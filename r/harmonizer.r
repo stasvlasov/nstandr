@@ -35,6 +35,7 @@
 ## Define functions for harmonization
 ## ================================================================================
 
+
 ## Convert HTML characters to UTF-8 (this one is 1/3 faster than htmlParse but it is still very slow)
 ## from - http://stackoverflow.com/questions/5060076/convert-html-character-entity-encoding-in-r?lq=1
 #' @import xml2 magrittr 
@@ -149,6 +150,7 @@ harm.codes.files <- c("nber-pdp-harmonization-(codes_org_type-9).csv")
 
 ## Wrapers for standardizes
 ## ================================================================================
+#' @import magrittr
 standardize.nber <- function(org.names) {
     file.path(harm.dir, c(harm.subs.files
                         , harm.rem.files)) %>% 
@@ -156,18 +158,21 @@ standardize.nber <- function(org.names) {
         {standardize(org.names, .)}
 }
 
+#' @import magrittr
 standardize.nber.sansremovals <- function(org.names) {
     file.path(harm.dir, harm.subs.files) %>% 
         make.subs.table %>%
         {standardize(org.names, .)}
 }
 
+#' @import magrittr
 standardize.nber.sansderwent.sansremovals <- function(org.names) {
     file.path(harm.dir, harm.subs.files.sansderwent) %>% 
         make.subs.table %>%
         {standardize(org.names, .)}
 }
 
+#' @import magrittr
 standardize.nber.sansderwent <- function(org.names) {
     file.path(harm.dir, c(harm.subs.files.sansderwent
                         , harm.rem.files)) %>% 
@@ -175,6 +180,7 @@ standardize.nber.sansderwent <- function(org.names) {
         {standardize(org.names, .)}
 }
 
+#' @import magrittr
 standardize.punctuation <- function(org.names) {
     file.path(harm.dir, harm.subs.files.punctuation) %>% 
         make.subs.table %>%
@@ -197,7 +203,7 @@ standardize.punctuation <- function(org.names) {
 #' @param org.names Character vector of organizational names to harmonize
 #' @param procedures List of harmonization procedures. Each procedure can be specified as a string representing procedure name (see details for procedure names) or as a list where the first element should be procedure name (string) and other elements will passed as arguments to this procedure.
 #' @return Character vector of harmonized  organizational names
-#' @import magrittr pbapply
+#' @import magrittr pbapply stringr stringi data.table xml2
 #' @export
 #' @examples
 #' org.names.test <- c("žŸong-ÂÃÇÈÏa\n\u00b5 &oacute;\u00b5<p>,  INt LTD &AMP; Co;  "
