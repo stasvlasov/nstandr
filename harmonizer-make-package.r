@@ -51,3 +51,4 @@ install_github("stasvlasov/harmonizer")
 
 library("harmonizer")
 harmonize(c("Lala Ltd.", "bla-bla Ltd."))
+

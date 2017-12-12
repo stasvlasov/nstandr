@@ -34,6 +34,11 @@ Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D.
 
   data.frame(original = org.names.test
            , harmonized = harmonize(org.names.test))
+  #                                           original          harmonized
+  # 1    žŸong-ÂÃÇÈÏa\nµ &oacute;µ<p>, LTD &AMP; Co;   ZYONG AACEIA U OU &
+  # 2 <br> the $ (&AMP; C&oacute;MP comPANY) Ïotta INt           IOTTA INT
+  # 3                                 Lala Ltd.  (USA)                LALA
+  # 4                                     bla-bla Ltd.             BLA BLA
 
 #+END_SRC
 
