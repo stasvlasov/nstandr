@@ -4,7 +4,7 @@
 
 The R package =harmonizer= standardizes (harmonizes) organizational names mainly using procedures described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) but not only.
 
-file:./img/harmonization.png
+[[file:img/harmonization.png]]
 
 This is work in progress. Please, file an issues or suggestion if you have any.
 
