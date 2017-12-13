@@ -231,7 +231,7 @@ standardize.punctuation <- function(org.names) {
 #' * standardize.nber.sansderwent.sansremovals - same as standardize.nber.sansderwent but without removals of organization legal form
 #' * standardize.punctuation - removes punctuation
 #' @md
-harmonizer <- function(org.names
+harmonize <- function(org.names
                     , procedures = list(
                           "toutf"
                         , "tolower"
