@@ -244,15 +244,13 @@ harmonize <- function(org.names
                       )) {
     ## Apply harmonization
     if(is.character(org.names)) {
-        apply.procedure <-  function(procedure) {
+        for(procedure in procedures) {
             print(paste("Running procedure:", procedure[[1]]))
-            org.names <<-
-                org.names %>% 
+            org.names %<>% 
                 list %>%
                 c(procedure[-1]) %>%        # add arguents
                 {do.call(procedure[[1]], .)}
         }
-        pbsapply(procedures, apply.procedure)
         return(org.names)
     } else {
         return(org.names)
