@@ -4,7 +4,9 @@
 
 The R package =harmonizer= standardizes (harmonizes) organizational names mainly using procedures described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) but not only.
 
-This is work in progress. Please, file issues or suggestions if you have any.
+file:./img/harmonization.png
+
+This is work in progress. Please, file an issues or suggestion if you have any.
 
 * References
 Magerman, T., Looy, V., Bart, & Song, X. (2006). /Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization/ (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470
