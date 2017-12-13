@@ -24,6 +24,7 @@ options(devtools.desc.author = paste0("'",
                                           role  = c("aut", "cre")
                                       ), "'"))
 
+setwd("~/mega/research/harmonizer")
 
 ## Assume that it runs from "harmonizer" directory
 setup(rstudio = FALSE
