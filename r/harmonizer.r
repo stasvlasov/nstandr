@@ -51,17 +51,19 @@ html2txt <- function(strings) {
     }) %>% as.vector
 }
 
-## Translates non-ascii symbols to its ascii equivalent
-toascii <- function(str) {
-    utf <- "ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ"
-    ascii <- "SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy"
-    Encoding(utf) <- "UTF-8"
-    chartr(utf, ascii, str)
-}
 
 ## Encodes as UTF-8
 #' @import stringr
 toutf <- function(str) str_conv(str, "UTF-8")
+
+
+## Translates non-ascii symbols to its ascii equivalent
+toascii <- function(str) {
+    utf <- "ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ" %>% toutf
+    ascii <- "SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy" %>% toutf
+    chartr(utf, ascii, str)
+}
+
 
 ## Trims whitespases
 #' @import stringr stringi
