@@ -58,9 +58,14 @@ toutf <- function(str) str_conv(str, "UTF-8")
 
 
 ## Translates non-ascii symbols to its ascii equivalent
+#' @import stringr magrittr
 toascii <- function(str) {
-    utf <- "ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ" %>% toutf
-    ascii <- "SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy" %>% toutf
+    ## utf <- "ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ" %>% toutf
+    utf <- system.file(package = "harmonizer") %>%
+        file.path("enc/enc.txt") %>%
+        readLines %>%
+        str_conv(str, "UTF-8")
+    ascii <- "SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy"
     chartr(utf, ascii, str)
 }
 
