@@ -244,8 +244,12 @@ harmonize <- function(org.names
                       )) {
     ## Apply harmonization
     if(is.character(org.names)) {
+        message("Running harmonizer procedures:")
         for(procedure in procedures) {
-            print(paste("Running procedure:", procedure[[1]]))
+            packageStartupMessage("* ", procedure[[1]], " ..."
+                                , paste0(rep("\t", 3 - (nchar(procedure[[1]]) %/% 10)))
+                                , appendLF = FALSE)
+            packageStartupMessage("DONE")
             org.names %<>% 
                 list %>%
                 c(procedure[-1]) %>%        # add arguents
@@ -265,6 +269,4 @@ harmonize <- function(org.names
 ## data.frame(original = org.names.test
 ##          , harmonized = harmonize(org.names.test))
 
-
- 
 

@@ -4,8 +4,6 @@
 
 The R package =harmonizer= standardizes (harmonizes) organizational names mainly using procedures described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) but not only.
 
-[[file:img/harmonization.png]]
-
 This is work in progress. Please, file an issues or suggestion if you have any.
 
 * References
@@ -27,23 +25,26 @@ Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D.
 #+END_SRC
 
 * Usage
-
+The package provides its main function =harmonize= that expect character vector of organization names as input and returns its harmonized version.
 #+BEGIN_SRC R
-  org.names.test <- c("žŸong-ÂÃÇÈÏa\n\u00b5 &oacute;\u00b5<p>, LTD &AMP; Co;  "
-                    , "<br> the $ (&AMP; C&oacute;MP comPANY) Ïotta INt"
-                    , "Lala Ltd.  (USA)"
-                    , "bla-bla Ltd.")
+  org.names.test <- c("žŸong-ÃÇÈÏ\n\u00b5&oacute;\u00b5<p>, LTD Co;  "
+                    , "<br> the $(Ldt &AMP; C&oacute;MP) Ïotta INt"
+                    , "Masha  &AMP;Lena Ltd. (Spb)"
+                    , "bla-bla-bla Ltd.")
+  data.frame(harmonized = harmonize(org.names.test)
+           , original = org.names.test)
 
-  data.frame(original = org.names.test
-           , harmonized = harmonize(org.names.test))
-  #                                           original          harmonized
-  # 1    žŸong-ÂÃÇÈÏa\nµ &oacute;µ<p>, LTD &AMP; Co;   ZYONG AACEIA U OU &
-  # 2 <br> the $ (&AMP; C&oacute;MP comPANY) Ïotta INt           IOTTA INT
-  # 3                                 Lala Ltd.  (USA)                LALA
-  # 4                                     bla-bla Ltd.             BLA BLA
-
+  #           harmonized                                    original
+  #  1    ZYONG ACEI UOU        žŸong-ÃÇÈÏ\nµ&oacute;µ<p>, LTD Co;  
+  #  2         IOTTA INT <br> the $(Ldt &AMP; C&oacute;MP) Ïotta INt
+  #  3      MASHA & LENA                 Masha  &AMP;Lena Ltd. (Spb)
+  #  4       BLA BLA BLA                            bla-bla-bla Ltd.
 #+END_SRC
 
+
+* Default harmonization procedures
+Figure below illustrates default sequence of harmonization procedures
+[[file:img/harmonization.png]]
 
 * Other relevant literature
 
