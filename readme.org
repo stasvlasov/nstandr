@@ -6,7 +6,7 @@ The R package =harmonizer= standardizes (harmonizes) organizational names mainly
 
 This is work in progress. Please, file an issues or suggestion if you have any.
 
-* References
+*References*:
 Magerman, T., Looy, V., Bart, & Song, X. (2006). /Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization/ (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470
 
 Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. /National Bureau of Economic Research Working Paper Series/, (15851). Retrieved from http://www.nber.org/papers/w15851 http://www.nber.org/papers/w15851.pdf
@@ -26,6 +26,7 @@ Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D.
 
 * Usage
 The package provides its main function =harmonize= that expect character vector of organization names as input and returns its harmonized version.
+
 #+BEGIN_SRC R
   org.names.test <- c("žŸong-ÃÇÈÏ\n\u00b5&oacute;\u00b5<p>, LTD Co;  "
                     , "<br> the $(Ldt &AMP; C&oacute;MP) Ïotta INt"
@@ -44,6 +45,7 @@ The package provides its main function =harmonize= that expect character vector 
 
 * Default harmonization procedures
 Figure below illustrates default sequence of harmonization procedures
+
 [[file:img/harmonization.png]]
 
 * Other relevant literature
