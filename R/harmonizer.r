@@ -240,16 +240,19 @@ harmonize <- function(org.names
                         , "toascii"
                         , "toupper"
                         , "standardize.nber"
-                        , "trims"
-                      )) {
+                        , "trims")
+                      , quite = FALSE
+                      ) {
     ## Apply harmonization
     if(is.character(org.names)) {
-        message("Running harmonizer procedures:")
+        if(!quite) message("Running harmonizer procedures:")
         for(procedure in procedures) {
-            packageStartupMessage("* ", procedure[[1]], " ..."
+            if(!quite) {
+                packageStartupMessage("* ", procedure[[1]], " ..."
                                 , paste0(rep("\t", 3 - (nchar(procedure[[1]]) %/% 10)))
                                 , appendLF = FALSE)
-            packageStartupMessage("DONE")
+                packageStartupMessage("DONE")
+            }
             org.names %<>% 
                 list %>%
                 c(procedure[-1]) %>%        # add arguents
