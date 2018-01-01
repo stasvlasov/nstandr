@@ -19,7 +19,7 @@
 ## Load or Install Packages (for testing)
 ## --------------------------------------------------------------------------------
 ## for(pkg in c('pbapply'
-##              , "stringi"
+##            , "stringi"
 ##            , 'stringr'
 ##            , 'data.table'
 ##            , 'dplyr'
@@ -97,7 +97,7 @@ toascii <- function(str, enc.detect = FALSE) {
 
 
 ## Trims whitespases
-#' @import stringr stringi
+#' @import stringr
 trims <- function(strings) {
     gsub("\\s+", " ", stringr::str_trim(strings))
 }
@@ -109,7 +109,7 @@ clear.in.brackets <- function(str) str_replace_all(str, "<.*>|\\(.*\\)|\\{.*\\}|
 
 
 ## Makes list of supstitutes given csv files with two columns (del, ins)
-#' @import magrittr data.table
+##' @import magrittr data.table
 ## make.subs.table <- function(harm.files) {
 ##     harm.files %>%
 ##         lapply(function(file)
@@ -242,8 +242,8 @@ standardize.nber.sansremovals <- function(org.names) {
         {standardize(org.names, .)}
 }
 
-#' @import magrittr
 #' it assumes that there is no removals for the first word
+#' @import magrittr
 standardize.nber.removals <- function(org.names) {
     file.path(harm.dir, c(harm.rem.files)) %>% 
         {standardize(org.names, .
