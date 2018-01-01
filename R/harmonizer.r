@@ -206,9 +206,9 @@ harm.codes.files <- c("nber-pdp-harmonization-(codes_org_type-9).csv")
 
 
 ## Magerman et al. (2006) harmonization
-harm.magerman <- system.file(package = "harmonizer") %>%
-    file.path("magerman-harmonization", "magerman-harmonization.csv") %>%
-    read.csv(header = FALSE, stringsAsFactors = FALSE)
+## harm.magerman <- system.file(package = "harmonizer") %>%
+##     file.path("magerman-harmonization", "magerman-harmonization.csv") %>%
+##     read.csv(header = FALSE, stringsAsFactors = FALSE)
 
 
 ## for testing
@@ -284,6 +284,8 @@ standardize.punctuation <- function(org.names) {
 #' @description
 #' Returns harmonized version of organizational names.
 #' @param org.names Character vector of organizational names to harmonize
+#' @param quite Logical value indicating whether or not print messages about procedures progress
+#' @param progress.by Numeric value that is used to split the org.names vector for showing percentage of completion. Default is 0 meaning not to split the vector and thus does not show progress percentage. Designed to be used for long strings.
 #' @param procedures List of harmonization procedures. Each procedure can be specified as a string representing procedure name (see details for procedure names) or as a list where the first element should be procedure name (string) and other elements will passed as arguments to this procedure.
 #' @return Character vector of harmonized  organizational names
 #' @import magrittr pbapply stringr stringi data.table xml2

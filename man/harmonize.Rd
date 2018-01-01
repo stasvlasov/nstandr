@@ -4,13 +4,19 @@
 \alias{harmonize}
 \title{Harmonizes organizational names.}
 \usage{
-harmonize(org.names, procedures = list("toutf", "tolower", "html2txt",
-  "clear.in.brackets", "toascii", "toupper", "standardize.nber", "trims"))
+harmonize(org.names, procedures = list("enc2utf8", "tolower",
+  "clear.in.brackets", list("toascii", "ind"), "toupper",
+  "standardize.nber.sansremovals", "standardize.nber.removals", "trims"),
+  quite = FALSE, progress.by = 0)
 }
 \arguments{
 \item{org.names}{Character vector of organizational names to harmonize}
 
 \item{procedures}{List of harmonization procedures. Each procedure can be specified as a string representing procedure name (see details for procedure names) or as a list where the first element should be procedure name (string) and other elements will passed as arguments to this procedure.}
+
+\item{quite}{Logical value indicating whether or not print messages about procedures progress}
+
+\item{progress.by}{Numeric value that is used to split the org.names vector for showing percentage of completion. Default is 0 meaning not to split the vector and thus does not show progress percentage. Designed to be used for long strings.}
 }
 \value{
 Character vector of harmonized  organizational names
