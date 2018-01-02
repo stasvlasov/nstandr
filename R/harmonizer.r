@@ -183,6 +183,7 @@ harm.dir <- system.file(package = "harmonizer") %>%
 ## Substitutions
 harm.subs.files <- c("nber-pdp-harmonization-(punctuation2_not_all-2,5,6,10).csv"
                    , "nber-pdp-harmonization-(standard_name-8).csv"
+                   , "additional.substitutions.2018-01-02.csv"
                    , "nber-pdp-harmonization-(non_corporates_univ-8).csv"
                    , "nber-pdp-harmonization-(nameonly_main-9).csv"
                    , "nber-pdp-harmonization-(derwent_standardisation_BHH-9).csv")
