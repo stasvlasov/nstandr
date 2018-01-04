@@ -36,7 +36,8 @@ setup(rstudio = FALSE
                                         , "magrittr"
                                         , "xml2"
                                         , "stringi"
-                                        , "stringr" , sep = ", ")
+                                        , "stringr"
+                                        , sep = ", ")
                         , Description = "Harmonizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006)."
                         , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851 http://www.nber.org/papers/w15851.pdf"))
 
@@ -53,7 +54,7 @@ install_github("stasvlasov/harmonizer")
 
 library("harmonizer")
 
-mharmonize(c("Lala Ltd.", "bla-bla Ltd."))
+harmonize(c("Lala Ltd.", "bla-bla Ltd."))
 
 
 

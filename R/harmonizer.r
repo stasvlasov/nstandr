@@ -37,6 +37,45 @@
 
 ## Define functions for harmonization
 ## ================================================================================
+## Load Substitution Rules
+## ================================================================================
+## Path for files with substitutions
+delayedAssign("inst.dir", system.file(package = "harmonizer"))
+## inst.dir <- file.path("../inst")  # for testing
+## Specify accented char to replace with ascii equivalents
+## Note: a" wraper for delayedAssign() is %<d-% from pryr package
+delayedAssign("harmonization.accented"
+            , file.path(inst.dir, "ascii-equivalents/accented-chars.txt") %>% 
+              readLines %>%
+              enc2utf8)
+## Specify folders to scan for CSV with substitutions
+delayedAssign("harmonization.dirs"
+            , c("nber-pdp-harmonization"
+                ## , "magerman-harmonization"
+              , "additional-harmonization"))
+delayedAssign("harmonization.files"
+            , (sapply(file.path(inst.dir, harmonization.dirs)
+                    , list.files
+                    , pattern = ".csv$", full.names = TRUE) %>% unlist))
+delayedAssign("harmonization.names"
+            , basename(harmonization.files) %>%
+              str_replace(".csv$", ""))
+## Load all CSVs into list
+delayedAssign("harmonization.tabs"
+            , lapply(harmonization.files, function(file) {
+                ## packageStartupMessage("* Loading substitutions: "
+                ##                     , basename(file))
+                read.csv(file
+                       , header = FALSE
+                       , col.names = c("del", "ins")
+                       , as.is = TRUE
+                       , colClasses = c("character", "character")
+                       , na.strings = NULL
+                       , comment.char = "#"
+                       , strip.white = TRUE)
+            }) %>% setNames(harmonization.names))
+## Get list of system encodings (should save time)
+delayedAssign("harmonizer.enc.list", iconvlist())
 
 
 ## Convert HTML characters to UTF-8 (this one is 1/3 faster than htmlParse but it is still very slow)
@@ -323,46 +362,12 @@ harmonize <- function(org.names
                         , "remove.brackets"
                         , "toupper"
                         , "apply.nber"
-                        , "trims"
+                        , "remove.spaces"
                       )
                     , quite = FALSE
                     , progress.by = 0
                     , include.original = FALSE
                       ) {
-    ## Load Substitution Rules
-    ## ================================================================================
-    ## Path for files with substitutions
-    inst.dir <- system.file(package = "harmonizer")
-    ## inst.dir <- file.path("../inst")  # for testing
-    ## Specify accented char to replace with ascii equivalents
-    harmonization.accented <- 
-        file.path(inst.dir, "ascii-equivalents/accented-chars.txt") %>% 
-        readLines %>%
-        enc2utf8
-    ## Specify folders to scan for CSV with substitutions
-    harmonization.dirs <- c("nber-pdp-harmonization"
-                            ## , "magerman-harmonization"
-                          , "additional-harmonization")
-    harmonization.files <- sapply(file.path(inst.dir, harmonization.dirs)
-                                , list.files
-                                , pattern = ".csv$", full.names = TRUE) %>% unlist
-    harmonization.names <- basename(harmonization.files) %>% str_replace(".csv$", "")
-    ## Load all CSVs into list
-    harmonization.tabs <- lapply(harmonization.files, function(file) {
-        packageStartupMessage("* Loading substitutions: " ,basename(file))
-        read.csv(file
-               , header = FALSE
-               , col.names = c("del", "ins")
-               , as.is = TRUE
-               , colClasses = c("character", "character")
-               , na.strings = NULL
-               , comment.char = "#"
-               , strip.white = TRUE)
-    })
-    ## Rename list elements
-    names(harmonization.tabs) <- harmonization.names
-    ## Get list of system encodings (should save time)
-    harmonizer.enc.list <- iconvlist()
     ## ================================================================================
     ## check if procedures are specified
     if(length(procedures) == 0) {message("No harmonizing procedures are specified."); return()}
@@ -376,6 +381,7 @@ harmonize <- function(org.names
                                                       , 5 - ((nchar(procedure[[1]]) + 6) %/% 8)))
                                            , appendLF = FALSE)
             if(progress.by & !quite) {
+                env <- environment()
                 i <- 1
                 l <- length(org.names)
                 n <- l %/% progress.by + 1
@@ -390,7 +396,7 @@ harmonize <- function(org.names
                                             , ifelse(round(100/n * i) < 10 , " ", "")
                                             , round(100/n * i), "%"
                                             , appendLF = FALSE)
-                        i <<- i + 1
+                        assign("i", i + 1, envir = env)
                         org.names.by %>% 
                             list %>%
                             c(procedure[-1])  %>%        # add arguents at the end

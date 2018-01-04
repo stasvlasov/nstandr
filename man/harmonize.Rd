@@ -6,7 +6,7 @@
 \usage{
 harmonize(org.names, procedures = list(list("toascii", TRUE), "tolower",
   "html2txt", list("toascii", FALSE), "remove.brackets", "toupper",
-  "apply.nber", "trims"), quite = FALSE, progress.by = 0,
+  "apply.nber", "remove.spaces"), quite = FALSE, progress.by = 0,
   include.original = FALSE)
 }
 \arguments{
