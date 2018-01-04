@@ -46,7 +46,7 @@ delayedAssign("inst.dir", system.file(package = "harmonizer"))
 ## Note: a" wraper for delayedAssign() is %<d-% from pryr package
 delayedAssign("harmonization.accented"
             , file.path(inst.dir, "ascii-equivalents/accented-chars.txt") %>% 
-              readLines %>%
+              readLines(encoding = "UTF-8") %>%
               enc2utf8)
 ## Specify folders to scan for CSV with substitutions
 delayedAssign("harmonization.dirs"
@@ -72,7 +72,8 @@ delayedAssign("harmonization.tabs"
                        , colClasses = c("character", "character")
                        , na.strings = NULL
                        , comment.char = "#"
-                       , strip.white = TRUE)
+                       , strip.white = TRUE
+                       , encoding = "UTF-8")
             }) %>% setNames(harmonization.names))
 ## Get list of system encodings (should save time)
 delayedAssign("harmonizer.enc.list", iconvlist())
@@ -108,6 +109,8 @@ detect.enc <- function(str) {
     }) %>% unlist %>% return
 }
 
+## SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy
+## ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ
 
 ## Translates non-ascii symbols to its ascii equivalent
 #' @import stringi stringr magrittr
