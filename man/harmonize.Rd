@@ -4,10 +4,10 @@
 \alias{harmonize}
 \title{Harmonizes organizational names.}
 \usage{
-harmonize(org.names, procedures = list("enc2utf8", "tolower",
-  "clear.in.brackets", list("toascii", "ind"), "toupper",
-  "standardize.nber.sansremovals", "standardize.nber.removals", "trims"),
-  quite = FALSE, progress.by = 0)
+harmonize(org.names, procedures = list(list("toascii", TRUE), "tolower",
+  "html2txt", list("toascii", FALSE), "remove.brackets", "toupper",
+  "apply.nber", "trims"), quite = FALSE, progress.by = 0,
+  include.original = FALSE)
 }
 \arguments{
 \item{org.names}{Character vector of organizational names to harmonize}
@@ -17,9 +17,11 @@ harmonize(org.names, procedures = list("enc2utf8", "tolower",
 \item{quite}{Logical value indicating whether or not print messages about procedures progress}
 
 \item{progress.by}{Numeric value that is used to split the org.names vector for showing percentage of completion. Default is 0 meaning not to split the vector and thus does not show progress percentage. Designed to be used for long strings.}
+
+\item{include.original}{Logical value indicating whether or not include original vector of orgnamizational names (e.g., org.names). Default is FALSE. If TRUE the function will return data.frame instead of vector.}
 }
 \value{
-Character vector of harmonized  organizational names
+Character vector of harmonized  organizational names (if include.original = FALSE - default). If include.original = TRUE the function returns data.frame(original = org.names, harmonized = harmonize(org.names))
 }
 \description{
 Returns harmonized version of organizational names.
@@ -30,16 +32,19 @@ The following procedures are available:
 \item toutf - encode as UTF-8 (a wrapper for str_conv(str, "UTF-8"))
 \item tolower - lowercase
 \item toupper - uppercase
-\item html2txt - remove HTML symbols and tags (takes lot of time)
-\item toascii - replace accented characters with ascii equivalent
-\item clear.in.brackets - removes brackets and its content - (), [], {}, <>
-\item trims - removes double white spaces and trims white spaces
-\item standardize.nber - applies standard name substitutions following NBER's PDP (Thoma, et al, 2010) - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
-\item standardize.nber.sansremovals - same as standardize.nber but without removals of organization legal form
-\item standardize.nber.sansderwent - same as standardize.nber but without Derwent names standardization
-\item standardize.nber.sansderwent.sansremovals - same as standardize.nber.sansderwent but without removals of organization legal form
-\item standardize.punctuation - removes punctuation
+\item html2txt - removes HTML symbols and tags (relatively slow)
+\item toascii - replaces accented characters with ascii equivalent. Can also identify encoding for each character string in vector (option detect.encoding = TRUE). Does not detect encoding by default (detect.encoding = FALSE) and assumes that the right one is specified for the vector.
+\item remove.brackets - removes brackets and its content - (), [], {}, <>
+\item remove.spaces - removes double white spaces and trims white spaces
+\item remove.quotes - removes double quotes
+\item apply.nber - applies standard name substitutions following NBER's PDP (Thoma, et al, 2010) - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
+\item apply.nber.sansremovals - same as apply.nber but without removals of organization legal form
+\item apply.nber.sansderwent - same as apply.nber but without Derwent names standardization
+\item apply.nber.sansderwent.sansremovals - same as apply.nber.sansderwent but without removals of organization legal form
+\item apply.punctuation - removes punctuation
 }
+
+External functions can be also passed as a separate harmonizer procedure
 }
 \examples{
 org.names.test <- c("žŸong-ÂÃÇÈÏa\\n\\u00b5 &oacute;\\u00b5<p>,  INt LTD &AMP; Co;  "

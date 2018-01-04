@@ -1,0 +1,47 @@
+# Added by Stas Vlasov 2018-01-03
+" LTDA ", " "  # Brasil: Sociedade limitada (Ltda.): ≈ Ltd. (UK) - https://en.wikipedia.org/wiki/List_of_business_entities
+" SPOL S RO ", " "  # Czech Republic: Ltd. (UK)
+" AKC SPOL ", " "  # Czech Republic: plc (UK)
+" PVT LTD ", " "  # India:  Ltd (UK)
+" LLLP ", " "  # US: LLLP Limited Liability Limited Partnership: a combination of LP and LLP available in some states
+# From Magerman et al. (2006)
+" QLD PTY LTD ", " "
+" PTY LTD ", " "
+" PTE LTD ", " "
+" & C SPA ", " "
+" & C SRL ", " "
+" E C SRL ", " "
+" U CO GMBH ", " "
+" NZ LTD ", " "
+" HK LTD ", " "
+" IP LTD ", " "
+" & CIE ", " "
+" Y CIA SA ", " "
+" CIA SA ", " "
+" CY SA ", " "
+" PLC COM PANY ", " "
+" NV A DUTCH LTD COM PANY ", " "
+" & GMBH & CO KG ", " "
+" GBMH & CO ", " "
+" GES MBH & CO ", " "
+" GMB & O CO KG ", " "
+" GNBH & CO KG ", " "
+" GESM B H & CO KG ", " "
+" GMBH MBH & ", " "
+" GESMH & CO KG ", " "
+" GMGH & CO KG ", " "
+" KG & CO KG ", " "
+" AG & CO AG ", " "
+" GES MBH ", " "
+" NA NV ", " "
+" AG AG ", " "
+" SA SA ", " "
+" CO CO LTD ", " "
+" NI LTD ", " "
+" MBH ", " "  # Germany: sometimes added to the name of a firm that already ends in "-gesellschaft" ("company")
+# Not sure about this part could be dangerous, lets see
+# " S P A ", " "
+# " S A ", " "
+# " A S ", " "
+# " P L C ", " "
+# " L L C ", " "
