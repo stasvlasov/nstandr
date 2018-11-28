@@ -44,10 +44,39 @@ The package provides its main function =harmonize= that expect character vector 
 #+END_SRC
 
 
-* Default harmonization procedures
-Figure below illustrates default sequence of harmonization procedures
+** Harmonization procedures
+
+Harmonization procedures are flexible and can be specified with setting ~procedures~ option like so:
+
+#+BEGIN_SRC R
+  org.names.test %>%
+      harmonize(procedures = list(
+                    list("toascii", FALSE)
+                  , "remove.brackets"
+                  , "toupper"
+                  , "apply.nber"
+                  , "remove.spaces"))
+
+#+END_SRC
+
+Figure below illustrates default sequence of harmonization procedures:
 
 [[file:img/harmonization.png]]
+
+
+** Displaying harmonization progress
+Useful for big data tables. The option ~progress.by~ tells how often to update the progress. (If you have 10^7 records it is recommended to set ~progress.by~ as 10^5 or more.) Setting this option will slow the harmonization down a little.
+
+#+BEGIN_SRC R
+  org.names.test %>%
+      harmonize(progress.by = 1)
+
+  ## Running harmonizer procedures:
+  ## * toascii ...			DONE
+  ## * remove.brackets ...		DONE
+  ## * toupper ...			DONE
+  ## * apply.nber ...			 73%
+#+END_SRC
 
 * Other relevant literature
 
@@ -78,4 +107,8 @@ Van der Loo, M. P. (2014). The stringdist package for approximate string matchin
 Wasi, N., Flaaen, A., & others. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. /Stata Journal/, 15(3), 672–697.
 
 Winkler, W. E. (2006). /Overview of record linkage and current research directions/. Bureau of the Census. Retrieved from http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.79.1519
+
+
+
+
 

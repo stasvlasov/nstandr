@@ -50,6 +50,8 @@ roxygenise()
 ## --------------------------------------------------------------------------------
 install(".")
 
+install("~/mega/research/harmonizer")
+
 install_github("stasvlasov/harmonizer")
 
 library("harmonizer")
