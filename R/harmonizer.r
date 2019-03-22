@@ -109,11 +109,18 @@ detect.enc <- function(str) {
     }) %>% unlist %>% return
 }
 
-## SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy
-## ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ
 
-## Translates non-ascii symbols to its ascii equivalent
+#' Translates non-ascii symbols to its ascii equivalent
+#'
+#' It takes characters from this string:
+#' ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ
+#' And translates to this one
+#' SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy
+#' @param str String to translate
+#' @param detect.encoding Detect encoding of individual elements
 #' @import stringi stringr magrittr
+#' 
+#' @export
 toascii <- function(str, detect.encoding = FALSE) {
     ## utf <- "ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ" %>% toutf
     utf <- harmonization.accented
@@ -303,6 +310,7 @@ apply.nber.sansderwent <- function(org.names) {
                             , "nber-stem-name")
                           , add.spaces = "right")
 }
+
 
 #' @import magrittr
 apply.punctuation <- function(org.names) {
