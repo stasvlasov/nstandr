@@ -1,9 +1,5 @@
-## Harmonize Paten Assignees Names
+## Harmonize Organizational Names
 ## ================================================================================
-
-## TODO: Add eurostat harmonization
-## TODO: Add harmonization from Magerman, T., Van Looy, B., Song, X., European Commission, & Eurostat. (2006). Data production methods for harmonised patent statistics patentee name harmonisation. Luxembourg: Publications Office. Retrieved from http://epp.eurostat.ec.europa.eu/cache/ITY_OFFPUB/KS-AV-06-002/EN/KS-AV-06-002-EN.PDF
-## TODO: Add legal form auto-recognition and country guess
 
 ## sequence used in NBER PDP
 ## ................................................................................
@@ -15,30 +11,12 @@
 ## - 5 (combabbrev) - it is just coding for legal form
 ## - 6 (stem_name) - I left common names untouched
 
-## --------------------------------------------------------------------------------
-## Load or Install Packages (for testing)
-## --------------------------------------------------------------------------------
-## for(pkg in c('pbapply'
-##            , "stringi"
-##            , 'stringr'
-##            , 'data.table'
-##            , 'dplyr'
-##            , 'magrittr'
-##            , "XML"
-##            , "xml2"
-##            , "readr"))
-##     if(!require(pkg, character.only = TRUE)) {
-##         install.packages(pkg, repos = 'http://cloud.r-project.org')
-##         library(pkg, character.only = TRUE)
-##     }
-## --------------------------------------------------------------------------------
-
-
 
 ## Define functions for harmonization
 ## ================================================================================
 ## Load Substitution Rules
 ## ================================================================================
+
 ## Path for files with substitutions
 delayedAssign("inst.dir", system.file(package = "harmonizer"))
 ## inst.dir <- file.path("../inst")  # for testing
