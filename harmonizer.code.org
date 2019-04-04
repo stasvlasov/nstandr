@@ -13,72 +13,232 @@
 :END:
 
 #+BEGIN_SRC R :results silent :tangle .Rprofile
-  ## --------------------------------------------------------------------------------
-  ## Load or Install Packages
-  ## --------------------------------------------------------------------------------
-  for(pkg in c('devtools'
-             , 'roxygen2'
-             , 'magrittr'))
-    if(!require(pkg, character.only = TRUE)) {
-      install.packages(pkg, repos = 'http://cloud.r-project.org')
-      library(pkg, character.only = TRUE)
-    }
- ## --------------------------------------------------------------------------------
+     ## --------------------------------------------------------------------------------
+     ## Load or Install Packages
+     ## --------------------------------------------------------------------------------
+     for(pkg in c('devtools'
+                , 'roxygen2'
+                , 'stringr'
+                , 'magrittr'))
+       if(!require(pkg, character.only = TRUE)) {
+         install.packages(pkg, repos = 'http://cloud.r-project.org')
+         library(pkg, character.only = TRUE)
+       }
+    ## --------------------------------------------------------------------------------
 #+END_SRC
+*** Functions
+:PROPERTIES:
+:ID:       org:9ph1ac70uai0
+:END:
+#+BEGIN_SRC R :results silent :tangle .Rprofile
+  ## Function that either loads rds or makes one if there is no file...
+  read.or.make.rds <- function(obj.name
+                             , ...  # How to construct the object if it is not on disk
+                             , dir = "rds"
+                             , file.name.sufix = "" # e.g., date or version
+                             , file.name.sufix.sep = "."
+                             , file.name.extention = ".rds"
+                             , obj.name.has.extention = FALSE
+                             , return.obj.name = FALSE
+                             , do.not.make = FALSE
+                             , quietly = FALSE) {
+      ## Experiments with utilizing name of the object as file name...
+      ## get.object.name <- function(x) deparse(substitute(x))
+      ## this does not work with pipes %>%
+      file.name.sufix %<>% {ifelse(. != "", paste0(file.name.sufix.sep, .), "")}
+      file.name.extention %<>% ifelse(obj.name.has.extention
+                                    , str_extract(obj.name, "\\.[^\\.]+$"), .)
+      obj.name %<>% ifelse(obj.name.has.extention, str_remove(., "\\.[^\\.]+$"), .)
+      dir %<>% path.expand
+      file.path <- file.path(dir
+                           , paste0(obj.name
+                                  , file.name.sufix
+                                  , file.name.extention))
+      if(file.path %>% file.exists) {
+          if(quietly) {
+              readRDS(file.path) %>% assign(obj.name, ., 1)
+          } else {
+              time.started <- Sys.time()
+              message("Loading file ", file.path)
+              obj.size <- . %>% get %>% object_size %>%
+                  structure(class="object_size") %>%
+                  format(units="auto", )
+              readRDS(file.path) %>% assign(obj.name, ., 1)
+              time.took <- as.duration(Sys.time() - time.started)
+              message("Loaded ", obj.name, " - ", obj.name %>% obj.size, " in ", time.took)
+            
+          }
+          if(return.obj.name) obj.name
+      } else if(!do.not.make) {
+          if(quietly) {
+              eval(...) %T>% saveRDS(file.path) %>% assign(obj.name, ., 1)
+          } else {
+              time.started <- Sys.time()
+              message("File ", file.path, " does not exist. Making one...")
+              eval(...) %T>% saveRDS(file.path) %>% assign(obj.name, ., 1)
+              time.took <- as.duration(Sys.time() - time.started)
+              message("Done! Made ", obj.name, " and saved - ", obj.name %>% obj.size, " in ", time.took)
+          }
+          if(return.obj.name) obj.name
+      } else if(!quietly) {
+          message("Can not find ", file.path, " file.")
+      }}
 
-
-
+#+END_SRC
 
 ** Generate package description
 #+BEGIN_SRC R :results silent :tangle no
-## Making a package
-## --------------------------------------------------------------------------------
+    ## Making a package
+    ## --------------------------------------------------------------------------------
 
-## Updates package info
-options(devtools.desc.author = paste0("'",
-                                      person(
-                                          "Stas", 
-                                          "Vlasov", 
-                                          email = "s.vlasov@uvt.nl", 
-                                          role  = c("aut", "cre")
-                                      ), "'"))
+    ## Assume that it runs from "harmonizer" directory
+    ## setwd("~/org/research/harmonizer")
 
-setwd("~/mega/research/harmonizer")
+    use_description(fields =
+                        list(Title  = "Harmonization of Organizational Names"
+                           , Date = "2019-03-22"
+                           , "Authors@R" = 'as.person("Stanislav Vlasov <s.vlasov@uvt.nl> [aut, cre]")'
+                           , License = "MIT License"
+                            , Imports = paste("pbapply"
+                                            , "data.table"
+                                            , "magrittr"
+                                            , "xml2"
+                                            , "stringi"
+                                            , "stringr"
+                                            , sep = ", ")
+                           , Depends = "R (>= 3.4.1)"
+                            , Description = "Harmonizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006)."
+                            , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851.pdf"))
 
-## Assume that it runs from "harmonizer" directory
-setup(rstudio = FALSE
-    , description = list(Title  = "Harmonization of Organizational Names"
-                        , Date = "2018-01-01"
-                        , License = "MIT License"
-                        , Imports = paste("pbapply"
-                                        , "data.table"
-                                        , "magrittr"
-                                        , "xml2"
-                                        , "stringi"
-                                        , "stringr"
-                                        , sep = ", ")
-                        , Description = "Harmonizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006)."
-                        , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851 http://www.nber.org/papers/w15851.pdf"))
+    ## Update name spaces and documentation for functions
+    roxygenise()
 
+  ## document()  # This function is a wrapper for the ‘roxygen2::roxygenize()’ but also load the package
 
-## Update name spaces and documentation for functions
-roxygenise()
-
-
-## Test
-## --------------------------------------------------------------------------------
-install(".")
-
-install("~/mega/research/harmonizer")
-
-install_github("stasvlasov/harmonizer")
-
-library("harmonizer")
-
-harmonize(c("Lala Ltd.", "bla-bla Ltd."))
 
 #+END_SRC
 
+** Deploy package
+
+
+#+BEGIN_SRC R :results silent :tangle no
+
+  ## Remove
+
+
+  ## Deploy
+  ## --------------------------------------------------------------------------------
+  install(".")
+
+  install("~/org/research/harmonizer")
+
+  install_github("stasvlasov/harmonizer")
+
+  library("harmonizer")
+
+
+   ## Test
+  ## --------------------------------------------------------------------------------
+  harmonize(c("Lala Ltd.", "bla-bla Ltd."))
+#+END_SRC
+
+* Resources
+** Magerman, et. al, 2006
+
+*** Common company words to be removed
+#+name: add-magerman-remove-to-sysdata
+#+header: :var data.name = "magerman.remove.at.the.end"
+#+header: :var data = magerman.remove.at.the.end
+#+begin_src R  :var data.dir = "data"  :results none  :tangle no
+  ## make a path for saving .rds
+  data.path  <-
+      data.name %>% 
+      paste0(".rds") %>%
+      file.path(data.dir, .)
+
+  ## save data to .rda (filename is the same as var name)
+  data %>% 
+      extract2(1) %>% 
+      saveRDS(data.path)
+
+  ## add everything to R/sysdata.rda
+  dir(data.dir) %>% 
+      sapply(read.or.make.rds
+           , dir = data.dir
+           , quietly = TRUE
+           , return.obj.name = TRUE
+           , do.not.make = TRUE
+           , obj.name.has.extention = TRUE) %>%
+      save(list = ., file = "R/sysdata.rda")
+#+end_src
+
+Magerman, T., Van Looy, B., Song, X., European Commission, & Eurostat. (2006). Data production methods for harmonised patent statistics patentee name harmonisation.
+
+Table 19: Common company words to be removed at the end of a name
+#+NAME: magerman.remove.at.the.end
+| KEYWORD        | NBR    |
+|----------------+--------|
+| "CORPORATION"  | 23,134 |
+| "CORP"         | 102    |
+| "AND COMPANY"  | 120    |
+| "& COMPANY"    | 10,909 |
+| "COMPANY"      | 30,946 |
+| " KG"          | 1,078  |
+| "GESELLSCHAFT" | 1,863  |
+
+#+call: add-magerman-remove-to-sysdata(data = magerman.remove.at.the.end, data.name = "magerman.remove.at.the.end")
+
+
+Table 20: Common company words to be removed at the beginning of a name
+#+NAME: magerman.remove.at.the.beginning
+| KEYWORD                                 |   NBR |
+|-----------------------------------------+-------|
+| "SOCIETE A RESPONSABILITE LIMITEE DITE" |    20 |
+| "SOCIETE A RESPONSABILITE LIMITEE"      |    19 |
+| "SOCIETE ANONYME DITE"                  |   130 |
+| "SOCIETE ANONYME DES "                  |    40 |
+| "SOCIETE ANONYME DE "                   |    23 |
+| "SOCIETE ANONYME D'"                    |    14 |
+| "SOCIETE ANONYME"                       |   110 |
+| "SOCIETE CIVILE DES "                   |     6 |
+| "SOCIETE CIVILE DE "                    |    12 |
+| "SOCIETE CIVILE D'"                     |    18 |
+| "SOCIETE CIVILE "                       |    52 |
+| "SOCIETE DITE"                          |    60 |
+| "SOCIETE DES "                          |   104 |
+| "SOCIETE DE "                           |   260 |
+| "SOCIETE D'"                            |   310 |
+| "SOCIETE "                              | 1,285 |
+
+
+#+call: add-magerman-remove-to-sysdata(data = magerman.remove.at.the.beginning, data.name = "magerman.remove.at.the.beginning")
+
+
+Table 21: Common company words to be removed anywhere in a name
+#+NAME: magerman.remove.anywhere
+| KEYWORD          |   NBR |
+|------------------+-------|
+| " AND CO "       |     0 |
+| " AND CO."       |     4 |
+| " AND CO,"       |     0 |
+| " & CO "         |    25 |
+| " & CO."         |   415 |
+| " & CO,"         |     3 |
+| " CO "           |    23 |
+| " CO."           |   859 |
+| " CO,"           |     8 |
+| " GESELLSCHAFT " | 1,510 |
+| " SOCIETE "      |   922 |
+| " CORPORATION "  |   802 |
+| " INC."          |   817 |
+| " INC,"          |     8 |
+| " COMPANY "      | 1,619 |
+| " AG "           |   559 |
+| " AG,"           |    80 |
+| " AG."           |     8 |
+
+#+call: add-magerman-remove-to-sysdata(data = magerman.remove.at.the.anywhere, data.name = "magerman.remove.at.the.anywhere")
+*** 
 * Harmonizer Package
 :PROPERTIES:
 :ID:       org:3jj7whz0cai0
@@ -429,6 +589,9 @@ harmonize(c("Lala Ltd.", "bla-bla Ltd."))
 
 
 ** harmonize
+:PROPERTIES:
+:ID:       org:ifb5ac70uai0
+:END:
 
 #+BEGIN_SRC R :results silent :tangle R/harmonizer.r :mkdirp yes
   ## Harmonize Organizational Names
