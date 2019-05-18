@@ -1,3 +1,18 @@
+# -- magerman.csv --
+# 
+# "All search and replace statements for all legal forms to be removed at the end of a name" (from Magerman et al., 2006, Appendix 2)
+#
+# Reference: Magerman, T., Van Looy, B., Song, X., European Commission, & Eurostat. (2006). Data production methods for harmonised patent statistics patentee name harmonisation.
+# Full text: https://core.ac.uk/download/pdf/34432497.pdf
+# 
+# Prepared harmonizer R package. Can be used for guessing organizational leagal form.
+# 
+# Version: 2017-12-29
+# 
+# Field names:
+# --------------------------------------------------------------------------------
+"remove", "legal.form", "replace"
+# --------------------------------------------------------------------------------
 " MFG. COMPANY INC."                                 , "INCORPORATED"       , " MANUFACTURING COMPANY"
 " MFG. COMPANY, INC."                                , "INCORPORATED"       , " MANUFACTURING COMPANY"
 " MFG. CO. INC."                                     , "INCORPORATED"       , " MANUFACTURING COMPANY"

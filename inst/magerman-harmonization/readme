@@ -1,8 +1,0 @@
-created: 2017-12-29
-magerman.csv is a table from Magerman et al., 2006, Appendix 2 ("all search and replace statements for all legal forms to be removed at the end of a name")
-
-fields:
-- keyword
-- legal form
-- replace
-- regex (in case if just keyword is not enought)
