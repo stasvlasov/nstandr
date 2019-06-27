@@ -22,7 +22,7 @@
               , 'stringr'
               , 'magrittr'
               , 'lubridate'
-              , 'pryr'
+              , 'plyr'
               , 'data.table'
               , 'dplyr'))
      if(!require(pkg, character.only = TRUE)) {
@@ -30,66 +30,30 @@
        library(pkg, character.only = TRUE)
      }
   ## --------------------------------------------------------------------------------
-#+END_SRC
-*** Functions
-:PROPERTIES:
-:ID:       org:9ph1ac70uai0
-:END:
-#+BEGIN_SRC R :results silent :tangle .Rprofile
-  ## Function that either loads rds or makes one if there is no file...
-  ## requires lubridate and plyr!!!!
-  read.or.make.rds <- function(obj.name
-                             , ...  # How to construct the object if it is not on disk
-                             , dir = "rds"
-                             , file.name.sufix = "" # e.g., date or version
-                             , file.name.sufix.sep = "."
-                             , file.name.extention = ".rds"
-                             , obj.name.has.extention = FALSE
-                             , return.obj.name = FALSE
-                             , do.not.make = FALSE
-                             , quietly = FALSE) {
-      ## Experiments with utilizing name of the object as file name...
-      ## get.object.name <- function(x) deparse(substitute(x))
-      ## this does not work with pipes %>%
-      file.name.sufix %<>% {ifelse(. != "", paste0(file.name.sufix.sep, .), "")}
-      file.name.extention %<>% ifelse(obj.name.has.extention
-                                    , str_extract(obj.name, "\\.[^\\.]+$"), .)
-      obj.name %<>% ifelse(obj.name.has.extention, str_remove(., "\\.[^\\.]+$"), .)
-      dir %<>% path.expand
-      file.path <- file.path(dir
-                           , paste0(obj.name
-                                  , file.name.sufix
-                                  , file.name.extention))
-      if(file.path %>% file.exists) {
-          if(quietly) {
-              readRDS(file.path) %>% assign(obj.name, ., 1)
-          } else {
-              time.started <- Sys.time()
-              message("Loading file ", file.path)
-              obj.size <- . %>% get %>% object_size %>%
-                  structure(class="object_size") %>%
-                  format(units="auto", )
-              readRDS(file.path) %>% assign(obj.name, ., 1)
-              time.took <- as.duration(Sys.time() - time.started)
-              message("Loaded ", obj.name, " - ", obj.name %>% obj.size, " in ", time.took)
-          }
-          if(return.obj.name) obj.name
-      } else if(!do.not.make) {
-          if(quietly) {
-              eval(...) %T>% saveRDS(file.path) %>% assign(obj.name, ., 1)
-          } else {
-              time.started <- Sys.time()
-              message("File ", file.path, " does not exist. Making one...")
-              eval(...) %T>% saveRDS(file.path) %>% assign(obj.name, ., 1)
-              time.took <- as.duration(Sys.time() - time.started)
-              message("Done! Made ", obj.name, " and saved - ", obj.name %>% obj.size, " in ", time.took)
-          }
-          if(return.obj.name) obj.name
-      } else if(!quietly) {
-          message("Can not find ", file.path, " file.")
-      }}
 
+read.or.make.rds
 #+END_SRC
+
+
+#+BEGIN_SRC R :results silent :session :tangle .Rprofile
+   ## detach(package:read.or.make.rds, unload = TRUE)
+  ## remove.packages("read.or.make.rds")
+
+
+  if (!require("read.or.make.rds", character.only = TRUE)) {
+    if(!require("devtools")) {
+      install.packages("devtools"
+                     , repos = 'http://cloud.r-project.org'
+                     , dependencies = TRUE)
+      library("devtools", character.only = TRUE)
+    }
+    install_github("stasvlasov/read.or.make.rds")
+    library("read.or.make.rds", character.only = TRUE)
+  }
+#+END_SRC
+
+
+
 *** Data
 :PROPERTIES:
 :ID:       org:isz3wd40zai0
@@ -342,10 +306,10 @@ It is a named src blocks so I can call it with CALL with arguments data.name and
 :ID:       org:kakfib50bci0
 :END:
 #+BEGIN_SRC R :results silent :session :tangle R/harmonizer.r :mkdirp yes
-   ## Removes redundant whitespases
+  ## Removes redundant whitespases
   #' @import stringr
   remove.spaces <- function(strings) {
-      gsub("\\s+", " ", stringr::str_trim(strings))
+    gsub("\\s+", " ", stringr::str_trim(strings))
   }
 
   ## Removes brackets and content in brackets
@@ -362,6 +326,29 @@ It is a named src blocks so I can call it with CALL with arguments data.name and
 
   ## Escapes special for regex characters
   escape.regex <- function(string) str_replace_all(string, "(\\W)", "\\\\\\1")
+  ## escape.regex  <- function (string) {
+  ##   gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", string)
+  ## }
+
+
+  ## Escapes special for regex characters conditionaly
+  escape.regex.cond <- function(strings, conds) {
+    mapply(function(string, cond) {
+      if(cond == "fixed") escape.regex(string)
+      else if(cond == "begins") paste0("^", escape.regex(string))
+      else if(cond == "ends") paste0(escape.regex(string), "$")
+      else if(cond == "regex") string
+    }
+  , strings
+  , conds
+  , SIMPLIFY = TRUE)
+  }
+
+  ## Test escape.regex.cond
+  ## c("MSlab$", "TriloBit.?", "(^0-3)", "Ltd.") %>%
+  ##   escape.regex.cond(c("regex", "fixed", "regex", "ends"))
+
+
 
 
 
@@ -372,22 +359,28 @@ It is a named src blocks so I can call it with CALL with arguments data.name and
                                 , add.spaces = "both"
                                 , del.spaces = TRUE
                                 , regex = FALSE) {
-      if(del.spaces) org.names %<>% remove.spaces
-      if(add.spaces == "right")
-          org.names %<>%  paste0(" ")  # add space at the end
-      if(add.spaces == "both")
-          org.names %<>% {paste0(" ",. , " ")}  # add space at the end
-      harmonization.tab <-
-          harmonization.tabs[harmonization.names] %>%
-          rbindlist
-      if(regex) org.names %<>% stri_replace_all_regex(harmonization.tab$del
-                                                    , harmonization.tab$ins
-                                                    , vectorize_all = FALSE)
-      else org.names %<>% stri_replace_all_fixed(harmonization.tab$del
-                                               , harmonization.tab$ins
-                                               , vectorize_all = FALSE)
-      return(org.names)
+    if(del.spaces) org.names %<>% remove.spaces
+    if(add.spaces == "right")
+      org.names %<>%  paste0(" ")  # add space at the end
+    if(add.spaces == "both")
+      org.names %<>% {paste0(" ",. , " ")}  # add space at the end
+    harmonization.tab <-
+      harmonization.tabs[harmonization.names] %>%
+      rbindlist
+    if(regex) org.names %<>% stri_replace_all_regex(harmonization.tab$del
+                                                  , harmonization.tab$ins
+                                                  , vectorize_all = FALSE)
+    else org.names %<>% stri_replace_all_fixed(harmonization.tab$del
+                                             , harmonization.tab$ins
+                                             , vectorize_all = FALSE)
+    return(org.names)
   }
+
+
+
+  empty.omit <- function(x) x[x != "" & !is.na(x) & !is.null(x)]
+
+
 #+END_SRC
 
 
@@ -396,51 +389,107 @@ It is a named src blocks so I can call it with CALL with arguments data.name and
 :ID:       org:xcpfib50bci0
 :END:
 #+BEGIN_SRC R :results silent :session :tangle R/harmonizer.r :mkdirp yes
-
-  ## this should accept both vector and table and return eather vector or a table
+  #' A wrapper for string replacement and cbinding some columns.
+  #'
+  #' Optionally matches only at the beginning or at the end of the string.
+  #' 
+  #' @param x Vector or table to harmonize.
+  #' @param patterns Accepts both vector or table. If patterns it is table can also include replacements column.
+  #' @param patterns.col If patterns is not a vector which column to use. Default is 1.
+  #' @param patterns.replacements.col If patterns is not a vector and includes replacements which column to use for replacements. Default is 2.
+  #' @param replacements If patterns does not have column with replacements provide it here.
+  #' @param replacements.col If replacements is not a vector which column to use. Default is 1.
+  #' @param x.col Which column to use for replacing
+  #' @param patterns.type Kind of pattern. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are "begins", "ends" - which means that it should only match fixed pattern at the beginning of the string or at the and. Another possible value is "regex" (calling code{\link[stringi]{stri_replace_all_regex}})
+  #' @param bind.x.cols If x is table then what columns of it to bind to the result. Default is "none". Other options are "all" - bind original all x, "x.col" - only bind original column that was harmonized, "all.but.x.col" - bind all x except original column that was harmonized. Other values just passed to select. It could be a vector of column numbers or names.
+  #'
+  #' @return If nothing was indicated to cbind to results then it returns harmonized vector. If something is needs to be cbind then it returns data.table
   harmonize.replace <- function(x
                               , patterns
+                              , patterns.col = 1
+                              , patterns.type = "fixed"
+                              , patterns.replacements.col = 2
                               , replacements = NULL
-                              , replacements.col = 2
-                              , harmonize.col = 1
-                              , bind.x.cols = c("none"
-                                              , "harmonize.col"
-                                              , "all.but.harmonize.col"
-                                              , "all")[1]
-                              , bind.patterns.cols = NULL) {
-    patterns.is.vector <- is.vector(patterns)
-    replacements %<>%
-      {if (is.null(.)) if (patterns.is.vector) "" else patterns[[replacements.col]]
-       else if (is.vector(.)) .
-       else .[[1]]}
-    patterns %<>% {if (patterns.is.vector) . else .[[1]]}
+                              , replacements.col = 1
+                              , x.col = 1
+                              , bind.x.cols = "none") {
+    ## check imput type
     x.is.vector <- is.vector(x)
+    patterns.is.vector <- is.vector(patterns)
+    ## check pattern type
+    patterns.type %<>% {if(length(.) == 1)
+                          if(. %in% c("fixed", "begins", "ends", "regex")) .
+                          else if(is.numeric(.)) patterns[[.]]
+                          else if(!is.null(patterns[[.]])) patterns[[.]]
+                          else stop("patterns.type misspecified!")
+                        else if(length(.) == ifelse(is.null(nrow(patterns))
+                                                  , length(patterns)
+                                                  , nrow(patterns))) .
+                        else stop("patterns.type misspecified!")}
+    ## make vectors
+    replacements %<>%
+      {if (is.null(.)) if (patterns.is.vector) ""
+                       else patterns[[patterns.replacements.col]]
+       else if (is.vector(.)) .
+       else .[[replacements.col]]}
+    patterns %<>%
+      {if (patterns.is.vector) . else .[[patterns.col]]} %>%
+      {if(length(patterns.type) == 1)
+         if(patterns.type == "begins") paste0("^", escape.regex(.))
+         else if(patterns.type == "ends") paste0(escape.regex(.), "$")
+         else .
+       else escape.regex.cond(.,patterns.type)}
+    ## harmonize
     x %>%
-      {if(x.is.vector) . else .[[harmonize.col]]} %>%
-      {if (single.replacement)
-         for (string in .)
-           stri_replace(string, mode = )
-      else stri_replace_all_fixed(.
-                                , patterns
-                                , replacements
-                                , vectorize_all = FALSE)} %>%
-      {if(bind.x.cols == "none" | (x.is.vector & bind.x.cols == "all.but.harmonize.col")) .
-       else if(x.is.vector & (bind.x.cols == "all" | bind.x.cols == "harmonize.col"))
+      {if(x.is.vector) . else .[[x.col]]} %>%
+      {if(length(patterns.type) == 1 & patterns.type[1] == "fixed")
+         stri_replace_all_fixed(.
+                              , patterns
+                              , replacements
+                              , vectorize_all = FALSE)
+       else 
+         stri_replace_all_regex(.
+                              , patterns
+                              , replacements
+                              , vectorize_all = FALSE)
+      } %>% 
+      {if(bind.x.cols == "none" | (x.is.vector & bind.x.cols == "all.but.x.col")) .
+       else if(x.is.vector & (bind.x.cols == "all" | bind.x.cols == "x.col"))
          cbind(harmonized = ., data.table(original = x))
        else if(bind.x.cols == "all")
          cbind(harmonized = ., as.data.table(x))
-       else if(bind.x.cols == "all.but.harmonize.col")
-         cbind(harmonized = ., as.data.table(x) %>% select(-harmonize.col))
-       else if(bind.x.cols == "harmonize.col")
-         cbind(harmonized = ., as.data.table(x) %>% select(harmonize.col))
+       else if(bind.x.cols == "all.but.x.col")
+         cbind(harmonized = ., as.data.table(x) %>% select(-x.col))
+       else if(bind.x.cols == "x.col")
+         cbind(harmonized = ., as.data.table(x) %>% select(x.col))
+       else
+         cbind(harmonized = ., as.data.table(x) %>% select(bind.x.cols))
       }
   }
+
+
+  ## Test harmonize.replace
+  ## c("lala MSlab"
+  ## , "this company called TriloBit.? maybe"
+  ##   , "MS007lab, Ltd.") %>% 
+  ## harmonize.replace(patterns = c("MSlab$", "TriloBit.?", "[0-3]*", "Ltd.")
+  ##                 , patterns.type = c("regex", "fixed", "regex", "ends"))
+
+
+
+
+
+
+
+
 
   ## Apply Magerman Example:
   ## , magerman.remove.common.words
   ## , magerman.clean.punctuation
   ## , list(magerman.do.something, col = 2)
   ## , magerman.clean.punctuation
+
+
 
 #+END_SRC
 
@@ -452,70 +501,150 @@ It is a named src blocks so I can call it with CALL with arguments data.name and
 
 #+BEGIN_SRC R :results silent :session :tangle R/harmonizer.r :mkdirp yes
   ## this function is basically for coding names based on certain pattern
+
+  #' A wrapper for string replacement and cbinding some colums.
+  #'
+  #' Optionaly matches only at the beginning or at the end of the string.
+  #' 
+  #' @param x Vector or table to harmonize.
+  #' @param patterns Accepts both vector or table. If patterns it is table can also include replacements column.
+  #' @param patterns.col If patterns is not a vectorwhich column to use. Defauld is 1.
+  #' @param x.col Which column to use for replacing
+  #' @param x.col.name If x was vector then use this name as a column name. Otherwise original column names will be used
+  #' @param patterns.type Kind of pattern. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are "beggins", "ends" - which means that it should only match fixed pattern at the beginngin of the string or at the and. Another possible value is "regex" (calling code{\link[stringi]{stri_replace_all_regex}})
+  #' @param patterns.codes.col If patterns is table which column to use as codes column.
+  #' @param codes If provided use it as codes. Should be the same length as patterns
+  #' @param codes.col If codes is not vector use this column for codes
+  #' @param codes.name If provided use it as a name for codes column in results.
+  #' @param codes.first If TRUE then return only codes for the first detected pattern.  Otherwise return list of all matched codes.
+  #' 
+  #' @return If nothing was indicated to cbind to resutls then it returns harmonized vector. If something is needs to be cbind then it returns data.table
   harmonize.detect <- function(x
                              , patterns
-                             , x.col = 1
                              , patterns.col = 1
-                             , type = "fixed"
-                             , bind.patterns.col = 2
-                             , bind.patterns.col.name = NA
-                             , bind.patterns.first.occurence = FALSE) {
-    ## x.is.vector <- is.vector(x)
-    x.vector <- x %>% {if(is.vector(.)) . else .[[x.col]]}
-    bind.patterns.col.name %<>% {if(!is.na(.)) .
-                                 else names(patterns)[bind.patterns.col] %>% 
-                                        {if(!is.null(.)) .
-                                         else names(x)[x.col] %>%
-                                                {if(!is.null(.)) paste0(., ".detected")
-                                                 else "detected"}}}
-    if(type %in% c("fixed", "regex", "fixed.end", "fixed.beginning")) {
-      mapply(function(pattern, bind) {
+                             , patterns.type = "fixed"
+                             , patterns.codes.col = 2
+                             , codes = NULL
+                             , codes.col = 1
+                             , codes.name = NA
+                             , codes.first = FALSE
+                             , x.col = 1
+                             , x.rows = NULL
+                             , x.col.name = "x"
+                             , x.codes.col = ncol(x)
+                             , x.codes.add = FALSE
+                             , x.codes.merge = FALSE) {
+    x.is.vector <- is.vector(x)
+    x %<>% {if(x.is.vector) . else as.data.table(lapply(., as.character))}
+    x.codes <- x[[x.codes.col]]
+    ## filter x rows if x.codes.add is set
+    if((x.codes.add & !x.is.vector) | !is.null(x.rows)) {
+      x.rows <- x.codes %>%
+        {. == "" | sapply(.,is.na) | sapply(., length) == 0}
+      if(all(!x.rows)) return(x)
+    }
+    x.vector <- x %>%
+      {if(x.is.vector) . else .[[x.col]]} %>%
+      {if(is.null(x.rows)) .
+       else .[x.rows]}
+    codes.name %<>%
+      {if(!is.na(.)) .
+       else names(patterns)[patterns.codes.col] %>% 
+              {if(!is.null(.)) .
+               else names(x)[x.col] %>%
+                      {if(!is.null(.)) paste0(., ".code")
+                       else "code"}}}
+    codes %<>%
+      {if(!is.null(codes)) .
+       else patterns %>%
+              {if(is.vector(.)) .
+               else .[[patterns.codes.col]]} %>%
+              as.character}
+    patterns %<>%
+      {if(is.vector(.)) .
+       else .[[patterns.col]]} %>%
+      as.character %>% 
+      {if(patterns.type == "begins")
+         paste0("^", escape.regex(.))
+       else if(patterns.type == "ends")
+         paste0(escape.regex(.), "$")
+       else .}
+  ## detect
+    mapply(
+      function(pattern, code) {
         x.vector %>%
-          {if (type == "fixed")
+          {if(patterns.type == "fixed")
              stri_detect_fixed(., pattern)
-           else if (type == "regex")
-             stri_detect_regex(., pattern)
-           else if (type == "fixed.beginning")
-             stri_detect_regex(., paste0("^", escape.regex(pattern)))
-           else if (type == "fixed.end")
-             stri_detect_regex(., paste0(escape.regex(pattern), "$"))} %>%
-          ifelse(bind, NA) %>%
+           else
+             stri_detect_regex(., pattern)} %>% 
+          ifelse(code, NA) %>%
           ifelse(. == "", NA, .)
       }
-    , patterns %>% {if(is.vector(.)) . else .[[patterns.col]]}
-    , patterns %>% {if(is.vector(.)) . else .[[bind.patterns.col]]}
-    , SIMPLIFY = TRUE
-    , USE.NAMES = TRUE) %>%
-      apply(1, na.omit) %>%
-      {if (bind.patterns.first.occurence) lapply(.,extract, 1) else .} %>% 
-      data.table(detect = .) %>% 
-      cbind(x,.) %>% 
-      set_names(c(colnames(x) %>% ifelse(is.null(.), "names", .)
-                , bind.patterns.col.name))
-    } else message("Wrong type!")
+    , patterns
+    , codes
+    , SIMPLIFY = FALSE, USE.NAMES = FALSE) %>%
+      do.call(cbind,.) %>% 
+      apply(1, na.omit, ) %>%
+      {if(codes.first) lapply(.,extract, 1) else .} %>%
+      {if(x.codes.merge)
+         mapply(function(a,b) c(a,b)
+              , .
+              , x.codes[if(is.null(x.rows)) TRUE else x.rows]
+              , SIMPLIFY = FALSE)
+       else .} %>%
+      {if(!is.null(x.rows))
+         if(x.codes.add & !is.null(x.codes.col))
+           inset(x.codes, x.rows, .)
+         else
+           inset(rep(NA, length(x[[x.codes.col]])), x.rows, .)
+       else .} %>%
+    lapply(empty.omit) %>% 
+      {if(x.codes.merge | x.codes.add) {
+         x[[x.codes.col]] <- .
+         return(x)
+       } else {
+         data.table(code = .) %>% 
+           cbind(x,.) %>%
+           set_names(c(colnames(x) %>%
+                       {if(is.null(.)) x.col.name else .}
+                     , codes.name)) %>%
+           return()
+       }
+      }
   }
+
 
 
 
   ## Tests
 
-  c("MSlab Co."
-  , "IBM Corp."
-  , "Tilburg University") %>% 
-    harmonize.detect(data.table(c("Co.", "Co"), type = c("corp", "corp2"), la = c(1,2)))
 
+  ## data.frame(
+  ##   name =   c("MSlab Co."
+  ##            , "IBM Corp."
+  ##            , "Tilburg University")
+  ## , codes = c("",3,NA)) %>%
+  ##   harmonize.detect(c("Co.", "Corp.", "MS")
+  ##                  , patterns.type = "ends"
+  ##                  , x.codes.merge = TRUE)
 
-  ## here data.frame does the factoring for columns
-  c("MSlab Co."
-  , "IBM Corp."
-  , "Tilburg University") %>% 
-    harmonize.detect(data.frame(c("Co.", "Co"), type = c("corp", "corp2")))
+  ## c("MSlab Co."
+  ## , "IBM Corp."
+  ## , "Tilburg University") %>% 
+  ##   harmonize.detect(data.table(c("Co.", "Co"), type = c("corp", "corp2"), some.extra.col = c(1,2)))
 
+  ## ## here data.frame does the factoring for columns
+  ## c("MSlab Co."
+  ## , "IBM Corp."
+  ## , "Tilburg University") %>% 
+  ##   harmonize.detect(data.frame(c("Co.", "Co")
+  ##                             , type = c("corp", "corp2"))
+  ##                  , codes.first = TRUE
+  ##                  , patterns.type = "ends"
+  ##                    )
 
-  c("MSlab Co."
-  , "IBM Corp."
-  , "Tilburg University") %>% 
-    harmonize.detect(c("Co.", "Co"))
+  ## ## with x as data.frame
+
 
 #+END_SRC
 
@@ -676,39 +805,16 @@ It is a named src blocks so I can call it with CALL with arguments data.name and
 
 * Resources
 ** Magerman, et al. (2006)
+Notes:
 [[id:org:zy6j0m20vai0][Magerman, Van Looy & Song, 2006 - Name harmonisation]]
+Pdf:
+[[zotero://select/items/1_IT9A958K][Magerman et al., 2006 - Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization]]
 
 Magerman, T., Van Looy, B., Song, X., European Commission, & Eurostat. (2006). Data production methods for harmonised patent statistics patentee name harmonisation.
 
-Procedures:
-- Pre Processing
-  - Character cleaning
-    - [X] html
-      - they search for all <.*> and only find <BR> and removed only it
-      - not everything that fall into html pattern is html
-    - [X] SGML coded
-      - they search for all “%&%;%”, found few and removed it
-      - not everything that fall into html pattern is html
-      - the order of replacement is importatnt - "The “&AMP;” code must always be replaced first, before other codes."
-    - [X] propriety coded characters
-      - identified by querying the data for the following pattern: “%{%}%”; “%[0%]%” and “%(%)%”.
-    - [X] accented
-    - [X] special = delete everything that is not A-Z; 0-9; “-“; “+”; “’”; “””; “#”; “*”;“@”; “!”; “?”; “/”; “&”; “(“; “)”; “:”; “;”; “,”; “.”; “ “.
-  - Punctuation Cleaning
-    - [X] Remove double spaces
-    - [X] Remove double quotation mark irregularities
-    - [X] Remove double quotation marks at the beginning and the end of a name
-    - [X] Remove non-alphanumerical characters at the beginning of a name
-    - [X] commas
-    - [X] periods
-- Name Cleaning
-  - [X] Legal Form Indication
-  - [X] Common Company Word Removal
-  - [ ] Spelling Variation Harmonization
-  - [ ] Condensing
-  - [ ] Umlaut Harmonization
+Full text: https://core.ac.uk/download/pdf/34432497.pdf
 
-*** Characters cleaning
+*** Characters
 :PROPERTIES:
 :ID:       org:qwne4v20zai0
 :END:
@@ -953,84 +1059,123 @@ Here one probably need to add smart quotes as well...
 
 #+END_SRC
 
-**** Replace comma irregularities
+**** Comma and period irregularities
 
 
-Pattern: “%,[! ]%”
+Patterns used to identify comma and period irregularities
+| pattern      | tab | procedure                                              |
+|--------------+-----+--------------------------------------------------------|
+| %,[! ]%      |  10 | Patterns with comma not followed by space              |
+| % ,%         |  11 | Patterns with comma preceded by space                  |
+| %[!A-Z0-9].% |  12 | Patterns with period not preceded by a letter or digit |
+
 
 Table 10: Patterns with comma not followed by space
 #+name: magerman.patterns.comma.followed.by.space
-| PATTERN        | REPLACE WITH |
-|----------------+--------------|
-| "% CO.,LTD.%"  | " CO., LTD." |
-| "% CO.,LTD%"   | " CO., LTD"  |
-| "% CO,. LTD.%" | " CO., LTD." |
-| "% CO.,INC.%"  | " CO., INC." |
-| "%,LTD.%"      | ", LTD."     |
-| "%,LTD"        | ", LTD"      |
-| "%,INC.%"      | ", INC."     |
-| "%,INC"        | ", INC"      |
-| "%,LLC.%"      | ", LLC."     |
-| "%,LLC"        | ", LLC"      |
-| "%,L.L.C.%"    | ", L.L.C."   |
-| "%,S.A.R.L.%"  | ", S.A.R.L." |
-| "%,S.A.%"      | ", S.A."     |
-| "% CO,LTD"     | " CO, LTD"   |
-| "% CO,KG.%"    | " CO, KG."   |
-| "% CO.,KG"     | " CO., KG"   |
-| "%,GMBH.%"     | ", GMBH."    |
-| "%,GMBH"       | ", GMBH"     |
-| "%,PLC"        | ", PLC"      |
-| "%,S.R.L.%"    | ", S.R.L."   |
+| PATTERN      | REPLACE WITH | type  |
+|--------------+--------------+-------|
+| " CO.,LTD."  | " CO., LTD." | fixed |
+| " CO.,LTD"   | " CO., LTD"  | fixed |
+| " CO,. LTD." | " CO., LTD." | fixed |
+| " CO.,INC."  | " CO., INC." | fixed |
+| ",LTD."      | ", LTD."     | fixed |
+| ",LTD"       | ", LTD"      | ends  |
+| ",INC."      | ", INC."     | fixed |
+| ",INC"       | ", INC"      | ends  |
+| ",LLC."      | ", LLC."     | fixed |
+| ",LLC"       | ", LLC"      | ends  |
+| ",L.L.C."    | ", L.L.C."   | fixed |
+| ",S.A.R.L."  | ", S.A.R.L." | fixed |
+| ",S.A."      | ", S.A."     | fixed |
+| " CO,LTD"    | " CO, LTD"   | ends  |
+| " CO,KG."    | " CO, KG."   | fixed |
+| " CO.,KG"    | " CO., KG"   | ends  |
+| ",GMBH."     | ", GMBH."    | fixed |
+| ",GMBH"      | ", GMBH"     | ends  |
+| ",PLC"       | ", PLC"      | ends  |
+| ",S.R.L."    | ", S.R.L."   | fixed |
+
 
 #+call: make-rds-magerman-patterns-table(data = magerman.patterns.comma.followed.by.space, data.name = "magerman.patterns.comma.followed.by.space")
 
-Pattern: “% ,%”
 
 Table 11: Patterns with comma preceded by space
 #+name: magerman.patterns.comma.preceded.by.space
-| PATTERN       | REPLACE WITH |
-|---------------+--------------|
-| "% , INC.%"   | ", INC."     |
-| "% , LTD.%"   | ", LTD."     |
-| "% , L.L.C.%" | ", L.L.C."   |
-| "% , LLC"     | ", LLC"      |
-| "% , S.P.A.%" | ", S.P.A."   |
-| "% , S.A.%"   | ", S.A."     |
+| PATTERN       | REPLACE WITH | type  |
+|---------------+--------------+-------|
+| "% , INC.%"   | ", INC."     | fixed |
+| "% , LTD.%"   | ", LTD."     | fixed |
+| "% , L.L.C.%" | ", L.L.C."   | fixed |
+| "% , LLC"     | ", LLC"      | ends  |
+| "% , S.P.A.%" | ", S.P.A."   | fixed |
+| "% , S.A.%"   | ", S.A."     | fixed |
 
 #+call: make-rds-magerman-patterns-table(data = magerman.patterns.comma.preceded.by.space, data.name = "magerman.patterns.comma.preceded.by.space")
 
-**** Period Irregularities
-
-Pattern: “%[!A-Z0-9].%”
 
 Table 12: Patterns with period not preceded by a letter or digit
 #+name: magerman.patterns.periods
-| PATTERN               | REPLACE WITH        |
-|-----------------------+---------------------|
-| "%, INC,."            | ", INC."            |
-| "% CORP,."            | " CORP."            |
-| "% CO,."              | " CO."              |
-| "% COMPANY,. LIMITED" | " COMPANY, LIMITED" |
-| "% INC..%"            | " INC."             |
-| "% S.A..%"            | " S.A."             |
-| "% PTY. .LIMITED%"    | " PTY. LIMITED"     |
-| "% CO.. INC.%"        | " CO. INC."         |
-| "%, INC.."            | ", INC."            |
-| "% CO.. LTD."         | " CO. LTD."         |
-| "% A/.S%"             | " A/S"              |
-| "% N..V"              | " N.V"              |
-| "% LTD.."             | " LTD."             |
-| "% CO., LTD,."        | " CO., LTD."        |
-| "% CO., LTD.."        | " CO., LTD."        |
-| "% CO.., LTD."        | " CO., LTD."        |
-| "% P.L.C.."           | " P.L.C."           |
+| PATTERN               | REPLACE WITH        | type  |
+|-----------------------+---------------------+-------|
+| "%, INC,."            | ", INC."            | ends  |
+| "% CORP,."            | " CORP."            | ends  |
+| "% CO,."              | " CO."              | ends  |
+| "% COMPANY,. LIMITED" | " COMPANY, LIMITED" | ends  |
+| "% INC..%"            | " INC."             | fixed |
+| "% S.A..%"            | " S.A."             | fixed |
+| "% PTY. .LIMITED%"    | " PTY. LIMITED"     | fixed |
+| "% CO.. INC.%"        | " CO. INC."         | fixed |
+| "%, INC.."            | ", INC."            | ends  |
+| "% CO.. LTD."         | " CO. LTD."         | ends  |
+| "% A/.S%"             | " A/S"              | fixed |
+| "% N..V"              | " N.V"              | ends  |
+| "% LTD.."             | " LTD."             | ends  |
+| "% CO., LTD,."        | " CO., LTD."        | ends  |
+| "% CO., LTD.."        | " CO., LTD."        | ends  |
+| "% CO.., LTD."        | " CO., LTD."        | ends  |
+| "% P.L.C.."           | " P.L.C."           | ends  |
 
 #+call: make-rds-magerman-patterns-table(data = magerman.patterns.periods, data.name = "magerman.patterns.periods")
 
+
+#+BEGIN_SRC R :results silent :session :tangle R/magerman.r :mkdirp yes
+   magerman.replace.comma.period.irregularities <- function(x, ...)
+    {
+      list(magerman.patterns.comma.followed.by.space
+         , magerman.patterns.comma.preceded.by.space
+         , magerman.patterns.periods) %>% 
+        rbindlist %>% 
+        harmonize.replace(x, ., patterns.type = 3, ...)
+    }
+
+
+   magerman.replace.comma.period.irregularities.all <- function(x, ...)
+    {
+      harmonize.replace(x 
+                      , patterns =  
+                          c(",([^\\s])"        , ", $1" 
+                          , "\\s,"             , ","
+                          , "([^A-Za-z0-9])\\.", "$1") %>%
+                          matrix(byrow = TRUE, ncol = 2) %>%
+                          data.frame
+                      , patterns.type = "regex"
+                      , ...)
+    }
+
+
+  ## Test magerman.replace.comma.period.irregularities.all
+  ## "A sentence with .irregular punctuation ,like commas , and periods ." %>% 
+  ##  magerman.replace.comma.period.irregularities.all
+
+
+
+
+#+END_SRC
+
+
+
 *** Legal Form
 "It has to be stressed that the objective is not to maximize the total number of matches (at the cost of introducing mismatches) but to minimize the number of mismatches given a reasonable number of matches."
-
 
 They assumed that the last word in organizational name more likely represents leagan form (see p. 33)
 
@@ -1041,9 +1186,9 @@ As suggested by the authors all ending words in the dataset of organization name
   magerman.detect.legal.form.end <- function(x, ...) {
     harmonize.detect(x
                    , magerman.patterns.legal.form.end
-                   , bind.patterns.col = 3
-                   , type = "fixed.end"
-                   , bind.patterns.first.occurence = TRUE
+                   , patterns.codes.col = 3
+                   , patterns.type = "ends"
+                   , codes.first = TRUE
                    , ...)
   }
 
@@ -1054,19 +1199,18 @@ As suggested by the authors all ending words in the dataset of organization name
                        , replacement = ""
                        , legal.form = "KABUSHIKI HAISHA"
                        )
-                     , bind.patterns.col = 3
-                     , type = "fixed.beginning"
-                     , bind.patterns.first.occurence = TRUE
+                     , patterns.codes.col = 3
+                     , patterns.type = "begins"
+                     , codes.first = TRUE
                      , ...)
   }
-
 
   magerman.detect.legal.form.middle <- function(x, ...) {
     harmonize.detect(x
                    , magerman.patterns.legal.form.middle
-                   , bind.patterns.col = 3
-                   , type = "fixed"
-                   , bind.patterns.first.occurence = TRUE
+                   , patterns.codes.col = 3
+                   , patterns.type = "fixed"
+                   , codes.first = TRUE
                    , ...)
   }
 
@@ -1089,21 +1233,21 @@ As suggested by the authors all ending words in the dataset of organization name
 
 
   ## Test
-  read.or.make.rds("magerman.patterns.legal.form.end", dir = "data", do.not.make = TRUE)
-  magerman.patterns.legal.form.end %>% head
+  ## read.or.make.rds("magerman.patterns.legal.form.end", dir = "data", do.not.make = TRUE)
+  ## magerman.patterns.legal.form.end %>% head
 
 
-  read.or.make.rds("magerman.patterns.legal.form.middle", dir = "data", do.not.make = TRUE)
-  magerman.patterns.legal.form.middle %>% head
+  ## read.or.make.rds("magerman.patterns.legal.form.middle", dir = "data", do.not.make = TRUE)
+  ## magerman.patterns.legal.form.middle %>% head
 
 
-  c("lksdjf MFG. CO, INC"
-  , "MSlab Co."
-  , "IBM Corp."
-  , "MSlab Co. GMBH & CO.KG lalal"
-  , "KABUSHIKI HAISHA MSlab Co. ") %>%
-    toupper %>% 
-    magerman.detect.legal.form.beggining
+  ## c("lksdjf MFG. CO, INC"
+  ## , "MSlab Co."
+  ## , "IBM Corp."
+  ## , "MSlab Co. GMBH & CO.KG lalal"
+  ## , "KABUSHIKI HAISHA MSlab Co. ") %>%
+  ##   toupper %>% 
+  ##   magerman.detect.legal.form.beggining
 
 #+END_SRC
 
@@ -2328,7 +2472,7 @@ Appendix 2: All search and replace statements for all legal forms to be removed 
 
 
 
-*** Common company words to be removed
+*** Common Words
 
 Table 19: Common company words to be removed at the end of a name
 #+NAME: magerman.patterns.common.words.at.the.end
