@@ -91,6 +91,45 @@
   ## --------------------------------------------------------------------------------
 #+END_SRC
 
+** Functions for making rds from org-tables
+It is a named src blocks so I can call it with CALL with arguments data.name and data
+
+#+label: Rename and save org tables to .rds files
+#+name: make-rds-patterns-table
+#+header: :colnames no
+#+header: :var data = "test" 
+#+header: :var data.name = "test"
+#+header: :var data.names = "first.row" 
+#+header: :var data.dir = "./data"
+#+begin_src R :results none :tangle no
+  ## make a path for saving .rds
+  data.path  <-
+    data.name %>% 
+    paste0(".rds") %>%
+    file.path(data.dir, .)
+
+  if(data.names == "first.row") {
+    ## only works when option :colnames no
+    data.names <- 
+      data %>%
+      extract(1,) %>%
+      unlist %>% 
+      tolower %>%
+      make.names
+    data %<>% 
+      extract(-1,) %>%
+      set_names(data.names)
+  }
+
+  ## rename first and second column but leave the other columns names the same
+  ## assumes that first column is pattern and second is replacement
+  ## set_names(c("pattern", "replacement", names(.)[-c(1,2)])) %>%
+
+
+  ## save data to .rda (filename is the same as var name)
+  saveRDS(data, data.path)
+#+end_src
+
 
 
 ** Put all data tables to sysdata.rda
@@ -110,6 +149,7 @@ About R/sysdata.rda http://r-pkgs.had.co.nz/data.html
            , obj.name.has.extention = TRUE) %>%
       save(list = ., file = "R/sysdata.rda")
 #+END_SRC
+
 
 
 ** Generate package description
@@ -690,7 +730,7 @@ About R/sysdata.rda http://r-pkgs.had.co.nz/data.html
   ##   data.table("lala") %>%
   ##   harmonize.dehtmlize
 #+END_SRC
-*** harmonize.encode
+*** harmonize.detect.enc
 :PROPERTIES:
 :ID:       org:e2bfib50bci0
 :END:
@@ -698,37 +738,48 @@ About R/sysdata.rda http://r-pkgs.had.co.nz/data.html
 #+BEGIN_SRC R :results silent :session :tangle R/harmonizer.r :mkdirp yes
   #' @import stringi magrittr
   harmonize.detect.enc <- function(x
+                                 , codes.append = TRUE
+                                 , codes.suffix = "encoding"
+                                 , return.codes.only = FALSE
                                  , ...) {
+    dots <- list(...)
+    ## set new defaults for harmonize.x
+    dots$harmonized.suffix <- codes.suffix
+    dots$harmonized.append <- codes.append
+    ## set default if it is not set directly return.x.cols
+    if(is.null(dots$return.x.cols)) {
+      dots$return.x.cols <- 1:harmonize.x.width(x)
+    }
+    ## setup for return.codes.only
+    if(return.codes.only) {
+      dots$return.x.cols <- 0
+      dots$x.harmonized.col.update <- FALSE
+    }
     available.enc.list <- iconvlist()
-    x.vector <- harmonize.x(x, ...)
+    x.vector <- do.call(harmonize.x, c(list(x), dots))
     stri_enc_detect(x.vector) %>%
       lapply(function(enc) {
         enc %<>% extract2("Encoding")
         first.ok.enc <- (enc %in% available.enc.list) %>% which %>% extract(1)
         if(length(first.ok.enc) == 0) ""
         else enc[[first.ok.enc]]
-      }) %>% unlist %>% harmonize.x(x, ., ...) %>% return()
+      }) %>%
+      unlist %>%
+      {do.call(harmonize.x, c(list(x), list(.), dots))} %>%
+      return()
   }
+
+
+  ## Test
+  ## c("FAÇILE"
+  ## , "fa\xE7ile"
+  ## , "c\u00b5c\u00b5ber") %>%
+  ##   harmonize.detect.enc(return.codes.only = FALSE)
 
 
 #+END_SRC
-
+*** harmonize.toascii
 #+BEGIN_SRC R :results silent :session :tangle R/harmonizer.r :mkdirp yes
-  ## Encodes as UTF-8
-  #' @import stringr
-  toutf <- function(str) str_conv(str, "UTF-8")
-
-  #' @import stringi magrittr
-  detect.enc <- function(str) {
-      stri_enc_detect(str) %>% lapply(function(enc) {
-          enc %<>% extract2("Encoding")
-          first.ok.enc <- enc %in% harmonizer.enc.list %>% which %>% extract(1)
-          if(length(first.ok.enc) == 0) ""
-          else enc[first.ok.enc]
-      }) %>% unlist %>% return
-  }
-
-
   #' Translates non-ascii symbols to its ascii equivalent
   #'
   #' It takes characters from this string:
@@ -740,40 +791,122 @@ About R/sysdata.rda http://r-pkgs.had.co.nz/data.html
   #' @import stringi stringr magrittr
   #' 
   #' @export
-  toascii <- function(str, detect.encoding = FALSE) {
-      ## utf <- "ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ" %>% toutf
-      utf <- harmonization.accented
-      ascii <- "SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy"
-      if(detect.encoding)  # detect encoding of individual elements
-          mapply(function(name, enc)
-              iconv(name
-                  , from = enc
-                  , to = "UTF-8"
-                  , sub = "") %>%
-              {chartr(utf, ascii, .)}
-            , str
-            , detect.enc(str)
-            , SIMPLIFY = FALSE, USE.NAMES = FALSE) %>%
-              unlist %>% 
-              iconv(to = "ASCII", sub = "")
-      else
-          enc2utf8(str) %>% 
-              {chartr(utf, ascii, .)} %>% 
-              iconv(to = "ASCII", sub = "")
+  harmonize.toascii <- function(x
+                              , detect.encoding = FALSE
+                              , ...) {
+    str <- harmonize.x(x, ...)
+    utf <- harmonizer.patterns.ascii$utf %>% paste(collapse = "")
+    ascii <- harmonizer.patterns.ascii$ascii %>% paste(collapse = "")
+    {if(detect.encoding)  # detect encoding of individual elements
+       mapply(function(name, enc)
+         iconv(name
+             , from = enc
+             , to = "UTF-8"
+             , sub = "") %>%
+         {chartr(utf, ascii, .)}
+       , str
+       , harmonize.detect.enc(str, return.codes.only = TRUE)
+       , SIMPLIFY = FALSE, USE.NAMES = FALSE) %>%
+         unlist %>% 
+         iconv(to = "ASCII", sub = "")
+     else
+       enc2utf8(str) %>% 
+         {chartr(utf, ascii, .)} %>% 
+         iconv(to = "ASCII", sub = "")} %>%
+      harmonize.x(x, ., ...)
   }
 
 
   ## Test
-  ## detect.enc(c("FAÇILE"
+  ## harmonize.detect.enc(c("FAÇILE"
   ##         , "fa\xE7ile"
   ##         , "c\u00b5c\u00b5ber"))
 
-  ## toascii(c("FAÇILE"
-  ##         , "fa\xE7ile"
-  ##         , "c\u00b5c\u00b5ber")
-  ##         , detect.encoding = TRUE)
+  ## c("FAÇILE"
+  ## , "fa\xE7ile"
+  ## , "c\u00b5c\u00b5ber") %>%
+  ##   data.table("coffee") %>% 
+  ## harmonize.toascii(detect.encoding = TRUE)
 #+END_SRC
 
+**** ASCII equivalents table
+
+A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ~ string to ~SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy~
+
+#+NAME: harmonizer.patterns.ascii
+| utf  | ascii |
+|------+-------|
+| Š    | S     |
+| Œ    | O     |
+| Ž    | Z     |
+| š    | s     |
+| œ    | o     |
+| ž    | z     |
+| Ÿ    | Y     |
+| ¥    | Y     |
+| µ    | u     |
+| À    | A     |
+| Á    | A     |
+| Â    | A     |
+| Ã    | A     |
+| Ä    | A     |
+| Å    | A     |
+| Æ    | A     |
+| Ç    | C     |
+| È    | E     |
+| É    | E     |
+| Ê    | E     |
+| Ë    | E     |
+| Ì    | I     |
+| Í    | I     |
+| Î    | I     |
+| Ï    | I     |
+| Ð    | D     |
+| Ñ    | N     |
+| Ò    | O     |
+| Ó    | O     |
+| Ô    | O     |
+| Õ    | O     |
+| Ö    | O     |
+| Ø    | O     |
+| Ù    | U     |
+| Ú    | U     |
+| Û    | U     |
+| Ü    | U     |
+| Ý    | Y     |
+| ß    | s     |
+| à    | a     |
+| á    | a     |
+| â    | a     |
+| ã    | a     |
+| ä    | a     |
+| å    | a     |
+| æ    | a     |
+| ç    | c     |
+| è    | e     |
+| é    | e     |
+| ê    | e     |
+| ë    | e     |
+| ì    | i     |
+| í    | i     |
+| î    | i     |
+| ï    | i     |
+| ð    | o     |
+| ñ    | n     |
+| ò    | o     |
+| ó    | o     |
+| ô    | o     |
+| õ    | o     |
+| ö    | o     |
+| ø    | o     |
+| ù    | u     |
+| ú    | u     |
+| û    | u     |
+| ü    | u     |
+| ý    | y     |
+| ÿ    | y     |
+
+#+call: make-rds-patterns-table(data = harmonizer.patterns.ascii, data.name = "harmonizer.patterns.ascii")
 
 ** harmonize.replace
 :PROPERTIES:
@@ -1046,203 +1179,203 @@ About R/sysdata.rda http://r-pkgs.had.co.nz/data.html
 ** harmonize.detect
 
 #+BEGIN_SRC R :results silent :session :tangle R/harmonizer.r :mkdirp yes
-  ## this function is basically for coding names based on certain pattern
+    ## this function is basically for coding names based on certain pattern
 
-  #' A wrapper for string replacement and cbinding some colums.
-  #'
-  #' Optionaly matches only at the beginning or at the end of the string.
-  #' 
-  #' @param x Vector or table to detect in.
-  #' @param patterns Accepts both vector or table. If patterns it is table can also include replacements column.
-  #' 
-  #' @param patterns.col If patterns is not a vector specifies which column to use. Defauld is 1.
-  #' @param patterns.type Kind of pattern. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are "beggins", "ends" - which means that it should only match fixed pattern at the beginngin of the string or at the and. Another possible value is "regex" (calling code{\link[stringi]{stri_replace_all_regex}})
-  #' @param patterns.codes.col If patterns is table which column to use as codes column.
-  #' 
-  #' @param codes If provided use it as codes. Should be the same length as patterns
-  #' @param codes.col If codes is not vector use this column for codes
-  #' @param codes.name If provided use it as a name for codes column in results.
-  #' @param codes.suffix If codes.name is not provided use this suffix to x.col name or x.vector.name if x is vector
-  #' @param codes.first If TRUE then return only codes for the first detected pattern. Otherwise return list of all matched codes. Default is FALSE.
-  #' 
-  #' @param x.codes.col If x is table, which column to use for making/merging/adding newly detected codes. Default is last column of x or NULL is x is vector
-  #' @param x.codes.update.empty If set then detect and add new codes only for records (rows) that were not yet coded (i.e., related codes are either "", NA or length == 0).
-  #' @param x.codes.merge If set then merge (append) new codes to existing one.
-  #' @param return.codes.only If set then just return codes vector. Default is FALSE. Basically it resets return.x.cols to 0. So if it is set the return.x.cols (of harmonize.x helper) will be ignored.
-  #' 
-  #' @return If nothing was indicated to cbind to resutls then it returns harmonized vector. If something is needs to be cbind then it returns data.table
-  harmonize.detect <- function(x
-                             , patterns
-                             , patterns.col = 1
-                             , patterns.type = "fixed"
-                             , patterns.codes.col = 2
-                             , codes = NULL
-                             , codes.col = 1
-                             , codes.first = FALSE
-                             , codes.name = NA
-                             , codes.suffix = "coded"
-                             , codes.omitted.val = NA
-                             , codes.append = TRUE
-                             , x.col = 1
-                             , x.codes.col = NULL
-                             , x.codes.update.empty = FALSE
-                             , x.codes.merge = FALSE
-                             , return.codes.only = FALSE
-                             , ...) {
-    ## get dots variables
-    dots <- list(...)
-    ## set new defaults for harmonize.x
-    dots$x.harmonized.col <- x.codes.col
-    dots$x.harmonized.col.update <- x.codes.update.empty | x.codes.merge
-    dots$harmonized.omitted.val <- codes.omitted.val
-    dots$harmonized.name <- codes.name
-    dots$harmonized.suffix <- codes.suffix
-    dots$harmonized.append <- codes.append
-    ## setup for return.codes.only
-    if(return.codes.only) {
-      dots$return.x.cols <- 0
-      dots$x.harmonized.col.update <- FALSE
-    }
-    ## set default if it is not set directly return.x.cols
-    if(is.null(dots$return.x.cols)) {
-      dots$return.x.cols <- 1:harmonize.x.width(x)
-    }
+    #' A wrapper for string replacement and cbinding some colums.
+    #'
+    #' Optionaly matches only at the beginning or at the end of the string.
+    #' 
+    #' @param x Vector or table to detect in.
+    #' @param patterns Accepts both vector or table. If patterns it is table can also include replacements column.
+    #' 
+    #' @param patterns.col If patterns is not a vector specifies which column to use. Defauld is 1.
+    #' @param patterns.type Kind of pattern. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are "beggins", "ends" - which means that it should only match fixed pattern at the beginngin of the string or at the and. Another possible value is "regex" (calling code{\link[stringi]{stri_replace_all_regex}})
+    #' @param patterns.codes.col If patterns is table which column to use as codes column.
+    #' 
+    #' @param codes If provided use it as codes. Should be the same length as patterns
+    #' @param codes.col If codes is not vector use this column for codes
+    #' @param codes.name If provided use it as a name for codes column in results.
+    #' @param codes.suffix If codes.name is not provided use this suffix to x.col name or x.vector.name if x is vector
+    #' @param codes.first If TRUE then return only codes for the first detected pattern. Otherwise return list of all matched codes. Default is FALSE.
+    #' 
+    #' @param x.codes.col If x is table, which column to use for making/merging/adding newly detected codes. Default is last column of x or NULL is x is vector
+    #' @param x.codes.update.empty If set then detect and add new codes only for records (rows) that were not yet coded (i.e., related codes are either "", NA or length == 0).
+    #' @param x.codes.merge If set then merge (append) new codes to existing one.
+    #' @param return.codes.only If set then just return codes vector. Default is FALSE. Basically it resets return.x.cols to 0. So if it is set the return.x.cols (of harmonize.x helper) will be ignored.
+    #' 
+    #' @return If nothing was indicated to cbind to resutls then it returns harmonized vector. If something is needs to be cbind then it returns data.table
+    harmonize.detect <- function(x
+                               , patterns
+                               , patterns.col = 1
+                               , patterns.type = "fixed"
+                               , patterns.codes.col = 2
+                               , codes = NULL
+                               , codes.col = 1
+                               , codes.first = FALSE
+                               , codes.name = NA
+                               , codes.suffix = "coded"
+                               , codes.omitted.val = NA
+                               , codes.append = TRUE
+                               , x.col = 1
+                               , x.codes.col = NULL
+                               , x.codes.update.empty = FALSE
+                               , x.codes.merge = FALSE
+                               , return.codes.only = FALSE
+                               , ...) {
+      ## get dots variables
+      dots <- list(...)
+      ## set new defaults for harmonize.x
+      dots$x.harmonized.col <- x.codes.col
+      dots$x.harmonized.col.update <- x.codes.update.empty | x.codes.merge
+      dots$harmonized.omitted.val <- codes.omitted.val
+      dots$harmonized.name <- codes.name
+      dots$harmonized.suffix <- codes.suffix
+      dots$harmonized.append <- codes.append
+      ## setup for return.codes.only
+      if(return.codes.only) {
+        dots$return.x.cols <- 0
+        dots$x.harmonized.col.update <- FALSE
+      }
+      ## set default if it is not set directly return.x.cols
+      if(is.null(dots$return.x.cols)) {
+        dots$return.x.cols <- 1:harmonize.x.width(x)
+      }
   
-    ## add other defaults
+      ## add other defaults
   
-    ## set existing codes vector
-    ## TODO: separate check for x.codes.col with messages
-    if(isTRUE(length(x.codes.col) == 1 &
-              ifelse(is.numeric(x.codes.col)
-                   , x.codes.col <= nrow(x)
-                   , x.codes.col %in% names(x)))) {
-      ## if x.codes.update.empty is set filter those that have codes already
-      if(x.codes.update.empty & is.null(dots$x.rows)) {
-        dots$x.rows <-
-          harmonize.x(x, x.col = x.codes.col) %>%
-          harmonize.is.empty
-        ## if all dots$x.rows are FALSE so anything add and just return original
-        if(all(!dots$x.rows)) return(x)
-        x.codes <- NULL
+      ## set existing codes vector
+      ## TODO: separate check for x.codes.col with messages
+      if(isTRUE(length(x.codes.col) == 1 &
+                ifelse(is.numeric(x.codes.col)
+                     , x.codes.col <= nrow(x)
+                     , x.codes.col %in% names(x)))) {
+        ## if x.codes.update.empty is set filter those that have codes already
+        if(x.codes.update.empty & is.null(dots$x.rows)) {
+          dots$x.rows <-
+            harmonize.x(x, x.col = x.codes.col) %>%
+            harmonize.is.empty
+          ## if all dots$x.rows are FALSE so anything add and just return original
+          if(all(!dots$x.rows)) return(x)
+          x.codes <- NULL
+        } else {
+          ## get codes vector (filter with x.rows)
+          x.codes <- harmonize.x(x
+                               , x.col = x.codes.col
+                               , x.rows = dots$x.rows)
+        }
       } else {
-        ## get codes vector (filter with x.rows)
-        x.codes <- harmonize.x(x
-                             , x.col = x.codes.col
-                             , x.rows = dots$x.rows)
+        x.codes <- NULL
       }
-    } else {
-      x.codes <- NULL
+
+
+      ## get x vector to detect in (with new x.rows)
+      x.vector <- do.call(harmonize.x, c(list(x), dots))
+
+
+      ## set codes column name
+      codes.name %<>%
+        {if(!is.na(.)) .
+         else names(patterns)[patterns.codes.col] %>% 
+                {if(!is.null(.)) .
+                 else names(x)[x.col] %>%
+                        {if(!is.null(.)) paste0(., ".", codes.suffix)
+                         else paste0(x.vector.name, ".", codes.suffix)}}}
+
+      ## check existing codes
+      codes %<>%
+        {if(!is.null(.)) .
+         else patterns %>%
+                {if(is.atomic(.)) .
+                 else .[[patterns.codes.col]]}} %>%
+        harmonize.defactor
+
+      ## set patterns
+      patterns %<>%
+        {if(is.atomic(.)) .
+         else .[[patterns.col]]} %>%
+        harmonize.defactor %>% 
+        {if(patterns.type == "begins")
+           paste0("^", harmonize.escape.regex(.))
+         else if(patterns.type == "ends")
+           paste0(harmonize.escape.regex(.), "$")
+         else .}
+
+
+      ## do detection
+      mapply(
+        function(pattern, code) {
+          x.vector %>%
+            {if(patterns.type == "fixed")
+               stri_detect_fixed(., pattern)
+             else
+              stri_detect_regex(., pattern)} %>% 
+            ifelse(code, NA) %>%
+            ## remove empty string ("") codes
+            ifelse(. == "", NA, .)
+        }
+      , patterns
+      , codes
+      , SIMPLIFY = FALSE, USE.NAMES = FALSE) %>%
+        ## transpose list of vectors
+        {do.call(mapply, c(c, ., SIMPLIFY = FALSE, USE.NAMES = FALSE))} %>% 
+        ## remove empty codes
+        ## lapply(na.omit) %>%
+        lapply(harmonize.empty.omit) %>% 
+        ## check if only first detected code is needed
+        {if(codes.first) lapply(.,extract, 1) else .} %>%
+        ## check if we need to merge
+        {if(x.codes.merge & !is.null(x.codes))
+           mapply(function(a,b) c(b, a)
+                , .
+                , x.codes[if(is.null(dots$x.rows)) TRUE else dots$x.rows]
+                , SIMPLIFY = FALSE)
+         else .} %>%
+        ## remove empty codes
+        lapply(harmonize.empty.omit) %>%
+        harmonize.unlist.column %>% 
+      ## inset records
+        {do.call(harmonize.x, c(list(x), list(.), dots))}
+
     }
 
 
-    ## get x vector to detect in (with new x.rows)
-    x.vector <- do.call(harmonize.x, c(list(x), dots))
 
 
-    ## set codes column name
-    codes.name %<>%
-      {if(!is.na(.)) .
-       else names(patterns)[patterns.codes.col] %>% 
-              {if(!is.null(.)) .
-               else names(x)[x.col] %>%
-                      {if(!is.null(.)) paste0(., ".", codes.suffix)
-                       else paste0(x.vector.name, ".", codes.suffix)}}}
+    ## Tests
+    ## data.frame(
+    ##   name =   c("MSlab Co."
+    ##            , "IBM Corp."
+    ##            , "Tilburg University")
+    ## , codes = c("",3,NA)) %>%
+    ##   harmonize.detect(c("Co.", "Corp.", "MS")
+    ##                  , patterns.type = "ends"
+    ##                  , x.codes.col = 2
+    ##                  , x.codes.merge = TRUE
+    ##                  , return.codes.only = TRUE)
 
-    ## check existing codes
-    codes %<>%
-      {if(!is.null(.)) .
-       else patterns %>%
-              {if(is.atomic(.)) .
-               else .[[patterns.codes.col]]}} %>%
-      harmonize.defactor
+    ## c("MSlab Co."
+    ## , "IBM Corp."
+    ## , "Tilburg University") %>% 
+    ##   harmonize.detect(data.table(c("Co.", "Co")
+    ##                             , type = c("corp", "corp2")
+    ##                             , some.extra.col = c(1,2)))
 
-    ## set patterns
-    patterns %<>%
-      {if(is.atomic(.)) .
-       else .[[patterns.col]]} %>%
-      harmonize.defactor %>% 
-      {if(patterns.type == "begins")
-         paste0("^", harmonize.escape.regex(.))
-       else if(patterns.type == "ends")
-         paste0(harmonize.escape.regex(.), "$")
-       else .}
+    ## c("MSlab Co."
+    ## , "IBM Corp."
+    ## , "Tilburg University") %>% 
+    ##   harmonize.detect(data.table(c("Co.", "Co")
+    ##                             , type = c(FALSE, TRUE)
+    ##                             , some.extra.col = c(1,2))
+    ##                  , codes.first = TRUE) %>%
+    ##   extract2("x.coded")
 
-
-    ## do detection
-    mapply(
-      function(pattern, code) {
-        x.vector %>%
-          {if(patterns.type == "fixed")
-             stri_detect_fixed(., pattern)
-           else
-            stri_detect_regex(., pattern)} %>% 
-          ifelse(code, NA) %>%
-          ## remove empty string ("") codes
-          ifelse(. == "", NA, .)
-      }
-    , patterns
-    , codes
-    , SIMPLIFY = FALSE, USE.NAMES = FALSE) %>%
-      ## transpose list of vectors
-      {do.call(mapply, c(c, ., SIMPLIFY = FALSE, USE.NAMES = FALSE))} %>% 
-      ## remove empty codes
-      ## lapply(na.omit) %>%
-      lapply(harmonize.empty.omit) %>% 
-      ## check if only first detected code is needed
-      {if(codes.first) lapply(.,extract, 1) else .} %>%
-      ## check if we need to merge
-      {if(x.codes.merge & !is.null(x.codes))
-         mapply(function(a,b) c(b, a)
-              , .
-              , x.codes[if(is.null(dots$x.rows)) TRUE else dots$x.rows]
-              , SIMPLIFY = FALSE)
-       else .} %>%
-      ## remove empty codes
-      lapply(harmonize.empty.omit) %>%
-      harmonize.unlist.column %>% 
-    ## inset records
-      {do.call(harmonize.x, c(list(x), list(.), dots))}
-
-  }
-
-
-
-
-  ## Tests
-  ## data.frame(
-  ##   name =   c("MSlab Co."
-  ##            , "IBM Corp."
-  ##            , "Tilburg University")
-  ## , codes = c("",3,NA)) %>%
-  ##   harmonize.detect(c("Co.", "Corp.", "MS")
-  ##                  , patterns.type = "ends"
-  ##                  , x.codes.col = 2
-  ##                  , x.codes.merge = TRUE
-  ##                  , return.codes.only = TRUE)
-
-  ## c("MSlab Co."
-  ## , "IBM Corp."
-  ## , "Tilburg University") %>% 
-  ##   harmonize.detect(data.table(c("Co.", "Co")
-  ##                             , type = c("corp", "corp2")
-  ##                             , some.extra.col = c(1,2)))
-
-  ## c("MSlab Co."
-  ## , "IBM Corp."
-  ## , "Tilburg University") %>% 
-  ##   harmonize.detect(data.table(c("Co.", "Co")
-  ##                             , type = c(FALSE, TRUE)
-  ##                             , some.extra.col = c(1,2))
-  ##                  , codes.first = TRUE) %>%
-  ##   extract2("x.coded")
-
-  ## c("MSlab Co."
-  ## , "IBM Corp."
-  ## , "Tilburg University") %>% 
-  ##   harmonize.detect(data.frame(c("Co.", "Co")
-  ##                             , type = c("corp", "corp2"))
-  ##                  , codes.first = TRUE
-  ##                  , patterns.type = "ends")
+    ## c("MSlab Co."
+    ## , "IBM Corp."
+    ## , "Tilburg University") %>% 
+    ##   harmonize.detect(data.frame(c("Co.", "Co")
+    ##                             , type = c("corp", "corp2"))
+    ##                  , codes.first = TRUE
+    ##                  , patterns.type = "ends")
 #+END_SRC
 
 ** harmonize

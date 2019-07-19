@@ -59,7 +59,7 @@ It is a named src blocks so I can call it with CALL with arguments data.name and
 #+end_src
 
 
-** Make rds patterns vector
+** make rds patterns vector
 #+label: Filter and save org tables to .rds files
 #+name: make-rds-magerman-patterns-vector
 #+header: :var data.name = "magerman.patterns.common.words.at.the.end"
