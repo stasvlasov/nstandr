@@ -2,53 +2,51 @@
 % Please edit documentation in R/harmonizer.r
 \name{harmonize}
 \alias{harmonize}
-\title{Harmonizes organizational names.}
+\title{Harmonizes organizational names. Takes either vector or column in the table.}
 \usage{
-harmonize(org.names, procedures = list(list("toascii", TRUE), "tolower",
-  "html2txt", list("toascii", FALSE), "remove.brackets", "toupper",
-  "apply.nber", "remove.spaces"), quite = FALSE, progress.by = 0,
-  include.original = FALSE)
+harmonize(x, procedures = harmonize.default.procedures,
+  progress = TRUE, progress.min = 10^5, progress.by = NA,
+  progress.percent = 1, progress.message.use.names = TRUE,
+  quite = FALSE, ...)
 }
 \arguments{
-\item{org.names}{Character vector of organizational names to harmonize}
+\item{x}{object (table)}
 
-\item{procedures}{List of harmonization procedures. Each procedure can be specified as a string representing procedure name (see details for procedure names) or as a list where the first element should be procedure name (string) and other elements will passed as arguments to this procedure.}
+\item{procedures}{List of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments.}
 
-\item{quite}{Logical value indicating whether or not print messages about procedures progress}
+\item{progress}{Show the progress? Default is TRUE}
 
-\item{progress.by}{Numeric value that is used to split the org.names vector for showing percentage of completion. Default is 0 meaning not to split the vector and thus does not show progress percentage. Designed to be used for long strings.}
+\item{progress.min}{The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5}
 
-\item{include.original}{Logical value indicating whether or not include original vector of orgnamizational names (e.g., org.names). Default is FALSE. If TRUE the function will return data.frame instead of vector.}
+\item{progress.by}{If set it will divide the x into chunk of this amount of rows. Default is NA.}
+
+\item{progress.percent}{Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.}
+
+\item{progress.message.use.names}{Should we use names from `procedures` list to report progress. Default is TRUE.}
+
+\item{quite}{Suppress all messages. Default is FALSE.}
+
+\item{...}{Arguments passed on to \code{harmonize.x}
+\describe{
+  \item{x}{an object}
+  \item{x.inset}{a vector to inset. Optional. Default is NULL}
+  \item{x.col}{vector of interest in \code{x} object}
+  \item{x.rows}{Logical vector to filter records to harmonize. Default is NULL which means do not filter records}
+  \item{x.rows.col}{Column that indicates which records to harmonize. If it is set then \code{x.rows} is ignored}
+  \item{x.vector.name}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{x.col} will be used.}
+  \item{x.harmonized.col}{Column in \code{x} where we want to put/update the \code{x.inset} vector. Default is NULL which means that we just put \code{x.inset} as a first vector/column and remove \code{x.col}. If set and \code{x.col} and \code{x.harmonized.col} are the same \code{x.col} wont be removed.}
+  \item{x.harmonized.col.update}{Update values in this column if \code{x.rows} or \code{x.rows.col} is set. If set \code{harmonized.omitted.val} is ignored.}
+  \item{harmonized.omitted.val}{If x.rows or x.rows.col is set. Use this value to fill the rest. Default is NA}
+  \item{harmonized.append}{If set then put \code{x.inset} as the last instead of first vector/column. Default is FALSE.}
+  \item{harmonized.name}{Use this name for the first column in results (harmonized names). Default is NULL, which means that either x.vector.name if x is vector or original x.col name will be used with \code{harmonized.suffix} at the end.}
+  \item{harmonized.suffix}{If \code{harmonized.name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in \code{return.x.cols} it will add counter at the end to avoid variables with the same names.}
+  \item{return.x.cols}{If x is table, set the columns to cbind to the result table. Default is -1, meaning cbind all but the first (original/unharmonized) column.}
+  \item{return.x.cols.all}{Whether to bind all columns in x. Default is FALSE. If set the return.x.cols is ignored}
+}}
 }
 \value{
-Character vector of harmonized  organizational names (if include.original = FALSE - default). If include.original = TRUE the function returns data.frame(original = org.names, harmonized = harmonize(org.names))
+
 }
 \description{
-Returns harmonized version of organizational names.
-}
-\details{
-The following procedures are available:
-\itemize{
-\item toutf - encode as UTF-8 (a wrapper for str_conv(str, "UTF-8"))
-\item tolower - lowercase
-\item toupper - uppercase
-\item html2txt - removes HTML symbols and tags (relatively slow)
-\item toascii - replaces accented characters with ascii equivalent. Can also identify encoding for each character string in vector (option detect.encoding = TRUE). Does not detect encoding by default (detect.encoding = FALSE) and assumes that the right one is specified for the vector.
-\item remove.brackets - removes brackets and its content - (), [], {}, <>
-\item remove.spaces - removes double white spaces and trims white spaces
-\item remove.quotes - removes double quotes
-\item apply.nber - applies standard name substitutions following NBER's PDP (Thoma, et al, 2010) - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
-\item apply.nber.sansremovals - same as apply.nber but without removals of organization legal form
-\item apply.nber.sansderwent - same as apply.nber but without Derwent names standardization
-\item apply.nber.sansderwent.sansremovals - same as apply.nber.sansderwent but without removals of organization legal form
-\item apply.punctuation - removes punctuation
-}
-
-External functions can be also passed as a separate harmonizer procedure
-}
-\examples{
-org.names.test <- c("žŸong-ÂÃÇÈÏa\\n\\u00b5 &oacute;\\u00b5<p>,  INt LTD &AMP; Co;  "
-                  , "<br> the $ (&AMP; C&oacute;MP comPANY) Ïotta")
-data.frame(original = org.names.test
-         , harmonized = harmonize(org.names.test))
+Harmonizes organizational names. Takes either vector or column in the table.
 }

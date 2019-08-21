@@ -4,4 +4,5 @@
     (when (f-exists? src-org-file)
       (org-babel-tangle-file src-org-file src-file 'R)))
 #+END_SRC
-** Thoma, et al. (2010)
+
+* Thoma, et al. (2010)
