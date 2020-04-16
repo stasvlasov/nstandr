@@ -6,7 +6,9 @@
 ##' @md 
 ##' @import magrittr
 ##' @export
-magerman.detect.characters <- function(x, ...) {
+magerman.detect.characters <- function(x
+                                     , codes.name = "characters.cleaning.candidates"
+                                     , ...) {
   harmonize.detect(x
                  , patterns = c( "\\{.+\\}" , "propriety coded characters {xxx}"
                               , "\\[0.+\\]" , "propriety coded characters [0xxx]"
@@ -16,7 +18,7 @@ magerman.detect.characters <- function(x, ...) {
                      matrix(byrow = TRUE, ncol = 2) %>%
                      data.frame
                  , patterns.type = "regex"
-                 , codes.name = "characters.cleaning.candidates"
+                 , codes.name = codes.name
                  , ...)
 }
 
@@ -232,7 +234,9 @@ magerman.remove.non.alphanumeric.at.the.end <- function(x, ...) {
 ##' @md 
 ##' @import magrittr
 ##' @export 
-magerman.detect.comma.period.irregularities <- function(x, ...)
+magerman.detect.comma.period.irregularities <- function(x
+                                                      , codes.name = "comma.period.irregularities.candidates"
+                                                      , ...)
 {
   c(",([^\\s])", "Patterns with comma not followed by space"
   , "\\s,", "Patterns with comma preceded by space"
@@ -242,7 +246,7 @@ magerman.detect.comma.period.irregularities <- function(x, ...)
   harmonize.detect(x 
                   , patterns = .
                   , patterns.type = "regex"
-                  , codes.name = "comma.period.irregularities.candidates"
+                  , codes.name = codes.name
                   , ...)
 }
 
@@ -285,7 +289,7 @@ magerman.replace.comma.period.irregularities <- function(x, ...)
       , magerman.patterns.comma.preceded.by.space
       , magerman.patterns.periods) %>% 
      rbindlist %>% 
-     harmonize.replace(x, ., patterns.type = 3, ...)
+     harmonize.replace(x, ., patterns.type.col = 3, ...)
  }
 
 ## Test magerman.replace.comma.period.irregularities
@@ -305,7 +309,7 @@ magerman.detect.legal.form.end <- function(x, ...) {
                  , magerman.patterns.legal.form.end
                  , patterns.codes.col = 3
                  , patterns.type = "ends"
-                 , codes.first = TRUE
+                 , return.only.first.detected.code = TRUE
                  , ...)
 }
 
@@ -335,7 +339,7 @@ magerman.detect.legal.form.beginning <- function(x, ...) {
                    , patterns = data.table(pattern = "KABUSHIKI KAISHA"
                                          , legal.form = "KAISHA")
                    , patterns.type = "begins"
-                   , codes.first = TRUE
+                   , return.only.first.detected.code = TRUE
                    , ...)
 }
 
@@ -364,10 +368,10 @@ magerman.replace.legal.form.beginning <- function(x, ...) {
 ##' @export 
 magerman.detect.legal.form.middle <- function(x, ...) {
   harmonize.detect(x
-                 , magerman.patterns.legal.form.middle
+                 , patterns = magerman.patterns.legal.form.middle
                  , patterns.codes.col = 3
                  , patterns.type = "fixed"
-                 , codes.first = TRUE
+                 , return.only.first.detected.code = TRUE
                  , ...)
 }
 
@@ -434,10 +438,10 @@ magerman.remove.legal.form <- function(x) {
     magerman.replace.legal.form.end %>%
     magerman.replace.legal.form.beginning(
       x.rows = harmonize.is.empty(.[[ncol(.)]])
-    , x.harmonized.col = 1) %>% 
+    , x.col.update = TRUE) %>% 
     magerman.replace.legal.form.middle(
       x.rows = harmonize.is.empty(.[[ncol(.)]])
-    , x.harmonized.col = 1
+    , x.col.update = TRUE
       ## drop last col "not.to.replace"
     , return.x.cols = -ncol(.))
     }
@@ -456,32 +460,8 @@ magerman.remove.legal.form.and.clean <- function(x) {
     magerman.remove.legal.form %>% 
     harmonize.replace(
       patterns = c("[-;:,&]*\\s*$", "^\\s*")
-    , patterns.type = "regex"
-    , harmonized.name = names(.)[1])
+    , patterns.type = "regex")
 }
-
-
-
-
-
-
-## ## Test
-## c("lksdjf MFG. GMBH CO,; INC"
-## , "MSlab Co."
-## , "IBM Corp."
-## , " MSlab Co. GMBH & CO.KG lalal  "
-## , "KABUSHIKI KAISHA MSlab Co.") %>%
-##   toupper %>% 
-##   magerman.remove.legal.form.and.clean
-
-
-## data.table(c("lksdjf MFG. GMBH CO,; INC"
-##            , "MSlab Co."
-##            , "IBM Corp."
-##            , " MSlab Co. GMBH & CO.KG lalal  "
-##            , "KABUSHIKI KAISHA MSlab Co.") %>% toupper
-##          , somevar = c(1,2,3,4,5)) %>%
-##   magerman.remove.legal.form.clean
 
 ##' Removes common words
 ##' @param x table
@@ -606,7 +586,7 @@ magerman.detect.umlaut <- function(x, ...) {
                  , patterns = magerman.patterns.umlaut
                  , patterns.codes.col = 4
                  , patterns.type = "fixed"
-                 , codes.first = TRUE
+                 , return.only.first.detected.code = TRUE
                  , ...)
 }
 
@@ -632,7 +612,7 @@ magerman.detect.umlaut <- function(x, ...) {
 ##' @export 
 magerman.replace.umlaut <- function(x
                                   , x.umlaut.col = NULL
-                                  , drop.umlaut.col = FALSE
+                                  , drop.umlaut.col = TRUE
                                   , replace.accented.characters = FALSE
                                   , ...) {
   ## get x vector...
@@ -658,7 +638,7 @@ magerman.replace.umlaut <- function(x
     ## transform umlaut
     x.harmonized <- x.vector %>%
       ## first "AE", "OE", "UE" -> "A", "O", "U"
-      harmonileze.replace(patterns = magerman.patterns.umlaut
+      harmonize.replace(patterns = magerman.patterns.umlaut
                       , patterns.col = 3
                       , patterns.replacements.col = 2) %>% 
       ## then "A", "O", "U" -> "AE", "OE", "UE"
@@ -694,51 +674,12 @@ magerman.replace.umlaut <- function(x
 ##                         , x.umlaut.col = "umlaut"
 ##                         , drop.umlaut.col = TRUE)
 
-magerman.procedures.list <- list(
-  ## prepossessing
-  "Upper casing" = "harmonize.toupper"
-, "Cleaning spaces" = "harmonize.squish.spaces"
-  ## characters
-, "Removing HTML codes" = "magerman.remove.html.codes"
-, "Cleaning spaces (2)" = "harmonize.squish.spaces"
-, "Replacing SGML coded characters" = "magerman.replace.sgml.characters"
-, "Replacing proprietary characters" = "magerman.replace.proprietary.characters"
-# code names with umlaut for umlaut harmonization
-, "Detecting Umlauts" = list("magerman.detect.umlaut"
-                           , codes.name = "magerman.umlaut")
-, "Replacing accented characters" = "magerman.replace.accented.characters"
-  ## punctuation
-, "Removing special characters" = "magerman.remove.special.characters"
-, "Fixing quotation irregularities" =  "magerman.remove.double.quotation.marks.irregularities"
-, "Removing double quotations" = "magerman.remove.double.quotation.marks.beginning.end"
-, "Removing non alphanumeric characters (1)" = "magerman.remove.non.alphanumeric.at.the.beginning"
-, "Removing non alphanumeric characters (2)" = "magerman.remove.non.alphanumeric.at.the.end"
-, "Fixing comma and period irregularities" = "magerman.replace.comma.period.irregularities"
-  ## legal form
-, "Detecting legal form" = list("magerman.detect.legal.form"
-                              , codes.name = "legal.form")
-, "Removing legal form" = "magerman.remove.legal.form.and.clean"
-  ## common words
-, "Removing common words" = "magerman.remove.common.words"
-  ## spelling variation
-, "Fixing spelling variations" = "magerman.replace.spelling.variation"
-  ## condensing
-, "Condensing" = "magerman.condense"
-  ## umlaut harmonization
-, "Fixing umlaut variations" = list("magerman.replace.umlaut"
-     , x.umlaut.col = "magerman.umlaut"
-     , drop.umlaut.col = TRUE
-       ## this function wont work properly for batches
-       ## it need to look up matches in the whole corpus
-     , progress = FALSE)
-)
-
 ##' Harmonizes strings using exact procedures described in Magerman et al. 2009.
 ##' @param x table or vector
 ##' @param magerman.procedures list of procedures to pass to `harmonize` function. Default is `magerman.procedures.list`
-##' @param detect.legal.form Whether to detect legal forms
-##' @param return.x.before.common.words.removal Whether to save harmonized column before `common.words.removal` procedure
-##' @param return.x.cols.all Whether to return initial column in x
+##' @param detect.legal.form Whether to detect legal forms. Default is FALSE
+##' @param return.x.before.common.words.removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
+##' @param return.x.cols.all Whether to return initial column in x. Default is FALSE
 ##' @inheritDotParams harmonize
 ##' @return Harmonized table
 ##'
@@ -748,46 +689,30 @@ magerman.procedures.list <- list(
 ##' @import magrittr
 ##' @export 
 harmonize.magerman <- function(x
-                             , magerman.procedures = magerman.procedures.list
+                             , magerman.procedures =
+                                   magerman.procedures.table %>%
+                                   harmonize.make.procedures.list
                              , detect.legal.form = FALSE
                              , return.x.before.common.words.removal = FALSE
                              , return.x.cols.all = FALSE
                              , ... ) {
-  ## do some tweaks on magerman.procedures
-  if(!detect.legal.form) {
-    magerman.procedures %<>%
-      extract(sapply(., extract2, 1) %>%
-              sapply(equals, "magerman.detect.legal.form") %>%
-              not)
-  }
-  if(return.x.before.common.words.removal) {
-    magerman.procedures %<>%
-      inset2(sapply(., extract2, 1) %>%
-             sapply(equals, "magerman.remove.legal.form.and.clean") %>%
-             which
-           , list("magerman.remove.legal.form.and.clean", return.x.cols.all = TRUE))
-  }
-  if(return.x.cols.all) {
-    magerman.procedures %<>% 
-      inset2(1, c(as.list(extract2(.,1)), return.x.cols.all = TRUE))
-  }
-  harmonize(x, magerman.procedures, ...)
+    ## do some tweaks on magerman.procedures
+    if(!detect.legal.form) {
+        magerman.procedures %<>%
+            extract(sapply(., extract2, 1) %>%
+                    sapply(equals, "magerman.detect.legal.form") %>%
+                    not)
+    }
+    if(return.x.before.common.words.removal) {
+        magerman.procedures %<>%
+            inset2(sapply(., extract2, 1) %>%
+                   sapply(equals, "magerman.remove.legal.form.and.clean") %>%
+                   which
+                 , list("magerman.remove.legal.form.and.clean", return.x.cols.all = TRUE))
+    }
+    if(return.x.cols.all) {
+        magerman.procedures %<>% 
+            inset2(1, c(as.list(extract2(.,1)), return.x.cols.all = TRUE))
+    }
+    harmonize(x, magerman.procedures, ...)
 }
-
-
-## Test with return magerman.procedures in harmonize.magerman
-## harmonize.magerman()
-## harmonize.magerman(detect.legal.form = TRUE)
-## harmonize.magerman(return.x.before.common.words.removal = TRUE)
-## harmonize.magerman(return.x.cols.all = TRUE)
-
-## Test
-## data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-##                   , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-##                   , "MSLab Co."
-##                   , "MSLaeb Comp."
-##                   , "MSLab Comp. Ltd."
-##                   , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>% rep(200)
-##          , foo = "I love coffee" ) %>% 
-##   harmonize.magerman(progress.min = 50
-##                    , detect.legal.form = TRUE)
