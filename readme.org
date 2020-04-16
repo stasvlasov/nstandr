@@ -2,9 +2,21 @@
 #+author: Stas Vlasov
 #+email: s.vlasov@uvt.nl
 
-The R package =harmonizer= standardizes (harmonizes) organizational names mainly using procedures described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) but not only.
+The R package =harmonizer= standardizes (harmonizes) organizational names.
 
-This is work in progress. Please, file an issues or suggestion if you have any.
+The task of merging large datasets becomes more common these days as more and more data is coming. However, there is still no standard tool for that task according to Thoma et al. (2010).
+
+Initially this task was performed manually (e.g., Griliches, 1981) and relatively recently some automatic tools start to emerge. This package is meant to a framework for name harmonization procedures and consolidate prior efforts of researchers that were working on the similar task.
+
+This R package currently includes contributions of Thoma et al. (2010), Magerman et al. (2006) and Cockburn et al. (2009) with number of additional cleaning procedures.
+
+The detailed procedures can be found here:
+- [[file:res/magerman.code.org][Magerman et al. (2006)]]
+- [[file:res/cockburn.code.org][Cockburn et al. (2009)]]
+
+Harmonization of names is a separate tasks from name matching. Most of the harmonizing procedures works separately on an individual string and independent on the corpus of names. Nevertheless, some of harmonization procedures can also consider the whole corpus of names for harmonizing, e.g., as it is a case in Magerman's umlaut harmonization procedure. Processing of such procedures can not be done now in parallel.
+
+This is work in progress. Please, file an issue or a suggestion if you have any.
 
 *** References
 
@@ -112,3 +124,17 @@ Winkler, W. E. (2006). /Overview of record linkage and current research directio
 
 
 
+
+* How to cite this R package
+
+#+begin_src latex
+@misc{Vlasov2020,
+  author = {Vlasov, Stanislav A.},
+  title = {harmonizer - an R package to harmonize organizational names.},
+  year = {2020},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/stasvlasov/harmonizer}},
+  commit = {4f57d6a0e4c030202a07a60bc1bb1ed1544bf679}
+}
+#+end_src 
