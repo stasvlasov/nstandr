@@ -135,6 +135,6 @@ Winkler, W. E. (2006). /Overview of record linkage and current research directio
   publisher = {GitHub},
   journal = {GitHub repository},
   howpublished = {\url{https://github.com/stasvlasov/harmonizer}},
-  commit = {4f57d6a0e4c030202a07a60bc1bb1ed1544bf679}
+  commit = {5fc35d74c0f8e0421845029d4da2f050f352edbb}
 }
 #+end_src 
