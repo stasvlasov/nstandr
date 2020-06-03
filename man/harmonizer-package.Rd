@@ -8,12 +8,12 @@
 \description{
 Harmonizes organizational names using steps
     described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song
-    (2006).
+    (2006) and more.
 }
 \details{
 standardizes (harmonizes) organizational names mainly using procedures described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) but not only.
 This is work in progress. Please, file an issues or suggestion if you have any.
-The main function is [harmonize()].
+The main function is \code{\link[=harmonize]{harmonize()}}.
 }
 \author{
 \strong{Maintainer}: Stanislav Vlasov \email{s.vlasov@uvt.nl}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/harmonizer.r
 \name{harmonize.unlist.column}
 \alias{harmonize.unlist.column}
-\title{If column in the `x` table is list unlist it if possible}
+\title{If column in the \code{x} table is list unlist it if possible}
 \usage{
 harmonize.unlist.column(x)
 }
@@ -13,5 +13,5 @@ harmonize.unlist.column(x)
 updated object
 }
 \description{
-If column in the `x` table is list unlist it if possible
+If column in the \code{x} table is list unlist it if possible
 }

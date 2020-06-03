@@ -1,8 +1,18 @@
 * Tangle everything
+:PROPERTIES:
+:ID:       org:mib9tkg0fqi0
+:END:
 #+BEGIN_SRC emacs-lisp :results none
-  (let ((src-org-files (cons (expand-file-name "harmonizer.code.org")
+  ;; (add-to-list 'safe-local-eval-forms '(org-babel-lob-ingest "./../harmonizer.code.org"))
+  (let (
+        ;; set save eval variables so Emacs do not ask and just evaluate it
+        (safe-local-eval-forms (cons '(org-babel-lob-ingest "./../harmonizer.code.org")
+                                     safe-local-eval-forms))
+        ;; tangle "harmonizer.code.org" and all files in "res"
+        (src-org-files (cons (expand-file-name "harmonizer.code.org")
                              ;; tange resources code
                              (directory-files "res" t "\.code\.org$"))))
+  
     (dolist (f src-org-files)
       (when (f-exists? f)
         (message "Tangling %s" f)
@@ -75,7 +85,7 @@
 :ID:       org:v7r8oh01rmi0
 :END:
 
-#+BEGIN_SRC R :results silent :tangle .Rprofile
+#+BEGIN_SRC R :results silent :tangle no
   ## Load main functions
   source("R/harmonizer.r")
 
@@ -87,7 +97,7 @@
   source("R/cockburn.r")
 #+END_SRC
 
-** Functions for making rds from org-tables
+** Functions for making .rds from org-tables
 
 It is a named src blocks so I can call it with CALL with arguments data.name and data.
 
@@ -164,7 +174,7 @@ That should be done after saving all tables to Rdata files...
 
 About R/sysdata.rda http://r-pkgs.had.co.nz/data.html
 
-#+BEGIN_SRC R :var data.dir = "data"  :results none  :tangle no
+#+BEGIN_SRC R :var data.dir = "data" :session :results none  :tangle no
   ## add all .rds to R/sysdata.rda
   ## (variable names are the same as .rds files)
   dir(data.dir) %>% 
@@ -184,7 +194,6 @@ About R/sysdata.rda http://r-pkgs.had.co.nz/data.html
 
   ## Assume that it runs from "harmonizer" directory
   ## setwd("~/org/research/harmonizer")
-
 
     package.packages <- c(
       "data.table"
@@ -214,13 +223,14 @@ About R/sysdata.rda http://r-pkgs.had.co.nz/data.html
 
   use_description(fields =
                     list(Title  = "Harmonization of Organizational Names"
-                       , Date = "2019-08-21"
+                       , Date = "2020-06-03"
                        , "Authors@R" = 'as.person("Stanislav Vlasov <s.vlasov@uvt.nl> [aut, cre]")'
                        , License = "MIT License"
+                       , Version = "0.3"
                        , Imports = paste(package.packages.man.ver
                                        , collapse = ", ")
                        , Depends = "R (>= 3.4)"
-                       , Description = "Harmonizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006)."
+                       , Description = "Harmonizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more."
                        , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851.pdf"))
 
   ## Update name spaces and documentation for functions
@@ -1780,7 +1790,7 @@ Test:
   #' @param codes.append basically `harmonized.append` parameter passed to `harmonize.x` but with new defaults. Default is TRUE.
   #' @param codes.suffix basically `harmonized.suffix` parameter passed to `harmonize.x` but with new defaults. Default is "encoding"
   #' @param return.codes.only If set it overwrites `return.x.cols` and `x.harmonized.col.update` parameters passed to `harmonize.x`. Default is FALSE.
-  #' @inheritDotParams harmonize.x -harmonized.suffix -harmonized.append
+  #' @inheritDotParams harmonize.x
   #' @return updated object
   #'
   #' @import stringi magrittr
@@ -1807,6 +1817,9 @@ Test:
       return()
   }
 
+
+
+  ## inheritDotParams harmonize.x -harmonized.suffix -harmonized.append
 
   ## ## Test
   ## c("FAÇILE"

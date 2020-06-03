@@ -4,16 +4,22 @@
 \alias{harmonize.defactor}
 \title{Defactor the object}
 \usage{
-harmonize.defactor(x, ...)
+harmonize.defactor(
+  x,
+  conv2dt = c("only.tables", "all.but.atomic", "all.but.lists", "all", "none"),
+  ...
+)
 }
 \arguments{
 \item{x}{an object}
 
-\item{...}{Arguments passed on to \code{harmonize.defactor.vector}
-\describe{
-  \item{x}{a vector}
-  \item{check.numeric}{check if vector is numeric. Default is TRUE. Takes longer with this check but avoids type conversion (numeric to character).}
-}}
+\item{conv2dt}{What to convert to data.table}
+
+\item{...}{
+  Arguments passed on to \code{\link[=harmonize.defactor.vector]{harmonize.defactor.vector}}
+  \describe{
+    \item{\code{check.numeric}}{check if vector is numeric. Default is TRUE. Takes longer with this check but avoids type conversion (numeric to character).}
+  }}
 }
 \value{
 object of the same type without factors

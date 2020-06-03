@@ -9,10 +9,11 @@ magerman.detect.legal.form(x, ...)
 \arguments{
 \item{x}{table}
 
-\item{...}{Arguments passed on to \code{magerman.detect.legal.form.end}
-\describe{
-  \item{x}{table}
-}}
+\item{...}{
+  Arguments passed on to \code{\link[=magerman.detect.legal.form.end]{magerman.detect.legal.form.end}}
+  \describe{
+    \item{\code{}}{}
+  }}
 }
 \value{
 Harmonized table

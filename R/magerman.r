@@ -689,13 +689,14 @@ magerman.replace.umlaut <- function(x
 ##' @import magrittr
 ##' @export 
 harmonize.magerman <- function(x
-                             , magerman.procedures =
-                                   magerman.procedures.table %>%
-                                   harmonize.make.procedures.list
+                             , magerman.procedures = magerman.procedures.table
                              , detect.legal.form = FALSE
                              , return.x.before.common.words.removal = FALSE
                              , return.x.cols.all = FALSE
                              , ... ) {
+    if(is.data.frame(magerman.procedures)) {
+        magerman.procedures %<>% harmonize.make.procedures.list
+    }
     ## do some tweaks on magerman.procedures
     if(!detect.legal.form) {
         magerman.procedures %<>%

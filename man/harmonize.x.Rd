@@ -2,48 +2,51 @@
 % Please edit documentation in R/harmonizer.r
 \name{harmonize.x}
 \alias{harmonize.x}
-\title{Gets vector, (harmonize it) and put it back.}
+\title{Gets a vector to harmonize and puts it back.}
 \usage{
-harmonize.x(x, x.inset = NULL, x.col = 1, x.rows = NULL,
-  x.rows.col = NULL, x.vector.name = "x", x.harmonized.col = NULL,
-  x.harmonized.col.update = TRUE, harmonized.omitted.val = NA,
-  harmonized.append = FALSE, harmonized.name = NA,
-  harmonized.suffix = "harmonized",
-  return.x.cols = -ifelse(is.numeric(x.col), x.col, match(x.col,
-  names(x))), return.x.cols.all = FALSE)
+harmonize.x(
+  x,
+  inset.vector = NULL,
+  x.col = 1,
+  x.col.update = FALSE,
+  x.rows = NULL,
+  x.atomic.name = "x",
+  inset.omitted.val = NULL,
+  inset.append = FALSE,
+  inset.suffix = "harmonized",
+  inset.name = NA,
+  return.x.cols = -ifelse(is.numeric(x.col), x.col, match(x.col, names(x))),
+  return.x.cols.all = inset.append | x.col.update
+)
 }
 \arguments{
 \item{x}{an object}
 
-\item{x.inset}{a vector to inset. Optional. Default is NULL}
+\item{inset.vector}{a vector to inset. Optional. Default is NULL}
 
 \item{x.col}{vector of interest in \code{x} object}
 
-\item{x.rows}{Logical vector to filter records to harmonize. Default is NULL which means do not filter records}
+\item{x.col.update}{Update values in \code{x.col} column. Default is FALSE. If set \code{inset.append}, \code{inset.name} and \code{inset.suffix} are ignored. Also if set the default for \code{return.x.cols.all} will be set to TRUE.}
 
-\item{x.rows.col}{Column that indicates which records to harmonize. If it is set then \code{x.rows} is ignored}
+\item{x.rows}{Logical vector to filter records of interest. Default is NULL which means do not filter records}
 
-\item{x.vector.name}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{x.col} will be used.}
+\item{x.atomic.name}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{x.col} will be used.}
 
-\item{x.harmonized.col}{Column in \code{x} where we want to put/update the \code{x.inset} vector. Default is NULL which means that we just put \code{x.inset} as a first vector/column and remove \code{x.col}. If set and \code{x.col} and \code{x.harmonized.col} are the same \code{x.col} wont be removed.}
+\item{inset.omitted.val}{If \code{x.rows} is set merge these values to the results. It should be a vector of length 1 or \code{nrow(x)}. If the value is NULL (default) then use values of \code{x.col}.}
 
-\item{x.harmonized.col.update}{Update values in this column if \code{x.rows} or \code{x.rows.col} is set. If set \code{harmonized.omitted.val} is ignored.}
+\item{inset.append}{If set then put \code{inset.vector} as the last instead of first vector/column. Default is FALSE.}
 
-\item{harmonized.omitted.val}{If x.rows or x.rows.col is set. Use this value to fill the rest. Default is NA}
+\item{inset.suffix}{If \code{inset.name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in \code{return.x.cols} it will add counter at the end to avoid variables with the same names.}
 
-\item{harmonized.append}{If set then put \code{x.inset} as the last instead of first vector/column. Default is FALSE.}
+\item{inset.name}{Use this name for the first column in results (harmonized names). Default is NULL, which means that either x.atomic.name if x is vector or original x.col name will be used with \code{inset.suffix} at the end.}
 
-\item{harmonized.name}{Use this name for the first column in results (harmonized names). Default is NULL, which means that either x.vector.name if x is vector or original x.col name will be used with \code{harmonized.suffix} at the end.}
+\item{return.x.cols}{If x is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (x.col).}
 
-\item{harmonized.suffix}{If \code{harmonized.name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in \code{return.x.cols} it will add counter at the end to avoid variables with the same names.}
-
-\item{return.x.cols}{If x is table, set the columns to cbind to the result table. Default is -1, meaning cbind all but the first (original/unharmonized) column.}
-
-\item{return.x.cols.all}{Whether to bind all columns in x. Default is FALSE. If set the return.x.cols is ignored}
+\item{return.x.cols.all}{Whether to bind all columns in x. Defaults depends on values of \code{x.col.update} and \code{inset.append}. If either is set then defaut values is TRUE otherwise FALSE. If set to TRUE by user the return.x.cols is ignored.}
 }
 \value{
 Vector or data.table
 }
 \description{
-The function \code{harmonize.x} basically works as two functions depending whether the second optional parameter \code{x.inset} is provided. If \code{x.inset} is not provided the function returns a vector (x.vector) that we want to process (harmonize) from object \code{x} and inset it back to the original object.  If \code{x.inset} (harmonized x.vector) is provided the function returns updated \code{x} object with x.vector inserted/updated in it.
+The function \code{harmonize.x} basically works as two functions depending whether the second optional parameter \code{inset.vector} is provided. If \code{inset.vector} is not provided the function returns a vector that we want to process (harmonize) from object \code{x} and inset it back to the original object later.  If \code{inset.vector} (harmonized vector) is provided the function returns updated \code{x}.
 }

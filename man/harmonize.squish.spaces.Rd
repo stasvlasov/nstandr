@@ -4,28 +4,28 @@
 \alias{harmonize.squish.spaces}
 \title{Removes redundant whitespases}
 \usage{
-harmonize.squish.spaces(x, ...)
+harmonize.squish.spaces(x, wrap.in.spaces = FALSE, ...)
 }
 \arguments{
 \item{x}{table or vector}
 
-\item{...}{Arguments passed on to \code{harmonize.x}
-\describe{
-  \item{x}{an object}
-  \item{x.inset}{a vector to inset. Optional. Default is NULL}
-  \item{x.col}{vector of interest in \code{x} object}
-  \item{x.rows}{Logical vector to filter records to harmonize. Default is NULL which means do not filter records}
-  \item{x.rows.col}{Column that indicates which records to harmonize. If it is set then \code{x.rows} is ignored}
-  \item{x.vector.name}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{x.col} will be used.}
-  \item{x.harmonized.col}{Column in \code{x} where we want to put/update the \code{x.inset} vector. Default is NULL which means that we just put \code{x.inset} as a first vector/column and remove \code{x.col}. If set and \code{x.col} and \code{x.harmonized.col} are the same \code{x.col} wont be removed.}
-  \item{x.harmonized.col.update}{Update values in this column if \code{x.rows} or \code{x.rows.col} is set. If set \code{harmonized.omitted.val} is ignored.}
-  \item{harmonized.omitted.val}{If x.rows or x.rows.col is set. Use this value to fill the rest. Default is NA}
-  \item{harmonized.append}{If set then put \code{x.inset} as the last instead of first vector/column. Default is FALSE.}
-  \item{harmonized.name}{Use this name for the first column in results (harmonized names). Default is NULL, which means that either x.vector.name if x is vector or original x.col name will be used with \code{harmonized.suffix} at the end.}
-  \item{harmonized.suffix}{If \code{harmonized.name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in \code{return.x.cols} it will add counter at the end to avoid variables with the same names.}
-  \item{return.x.cols}{If x is table, set the columns to cbind to the result table. Default is -1, meaning cbind all but the first (original/unharmonized) column.}
-  \item{return.x.cols.all}{Whether to bind all columns in x. Default is FALSE. If set the return.x.cols is ignored}
-}}
+\item{wrap.in.spaces}{If set then adds leaing and ending spaces. Default is FALSE.}
+
+\item{...}{
+  Arguments passed on to \code{\link[=harmonize.x]{harmonize.x}}
+  \describe{
+    \item{\code{inset.vector}}{a vector to inset. Optional. Default is NULL}
+    \item{\code{x.col}}{vector of interest in \code{x} object}
+    \item{\code{x.col.update}}{Update values in \code{x.col} column. Default is FALSE. If set \code{inset.append}, \code{inset.name} and \code{inset.suffix} are ignored. Also if set the default for \code{return.x.cols.all} will be set to TRUE.}
+    \item{\code{x.rows}}{Logical vector to filter records of interest. Default is NULL which means do not filter records}
+    \item{\code{x.atomic.name}}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{x.col} will be used.}
+    \item{\code{inset.omitted.val}}{If \code{x.rows} is set merge these values to the results. It should be a vector of length 1 or \code{nrow(x)}. If the value is NULL (default) then use values of \code{x.col}.}
+    \item{\code{inset.append}}{If set then put \code{inset.vector} as the last instead of first vector/column. Default is FALSE.}
+    \item{\code{inset.suffix}}{If \code{inset.name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in \code{return.x.cols} it will add counter at the end to avoid variables with the same names.}
+    \item{\code{inset.name}}{Use this name for the first column in results (harmonized names). Default is NULL, which means that either x.atomic.name if x is vector or original x.col name will be used with \code{inset.suffix} at the end.}
+    \item{\code{return.x.cols}}{If x is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (x.col).}
+    \item{\code{return.x.cols.all}}{Whether to bind all columns in x. Defaults depends on values of \code{x.col.update} and \code{inset.append}. If either is set then defaut values is TRUE otherwise FALSE. If set to TRUE by user the return.x.cols is ignored.}
+  }}
 }
 \value{
 updated table or vector

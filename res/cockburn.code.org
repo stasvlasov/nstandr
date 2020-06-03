@@ -12,6 +12,7 @@ Load code:
   ## Load data used in funcitons
   load("R/sysdata.rda")
 #+END_SRC
+
 * Utils
 ** cockburn.combabbrev
 :PROPERTIES:
@@ -2840,13 +2841,16 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                        , ...)
       }
 
+#+END_SRC
+
+#+BEGIN_SRC R :results none :session :tangle no :eval no-export
       ## Test
       c(" EINGETRAGENER VEREIN UNIV "
       , " BERLIN EINGETRAGENER VEREIN "
       , " STIFTUNG ") %>% 
           cockburn.detect.inst.german
-
 #+END_SRC
+
 
 *** Hospitals
 :PROPERTIES:
@@ -2854,37 +2858,37 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :END:
 
 #+BEGIN_SRC R :results silent :session :tangle ../R/cockburn.r :mkdirp yes
-    ##' Detect Hospitals (Non-Corporates group)
-    ##'
-    ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
-    ##' 
-    ##' @param x vector or table
-    ##' @inheritDotParams harmonize.detect
-    ##' @return Harmonized table
-    ##' 
-    ##' @md 
-    ##' @export 
-    cockburn.detect.hosp <- function(x
-                                   , codes.name = "entity.type"
-                                   , x.codes.merge = TRUE 
-                                   , ...) {
-      harmonize.detect(x
-                     , codes.name = codes.name
-                     , x.codes.merge = x.codes.merge
-                     , patterns = cockburn.patterns.hosp
-                     , codes = "hosp"
-                     , return.only.first.detected.code = TRUE
-                     , ...)
-    }
+  ##' Detect Hospitals (Non-Corporates group)
+  ##'
+  ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
+  ##' 
+  ##' @param x vector or table
+  ##' @inheritDotParams harmonize.detect
+  ##' @return Harmonized table
+  ##' 
+  ##' @md 
+  ##' @export 
+  cockburn.detect.hosp <- function(x
+                                 , codes.name = "entity.type"
+                                 , x.codes.merge = TRUE 
+                                 , ...) {
+    harmonize.detect(x
+                   , codes.name = codes.name
+                   , x.codes.merge = x.codes.merge
+                   , patterns = cockburn.patterns.hosp
+                   , codes = "hosp"
+                   , return.only.first.detected.code = TRUE
+                   , ...)
+  }
 
 
 
 
-    ## test
-    ## c(" DR VLASOV "
-    ## , " S.VLASOV PHD "
-    ## , " STANICA LEGALY REPRESENTED BY STAS") %>%
-    ##     cockburn.detect.hosp
+  ## test
+  ## c(" DR VLASOV "
+  ## , " S.VLASOV PHD "
+  ## , " STANICA LEGALY REPRESENTED BY STAS") %>%
+  ##     cockburn.detect.hosp
 
 
 #+END_SRC
@@ -2966,7 +2970,7 @@ Following funciton removes punctuation and standardise some symbols. Implementat
   ##' @return Harmonized table
   ##' 
   ##' @md
-  ##' @import magritter
+  ##' @import magrittr
   ##' @export 
   cockburn.replace.punctuation <- function(x
                                            , ...) {
@@ -3175,7 +3179,7 @@ ISO8859-1 (AMADEUS)
   ##' @return Harmonized table
   ##' 
   ##' @md
-  ##' @import magritter
+  ##' @import magrittr
   ##' @export 
   cockburn.replace.standard.names <- function(x
                                               , ...) {
@@ -3185,12 +3189,16 @@ ISO8859-1 (AMADEUS)
       harmonize.replace(patterns = cockburn.patterns.standard.names.country.specific, ...)
   }
 
+#+END_SRC
+
+#+BEGIN_SRC R :results none :session :tangle no :eval no-export
   ## Test
   c("WESTINGHOUSE, |.?^&*@ ELEC  "
   , "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
   , "GRACE (W/R) & CO LTD ") %>% 
    cockburn.replace.standard.names
 #+END_SRC
+
 
 *** table - additional changes
 
@@ -3328,7 +3336,7 @@ ISO8859-1 (AMADEUS)
   ##' @return Harmonized table
   ##' 
   ##' @md
-  ##' @import magritter
+  ##' @import magrittr
   ##' @export 
   cockburn.remove.standard.names <- function(x
                                               , ...) {
@@ -3508,7 +3516,7 @@ creates a name with all legal entity identifiers removed
     ##' @return Harmonized table
     ##' 
     ##' @md
-    ##' @import magritter
+    ##' @import magrittr
     ##' @export 
     cockburn.remove.uspto <- function(x
                                          , ...) {
@@ -3524,7 +3532,7 @@ creates a name with all legal entity identifiers removed
     ##' @return Harmonized table
     ##' 
     ##' @md
-    ##' @import magritter
+    ##' @import magrittr
     ##' @export 
     cockburn.detect.uspto <- function(x
                                          , ...) {

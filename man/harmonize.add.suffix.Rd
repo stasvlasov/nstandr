@@ -4,7 +4,14 @@
 \alias{harmonize.add.suffix}
 \title{Adds a suffix to the string and counter at the end if needed}
 \usage{
-harmonize.add.suffix(name, suffix, x.names)
+harmonize.add.suffix(
+  name,
+  suffix,
+  x.names,
+  search.suffix.in.name = TRUE,
+  suffix.nbr.init = 1,
+  suffix.nbr = NULL
+)
 }
 \arguments{
 \item{name}{Variable name}

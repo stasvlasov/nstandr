@@ -931,7 +931,7 @@ harmonize.dehtmlize <- function(x
 #' @param codes.append basically `harmonized.append` parameter passed to `harmonize.x` but with new defaults. Default is TRUE.
 #' @param codes.suffix basically `harmonized.suffix` parameter passed to `harmonize.x` but with new defaults. Default is "encoding"
 #' @param return.codes.only If set it overwrites `return.x.cols` and `x.harmonized.col.update` parameters passed to `harmonize.x`. Default is FALSE.
-#' @inheritDotParams harmonize.x -harmonized.suffix -harmonized.append
+#' @inheritDotParams harmonize.x
 #' @return updated object
 #'
 #' @import stringi magrittr
@@ -958,6 +958,9 @@ harmonize.detect.enc <- function(x
     return()
 }
 
+
+
+## inheritDotParams harmonize.x -harmonized.suffix -harmonized.append
 
 ## ## Test
 ## c("FAÇILE"

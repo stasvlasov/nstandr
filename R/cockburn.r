@@ -486,12 +486,6 @@ cockburn.detect.inst.german <- function(x
                  , ...)
 }
 
-## Test
-c(" EINGETRAGENER VEREIN UNIV "
-, " BERLIN EINGETRAGENER VEREIN "
-, " STIFTUNG ") %>% 
-    cockburn.detect.inst.german
-
 ##' Detect Hospitals (Non-Corporates group)
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -531,7 +525,7 @@ cockburn.detect.hosp <- function(x
 ##' @return Harmonized table
 ##' 
 ##' @md
-##' @import magritter
+##' @import magrittr
 ##' @export 
 cockburn.replace.punctuation <- function(x
                                          , ...) {
@@ -558,7 +552,7 @@ cockburn.replace.punctuation <- function(x
 ##' @return Harmonized table
 ##' 
 ##' @md
-##' @import magritter
+##' @import magrittr
 ##' @export 
 cockburn.replace.standard.names <- function(x
                                             , ...) {
@@ -568,12 +562,6 @@ cockburn.replace.standard.names <- function(x
     harmonize.replace(patterns = cockburn.patterns.standard.names.country.specific, ...)
 }
 
-## Test
-c("WESTINGHOUSE, |.?^&*@ ELEC  "
-, "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
-, "GRACE (W/R) & CO LTD ") %>% 
- cockburn.replace.standard.names
-
 ##' Creates so called stem name (a name with all legal entity identifiers removed)
 ##'
 ##' @param x object
@@ -581,7 +569,7 @@ c("WESTINGHOUSE, |.?^&*@ ELEC  "
 ##' @return Harmonized table
 ##' 
 ##' @md
-##' @import magritter
+##' @import magrittr
 ##' @export 
 cockburn.remove.standard.names <- function(x
                                             , ...) {
@@ -604,7 +592,7 @@ cockburn.remove.standard.names <- function(x
 ##' @return Harmonized table
 ##' 
 ##' @md
-##' @import magritter
+##' @import magrittr
 ##' @export 
 cockburn.remove.uspto <- function(x
                                      , ...) {
@@ -620,7 +608,7 @@ cockburn.remove.uspto <- function(x
 ##' @return Harmonized table
 ##' 
 ##' @md
-##' @import magritter
+##' @import magrittr
 ##' @export 
 cockburn.detect.uspto <- function(x
                                      , ...) {
@@ -643,32 +631,6 @@ cockburn.detect.uspto <- function(x
 ## , "Bechara;John") %>% 
 ##   cockburn.detect.uspto.code
 
-cockburn.procedures.list <- list(
-  ## prepossessing
-  "Cleaning spaces" =
-    list("harmonize.squish.spaces"
-       , wrap.in.spaces = TRUE)
-, "Upper casing" =
-    "harmonize.toupper"
-  ## standartization
-, "Special removals and recoding for USPTO names" = 
-    "cockburn.detect.uspto"
-, "Standardization of symbols and removals of some punctuation" = 
-    "cockburn.replace.punctuation"
-, "Standardization of names (Derwent, etc.)" = 
-    "cockburn.replace.standard.names"
-, "Identification of organization type" = 
-    "cockburn.detect.type"
-, "Cleaning organization type" = 
-    "cockburn.replace.type"
-, "Combining single char sequences" = 
-    "cockburn.combabbrev"
-, "Removal of legal entity identifiers" = 
-    "cockburn.remove.standard.names"
-, "Cleaning spaces" = 
-    "harmonize.squish.spaces")
-
-
 ##' Harmonizes strings using exact procedures described in Cockburn, et al. (2009)
 ##' @param x table or vector
 ##' @param cockburn.procedures list of procedures to pass to `harmonize` function. Default is `cockburn.procedures.list`
@@ -684,11 +646,14 @@ cockburn.procedures.list <- list(
 ##' @import magrittr
 ##' @export 
 harmonize.cockburn <- function(x
-                             , cockburn.procedures = cockburn.procedures.list
+                             , cockburn.procedures = cockburn.procedures.table
                              , detect.legal.form = FALSE
                              , return.x.before.common.words.removal = FALSE
                              , return.x.cols.all = FALSE
                              , ... ) {
+    if(is.data.frame(cockburn.procedures)) {
+        cockburn.procedures %<>% harmonize.make.procedures.list
+    }
   ## do some tweaks on cockburn.procedures
   if(!detect.legal.form) {
     cockburn.procedures %<>%
