@@ -2376,7 +2376,7 @@ Old list specification
 #+BEGIN_SRC R :results silent :session :tangle ../R/magerman.r :mkdirp yes
   ##' Harmonizes strings using exact procedures described in Magerman et al. 2009.
   ##' @param x table or vector
-  ##' @param magerman.procedures list of procedures to pass to `harmonize` function. Default is `magerman.procedures.list`
+  ##' @param magerman.procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `harmonize.make.procedures.list` (see its help for the correct format of data.frame with procedures). Default is `magerman.procedures.table`.
   ##' @param detect.legal.form Whether to detect legal forms. Default is FALSE
   ##' @param return.x.before.common.words.removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
   ##' @param return.x.cols.all Whether to return initial column in x. Default is FALSE

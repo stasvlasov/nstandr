@@ -57,24 +57,43 @@ The package provides its main function =harmonize= that expect character vector 
 
 
 ** Harmonization procedures
+:PROPERTIES:
+:ID:       org:pm44dhm0fqi0
+:END:
 
 Harmonization procedures are flexible and can be specified with setting ~procedures~ option like so:
 
 #+BEGIN_SRC R
-  org.names.test %>%
-      harmonize(procedures = list(
-                    list("toascii", FALSE)
-                  , "remove.brackets"
-                  , "toupper"
-                  , "apply.nber"
-                  , "remove.spaces"))
+    org.names.test %>%
+        harmonize(procedures = list(
+                      list("harmonize.toascii", detect.encoding = FALSE)
+                    , "harmonize.remove.brackets"
+                    , "harmonize.toupper"
+                    , list("harmonize.squish.spaces", wrap.in.spaces = TRUE)
+                    , "cockburn.replace.punctuation"
+                    , "harmonize.squish.spaces"))
 
 #+END_SRC
 
-Figure below illustrates default sequence of harmonization procedures:
+The default harmonization procedures are the following (for now):
 
-[[file:img/harmonization.png]]
+#+NAME: harmonizer.default.procedures.table
+| no | message                            | function.call                                    |
+|----+------------------------------------+--------------------------------------------------|
+|    | *Prepossessing*                    |                                                  |
+|  1 | Cleaning spaces                    | 'harmonize.squish.spaces', wrap.in.spaces = TRUE |
+|    |                                    |                                                  |
+|    | *Characters*                       |                                                  |
+|  2 | Removing HTML codes                | 'harmonize.dehtmlize'                            |
+|  3 | Translating non-ASCII to ASCII     | 'harmonize.toascii'                              |
+|  4 | Upper casing                       | 'harmonize.toupper'                              |
+|    |                                    |                                                  |
+|    | *Cleaning*                         |                                                  |
+|  5 | Standardizing organizational names | 'cockburn.replace.punctuation'                   |
+|  6 | Removing brackets                  | 'harmonize.remove.brackets'                      |
+|  7 | Cleaning spaces                    | 'harmonize.squish.spaces'                        |
 
+#+call: make-rds-patterns-table(data = harmonizer.default.procedures.table, data.name = "harmonizer.default.procedures.table", remove.single.quotes = "FALSE", data.dir = "data", add.to.rda = "R/sysdata.rda")
 
 ** Displaying harmonization progress
 Useful for big data tables. The option ~progress.by~ tells how often to update the progress. (If you have 10^7 records it is recommended to set ~progress.by~ as 10^5 or more.) Setting this option will slow the harmonization down a little.
@@ -138,3 +157,10 @@ Winkler, W. E. (2006). /Overview of record linkage and current research directio
   commit = {5fc35d74c0f8e0421845029d4da2f050f352edbb}
 }
 #+end_src 
+* Local Variables
+
+Set local variables for tangling tables into .rds files and adding them to R/sysdata.rda
+
+: Local Variables:
+: eval: (org-babel-lob-ingest "harmonizer.code.org")
+: End:

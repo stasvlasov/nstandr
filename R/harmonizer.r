@@ -711,6 +711,44 @@ dots.and <- function(arg.name, arg.val
   } else eval(arg.val, envir = env)
 }
 
+##' Makes list of procedures calls from table.
+##'
+##' Table should have at least two columns - messages and fuctions calls. Each function call should be a string of the following format "'function.name', arg1 = val1, arg2 = val2" (same as arguments for `do.call` function).
+##' 
+##' @param procedures.table Table to use
+##' @param message.field name of the column with messages that will be displayed when each call is executed
+##' @param function.call.field name of the column where function (harmonization procedures) calls are listed.
+##' @param no.field name of the column where the number of procedure is specified. Also this field indicates if the row in the table is just a comment in which case it will be removed if `remove.comments` is set (which is set by default)
+##' @param remove.comments Whether to remove comments.
+##' 
+##' @return List of named function calls. Names are messages.
+##' 
+##' @md 
+##' @import magrittr data.table
+harmonize.make.procedures.list <- function(procedures.table
+                                         , message.field = "message"
+                                         , function.call.field = "function.call"
+                                         , no.field = "no"
+                                         , remove.comments = TRUE
+                                         , sort.by.no.field = TRUE
+                                         , comments = c("#", "-", "")) {
+    procedures.table %<>% harmonize.defactor
+    if(remove.comments) {
+        procedures.table %<>%
+            extract(!(procedures.table[[no.field]] %in% comments), )
+    }
+    if(sort.by.no.field) {
+        procedures.table %<>%
+            extract(order(procedures.table[[no.field]]), )
+    }
+    procedures.table %>% 
+        extract2(function.call.field) %>%
+        paste0("list(", ., ")") %>%
+        lapply(function(str) eval(parse(text = str))) %>%
+        lapply(function(lst) if(length(lst) == 1) unlist(lst) else lst) %>% 
+        set_names(procedures.table[[message.field]])
+}
+
 ##' Splits the object (table) in chunks by rows
 ##'
 ##' Convenient to apply some function to the table in chunks, e.g., if you want to add display of progress.
@@ -1446,7 +1484,7 @@ harmonize.detect..do.vector <- function(env = parent.frame()) {
 ##' Harmonizes organizational names. Takes either vector or column in the table.
 ##' 
 ##' @param x object (table)
-##' @param procedures List of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments.
+##' @param procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `harmonize.make.procedures.list` (see its help for the correct format of data.frame with procedures). Default is `harmonizer.default.procedures.table`
 ##' @param progress Show the progress? Default is TRUE
 ##' @param progress.min The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5
 ##' @param progress.by If set it will divide the x into chunk of this amount of rows. Default is NA.
@@ -1460,7 +1498,7 @@ harmonize.detect..do.vector <- function(env = parent.frame()) {
 ##' @import stringi stringr magrittr
 ##' @export
 harmonize <- function(x
-                    , procedures = harmonize.default.procedures
+                    , procedures = harmonizer.default.procedures.table
                     , progress = TRUE
                     , progress.min = 10^5
                     , progress.by = NA
@@ -1468,6 +1506,9 @@ harmonize <- function(x
                     , progress.message.use.names = TRUE
                     , quite = FALSE
                     , ...) {
+  if(is.data.frame(procedures)) {
+        procedures %<>% harmonize.make.procedures.list
+  }
   ## make format of the massages for procedures
   message.delimiter <- paste(c("\n", rep("-", 65), "\n"), collapse = "")
   message.init <- paste0("\nApplying harmonization procedures:", message.delimiter)

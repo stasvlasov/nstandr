@@ -6,7 +6,7 @@
 \usage{
 harmonize(
   x,
-  procedures = harmonize.default.procedures,
+  procedures = harmonizer.default.procedures.table,
   progress = TRUE,
   progress.min = 10^5,
   progress.by = NA,
@@ -19,7 +19,7 @@ harmonize(
 \arguments{
 \item{x}{object (table)}
 
-\item{procedures}{List of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments.}
+\item{procedures}{Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with \code{harmonize.make.procedures.list} (see its help for the correct format of data.frame with procedures). Default is \code{harmonizer.default.procedures.table}}
 
 \item{progress}{Show the progress? Default is TRUE}
 

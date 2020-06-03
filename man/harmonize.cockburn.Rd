@@ -27,7 +27,7 @@ harmonize.cockburn(
 \item{...}{
   Arguments passed on to \code{\link[=harmonize]{harmonize}}
   \describe{
-    \item{\code{procedures}}{List of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments.}
+    \item{\code{procedures}}{Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with \code{harmonize.make.procedures.list} (see its help for the correct format of data.frame with procedures). Default is \code{harmonizer.default.procedures.table}}
     \item{\code{progress}}{Show the progress? Default is TRUE}
     \item{\code{progress.min}}{The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5}
     \item{\code{progress.by}}{If set it will divide the x into chunk of this amount of rows. Default is NA.}
