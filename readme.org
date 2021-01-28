@@ -2,6 +2,11 @@
 #+author: Stas Vlasov
 #+email: s.vlasov@uvt.nl
 
+
+
+
+
+
 The R package =harmonizer= standardizes (harmonizes) organizational names.
 
 The task of merging large datasets becomes more common these days as more and more data is coming. However, there is still no standard tool for that task according to Thoma et al. (2010).
@@ -157,7 +162,7 @@ Winkler, W. E. (2006). /Overview of record linkage and current research directio
   commit = {5fc35d74c0f8e0421845029d4da2f050f352edbb}
 }
 #+end_src 
-* Local Variables
+* Local Variables                                                   :exclude:
 
 Set local variables for tangling tables into .rds files and adding them to R/sysdata.rda
 

@@ -269,11 +269,10 @@ About R/sysdata.rda http://r-pkgs.had.co.nz/data.html
 
   install_github("stasvlasov/harmonizer")
 
-  library("harmonizer")
-
-
   ## Test
   ## --------------------------------------------------------------------------------
+  library("harmonizer")
+
   harmonize(c("Lala Ltd.", "bla-bla Ltd."))
 
   harmonize.magerman(c("Lala Ltd.", "bla-bla Ltd."))
