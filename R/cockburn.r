@@ -1,3 +1,4 @@
+## -------->>  [[id:org:z3bhq6914gi0][cockburn.combabbrev:1]]
 ##' Collapses single character sequences
 ##'
 ##' @param x Object (table or vector)
@@ -54,7 +55,11 @@ cockburn.combabbrev <- function(x
 ## , "MSLab Comp. Ltd."
 ## , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>%
 ##   cockburn.combabbrev
+## --------<<  cockburn.combabbrev:1 ends here
 
+
+
+## -------->>  [[id:org:y5ghq6914gi0][Derwent:1]]
 ##' Performs Derwent standardization of organizational names
 ##'
 ##' It is a version from Cockburn, I. M., A. Agrawal, J. Bessen, J. H. S. Graham, B. H. Hall, and M. MacGarvie (2009), The NBER Patent Citations Datafile Update. It differs from original dervert standartization
@@ -71,7 +76,11 @@ cockburn.replace.derwent <- function(x
                   , patterns.mode = "first"
                   , ...)
 }
+## --------<<  Derwent:1 ends here
 
+
+
+## -------->>  [[id:org:5lmhq6914gi0][Compustat:1]]
 ##' COMPUSTAT specific standardization for organizational names
 ##'
 ##' @param x object
@@ -110,7 +119,11 @@ cockburn.replace.compustat.names <- function(x
 ## , "GRACE (W R) & CO"
 ## , "GRACE (W R) & CO Ltd.") %>% 
 ##   cockburn.compustat.names
+## --------<<  Compustat:1 ends here
 
+
+
+## -------->>  [[id:org:fyt54a51nki0][Identify Entity Type:1]]
 ##' Identifies Entity Type
 ##'
 ##' @param x vector or table
@@ -161,7 +174,11 @@ cockburn.replace.type <- function(x, ...) {
     cockburn.replace.univ(...) %>% 
     return()
 }
+## --------<<  Identify Entity Type:1 ends here
 
+
+
+## -------->>  [[id:org:nvtj6q51nki0][Firms (Corporates):1]]
 ##' Detect Corporates (code - "firm")
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -191,7 +208,11 @@ cockburn.detect.corp <- function(x
 ## , " S.VLASOV PHD "
 ## , "LEGALY REPRESENTED BY STAS") %>%
 ## cockburn.detect.corp
+## --------<<  Firms (Corporates):1 ends here
 
+
+
+## -------->>  [[id:org:480k6q51nki0][Individuals:1]]
 ##' Detect Individuals (Non-Corporates group)
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -234,7 +255,11 @@ cockburn.detect.indiv <- function(x
   ##   cockburn.detect.indiv %>%
   ##   cockburn.detect.govt %>%
   ##   cockburn.detect.indiv
+## --------<<  Individuals:1 ends here
 
+
+
+## -------->>  [[id:org:r46k6q51nki0][Government:1]]
 ##' Detect Goverment Organizations (Non-Corporates group)
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -284,7 +309,11 @@ cockburn.replace.govt <- function(x, ...) {
 
 ## test
 ## " VERY IMPORTANT SEC OF THE DEPT OF  " %>% cockburn.replace.govt
+## --------<<  Government:1 ends here
 
+
+
+## -------->>  [[id:org:zdck6q51nki0][Universities:1]]
 ##' Detect Universities (Non-Corporates group)
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -336,7 +365,11 @@ cockburn.replace.univ <- function(x, ...) {
 ## , " VU UNIVERSTITAET "
 ## , "LEGALY REPRESENTED BY STAS") %>%
 ## cockburn.replace.univ
+## --------<<  Universities:1 ends here
 
+
+
+## -------->>  [[id:org:owhk6q51nki0][Non-profit institutes:1]]
 ##' Detect Non-profit Institutes (Non-Corporates group)
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -365,7 +398,11 @@ cockburn.detect.inst <- function(x
 ## , " S.VLASOV PHD "
 ## , " FUNDATION LEGALY REPRESENTED BY STAS") %>%
 ## cockburn.detect.inst
+## --------<<  Non-profit institutes:1 ends here
 
+
+
+## -------->>  [[id:org:ajok6q51nki0][Complex conditions:1]]
 ##' Detects Non-profit institutes with special conditions
 ##'
 ##' @param x table. Expected that x has a column with codes for universities
@@ -450,7 +487,11 @@ cockburn.detect.inst.conds <- function(x
                                , x.codes.merge = x.codes.merge) %>%
     return()
 }
+## --------<<  Complex conditions:1 ends here
 
+
+
+## -------->>  [[id:org:vxuk6q51nki0][German Non-profit institutes:1]]
 ##' Detects German Non-profit institutes
 ##'
 ##' "EINGETRAGENER VEREIN. NON PROFIT SOCIETY/ASSOCIATION."
@@ -485,7 +526,11 @@ cockburn.detect.inst.german <- function(x
                  , return.only.first.detected.code = TRUE
                  , ...)
 }
+## --------<<  German Non-profit institutes:1 ends here
 
+
+
+## -------->>  [[id:org:pk0l6q51nki0][Hospitals:1]]
 ##' Detect Hospitals (Non-Corporates group)
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -517,7 +562,11 @@ cockburn.detect.hosp <- function(x
 ## , " S.VLASOV PHD "
 ## , " STANICA LEGALY REPRESENTED BY STAS") %>%
 ##     cockburn.detect.hosp
+## --------<<  Hospitals:1 ends here
 
+
+
+## -------->>  [[id:org:ehachlb1cgi0][Punctuation:1]]
 ##' Removes punctuation and standardise some symbols. 
 ##'
 ##' @param x object
@@ -544,7 +593,11 @@ cockburn.replace.punctuation <- function(x
 ## , "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©"
 ## , "GRACE (W/R) & CO Ltd.") %>% 
 ##   cockburn.replace.punctuation
+## --------<<  Punctuation:1 ends here
 
+
+
+## -------->>  [[id:org:tnnchlb1cgi0][Standard Name:1]]
 ##' Create standard name
 ##'
 ##' @param x object
@@ -561,7 +614,11 @@ cockburn.replace.standard.names <- function(x
     harmonize.replace(patterns = cockburn.patterns.standard.names.additional, ...) %>% 
     harmonize.replace(patterns = cockburn.patterns.standard.names.country.specific, ...)
 }
+## --------<<  Standard Name:1 ends here
 
+
+
+## -------->>  [[id:org:k5q64a51nki0][Stem Name:1]]
 ##' Creates so called stem name (a name with all legal entity identifiers removed)
 ##'
 ##' @param x object
@@ -584,7 +641,11 @@ cockburn.remove.standard.names <- function(x
 ## , "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
 ## , "GRACE (W/R) & CO LTD ") %>% 
 ##  cockburn.remove.standard.names
+## --------<<  Stem Name:1 ends here
 
+
+
+## -------->>  [[id:org:mex64a51nki0][USPTO special:1]]
 ##' Removes special USPTO codes.
 ##'
 ##' @param x object
@@ -630,7 +691,11 @@ cockburn.detect.uspto <- function(x
 ## , "GRACE-CONN. (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
 ## , "Bechara;John") %>% 
 ##   cockburn.detect.uspto.code
+## --------<<  USPTO special:1 ends here
 
+
+
+## -------->>  [[id:org:ns374a51nki0][main_coname2.do:1]]
 ##' Harmonizes strings using exact procedures described in Cockburn, et al. (2009)
 ##' @param x table or vector
 ##' @param cockburn.procedures list of procedures to pass to `harmonize` function. Default is `cockburn.procedures.list`
@@ -677,3 +742,6 @@ harmonize.cockburn <- function(x
   }
   harmonize(x, cockburn.procedures, ...)
 }
+## --------<<  main_coname2.do:1 ends here
+
+

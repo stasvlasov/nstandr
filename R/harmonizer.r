@@ -1,10 +1,15 @@
+## -------->>  [[id:org:g5wa69d1ffi0][Add package documentation:1]]
 #' @details
-#' standardizes (harmonizes) organizational names mainly using procedures described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) but not only.
+#' Harmonizer package standardizes (harmonizes) organizational names mainly using procedures described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) but not only.
 #' This is work in progress. Please, file an issues or suggestion if you have any.
 #' The main function is [harmonize()]. 
 #' @keywords internal
 "_PACKAGE"
+## --------<<  Add package documentation:1 ends here
 
+
+
+## -------->>  [[id:org:rixkspb0wei0][harmonize.x.length and width:1]]
 ##' Gets lengths of the object
 ##' 
 ##' @param x object (table)
@@ -14,7 +19,6 @@
    if(is.atomic(x)) length(x) else nrow(x)
 }
 
-
 ##' Gets width of the object
 ##' 
 ##' @param x object (table)
@@ -23,7 +27,11 @@
  harmonize.x.width <- function(x) {
    if(is.atomic(x)) 1 else ncol(x)
 }
+## --------<<  harmonize.x.length and width:1 ends here
 
+
+
+## -------->>  [[id:org:3971f8s0lei0][harmonize.empty:1]]
 ##' Checks if elements that are either "", NA, NULL or have zero length
 ##' @param xs vector 
 ##' @return logical vector of the same length
@@ -63,7 +71,11 @@ harmonize.eval.if.empty <- function(x, ..., env = parent.frame()) {
 ##   a <- 5
 ##   harmonize.if.empty("", a)
 ## })()
+## --------<<  harmonize.empty:1 ends here
 
+
+
+## -------->>  [[id:org:uj31f8s0lei0][harmonize.escape.regex:1]]
 ##' Escapes special for regex characters
 ##' @param string character vector 
 ##' @return character vector with all special to regex characters escaped
@@ -148,7 +160,11 @@ harmonize.escape.types <- function(patterns, conds, all.regex = FALSE) {
 ## c("MSlab$", "TriloBit.?", "(^0-3)", "Ltd.", "lalala") %>%
 ##   harmonize.escape.types(c("regex", "fixed", "regex", "ends", "trim.exact")
 ##                               , all.regex = FALSE)
+## --------<<  harmonize.escape.regex:1 ends here
 
+
+
+## -------->>  [[id:org:c77b69d1ffi0][harmonize.add.suffix:1]]
 ##' Adds a suffix to the string and counter at the end if needed
 ##'
 ##' @param name Variable name
@@ -193,7 +209,11 @@ harmonize.add.suffix <- function(name, suffix, x.names
 ##                    , c("x", "foo" , "x.pro.8", "var")
 ##                    ## , c("x", "foo" , "x", "var")
 ##                      )
+## --------<<  harmonize.add.suffix:1 ends here
 
+
+
+## -------->>  [[id:org:x3j0f8s0lei0][harmonize.defactor:1]]
 ##' Converts factor to character
 ##' @param x a vector
 ##' @param check.numeric check if vector is numeric. Default is TRUE. Takes longer with this check but avoids type conversion (numeric to character).
@@ -260,7 +280,11 @@ harmonize.defactor <- function(x
                 , stringsAsFactors = FALSE)
   else x
 }
+## --------<<  harmonize.defactor:1 ends here
 
+
+
+## -------->>  [[id:org:ld4hpqj01li0][harmonize.is.ok:1]]
 ##' Checks if a column(s) name/number is valid.
 ##' 
 ##' @param col column name/number or vector of columns name/number
@@ -445,7 +469,11 @@ harmonize.is.ok.dots <- function(dots.names, formals) {
 
 ## harmonize.is.ok.dots(NULL
 ##                      , names(formals("harmonize.x"))[-c(1:2)] )
+## --------<<  harmonize.is.ok:1 ends here
 
+
+
+## -------->>  [[id:org:rjvdj9s0lei0][harmonize.x:1]]
 ##' Gets a vector to harmonize and puts it back.
 ##'
 ##' The function `harmonize.x` basically works as two functions depending whether the second optional parameter `inset.vector` is provided. If `inset.vector` is not provided the function returns a vector that we want to process (harmonize) from object `x` and inset it back to the original object later.  If `inset.vector` (harmonized vector) is provided the function returns updated `x`.
@@ -628,7 +656,11 @@ harmonize.x.cbind <- function(inset.vector, x, append = FALSE) {
   else
     cbind(inset.vector, x)
 }
+## --------<<  harmonize.x:1 ends here
 
+
+
+## -------->>  [[id:org:ngbgs341vli0][harmonize.x.dots:1]]
 ##' Same as `harmonize.x` but checks and updates dots values if needed. Runs only in environment where ... (dots) ment for `harmonize.x` exists.
 ##' 
 ##' @param x Table or vector
@@ -710,7 +742,11 @@ dots.and <- function(arg.name, arg.val
     eval(arg.val, envir = env) & dots.logical
   } else eval(arg.val, envir = env)
 }
+## --------<<  harmonize.x.dots:1 ends here
 
+
+
+## -------->>  [[id:org:i762gum0fqi0][harmonize.make.procedures.list:1]]
 ##' Makes list of procedures calls from table.
 ##'
 ##' Table should have at least two columns - messages and fuctions calls. Each function call should be a string of the following format "'function.name', arg1 = val1, arg2 = val2" (same as arguments for `do.call` function).
@@ -748,7 +784,11 @@ harmonize.make.procedures.list <- function(procedures.table
         lapply(function(lst) if(length(lst) == 1) unlist(lst) else lst) %>% 
         set_names(procedures.table[[message.field]])
 }
+## --------<<  harmonize.make.procedures.list:1 ends here
 
+
+
+## -------->>  [[id:org:ije1f8s0lei0][harmonize.x.split:1]]
 ##' Splits the object (table) in chunks by rows
 ##'
 ##' Convenient to apply some function to the table in chunks, e.g., if you want to add display of progress.
@@ -785,7 +825,11 @@ harmonize.make.procedures.list <- function(procedures.table
  ## , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>%
  ##   rep(50) %>% 
  ##   harmonize.x.split(10, length(.))
+## --------<<  harmonize.x.split:1 ends here
 
+
+
+## -------->>  [[id:org:dlp0f8s0lei0][harmonize.squish.spaces:1]]
 #' Removes redundant whitespases
 #' @param x table or vector
 #'
@@ -836,7 +880,11 @@ harmonize.squish.spaces <- function(x, wrap.in.spaces = FALSE, ...) {
 ## harmonize.clean.spaces("  String with trailing,  middle, and leading white space\t"
 ##                        , trim = FALSE)
 ## harmonize.clean.spaces("\n\nString with excess,  trailing and leading white   space\n\n")
+## --------<<  harmonize.squish.spaces:1 ends here
 
+
+
+## -------->>  [[id:org:xys0f8s0lei0][harmonize.toupper:1]]
 ##' Uppercases vector of interest in the object (table)
 ##' 
 ##' @param x object
@@ -862,7 +910,11 @@ harmonize.toupper <- function(x, ...) {
 ##                   , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>%
 ##              rep(10)
 ##          , foo = "lalala" ) %>% harmonize.toupper
+## --------<<  harmonize.toupper:1 ends here
 
+
+
+## -------->>  [[id:org:9ew0f8s0lei0][harmonize.remove.brackets:1]]
 ##' Removes brackets and content in brackets
 ##' @param x object (table)
 ##' @inheritDotParams harmonize.x
@@ -880,7 +932,11 @@ harmonize.remove.brackets  <- function(x, ...) {
 ## test
 ## remove.brackets breaks the encoding (so it is better to apply decoding first)
 ## harmonize.remove.brackets("fa\xE7ile (lalala) lkj (sdfs) AAA [sdf]")
+## --------<<  harmonize.remove.brackets:1 ends here
 
+
+
+## -------->>  [[id:org:4vz0f8s0lei0][harmonize.remove.quotes:1]]
 ##' Removes double quotes (deprecated)
 ##' 
 ##' (This is a separate procedure because read.csv can not get this substitution in old version of harmonizer)
@@ -895,7 +951,11 @@ harmonize.remove.quotes <- function(x, ...) {
     stri_replace_all_fixed("\"", "") %>% 
     harmonize.x(x, ., ...)
 }
+## --------<<  harmonize.remove.quotes:1 ends here
 
+
+
+## -------->>  [[id:org:3ya1f8s0lei0][harmonize.unlist.column:1]]
 ##' If column in the `x` table is list unlist it if possible
 ##' @param x object
 ##' @return updated object
@@ -918,7 +978,11 @@ harmonize.unlist.column <- function(x) {
 ## list(c("a"), NULL, 3, "5", character(0)) %>% harmonize.unlist.column
 ## list(c("a"), 3, "5") %>% harmonize.unlist.column
 ## list(c("a", "b", "c"), NULL, 3, "5", character(0)) %>% harmonize.unlist.column
+## --------<<  harmonize.unlist.column:1 ends here
 
+
+
+## -------->>  [[id:org:4tffib50bci0][harmonize.dehtmlize:1]]
 #' Converts HTML characters to UTF-8 (this one is 1/3 faster than htmlParse but it is still very slow)
 ## from - http://stackoverflow.com/questions/5060076
 #' @param x object (table)
@@ -963,7 +1027,11 @@ harmonize.dehtmlize <- function(x
 ##   sample(100, replace = TRUE) %>% 
 ##   data.table("lala") %>%
 ##   harmonize.dehtmlize
+## --------<<  harmonize.dehtmlize:1 ends here
 
+
+
+## -------->>  [[id:org:e2bfib50bci0][harmonize.detect.enc:1]]
 #' Detects string encoding
 #' @param x object
 #' @param codes.append basically `harmonized.append` parameter passed to `harmonize.x` but with new defaults. Default is TRUE.
@@ -1011,7 +1079,11 @@ harmonize.detect.enc <- function(x
 ## , "fa\xE7ile"
 ## , "c\u00b5c\u00b5ber") %>%
 ##   harmonize.detect.enc
+## --------<<  harmonize.detect.enc:1 ends here
 
+
+
+## -------->>  [[id:org:mzn0tpb0wei0][harmonize.toascii:1]]
 #' Translates non-ascii symbols to its ascii equivalent
 #'
 #' It takes characters from this string:
@@ -1062,7 +1134,11 @@ harmonize.toascii <- function(x
 ## , "c\u00b5c\u00b5ber") %>%
 ##   data.table("coffee") %>% 
 ## harmonize.toascii(detect.encoding = TRUE)
+## --------<<  harmonize.toascii:1 ends here
 
+
+
+## -------->>  [[id:org:g18cg5z0nmi0][harmonize.match.arg:1]]
 ##' Matches the argument vector to (default) choices and ensures the correct length
 ##' @param arg An argument vector to check if it is matches the values
 ##' @param arg.length Desired length of the `arg` to check against or to ensure
@@ -1116,7 +1192,11 @@ harmonize.match.arg <- function(arg
     stop("Argument does not match choices/defauls '", deparse(choices), "'!")
   }
 }
+## --------<<  harmonize.match.arg:1 ends here
 
+
+
+## -------->>  [[id:org:xcpfib50bci0][harmonize.replace:1]]
 #' A wrapper for string replacement and cbinding some columns.
 #'
 #' Optionally matches only at the beginning or at the end of the string.
@@ -1250,7 +1330,11 @@ harmonize.replace..do <- function(env = parent.frame()) {
     }
   }, envir = env)
 }
+## --------<<  harmonize.replace:1 ends here
 
+
+
+## -------->>  [[id:org:bb21tpb0wei0][harmonize.detect:1]]
 #' This function is basically meant for coding names based on certain pattern
 #'
 #' Optionally matches only at the beginning or at the end of the string.
@@ -1480,7 +1564,11 @@ harmonize.detect..do.vector <- function(env = parent.frame()) {
           harmonize.unlist.column
     }, envir = env)
 }
+## --------<<  harmonize.detect:1 ends here
 
+
+
+## -------->>  [[id:org:ifb5ac70uai0][harmonize:1]]
 ##' Harmonizes organizational names. Takes either vector or column in the table.
 ##' 
 ##' @param x object (table)
@@ -1622,3 +1710,6 @@ harmonize <- function(x
 ##           , . 
 ##           , progress.min = 10
 ##           , progress.by = 30)
+## --------<<  harmonize:1 ends here
+
+

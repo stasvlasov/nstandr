@@ -1,8 +1,13 @@
 .DS_Store
+
+# R files
 .Rproj.user
 .Rhistory
 .RData
-*.project.org
 .Rprofile
+
+# my files
+*.project.org
 harmonizer.notes.org
 materials/
+inst/
