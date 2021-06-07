@@ -115,6 +115,9 @@ Useful for big data tables. The option ~progress.by~ tells how often to update t
 #+END_SRC
 
 ** Visualizing harmonization algorithm
+The package can generate simple visualization for harmonization algorithm (procedures). For example:
+
+[[file:.img/harmonization.png]]
 
 ** Comparison of alternative harmonization algorithms
 
@@ -124,8 +127,6 @@ Knowing ground truth whether any two text strings that represents organizational
 |-------------------------------+----------------------------+----------------------------------|
 | /Same set by algorithm/       | True Positive (*TP*)       | False Positive (*FP*)            |
 | /Different sets by algorithm/ | False Negative (*FN*)      | True Negative (*TN*)             |
-
-
 
 #+begin_latex
 \begin{equation}
