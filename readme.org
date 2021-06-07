@@ -129,11 +129,16 @@ Knowing ground truth whether any two text strings that represents organizational
 | /Different sets by algorithm/ | False Negative (*FN*)      | True Negative (*TN*)             |
 
 
-<img src="https://render.githubusercontent.com/render/math?math=pair-wise precision = \frac{TP}{TP + FP}">
-<img src="https://render.githubusercontent.com/render/math?math=pair-wise recall = \frac{TP}{TP + FN}">
+Relative performance metrics:
+- pair-wise precision / cluster precision [TP/(TP +FP)]
+- pair-wise recall / cluster recall [TP/(TP +FN)]
+- pair-wise / cluster F1 (harmonic mean of precision and recall)
+- pairwise accuracy
+- average cluster purity
+- K metric
 
-
-
+# <img src="https://render.githubusercontent.com/render/math?math=pair-wise precision = \frac{TP}{TP + FP}">
+# <img src="https://render.githubusercontent.com/render/math?math=pair-wise recall = \frac{TP}{TP + FN}">
 
 * Other relevant literature
 
