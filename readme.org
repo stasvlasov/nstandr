@@ -129,9 +129,9 @@ Knowing ground truth whether any two text strings that represents organizational
 | /Different sets by algorithm/ | False Negative (*FN*)      | True Negative (*TN*)             |
 
 
-$pair-wise precision = \frac{TP}{TP + FP}$
+$$pair-wise precision = \frac{TP}{TP + FP}$$
 
-$pair-wise recall = \frac{TP}{TP + FN}$
+$$pair-wise recall = \frac{TP}{TP + FN}$$
 
 
 * Other relevant literature
