@@ -117,7 +117,7 @@ Useful for big data tables. The option ~progress.by~ tells how often to update t
 ** Visualizing harmonization algorithm
 The package can generate simple visualization for harmonization algorithm (procedures). For example:
 
-[[file:.img/harmonization.png]]
+[[file:./img/harmonization.png]]
 
 ** Comparison of alternative harmonization algorithms
 
