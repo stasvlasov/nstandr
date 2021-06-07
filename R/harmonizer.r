@@ -1,8 +1,10 @@
-## -------->>  [[id:org:g5wa69d1ffi0][Add package documentation:1]]
+## -------->> [[id:org:g5wa69d1ffi0][Add package documentation:1]]
 #' @details
-#' Harmonizer package standardizes (harmonizes) organizational names mainly using procedures described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) but not only.
-#' This is work in progress. Please, file an issues or suggestion if you have any.
-#' The main function is [harmonize()]. 
+#' Harmonizer package standardizes (harmonizes) organizational names
+#'     mainly using procedures described in Thoma et al. (2010) and
+#'     Magerman, Looy, Bart, & Song (2006) but not only.  This is work
+#'     in progress. Please, file an issues or suggestion if you have
+#'     any.  The main function is [harmonize()].
 #' @keywords internal
 "_PACKAGE"
 ## --------<<  Add package documentation:1 ends here
@@ -11,12 +13,11 @@
 
 ## -------->>  [[id:org:rixkspb0wei0][harmonize.x.length and width:1]]
 ##' Gets lengths of the object
-##' 
 ##' @param x object (table)
 ##' @return Width (nrow) of the object. If it is atomic it returns its length.
 ##' @export
- harmonize.x.length <- function(x) { #
-   if(is.atomic(x)) length(x) else nrow(x)
+ harmonize.x.length <- function(x) {
+   if (is.atomic(x)) length(x) else nrow(x)
 }
 
 ##' Gets width of the object
@@ -77,7 +78,7 @@ harmonize.eval.if.empty <- function(x, ..., env = parent.frame()) {
 
 ## -------->>  [[id:org:uj31f8s0lei0][harmonize.escape.regex:1]]
 ##' Escapes special for regex characters
-##' @param string character vector 
+##' @param string character vector
 ##' @return character vector with all special to regex characters escaped
 ##'
 ##' @import stringr
@@ -92,9 +93,14 @@ harmonize.escape.regex <- function(string) str_replace_all(string, "(\\W)", "\\\
 
 
 ##' Escapes special for different types of pattern
-##' @param string character vector 
-##' @return character vector with all special to regex characters escaped
-##' @param type whether it should escape regex ("fixed") add beginning ("begins") or ending ("ends") matcher. Or if value is "regex" then do not change the string. Also possible to escape a regex for exact match ("exact") or exact match after trimming spaces ("trim.exact")
+##' @param string character vector
+##' @return character vector with all special to regex characters
+##'     escaped
+##' @param type whether it should escape regex ("fixed") add beginning
+##'     ("begins") or ending ("ends") matcher. Or if value is "regex"
+##'     then do not change the string. Also possible to escape a regex
+##'     for exact match ("exact") or exact match after trimming spaces
+##'     ("trim.exact")
 ##' @import stringr
 ##' @export
 harmonize.escape.type <- function(string
@@ -128,8 +134,6 @@ harmonize.escape.type <- function(string
         if(all.regex)  paste0("^\\s*", harmonize.escape.regex(string), "\\s*$")
         else str_trim(string)
 }
-
-
 
 ##' Escapes special for regex characters conditionally
 ##' @param strings character vector

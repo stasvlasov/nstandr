@@ -114,6 +114,29 @@ Useful for big data tables. The option ~progress.by~ tells how often to update t
   ## * apply.nber ...			 73%
 #+END_SRC
 
+** Visualizing harmonization algorithm
+
+** Comparison of alternative harmonization algorithms
+
+Knowing ground truth whether any two text strings that represents organizational names are the same organizational name or assuming that some algorithm produces such ground truth the package uses simple well known statistics (see table below) of pair-wise name comparison to assess relative performance of specific algorithm.
+
+|                               | /Same set by ground truth/ | /Different sets by ground truth/ |
+|-------------------------------+----------------------------+----------------------------------|
+| /Same set by algorithm/       | True Positive (*TP*)       | False Positive (*FP*)            |
+| /Different sets by algorithm/ | False Negative (*FN*)      | True Negative (*TN*)             |
+
+
+
+#+begin_latex
+\begin{equation}
+
+pair-wise precision = \frac{TP}{TP + FP}
+
+pair-wise recall = \frac{TP}{TP + FN}
+
+\end{equation}
+#+end_latex
+
 * Other relevant literature
 
 Balasubramanian, N., & Sivadasan, J. (2010). /NBER Patent Data-BR Bridge: User Guide and Technical Documentation/ (SSRN Scholarly Paper No. ID 1695013). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=1695013
@@ -161,7 +184,8 @@ Winkler, W. E. (2006). /Overview of record linkage and current research directio
   howpublished = {\url{https://github.com/stasvlasov/harmonizer}},
   commit = {5fc35d74c0f8e0421845029d4da2f050f352edbb}
 }
-#+end_src 
+#+end_src
+
 * Local Variables                                                   :exclude:
 
 Set local variables for tangling tables into .rds files and adding them to R/sysdata.rda
