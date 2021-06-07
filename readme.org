@@ -128,15 +128,11 @@ Knowing ground truth whether any two text strings that represents organizational
 | /Same set by algorithm/       | True Positive (*TP*)       | False Positive (*FP*)            |
 | /Different sets by algorithm/ | False Negative (*FN*)      | True Negative (*TN*)             |
 
-#+begin_latex
-\begin{equation}
 
-pair-wise precision = \frac{TP}{TP + FP}
+$pair-wise precision = \frac{TP}{TP + FP}$
 
-pair-wise recall = \frac{TP}{TP + FN}
+$pair-wise recall = \frac{TP}{TP + FN}$
 
-\end{equation}
-#+end_latex
 
 * Other relevant literature
 
