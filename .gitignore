@@ -6,6 +6,9 @@
 .RData
 .Rprofile
 
+# logs
+.log/
+
 # my files
 *.project.org
 harmonizer.notes.org
