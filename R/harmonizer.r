@@ -1,4 +1,4 @@
-## -------->> [[id:org:g5wa69d1ffi0][Add package documentation:1]]
+## -------->>  [[id:org:g5wa69d1ffi0][Add package documentation:1]]
 #' @details
 #' Harmonizer package standardizes (harmonizes) organizational names
 #'     mainly using procedures described in Thoma et al. (2010) and
@@ -620,7 +620,7 @@ harmonize.x.get.col <- function(x, col) {
         harmonize.defactor(x[[col]])
 }
 
-                                        # binds to existing table
+## binds to existing table
 harmonize.x.inset <- function(env = parent.frame()) {
     evalq({
         ## inset filtered rows (this makes list if inset.vector is list)
