@@ -11,7 +11,7 @@
 
 # my files
 *.project.org
-harmonizer.notes.org
+*.notes.org
 materials/
 inst/
 data/
