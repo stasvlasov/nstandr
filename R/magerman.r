@@ -22,10 +22,6 @@ magerman.detect.characters <- function(x
                  , codes.name = codes.name
                  , ...)
 }
-
-## Test
-## "Chip &AMP; Dayle (lala) [0x2345] {abs} ops html <br>" %>% 
-##   magerman.detect.characters
 ## --------<<  Characters:1 ends here
 
 
@@ -494,10 +490,10 @@ magerman.remove.legal.form <- function(x) {
     , x.col.update = TRUE) %>% 
     magerman.replace.legal.form.middle(
       x.rows = harmonize.is.empty(.[[ncol(.)]])
-    , x.col.update = TRUE
+    , x.col.updharmonize_is_empty
       ## drop last col "not.to.replace"
     , return.x.cols = -ncol(.))
-    }
+    }harmonize_is_empty
 
 
 

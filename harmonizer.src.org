@@ -10,7 +10,7 @@
 :PROPERTIES:
 :ID:       org:id2dzmx01ei0
 :END:
-#+BEGIN_SRC R
+#+BEGIN_SRC R :tangle no
   ## --------------------------------------------------------------------------------
   ## First load default packages getOption("defaultPackages")
   ## Otherwise it will add it at the end which can mask some funcitons
@@ -42,7 +42,7 @@
 :ID:       org:qa7ezmx01ei0
 :END:
 
-#+BEGIN_SRC R
+#+BEGIN_SRC R :tangle no
   ## --------------------------------------------------------------------------------
   ## Load My pakcages
   ## --------------------------------------------------------------------------------
@@ -338,7 +338,7 @@ For this package development I use Emacs' org-mode that allows literate programm
   ##' @return logical vector of the same length
   ##' @import magrittr
   ##' @export
-  harmonize.is.empty <- function(xs) {
+  harmonize_is_empty <- function(xs) {
     lapply(xs, function(x) {
       ifelse(length(x) == 0, TRUE, all(x == "" | is.na(x)))
     }) %>%
@@ -350,19 +350,22 @@ For this package development I use Emacs' org-mode that allows literate programm
   ##' @param x vector
   ##' @return updated vector with empty elements removed
   ##' @export
-  harmonize.empty.omit <- function(x) {
-    x[!sapply(harmonize.is.empty(x), isTRUE)]
+  harmonize_empty_omit <- function(x) {
+    x[!sapply(harmonize_is_empty(x), isTRUE)]
   }
 
 
 
   ## eval things if x empty otherwise return x
-  harmonize.eval.if.empty <- function(x, ..., env = parent.frame()) {
-    if(harmonize.is.empty(x))
+  harmonize_eval_if_empty <- function(x, ..., env = parent.frame()) {
+    if(harmonize_is_empty(x))
       eval(..., envir = env)
     else x
   }
+#+END_SRC
 
+
+#+BEGIN_SRC R :tangle tests/testthat/harmonize_empty.tests.r
   ## list("INCORPORATED", NULL, NULL, NULL, NULL) %>% is.empty
   ## c(NA, "", 3,4, "wsd", NULL) %>% is.empty
 
@@ -373,14 +376,23 @@ For this package development I use Emacs' org-mode that allows literate programm
   ##   a <- 5
   ##   harmonize.if.empty("", a)
   ## })()
+
 #+END_SRC
 
+#+BEGIN_SRC R :tangle no
+  ## list("INCORPORATED", NULL, NULL, NULL, NULL) %>% is.empty
+  ## c(NA, "", 3,4, "wsd", NULL) %>% is.empty
 
-#+BEGIN_SRC R :tangle tests/testthat/harmonize_empty.tests.r
-  
+  ## test
+  ## list("INCORPORATED", NULL, NULL, NULL, NULL) %>% empty.omit
 
-  
+  ## (function() {
+  ##   a <- 5
+  ##   harmonize.if.empty("", a)
+  ## })()
+
 #+END_SRC
+
 
 
 
@@ -396,14 +408,7 @@ For this package development I use Emacs' org-mode that allows literate programm
   ##'
   ##' @import stringr
   ##' @export
-  harmonize.escape.regex <- function(string) str_replace_all(string, "(\\W)", "\\\\\\1")
-
-
-  ## alternative:
-  ## escape.regex  <- function (string) {
-  ##   gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", string)
-  ## }
-
+  harmonize_escape_regex <- function(string) str_replace_all(string, "(\\W)", "\\\\\\1")
 
   ##' Escapes special for different types of pattern
   ##' @param string character vector
@@ -416,7 +421,7 @@ For this package development I use Emacs' org-mode that allows literate programm
   ##'     ("trim.exact")
   ##' @import stringr
   ##' @export
-  harmonize.escape.type <- function(string
+  harmonize_escape_type <- function(string
                                   , type = c("fixed"
                                            , "begins"
                                            , "begins.trimmed"
@@ -430,21 +435,21 @@ For this package development I use Emacs' org-mode that allows literate programm
       if(type == "regex")
           string
       else if(type == "fixed")
-          if(all.regex) harmonize.escape.regex(string)
+          if(all.regex) harmonize_escape_regex(string)
           else string
       else if(type == "begins")
-          paste0("^", harmonize.escape.regex(string))
+          paste0("^", harmonize_escape_regex(string))
       else if(type == "begins.trimmed")
-          paste0("^\\s*", harmonize.escape.regex(string))
+          paste0("^\\s*", harmonize_escape_regex(string))
       else if(type == "ends")
-          paste0(harmonize.escape.regex(string), "$")
+          paste0(harmonize_escape_regex(string), "$")
       else if(type == "ends.trimmed")
-          paste0(harmonize.escape.regex(string), "\\s*$")
+          paste0(harmonize_escape_regex(string), "\\s*$")
       else if(type == "exact")
-          if(all.regex) paste0("^", harmonize.escape.regex(string), "$")
+          if(all.regex) paste0("^", harmonize_escape_regex(string), "$")
           else string
       else if(type == "exact.trimmed")
-          if(all.regex)  paste0("^\\s*", harmonize.escape.regex(string), "\\s*$")
+          if(all.regex)  paste0("^\\s*", harmonize_escape_regex(string), "\\s*$")
           else str_trim(string)
   }
 
@@ -455,29 +460,39 @@ For this package development I use Emacs' org-mode that allows literate programm
   ##' @return string with all special to regex characters escaped
   ##'
   ##' @import stringr
-  harmonize.escape.types <- function(patterns, conds, all.regex = FALSE) {
+  harmonize_escape_types <- function(patterns, conds, all.regex = FALSE) {
       if(length(conds) == 1 || length(unique(conds)) == 1) {
           conds %<>% extract(1)
-          harmonize.escape.type(patterns, conds, all.regex = all.regex)
+          harmonize_escape_type(patterns, conds, all.regex = all.regex)
       }
       else if(length(conds) == length(patterns))
           mapply(function(pattern, cond) {
-              harmonize.escape.type(pattern, cond)
+              harmonize_escape_type(pattern, cond)
           }
         , patterns
         , conds
         , SIMPLIFY = TRUE)
       else stop("patterns.type misspecified - wrong length!")
   }
-
-  ## Test escape.regex.cond
-  ## c("MSlab$", "TriloBit.?", "(^0-3)", "Ltd.", "lalala") %>%
-  ##   harmonize.escape.types(c("regex", "fixed", "regex", "ends", "trim.exact"))
-
-  ## c("MSlab$", "TriloBit.?", "(^0-3)", "Ltd.", "lalala") %>%
-  ##   harmonize.escape.types(c("regex", "fixed", "regex", "ends", "trim.exact")
-  ##                               , all.regex = FALSE)
 #+END_SRC
+
+
+#+name: 
+#+BEGIN_SRC R
+    ## alternative:
+  ## escape.regex  <- function (string) {
+  ##   gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", string)
+  ## }  
+  
+  ## Test escape.regex.cond
+    ## c("MSlab$", "TriloBit.?", "(^0-3)", "Ltd.", "lalala") %>%
+    ##   harmonize.escape.types(c("regex", "fixed", "regex", "ends", "trim.exact"))
+    
+    ## c("MSlab$", "TriloBit.?", "(^0-3)", "Ltd.", "lalala") %>%
+    ##   harmonize.escape.types(c("regex", "fixed", "regex", "ends", "trim.exact")
+    ##                               , all.regex = FALSE)
+#+END_SRC
+
 
 *** harmonize.add.suffix
 :PROPERTIES:
@@ -490,7 +505,7 @@ For this package development I use Emacs' org-mode that allows literate programm
   ##' @param suffix Suffix
   ##' @param x.names Vector of variable names in x to check for duplicates and if we need to add a counter at the end
   ##' @import magrittr stringr
-  ##' 
+  ##'
   ##' @return Returns a new name
   harmonize.add.suffix <- function(name, suffix, x.names
                                  , search.suffix.in.name = TRUE
@@ -502,7 +517,7 @@ For this package development I use Emacs' org-mode that allows literate programm
                  else name
     name.with.suffix <- paste0(name.base, ".", suffix)
     name.with.suffix.regex.nbr <-
-      paste0("(?<=", harmonize.escape.regex(name.with.suffix), "\\.)", "\\d+$")
+      paste0("(?<=", harmonize_escape_regex(name.with.suffix), "\\.)", "\\d+$")
     suffix.nbr.init <- if(name.with.suffix %in% x.names)
                          suffix.nbr.init - 1
                        else NULL
@@ -520,8 +535,10 @@ For this package development I use Emacs' org-mode that allows literate programm
       name.with.suffix %>%
         paste0(".", suffix.nbr)
   }
+#+END_SRC
 
-
+#+name: 
+#+BEGIN_SRC R
   ## testing
   ## harmonize.add.suffix("x.pro.11", "pro"
   ##                    ## , c("x", "x.pro.20", "foo" , "x.pro.0", "x.pro.3", "var")
@@ -529,6 +546,7 @@ For this package development I use Emacs' org-mode that allows literate programm
   ##                    ## , c("x", "foo" , "x", "var")
   ##                      )
 #+END_SRC
+
 *** harmonize.defactor
 :PROPERTIES:
 :ID:       org:x3j0f8s0lei0
@@ -554,8 +572,6 @@ For this package development I use Emacs' org-mode that allows literate programm
     else x
   }
 
-  ## Test
-  ## factor(sample(c("a", "b", "b"), 20, replace = TRUE)) %>% harmonize.defactor.vector
 
   ##' Defactor the object
   ##' 
@@ -603,23 +619,27 @@ For this package development I use Emacs' org-mode that allows literate programm
 #+END_SRC
 
 #+BEGIN_SRC R :tangle no
+    ## Test
+  ## factor(sample(c("a", "b", "b"), 20, replace = TRUE)) %>% harmonize.defactor.vector
+
+  
   ## Tests
   data.frame(num = factor(sample(runif(5), 20, replace = TRUE))
            , let = factor(sample(c("a", "b", "b"), 20, replace = TRUE))) %>%
     harmonize.defactor
-
-
+  
+  
   list(c(1,2,3), 4,5,6,7) %>% 
     harmonize.defactor(conv2dt = "all.but.atomic")
-
-
+  
+  
   list(c(1,2,3), 4,5,6,7) %>% 
     harmonize.defactor(conv2dt = "only.table")
-
-
+  
+  
   c(c(1,2,3), 4,5,6,7) %>% 
     harmonize.defactor(conv2dt = "only.table")
-
+  
 #+END_SRC
 
 *** harmonize.is.ok
@@ -677,38 +697,6 @@ For this package development I use Emacs' org-mode that allows literate programm
     else stop("'", arg.name, "' should be ethier numeric or character.")
   }
 
-
-  ## ## test
-  ## test.col <- 2
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
-  ## test.col <- 4
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
-  ## test.col <- "drink"
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
-  ## test.col <- "food"
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
-  ## test.col <- NA
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
-  ## test.col <- NULL
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
-  ## test.col <- NULL
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
-  ## test.col <- c("nu", "coffee")
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
-  ## test.col <- c(1,2)
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
-  ## test.col <- c(1,3,0)
-  ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE)
-  ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE, several.ok = FALSE)
-  ## test.col <- -c(1,2)
-  ## test.col <- c(1,-2)
-  ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE)
-
-  ## test.col <- c(1,3)
-  ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE, ban.values = c(3,4,5))
-
-
-
   ##' Checks if object is valid type and length.
   ##' 
   ##' @param x Object to check.
@@ -755,28 +743,6 @@ For this package development I use Emacs' org-mode that allows literate programm
     stop(arg.name, " is type of ", class(x), " but should be one of ", type)
   }
 
-
-  ## test
-  ## test.arg <- FALSE
-  ## harmonize.is.ok.type(test.arg)
-  ## test.arg <- c(1,2,3,4,NA)
-  ## harmonize.is.ok.type(test.arg)
-  ## test.arg <- c(1,2,3,4,NA)
-  ## harmonize.is.ok.type(test.arg, type = "numeric")
-  ## test.arg <- c(T,T,F,T,NA)
-  ## harmonize.is.ok.type(test.arg)
-  ## test.arg <- c(NA, NA)
-  ## harmonize.is.ok.type(test.arg, type = "numeric")
-  ## test.arg <- NULL
-  ## harmonize.is.ok.type(test.arg, type = "numeric")
-  ## test.arg <- NA
-  ## harmonize.is.ok.type(test.arg)
-  ## test.arg <- list(1,2,3,NULL)
-  ## harmonize.is.ok.type(test.arg, type = "list")
-  ## test.arg <- list(1,2,3,NULL)
-  ## harmonize.is.ok.type(test.arg, type = c("list", "numeric"))
-
-
   ##' Checks if ... (dots) arguments are valid.
   ##' 
   ##' @param dots.names Character vector of names of ... (dots) arguments. Usually obtained with `names(as.list(...))`.
@@ -800,16 +766,77 @@ For this package development I use Emacs' org-mode that allows literate programm
           all(sapply(dots.names, is.in.formals))
       } else FALSE
   }
+#+END_SRC
+
+
+
+#+name: 
+#+BEGIN_SRC R
   ## ## test
+    ## test.col <- 2
+    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+    ## test.col <- 4
+    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+    ## test.col <- "drink"
+    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+    ## test.col <- "food"
+    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+    ## test.col <- NA
+    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+    ## test.col <- NULL
+    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+    ## test.col <- NULL
+    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
+    ## test.col <- c("nu", "coffee")
+    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
+    ## test.col <- c(1,2)
+    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
+    ## test.col <- c(1,3,0)
+    ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE)
+    ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE, several.ok = FALSE)
+    ## test.col <- -c(1,2)
+    ## test.col <- c(1,-2)
+    ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE)
+  
+    ## test.col <- c(1,3)
+    ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE, ban.values = c(3,4,5))
+  
+  
+  
+  
+    ## test
+  ## test.arg <- FALSE
+  ## harmonize.is.ok.type(test.arg)
+  ## test.arg <- c(1,2,3,4,NA)
+  ## harmonize.is.ok.type(test.arg)
+  ## test.arg <- c(1,2,3,4,NA)
+  ## harmonize.is.ok.type(test.arg, type = "numeric")
+  ## test.arg <- c(T,T,F,T,NA)
+  ## harmonize.is.ok.type(test.arg)
+  ## test.arg <- c(NA, NA)
+  ## harmonize.is.ok.type(test.arg, type = "numeric")
+  ## test.arg <- NULL
+  ## harmonize.is.ok.type(test.arg, type = "numeric")
+  ## test.arg <- NA
+  ## harmonize.is.ok.type(test.arg)
+  ## test.arg <- list(1,2,3,NULL)
+  ## harmonize.is.ok.type(test.arg, type = "list")
+  ## test.arg <- list(1,2,3,NULL)
+  ## harmonize.is.ok.type(test.arg, type = c("list", "numeric"))
+  
+  
+  
+  
+    ## ## test
   ## harmonize.is.ok.dots(names(list(x.col = 4, x.col.update = FALSE))
   ##                      , names(formals("harmonize.x"))[-c(1:2)] )
-
+  
   ## harmonize.is.ok.dots(names(list())
   ##                      , names(formals("harmonize.x"))[-c(1:2)] )
-
+  
   ## harmonize.is.ok.dots(c(NA, NA, 1)
   ##                      , names(formals("harmonize.x"))[-c(1:2)] )
-
+  
   ## harmonize.is.ok.dots(NULL
   ##                      , names(formals("harmonize.x"))[-c(1:2)] )
 #+END_SRC
@@ -980,7 +1007,7 @@ For this package development I use Emacs' org-mode that allows literate programm
             ## set harmonized name
             x.names <- if(is.atomic(x)) x.atomic.name else names(x)
             inset.name %<>%
-                harmonize.eval.if.empty(
+                harmonize_eval_if_empty(
                     harmonize.add.suffix(x.names[x.col]
                                        , inset.suffix
                                        , x.names[return.x.cols])) %>%
@@ -1540,27 +1567,32 @@ Test:
                 , each = by
                 , length.out = len))
    }
-
-  ## data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-   ##                   , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-   ##                   , "MSLab Co."
-   ##                   , "MSLaeb Comp."
-   ##                   , "MSLab Comp."
-   ##                   , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>%
-   ##              rep(50)
-   ##          , foo = "lalala" ) %>% 
-   ##   harmonize.x.split(10, nrow(.)) %>%
-   ##   sapply(class)
-
-   ## c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-   ## , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-   ## , "MSLab Co."
-   ## , "MSLaeb Comp."
-   ## , "MSLab Comp."
-   ## , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>%
-   ##   rep(50) %>% 
-   ##   harmonize.x.split(10, length(.))
 #+END_SRC
+
+
+  #+name: 
+#+BEGIN_SRC R
+    ## data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+       ##                   , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+       ##                   , "MSLab Co."
+       ##                   , "MSLaeb Comp."
+       ##                   , "MSLab Comp."
+       ##                   , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>%
+       ##              rep(50)
+       ##          , foo = "lalala" ) %>% 
+       ##   harmonize.x.split(10, nrow(.)) %>%
+       ##   sapply(class)
+    
+       ## c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+       ## , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+       ## , "MSLab Co."
+       ## , "MSLaeb Comp."
+       ## , "MSLab Comp."
+       ## , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>%
+       ##   rep(50) %>% 
+       ##   harmonize.x.split(10, length(.))
+#+END_SRC
+
 *** harmonize.squish.spaces
 :PROPERTIES:
 :ID:       org:dlp0f8s0lei0
@@ -1584,15 +1616,6 @@ Test:
       harmonize.x(x, ., ...) # put x.vector to x
   }
 
-
-  ## test
-  ## harmonize.squish.spaces("  String with trailing,  middle, and leading white space\t"
-  ##                        , wrap.in.spaces = TRUE)
-  ## harmonize.squish.spaces("\n\nString with excess,  trailing and leading white   space\n\n"
-  ##                         , wrap.in.spaces = FALSE)
-
-
-
   ## #' Removes redundant whitespases
   ## #' @param x table or vector
   ## #'
@@ -1611,14 +1634,24 @@ Test:
   ##      else stri_trim(., side = trim)} %>%
   ##     harmonize.x(x, ., ...) # put x.vector to x
   ## }
-
-
-  ## test
-  ## harmonize.clean.spaces("  String with trailing,  middle, and leading white space\t"
-  ##                        , trim = FALSE)
-  ## harmonize.clean.spaces("\n\nString with excess,  trailing and leading white   space\n\n")
 #+END_SRC
 
+
+  #+name: 
+#+BEGIN_SRC R
+    ## test
+      ## harmonize.squish.spaces("  String with trailing,  middle, and leading white space\t"
+      ##                        , wrap.in.spaces = TRUE)
+      ## harmonize.squish.spaces("\n\nString with excess,  trailing and leading white   space\n\n"
+      ##                         , wrap.in.spaces = FALSE)
+    
+    
+      ## test
+      ## harmonize.clean.spaces("  String with trailing,  middle, and leading white space\t"
+      ##                        , trim = FALSE)
+      ## harmonize.clean.spaces("\n\nString with excess,  trailing and leading white   space\n\n")
+      
+#+END_SRC
 *** harmonize.toupper
 :PROPERTIES:
 :ID:       org:xys0f8s0lei0
@@ -1640,7 +1673,11 @@ Test:
       toupper %>% 
       harmonize.x(x, ., ...)
   }
+#+END_SRC
 
+
+#+name: 
+#+BEGIN_SRC R
   ## Tests
   ## data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
   ##                   , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
@@ -1670,11 +1707,14 @@ Test:
       str_replace_all("<[^<>]*>|\\([^()]*\\)|\\{[^{}]*\\}|\\[[^\\[\\]]*\\]", "") %>%
       harmonize.x(x, ., ...)
   }
+#+END_SRC
 
 
-  ## test
-  ## remove.brackets breaks the encoding (so it is better to apply decoding first)
-  ## harmonize.remove.brackets("fa\xE7ile (lalala) lkj (sdfs) AAA [sdf]")
+  #+name: 
+#+BEGIN_SRC R
+    ## test
+      ## remove.brackets breaks the encoding (so it is better to apply decoding first)
+      ## harmonize.remove.brackets("fa\xE7ile (lalala) lkj (sdfs) AAA [sdf]")
 #+END_SRC
 
 *** harmonize.remove.quotes
@@ -1718,15 +1758,17 @@ Test:
       else x
     } else x
   }
-
-
-  ## Tests
-  ## c(1,2,3,4) %>% harmonize.unlist.column
-  ## list(c("a"), NULL, 3, "5", character(0)) %>% harmonize.unlist.column
-  ## list(c("a"), 3, "5") %>% harmonize.unlist.column
-  ## list(c("a", "b", "c"), NULL, 3, "5", character(0)) %>% harmonize.unlist.column
 #+END_SRC
 
+
+  #+name: 
+#+BEGIN_SRC R
+    ## Tests
+      ## c(1,2,3,4) %>% harmonize.unlist.column
+      ## list(c("a"), NULL, 3, "5", character(0)) %>% harmonize.unlist.column
+      ## list(c("a"), 3, "5") %>% harmonize.unlist.column
+      ## list(c("a", "b", "c"), NULL, 3, "5", character(0)) %>% harmonize.unlist.column
+#+END_SRC
 *** harmonize.dehtmlize
 :PROPERTIES:
 :ID:       org:4tffib50bci0
@@ -1769,15 +1811,19 @@ Test:
       harmonize.x(x, ., ...) %>%
       return()
   }
-
-
-  ## tests
-  ## set.seed(123)
-  ## c("abcd", "&amp; &apos; &gt;", "&amp;", "&euro; &lt;") %>% 
-  ##   sample(100, replace = TRUE) %>% 
-  ##   data.table("lala") %>%
-  ##   harmonize.dehtmlize
 #+END_SRC
+
+
+#+name: 
+#+BEGIN_SRC R
+  ## tests
+    ## set.seed(123)
+    ## c("abcd", "&amp; &apos; &gt;", "&amp;", "&euro; &lt;") %>% 
+    ##   sample(100, replace = TRUE) %>% 
+    ##   data.table("lala") %>%
+    ##   harmonize.dehtmlize
+#+END_SRC
+
 *** harmonize.detect.enc
 :PROPERTIES:
 :ID:       org:e2bfib50bci0
@@ -1815,18 +1861,20 @@ Test:
                      , harmonized.append = codes.append) %>% 
       return()
   }
+#+END_SRC
 
 
-
+#+name: 
+#+BEGIN_SRC R
   ## inheritDotParams harmonize.x -harmonized.suffix -harmonized.append
-
+  
   ## ## Test
   ## c("FAÇILE"
   ## , "fa\xE7ile"
   ## , "c\u00b5c\u00b5ber") %>%
   ##   harmonize.detect.enc(codes.append = FALSE
   ##                      , return.x.cols = 1)
-
+  
   ## c("FAÇILE"
   ## , "fa\xE7ile"
   ## , "c\u00b5c\u00b5ber") %>%
@@ -1838,11 +1886,6 @@ Test:
 :END:
 #+BEGIN_SRC R :tangle R/harmonizer.r
   #' Translates non-ascii symbols to its ascii equivalent
-  #'
-  #' It takes characters from this string:
-  #' ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ
-  #' And translates to this one
-  #' SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy
   #' 
   #' @param str String to translate
   #' @param detect.encoding Detect encoding of individual elements
@@ -1875,18 +1918,28 @@ Test:
          iconv(to = "ASCII", sub = "")} %>%
       harmonize.x(x, ., ...)
   }
+#+END_SRC
 
 
-  ## Test
-  ## harmonize.detect.enc(c("FAÇILE"
-  ##         , "fa\xE7ile"
-  ##         , "c\u00b5c\u00b5ber"))
 
-  ## c("FAÇILE"
-  ## , "fa\xE7ile"
-  ## , "c\u00b5c\u00b5ber") %>%
-  ##   data.table("coffee") %>% 
-  ## harmonize.toascii(detect.encoding = TRUE)
+#+name: 
+#+BEGIN_SRC R
+    #'
+      #' It takes characters from this string:
+      #' ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ
+      #' And translates to this one
+      #' SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy
+    
+      ## Test
+      ## harmonize.detect.enc(c("FAÇILE"
+      ##         , "fa\xE7ile"
+      ##         , "c\u00b5c\u00b5ber"))
+    
+      ## c("FAÇILE"
+      ## , "fa\xE7ile"
+      ## , "c\u00b5c\u00b5ber") %>%
+      ##   data.table("coffee") %>% 
+      ## harmonize.toascii(detect.encoding = TRUE)
 #+END_SRC
 
 **** ASCII equivalents table
@@ -1967,7 +2020,6 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 | ÿ   | y     |
 
 #+call: make-rds-patterns-table(data = harmonizer.patterns.ascii, data.name = "harmonizer.patterns.ascii")
-
 *** harmonize.match.arg
 :PROPERTIES:
 :ID:       org:g18cg5z0nmi0
@@ -2028,10 +2080,9 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   }
 #+END_SRC
 
-#+RESULTS:
+
 
 Tests:
-
 
 #+BEGIN_SRC R :tangle no
     ## testing harmonize.match.arg
@@ -2182,7 +2233,7 @@ Tests:
   harmonize.replace..do <- function(env = parent.frame()) {
     evalq({
       ## make patterns.vector excaped according to types.vector
-      patterns.vector %<>% harmonize.escape.types(types.vector)
+      patterns.vector %<>% harmonize_escape_types(types.vector)
       ## conditions are organized from fastest to slowest replace procedures
       if(all(types.vector == "exact") || all(types.vector == "exact.trimmed")) {
         x.vector %>% 
@@ -2586,7 +2637,7 @@ Tests:
           }
           ## set x.rows.codes.update for dots.and("x.rows")
           if(x.codes.update.empty) {
-              x.rows.codes.update <- harmonize.is.empty(x[[x.codes.col]])
+              x.rows.codes.update <- harmonize_is_empty(x[[x.codes.col]])
               x.codes.merge <- FALSE # nothing to merge with if codes are empty
           }
           ## - check return.only.codes
@@ -2610,7 +2661,7 @@ Tests:
   harmonize.detect..get.patterns.vector <- function(env = parent.frame()) {
     evalq({
           harmonize.x(patterns, x.col = patterns.col) %>% 
-              harmonize.escape.types(patterns.type.vector, all.regex = FALSE)
+              harmonize_escape_types(patterns.type.vector, all.regex = FALSE)
       }, envir = env)
   }
 
@@ -2663,7 +2714,7 @@ Tests:
             ## transpose list of vectors
             {do.call(Map, c(list(c), .))} %>% 
             ## remove empty codes
-            lapply(harmonize.empty.omit) %>%
+            lapply(harmonize_empty_omit) %>%
             ## check if only first detected code is needed
             {if(return.only.first.detected.code) lapply(.,extract, 1) else .} %>% 
             ## check if we need to merge
@@ -2673,7 +2724,7 @@ Tests:
                  Map(c, ., x.codes.vector)
              else .} %>% 
             ## remove empty codes
-            lapply(harmonize.empty.omit) %>%
+            lapply(harmonize_empty_omit) %>%
             harmonize.unlist.column
       }, envir = env)
   }
@@ -2914,7 +2965,7 @@ The default procedures ~harmonizer.default.procedures.table~ are difined in [[re
         extract(-c(1, which(names(.) == "progress")))
       ## get procedure names
       procedure.name <- names(procedures)[p] %>%
-          {if(harmonize.is.empty(.) | !progress.message.use.names)
+          {if(harmonize_is_empty(.) | !progress.message.use.names)
                procedure.fun
            else .}
       ## Anounce Procedure Name
@@ -2966,14 +3017,16 @@ The default procedures ~harmonizer.default.procedures.table~ are difined in [[re
       else x %>% rbindlist
     } else x
   }
+#+END_SRC
 
-
+#+name: 
+#+BEGIN_SRC R
   ## tests
   ## dummy <- function(x, n) {
   ##   for(i in 1:n) x <- sqrt(x)^2
   ##   return(x)
   ## }
-
+  
   ## list("Squaring stuff" = "sqrt"
   ##     ,list("abs", progress = FALSE)
   ##     ,list("log", base = 10)
@@ -3038,9 +3091,14 @@ The function below can be used to detect candidates for characters that need to 
                      , ...)
     }
 
-    ## Test
-    ## "Chip &AMP; Dayle (lala) [0x2345] {abs} ops html <br>" %>% 
-    ##   magerman.detect.characters
+#+END_SRC
+
+
+#+name: 
+#+BEGIN_SRC R
+  ## Test
+  ## "Chip &AMP; Dayle (lala) [0x2345] {abs} ops html <br>" %>% 
+  ##   magerman.detect.characters
 #+END_SRC
 
 *** magerman.remove.html.codes
