@@ -510,11 +510,11 @@ magerman_remove_legal_form <- function(x) {
         magerman_detect_legal_form_end(codes.name = "not.to.replace") %>%
         magerman_replace_legal_form_end() %>%
         magerman_replace_legal_form_beginning(
-            x.rows = harmonize_is_empty(.[[ncol(.)]]),
+            x.rows = harmonize_is_data_empty(.[[ncol(.)]]),
             x.col.update = TRUE
         ) %>%
         magerman_replace_legal_form_middle(
-            x.rows = harmonize_is_empty(.[[ncol(.)]]),
+            x.rows = harmonize_is_data_empty(.[[ncol(.)]]),
             x.col.update = TRUE
             ## drop last col "not.to.replace"
             , return.x.cols = -ncol(.)
@@ -829,3 +829,5 @@ harmonize_magerman <- function(x,
     harmonize(x, magerman.procedures, ...)
 }
 ## --------<<  Combined Magerman Procedures:2 ends here
+
+

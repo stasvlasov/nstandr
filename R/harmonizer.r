@@ -14,36 +14,36 @@
 ## -------->>  [[id:org:rixkspb0wei0][harmonize.x.length and width:1]]
 ##' Gets lengths of the object
 ##'
-##' @param x object (table)
-##' @return Width (nrow) of the object. If it is atomic it returns its length.
+##' @param data input data (table)
+##' @return Length (`nrow`) of the object. If it is atomic it returns its length.
 ##' @export
-harmonize_x_length <- function(x) {
-   if (is.atomic(x)) length(x) else nrow(x)
+harmonize_data_length <- function(data) {
+   if (is.atomic(data)) length(data) else nrow(data)
 }
 
 ##' Gets width of the object
 ##'
-##' @param x object (table)
+##' @param data object (table)
 ##' @return Width (ncol) of the object. If it is atomic it is 1.
 ##' @export
-harmonize_x_width <- function(x) {
-   if(is.atomic(x)) 1 else ncol(x)
+harmonize_data_width <- function(data) {
+   if (is.atomic(data)) 1 else ncol(data)
 }
 ## --------<<  harmonize.x.length and width:1 ends here
 
 
 
 ## -------->>  [[id:org:3971f8s0lei0][harmonize.empty:1]]
-##' Checks if elements that are either "", NA, NULL or have zero length
-##' @param xs vector
+##' Checks if all elements in vercor(s) are either "", NA, NULL or have zero length
+##' @param data input data to check each vector
 ##' @return logical vector of the same length
-##' @import magrittr
 ##' @export
-harmonize_is_empty <- function(xs) {
-  lapply(xs, function(x) {
-    ifelse(length(x) == 0, TRUE, all(x == "" | is.na(x)))
-  }) %>%
-    unlist(recursive = FALSE)
+harmonize_is_data_empty <- function(data) {
+    data_list_checks <-
+        lapply(data, function(x) {
+            if (length(x) == 0) TRUE else all(x == "" | is.na(x))
+        })
+    unlist(data_list_checks, recursive = FALSE)
 }
 
 
@@ -51,15 +51,15 @@ harmonize_is_empty <- function(xs) {
 ##' @param x vector
 ##' @return updated vector with empty elements removed
 ##' @export
-harmonize_empty_omit <- function(x) {
-  x[!sapply(harmonize_is_empty(x), isTRUE)]
+harmonize_omit_empty <- function(x) {
+  x[!sapply(harmonize_is_data_empty(x), isTRUE)]
 }
 
 
 
 ## eval things if x empty otherwise return x
 harmonize_eval_if_empty <- function(x, ..., env = parent.frame()) {
-  if(harmonize_is_empty(x))
+  if(harmonize_is_data_empty(x))
     eval(..., envir = env)
   else x
 }
@@ -296,7 +296,7 @@ harmonize.is.ok.col <- function(col, x
   else if(is.numeric(col) & !is.na(col))
     if(!allow.negative & col < 0) stop("'", arg.name, "' can not be negartive number or mixed.")
     else if(allow.zero & col == 0) TRUE
-    else if(abs(col) %in% 1:harmonize_x_width(x)) TRUE
+    else if(abs(col) %in% 1:harmonize_data_width(x)) TRUE
     else stop("'", arg.name, "' number is out of range. Check ncol(x).")
   else if(is.character(col))
     if(col %in% x.names) TRUE
@@ -438,7 +438,7 @@ harmonize.x.check.args <- function(env = parent.frame()) {
       x.col %<>% ifelse(is.numeric(.), ., match(., names(x)))
     }
     ## - check x.rows
-    if(!harmonize.is.ok.type(x.rows, harmonize_x_length(x), type = "logical")) {
+    if(!harmonize.is.ok.type(x.rows, harmonize_data_length(x), type = "logical")) {
       x.rows <- TRUE  # select all if x.rows NULL 
     }
   }, envir = env)
@@ -449,16 +449,16 @@ harmonize.x.inset.check.args <- function(env = parent.frame()) {
     evalq({
         ## - check inset.vector
         harmonize.is.ok.type(inset.vector
-                           , x.length = if(isTRUE(x.rows)) harmonize_x_length(x)
+                           , x.length = if(isTRUE(x.rows)) harmonize_data_length(x)
                                         else sum(x.rows)
                            , type = c("atomic", "list"))
         ## - check inset.omitted.val
         if(!harmonize.is.ok.type(inset.omitted.val
-                               , x.length = c(1, harmonize_x_length(x))
+                               , x.length = c(1, harmonize_data_length(x))
                                , type = "atomic")) {
             inset.omitted.val <- harmonize.x.get.col(x, x.col)
         } else if(length(inset.omitted.val) == 1) {
-            inset.omitted.val %<>% harmonize.defactor %>% rep(harmonize_x_length(x))
+            inset.omitted.val %<>% harmonize.defactor %>% rep(harmonize_data_length(x))
         } else {
             inset.omitted.val %<>% harmonize.defactor
         }
@@ -469,7 +469,7 @@ harmonize.x.inset.check.args <- function(env = parent.frame()) {
         ## then respect return.x.cols
         if(return.x.cols.all && (!missing(return.x.cols.all) || missing(return.x.cols)))
             ## set return.x.cols to all
-            return.x.cols <- 1:harmonize_x_width(x)
+            return.x.cols <- 1:harmonize_data_width(x)
         else if(harmonize.is.ok.col(return.x.cols, x
                                   , allow.negative = TRUE
                                   , several.ok = TRUE))
@@ -512,6 +512,23 @@ harmonize.x.get <- function(env = parent.frame()) {
             extract(x.rows)
     }, envir = env)
 }
+
+
+
+##' Gets a target vector to harmonize.
+##'
+##' @param data Input data. Can be vector, data.frame or a data.table
+##' @param target_col Column of interest in the input `data`. The vector we would like to work with. This parameter is ignored if input `data` is a vector (checked by `is.atomic`)
+##'
+##' @return A vector. Factors in imput `data` are converted to string.
+##'
+##' @md
+harmonize_target_get <- function(data,
+                                 target_col,
+                                 target_rows) {
+    harmonize.x.get.col(data, target_col)[target_rows]
+}
+
 
 harmonize.x.get.col <- function(x, col) {
     if(is.atomic(x))
@@ -1198,7 +1215,7 @@ harmonize.detect <- function(x
                            , return.only.first.detected.code = FALSE
                            , ...) {
     ## set x.rows.codes.update for dots.and("x.rows")
-    x.rows.codes.update <- rep(TRUE, harmonize_x_length(x)) # by defaults updates all codes
+    x.rows.codes.update <- rep(TRUE, harmonize_data_length(x)) # by defaults updates all codes
     harmonize.detect..check.args()                           # also sets x.rows.codes.update
     ## --------------------------------------------------------------------------------
     x.vector <- harmonize.x(x, x.rows = dots.and("x.rows", x.rows.codes.update))
@@ -1227,7 +1244,7 @@ harmonize.detect <- function(x
                    , inset.append = dots.default("inset.append", !codes.prepend)
                    , return.x.cols = if(return.only.codes) NULL
                                      else dots.default("return.x.cols"
-                                                     , 1:harmonize_x_width(x)))
+                                                     , 1:harmonize_data_width(x)))
 }
 
 harmonize.detect..check.args <- function(env = parent.frame()) {
@@ -1256,7 +1273,7 @@ harmonize.detect..check.args <- function(env = parent.frame()) {
             if(missing(codes.omitted.val)) codes.omitted.val <- NULL
         } else if(x.codes.merge | x.codes.update.empty) {
             ## set x.codes.col as last one
-            x.codes.col <- harmonize_x_width(x)
+            x.codes.col <- harmonize_data_width(x)
             ## check codes.names just in case
             harmonize.is.ok.type(codes.name, x.length = 1
                                , type = "character"
@@ -1275,11 +1292,11 @@ harmonize.detect..check.args <- function(env = parent.frame()) {
             }
         } else {
             ## set x.codes.col as last one anyway
-            x.codes.col <- harmonize_x_width(x)
+            x.codes.col <- harmonize_data_width(x)
         }
         ## set x.rows.codes.update for dots.and("x.rows")
         if(x.codes.update.empty) {
-            x.rows.codes.update <- harmonize_is_empty(x[[x.codes.col]])
+            x.rows.codes.update <- harmonize_is_data_empty(x[[x.codes.col]])
             x.codes.merge <- FALSE # nothing to merge with if codes are empty
         }
         ## - check return.only.codes
@@ -1311,10 +1328,10 @@ harmonize.detect..get.codes.vector <- function(env = parent.frame()) {
     evalq({
         if(patterns.as.codes) patterns.vector
         else if(harmonize.is.ok.type(codes
-                                   , x.length = c(1, harmonize_x_length(patterns))
+                                   , x.length = c(1, harmonize_data_length(patterns))
                                    , type = "atomic")) {
             if(length(codes) == 1)    
-                rep(harmonize.defactor(codes), harmonize_x_length(patterns))
+                rep(harmonize.defactor(codes), harmonize_data_length(patterns))
             else harmonize.defactor(codes)
         }
         else if(harmonize.is.ok.col(patterns.codes.col, patterns))
@@ -1356,7 +1373,7 @@ harmonize.detect..do.vector <- function(env = parent.frame()) {
           ## transpose list of vectors
           {do.call(Map, c(list(c), .))} %>% 
           ## remove empty codes
-          lapply(harmonize_empty_omit) %>%
+          lapply(harmonize_omit_empty) %>%
           ## check if only first detected code is needed
           {if(return.only.first.detected.code) lapply(.,extract, 1) else .} %>% 
           ## check if we need to merge
@@ -1366,7 +1383,7 @@ harmonize.detect..do.vector <- function(env = parent.frame()) {
                Map(c, ., x.codes.vector)
            else .} %>% 
           ## remove empty codes
-          lapply(harmonize_empty_omit) %>%
+          lapply(harmonize_omit_empty) %>%
           harmonize.unlist.column
     }, envir = env)
 }
@@ -1448,7 +1465,7 @@ harmonize <- function(x
       extract(-c(1, which(names(.) == "progress")))
     ## get procedure names
     procedure.name <- names(procedures)[p] %>%
-        {if(harmonize_is_empty(.) | !progress.message.use.names)
+        {if(harmonize_is_data_empty(.) | !progress.message.use.names)
              procedure.fun
          else .}
     ## Anounce Procedure Name
