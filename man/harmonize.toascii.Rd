@@ -29,8 +29,5 @@ harmonize.toascii(x, detect.encoding = FALSE, ...)
 \item{str}{String to translate}
 }
 \description{
-It takes characters from this string:
-ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ
-And translates to this one
-SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy
+Translates non-ascii symbols to its ascii equivalent
 }

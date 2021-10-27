@@ -6,8 +6,7 @@
 \alias{harmonizer-package}
 \title{harmonizer: Harmonization of Organizational Names}
 \description{
-Harmonizes organizational names using steps described in
-    Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more.
+Harmonizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more.
 }
 \details{
 Harmonizer package standardizes (harmonizes) organizational names

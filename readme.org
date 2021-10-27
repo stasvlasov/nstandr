@@ -80,25 +80,7 @@ Harmonization procedures are flexible and can be specified with setting ~procedu
 
 #+END_SRC
 
-The default harmonization procedures are the following (for now):
-
-#+NAME: harmonizer.default.procedures.table
-| no | message                            | function.call                                    |
-|----+------------------------------------+--------------------------------------------------|
-|    | *Prepossessing*                    |                                                  |
-|  1 | Cleaning spaces                    | 'harmonize.squish.spaces', wrap.in.spaces = TRUE |
-|    |                                    |                                                  |
-|    | *Characters*                       |                                                  |
-|  2 | Removing HTML codes                | 'harmonize.dehtmlize'                            |
-|  3 | Translating non-ASCII to ASCII     | 'harmonize.toascii'                              |
-|  4 | Upper casing                       | 'harmonize.toupper'                              |
-|    |                                    |                                                  |
-|    | *Cleaning*                         |                                                  |
-|  5 | Standardizing organizational names | 'cockburn.replace.punctuation'                   |
-|  6 | Removing brackets                  | 'harmonize.remove.brackets'                      |
-|  7 | Cleaning spaces                    | 'harmonize.squish.spaces'                        |
-
-#+call: make-rds-patterns-table(data = harmonizer.default.procedures.table, data.name = "harmonizer.default.procedures.table", remove.single.quotes = "FALSE", data.dir = "data", add.to.rda = "R/sysdata.rda")
+The default harmonization procedures are described in the literate [[file:harmonizer.src.org::*harmonize][source file]].
 
 ** Displaying harmonization progress
 Useful for big data tables. The option ~progress.by~ tells how often to update the progress. (If you have 10^7 records it is recommended to set ~progress.by~ as 10^5 or more.) Setting this option will slow the harmonization down a little.

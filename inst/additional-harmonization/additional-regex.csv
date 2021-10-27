@@ -1,8 +1,0 @@
-"\s+E\s+C$", " & CO "
-"\s+&\s+C$", " & CO "
-"\s+S\s*R\s*L$", " SRL "
-"\s+S\s*P\s+A$", " SPA "
-"\s+S\s*A$", " SA "
-"\s+A\s*S$", " AS "
-"\s+P\s*L\s+C$", " PLC "
-"\s+L\s*L\s+C$", " LLC "
