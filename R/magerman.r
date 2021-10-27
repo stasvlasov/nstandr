@@ -699,7 +699,7 @@ magerman_detect_umlaut <- function(x, ...) {
 
 
 ##' Replaces Umlauts
-##' @param x
+##' @param x Data
 ##' @param x.umlaut.col Column with logical values indicating weather a corresponding string has an umlaut. Default is NULL so it detects is automatically first
 ##' @param drop.umlaut.col Whether to drop `umlaut.col`. Default is FALSE
 ##' @param replace.accented.characters Whether to replace accented characters first. Default is FALSE

@@ -220,7 +220,7 @@ harmonize.defactor.vector <- function(x, check.numeric = TRUE) {
 ##' @import tibble data.table
 ##' 
 ##' @export
-harmonize.defactor <- function(x
+harmonize_defactor <- function(x
                              , conv2dt = c("only.tables"
                                             , "all.but.atomic"
                                             , "all.but.lists"
@@ -234,9 +234,9 @@ harmonize.defactor <- function(x
       data.table(harmonize.defactor.vector(x, ...))
   } else if(class(x)[1] == "list")
     if((conv2dt %in% c("only.tables", "all.but.lists", "none")))
-      lapply(x, harmonize.defactor, conv2dt = "none", ...)
+      lapply(x, harmonize_defactor, conv2dt = "none", ...)
     else
-      data.table(lapply(x, harmonize.defactor, conv2dt = "none", ...))
+      data.table(lapply(x, harmonize_defactor, conv2dt = "none", ...))
   else if(conv2dt != "none")
     as.data.table(lapply(x, harmonize.defactor.vector, ...))
   else if(is.matrix(x))
@@ -456,11 +456,11 @@ harmonize.x.inset.check.args <- function(env = parent.frame()) {
         if(!harmonize.is.ok.type(inset.omitted.val
                                , x.length = c(1, harmonize_data_length(x))
                                , type = "atomic")) {
-            inset.omitted.val <- harmonize.x.get.col(x, x.col)
+            inset.omitted.val <- harmonize_data_get_col(x, x.col)
         } else if(length(inset.omitted.val) == 1) {
-            inset.omitted.val %<>% harmonize.defactor %>% rep(harmonize_data_length(x))
+            inset.omitted.val %<>% harmonize_defactor %>% rep(harmonize_data_length(x))
         } else {
-            inset.omitted.val %<>% harmonize.defactor
+            inset.omitted.val %<>% harmonize_defactor
         }
         ## - check return.x.cols
         harmonize.is.ok.type(return.x.cols.all)
@@ -508,7 +508,7 @@ harmonize.x.inset.check.args <- function(env = parent.frame()) {
 harmonize.x.get <- function(env = parent.frame()) {
     evalq({
         x %>%
-            harmonize.x.get.col(x.col) %>% 
+            harmonize_data_get_col(x.col) %>% 
             extract(x.rows)
     }, envir = env)
 }
@@ -526,15 +526,15 @@ harmonize.x.get <- function(env = parent.frame()) {
 harmonize_target_get <- function(data,
                                  target_col,
                                  target_rows) {
-    harmonize.x.get.col(data, target_col)[target_rows]
+    harmonize_data_get_col(data, target_col)[target_rows]
 }
 
 
-harmonize.x.get.col <- function(x, col) {
+harmonize_data_get_col <- function(x, col) {
     if(is.atomic(x))
-        harmonize.defactor(x)
+        harmonize_defactor(x)
     else
-        harmonize.defactor(x[[col]])
+        harmonize_defactor(x[[col]])
 }
 
 ## binds to existing table
@@ -547,7 +547,7 @@ harmonize.x.inset <- function(env = parent.frame()) {
             inset.vector
         } else if(x.col.update) {
             x %>%
-              harmonize.defactor(conv2dt = "all") %>% 
+              harmonize_defactor(conv2dt = "all") %>% 
               inset2(x.col, value = inset.vector) %>% 
               extract(., ,return.x.cols, with = FALSE)
         } else if(isTRUE(return.x.cols == 0)) {
@@ -562,7 +562,7 @@ harmonize.x.inset <- function(env = parent.frame()) {
                                      , x.names[return.x.cols])) %>%
               make.names
           ## (pre)append inset.vector to x
-          x %<>% harmonize.defactor(conv2dt = "all") # returns data.table
+          x %<>% harmonize_defactor(conv2dt = "all") # returns data.table
             inset.vector %>%
                 data.table %>%          # should make one column even if inset is list
                 set_names(inset.name) %>%
@@ -689,7 +689,7 @@ harmonize.make.procedures.list <- function(procedures.table
                                          , remove.comments = TRUE
                                          , sort.by.no.field = TRUE
                                          , comments = c("#", "-", "")) {
-    procedures.table %<>% harmonize.defactor
+    procedures.table %<>% harmonize_defactor
     if(remove.comments) {
         procedures.table %<>%
             extract(!(procedures.table[[no.field]] %in% comments), )
@@ -1331,8 +1331,8 @@ harmonize.detect..get.codes.vector <- function(env = parent.frame()) {
                                    , x.length = c(1, harmonize_data_length(patterns))
                                    , type = "atomic")) {
             if(length(codes) == 1)    
-                rep(harmonize.defactor(codes), harmonize_data_length(patterns))
-            else harmonize.defactor(codes)
+                rep(harmonize_defactor(codes), harmonize_data_length(patterns))
+            else harmonize_defactor(codes)
         }
         else if(harmonize.is.ok.col(patterns.codes.col, patterns))
             harmonize.x(patterns, x.col = patterns.codes.col)

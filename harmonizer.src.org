@@ -1,7 +1,36 @@
 # - Reference from [[associate-id:org:29i4s7t0y5i0][Harmonizer R package]] on [2021-06-05 Sat 22:51]
 #+PROPERTY: header-args:R  :comments link :session :mkdirp yes :padline yes
 
-* Make
+* Development
+
+For this package development I use Emacs' org-mode that allows literate programming. Literate programming in this case provides ways to do the following:
+- Use tables of internal data for harmonization in human readable format and convert it to .rda when deploying package
+- Write function definition and tests next to other but tangle it from .org file to different directories and .r files on deployment
+
+To tangle
+#+name: tangle-buffer
+#+BEGIN_SRC emacs-lisp :results none
+  (org-babel-tangle)
+#+END_SRC
+
+** Naming Convention
+- All functions should have a verb
+- Variables should not have a verb
+- Everything that is available to user should start with either harmonizer (data) or harmonize (functions)
+- Internal functions and variables does not have to have this prefix
+- Second part of the name is a source if the function or a data is taken from this source (e.g. harmonize.magerman.remove.common.words)
+- The rest is the name of the function or a variable as precise and informative as possible
+- Data for string substitutions, removals or pattern recognition should be named as "patterns" (e.g., harmonizer.magerman.patterns.special.characters)
+
+
+* Building
+
+#+call: reset-working-directory()
+#+call: tangle-buffer()
+#+call: generate-package-docs()
+#+call: install-package()
+
+
 ** Set Enviroment for making the package (.Rprofile)
 :PROPERTIES:
 :ID:       org:yeu37341cai0
@@ -91,6 +120,50 @@ Note: If =install.packages= is tangled to =.Rprofile= it might cause a recursive
   ## --------------------------------------------------------------------------------
 #+END_SRC
 
+** Add package documentation
+:PROPERTIES:
+:ID:       org:g5wa69d1ffi0
+:END:
+
+#+BEGIN_SRC R :tangle R/harmonizer.r
+  #' @details
+  #' Harmonizer package standardizes (harmonizes) organizational names
+  #'     mainly using procedures described in Thoma et al. (2010) and
+  #'     Magerman, Looy, Bart, & Song (2006) but not only.  This is work
+  #'     in progress. Please, file an issues or suggestion if you have
+  #'     any.  The main function is [harmonize()].
+  #' @keywords internal
+  "_PACKAGE"
+#+END_SRC
+
+** Reset working directory
+#+name: reset-working-directory
+#+BEGIN_SRC R :tangle no
+  ## Remove tangled and generated files
+  ## --------------------------------------------------------------------------------
+  files_to_remove <- c(
+      "DESCRIPTION"
+    , "NAMESPACE"
+  )
+  
+  dirs_to_remove <-c(
+      "man"
+    , "R"
+  )
+
+  ## remove files in dirs recursively
+  sapply(dirs_to_remove
+       , function(dir) {
+           file.remove(list.files(dir , recursive = TRUE, full.names = TRUE))
+       })
+  
+  ## remove files and empty dirs
+  sapply(c(files_to_remove, dirs_to_remove) , file.remove)
+  
+#+END_SRC
+
+
+
 ** Make package data from org-tables
 
 It is a named src R code block. Call it in org file by refering in =#+CALL:= with arguments =data.name= and =data=.
@@ -98,6 +171,7 @@ It is a named src R code block. Call it in org file by refering in =#+CALL:= wit
 This file exports specific org-table to =.rds= (R data stucture) file to =data.dir= (default to =./data=) and then combines these data files (.rds) into =R/sysdata.rda= (about =R/sysdata.rda= see http://r-pkgs.had.co.nz/data.html).
 
 To call all calls
+#+name: call-all-calls
 #+BEGIN_SRC emacs-lisp :results none
   (let (org-confirm-babel-evaluate)
       (org-babel-map-call-lines nil (call-interactively 'org-babel-execute-maybe)))
@@ -114,7 +188,7 @@ To call all calls
 #+header: :var add.to.rda = "TRUE"
 #+header: :var rda.filename = "sysdata"
 #+header: :var rda.dir = "./R"
-#+begin_src R  :tangle no
+#+begin_src R :tangle no
   require("magrittr")
   require("stringr")
   require("stringi")
@@ -198,14 +272,12 @@ To call all calls
 #+end_src
 
 ** Generate package description
+#+name: generate-package-docs
 #+BEGIN_SRC R :tangle no
-  ## Making a package
+  ## Generate package description
   ## --------------------------------------------------------------------------------
   
-  ## Assume that it runs from "harmonizer" directory
-  ## setwd("~/org/research/harmonizer")
-  
-    package.packages <- c(
+  package.packages <- c(
       "data.table"
     , "magrittr"
     , "stringi"
@@ -214,13 +286,13 @@ To call all calls
     , "xml2"
     , "dplyr")
   
-    ## Print current packages verstions
-    package.packages %>% sapply(function(pkg)
+  ## Print current packages verstions
+  package.packages %>% sapply(function(pkg)
       paste0(pkg, " (>= ", packageVersion(pkg), ")"), USE.NAMES = FALSE) %>%
       cat(sep = "\n")
   
-    ## Adjust verstions manually
-    package.packages.man.ver  <- c(
+  ## Adjust verstions manually
+  package.packages.man.ver  <- c(
       "data.table (>= 1.12)"
     , "magrittr (>= 1.5)"
     , "stringi (>= 1.4)"
@@ -228,105 +300,72 @@ To call all calls
     , "dplyr (>= 0.8)"
     , "tibble (>= 2.0)"
     , "xml2 (>= 1.0)"
-    )
+  )
   
   
   use_description(fields =
-                    list(Title  = "Harmonization of Organizational Names"
-                       , Date = Sys.Date()
-                       , "Authors@R" = 'as.person("Stanislav Vlasov <s.vlasov@uvt.nl> [aut, cre]")'
-                       , License = "MIT License"
-                       , Version = "0.3"
-                       , Imports = paste(package.packages.man.ver
-                                       , collapse = ", ")
-                       , Depends = "R (>= 3.4)"
-                       , Description = "Harmonizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more."
-                       , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851.pdf"))
+                      list(Title  = "Harmonization of Organizational Names"
+                         , Date = Sys.Date()
+                         , "Authors@R" = 'as.person("Stanislav Vlasov <s.vlasov@uvt.nl> [aut, cre]")'
+                         , License = "MIT License"
+                         , Version = "0.3"
+                         , Imports = paste(package.packages.man.ver
+                                         , collapse = ", ")
+                         , Depends = "R (>= 3.4)"
+                         , Description = "Harmonizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more."
+                         , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851.pdf"))
   
   ## Update name spaces and documentation for functions
   roxygenise()
   
   # This function is a wrapper for the ‘roxygen2::roxygenize()’ but also load the package
-  document()
+  ## document()
   
   
 #+END_SRC
 
-** Add package documentation
-:PROPERTIES:
-:ID:       org:g5wa69d1ffi0
-:END:
-
-#+BEGIN_SRC R :tangle R/harmonizer.r
-  #' @details
-  #' Harmonizer package standardizes (harmonizes) organizational names
-  #'     mainly using procedures described in Thoma et al. (2010) and
-  #'     Magerman, Looy, Bart, & Song (2006) but not only.  This is work
-  #'     in progress. Please, file an issues or suggestion if you have
-  #'     any.  The main function is [harmonize()].
-  #' @keywords internal
-  "_PACKAGE"
-#+END_SRC
-
-** Deploy package
-
+** Install package
+#+name: install-package
 #+BEGIN_SRC R :tangle no
-  ## Deploy
-  ## --------------------------------------------------------------------------------
-  install(".")
-
-  install("~/org/research/harmonizer")
-
-  install_github("stasvlasov/harmonizer")
-
-  ## Test
-  ## --------------------------------------------------------------------------------
-  library("harmonizer")
-
-  harmonize(c("Lala Ltd.", "bla-bla Ltd."))
-
-  harmonize.magerman(c("Lala Ltd.", "bla-bla Ltd."))
-
-
-  ## Remove
+  ## Unload and uninstall package
   ## --------------------------------------------------------------------------------
   detach(package:harmonizer, unload = TRUE)
   remove.packages("harmonizer")
-
+  
+  ## Install package
+  ## --------------------------------------------------------------------------------
+  install(".")
 #+END_SRC
 
-
-** Functions and data
-:PROPERTIES:
-:ID:       org:v7r8oh01rmi0
-:END:
+** Test package
 
 #+BEGIN_SRC R :tangle no
+  
+  ## Deploy from web
+  ## --------------------------------------------------------------------------------
+  install_github("stasvlasov/harmonizer")
+  
+  
   ## Load main functions
   source("R/harmonizer.r")
-
+  
   ## Load data used in funcitons
   load("R/sysdata.rda")
-
+  
   ## load procedures functions
   source("R/magerman.r")
   source("R/cockburn.r")
+  
+  
+  ## Test
+  ## --------------------------------------------------------------------------------
+  library("harmonizer")
+  
+  harmonize(c("Lala Ltd.", "bla-bla Ltd."))
+  
+  harmonize_magerman(c("Lala Ltd.", "bla-bla Ltd."))
+  
 #+END_SRC
-
-* Development
-
-For this package development I use Emacs' org-mode that allows literate programming. Literate programming in this case provides ways to do the following:
-- Use tables of internal data for harmonization in human readable format and convert it to .rda when deploying package
-- Write function definition and tests next to other but tangle it from .org file to different directories and .r files on deployment
-
-** Naming Convention
-- All functions should have a verb
-- Variables should not have a verb
-- Everything that is available to user should start with either harmonizer (data) or harmonize (functions)
-- Internal functions and variables does not have to have this prefix
-- Second part of the name is a source if the function or a data is taken from this source (e.g. harmonize.magerman.remove.common.words)
-- The rest is the name of the function or a variable as precise and informative as possible
-- Data for string substitutions, removals or pattern recognition should be named as "patterns" (e.g., harmonizer.magerman.patterns.special.characters)
 
 
 * Functions
@@ -616,7 +655,7 @@ For this package development I use Emacs' org-mode that allows literate programm
   ##' @import tibble data.table
   ##' 
   ##' @export
-  harmonize.defactor <- function(x
+  harmonize_defactor <- function(x
                                , conv2dt = c("only.tables"
                                               , "all.but.atomic"
                                               , "all.but.lists"
@@ -630,9 +669,9 @@ For this package development I use Emacs' org-mode that allows literate programm
         data.table(harmonize.defactor.vector(x, ...))
     } else if(class(x)[1] == "list")
       if((conv2dt %in% c("only.tables", "all.but.lists", "none")))
-        lapply(x, harmonize.defactor, conv2dt = "none", ...)
+        lapply(x, harmonize_defactor, conv2dt = "none", ...)
       else
-        data.table(lapply(x, harmonize.defactor, conv2dt = "none", ...))
+        data.table(lapply(x, harmonize_defactor, conv2dt = "none", ...))
     else if(conv2dt != "none")
       as.data.table(lapply(x, harmonize.defactor.vector, ...))
     else if(is.matrix(x))
@@ -923,11 +962,14 @@ For this package development I use Emacs' org-mode that allows literate programm
       harmonize.x.inset()
     }
   }
-
-
+  
+  
+  
+  
+  
   ## functions that only runs within harmonize.x
   ## --------------------------------------------------------------------------------
-
+  
   ## Tests Arguments
   harmonize.x.check.args <- function(env = parent.frame()) {
     evalq({
@@ -941,8 +983,8 @@ For this package development I use Emacs' org-mode that allows literate programm
       }
     }, envir = env)
   }
-
-
+  
+  
   harmonize.x.inset.check.args <- function(env = parent.frame()) {
       evalq({
           ## - check inset.vector
@@ -954,11 +996,11 @@ For this package development I use Emacs' org-mode that allows literate programm
           if(!harmonize.is.ok.type(inset.omitted.val
                                  , x.length = c(1, harmonize_data_length(x))
                                  , type = "atomic")) {
-              inset.omitted.val <- harmonize.x.get.col(x, x.col)
+              inset.omitted.val <- harmonize_data_get_col(x, x.col)
           } else if(length(inset.omitted.val) == 1) {
-              inset.omitted.val %<>% harmonize.defactor %>% rep(harmonize_data_length(x))
+              inset.omitted.val %<>% harmonize_defactor %>% rep(harmonize_data_length(x))
           } else {
-              inset.omitted.val %<>% harmonize.defactor
+              inset.omitted.val %<>% harmonize_defactor
           }
           ## - check return.x.cols
           harmonize.is.ok.type(return.x.cols.all)
@@ -1001,18 +1043,18 @@ For this package development I use Emacs' org-mode that allows literate programm
           }
       }, envir = env)
   }
-
+  
   ## gets vector to harmonize
   harmonize.x.get <- function(env = parent.frame()) {
       evalq({
           x %>%
-              harmonize.x.get.col(x.col) %>% 
+              harmonize_data_get_col(x.col) %>% 
               extract(x.rows)
       }, envir = env)
   }
-
-
-
+  
+  
+  
   ##' Gets a target vector to harmonize.
   ##'
   ##' @param data Input data. Can be vector, data.frame or a data.table
@@ -1024,17 +1066,17 @@ For this package development I use Emacs' org-mode that allows literate programm
   harmonize_target_get <- function(data,
                                    target_col,
                                    target_rows) {
-      harmonize.x.get.col(data, target_col)[target_rows]
+      harmonize_data_get_col(data, target_col)[target_rows]
   }
-
-
-  harmonize.x.get.col <- function(x, col) {
+  
+  
+  harmonize_data_get_col <- function(x, col) {
       if(is.atomic(x))
-          harmonize.defactor(x)
+          harmonize_defactor(x)
       else
-          harmonize.defactor(x[[col]])
+          harmonize_defactor(x[[col]])
   }
-
+  
   ## binds to existing table
   harmonize.x.inset <- function(env = parent.frame()) {
       evalq({
@@ -1045,7 +1087,7 @@ For this package development I use Emacs' org-mode that allows literate programm
               inset.vector
           } else if(x.col.update) {
               x %>%
-                harmonize.defactor(conv2dt = "all") %>% 
+                harmonize_defactor(conv2dt = "all") %>% 
                 inset2(x.col, value = inset.vector) %>% 
                 extract(., ,return.x.cols, with = FALSE)
           } else if(isTRUE(return.x.cols == 0)) {
@@ -1060,7 +1102,7 @@ For this package development I use Emacs' org-mode that allows literate programm
                                        , x.names[return.x.cols])) %>%
                 make.names
             ## (pre)append inset.vector to x
-            x %<>% harmonize.defactor(conv2dt = "all") # returns data.table
+            x %<>% harmonize_defactor(conv2dt = "all") # returns data.table
               inset.vector %>%
                   data.table %>%          # should make one column even if inset is list
                   set_names(inset.name) %>%
@@ -1068,7 +1110,7 @@ For this package development I use Emacs' org-mode that allows literate programm
           }
       }, envir = env)
   }
-
+  
   harmonize.x.cbind <- function(inset.vector, x, append = FALSE) {
     if(isTRUE(append))
       cbind(x, inset.vector)
@@ -1401,6 +1443,74 @@ Tests:
   ## is.null(Inf)
 #+END_SRC
 
+*** inset_vector
+#+BEGIN_SRC R
+  
+  ##' Insets target vector back to input object (`data`)
+  ##'
+  ##' @param data an object
+  ##' @param vector a vector to inset. Optional. Default is NULL
+  ##' @param col vector of interest in `data` object
+  ##' @param update Update values in `col` column. Default is FALSE. If set `append`, `name` and `name_suffix` are ignored. Also if set the default for `return_all_data_cols` will be set to TRUE.
+  ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records
+  ##' @param name_if_data_atomic If `data` is vector use this name for original column if it is in results. Default is "data". If `data` is table the name of `col` will be used.
+  ##' @param ommitted_rows_values If `rows` is set merge these values to the results. It should be a vector of length 1 or `nrow(data)`. If the value is NULL (default) then use original values of `col`.
+  ##' @param append If set then put `vector` as the last instead of first vector/column. Default is FALSE.
+  ##' @param name_suffix If `name` is not set the use this as suffi (default is "harmonized"). If the name with the same suffi already edataists in `return_data_cols` it will add counter at the end to avoid variables with the same names.
+  ##' @param name Use this name for the first column in results (harmonized names). Default is NULL, which means that either name_if_data_atomic if data is vector or original col name will be used with `name_suffix` at the end.
+  ##' @param return_data_cols If data is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).
+  ##' @param return_all_data_cols Whether to bind all columns in `data`. Defaults depends on values of `update` and `append`. If either is set then defaut values is TRUE otherwise FALSE. If set to TRUE by user the return_data_cols is ignored.
+  ##'
+  ##' @return returns updated `data` object
+  ##'
+  ##' @md
+  ##' @import magrittr stringr data.table
+  inset_vector <- function(data
+                         , vector = NULL
+                         , col = 1
+                         , update = FALSE
+                         , append = FALSE
+                         , rows = NULL
+                         , ommitted_rows_values = NULL
+                         , name = NA
+                         , name_suffix = "harmonized"
+                         , name_if_data_atomic = "names"
+                         , return_data_cols =
+                               -ifelse(is.numeric(col), col, match(col, names(data)))
+                         , return_all_data_cols = append | update ) {
+  
+      ## inset filtered rows (this makes list if vector is list)
+      vector %<>% inset(ommitted_rows_values, rows, .)
+      ## inset vector to data
+      if(is.atomic(data) & isFALSE(return_data_cols == 1)) {
+          vector
+      } else if(update) {
+          data %>%
+              harmonize_defactor(conv2dt = "all") %>% 
+              inset2(col, value = vector) %>% 
+              edatatract(., ,return_data_cols, with = FALSE)
+      } else if(isTRUE(return_data_cols == 0)) {
+          vector
+      } else {
+          ## set harmonized name
+          data.names <- if(is.atomic(data)) name_if_data_atomic else names(data)
+          name %<>%
+              harmonize_eval_if_empty(
+                  harmonize.add.suffi(data.names[col]
+                                    , name_suffix
+                                    , data.names[return_data_cols])) %>%
+              make.names
+          ## (pre)append vector to data
+          data %<>% harmonize_defactor(conv2dt = "all") # returns data.table
+          vector %>%
+              data.table %>%          # should make one column even if inset is list
+              set_names(name) %>%
+              harmonize.data.cbind(data[, return_data_cols, with = FALSE], append)
+      }
+  }
+  
+#+END_SRC
+
 *** harmonize.x.dots
 :PROPERTIES:
 :ID:       org:ngbgs341vli0
@@ -1560,7 +1670,7 @@ Tests:
                                            , remove.comments = TRUE
                                            , sort.by.no.field = TRUE
                                            , comments = c("#", "-", "")) {
-      procedures.table %<>% harmonize.defactor
+      procedures.table %<>% harmonize_defactor
       if(remove.comments) {
           procedures.table %<>%
               extract(!(procedures.table[[no.field]] %in% comments), )
@@ -2719,8 +2829,8 @@ Tests:
                                      , x.length = c(1, harmonize_data_length(patterns))
                                      , type = "atomic")) {
               if(length(codes) == 1)    
-                  rep(harmonize.defactor(codes), harmonize_data_length(patterns))
-              else harmonize.defactor(codes)
+                  rep(harmonize_defactor(codes), harmonize_data_length(patterns))
+              else harmonize_defactor(codes)
           }
           else if(harmonize.is.ok.col(patterns.codes.col, patterns))
               harmonize.x(patterns, x.col = patterns.codes.col)
@@ -4935,7 +5045,7 @@ remove legal forms anywhere in a name (see Table 18)." (p. 39)
   ## , "MSlab Co. GMBH & CO.KG lalal"
   ## , "KABUSHIKI KAISHA MSlab Co. ") %>%
   ##   toupper %>%
-  ##   magerman.detect.legal.form.end
+  ##   magerman_detect_legal_form_end
 #+END_SRC
 
 
@@ -4950,7 +5060,7 @@ plus trim..."
 #+BEGIN_SRC R :tangle ./R/magerman.r
   ##' Detects legal form
   ##' @param x table
-  ##' @inheritDotParams magerman.detect.legal.form.end
+  ##' @inheritDotParams magerman_detect_legal_form_end
   ##' @return Harmonized table
   ##'
   ##' @md
@@ -5327,7 +5437,7 @@ Table 22: Spelling variations and their harmonized equivalent
 
 
   ##' Replaces Umlauts
-  ##' @param x
+  ##' @param x Data
   ##' @param x.umlaut.col Column with logical values indicating weather a corresponding string has an umlaut. Default is NULL so it detects is automatically first
   ##' @param drop.umlaut.col Whether to drop `umlaut.col`. Default is FALSE
   ##' @param replace.accented.characters Whether to replace accented characters first. Default is FALSE
