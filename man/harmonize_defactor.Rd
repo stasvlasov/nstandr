@@ -16,7 +16,7 @@ harmonize_defactor(
 \item{conv2dt}{What to convert to data.table}
 
 \item{...}{
-  Arguments passed on to \code{\link[=harmonize.defactor.vector]{harmonize.defactor.vector}}
+  Arguments passed on to \code{\link[=harmonize_defactor_vector]{harmonize_defactor_vector}}
   \describe{
     \item{\code{check.numeric}}{check if vector is numeric. Default is TRUE. Takes longer with this check but avoids type conversion (numeric to character).}
   }}

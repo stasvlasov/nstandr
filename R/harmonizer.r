@@ -153,7 +153,7 @@ harmonize_escape_types <- function(patterns, conds, all.regex = FALSE) {
 ##' @import magrittr stringr
 ##'
 ##' @return Returns a new name
-harmonize.add.suffix <- function(name, suffix, x.names
+harmonize_add_suffix <- function(name, suffix, x.names
                                , search.suffix.in.name = TRUE
                                , suffix.nbr.init = 1
                                , suffix.nbr = NULL) {
@@ -190,7 +190,7 @@ harmonize.add.suffix <- function(name, suffix, x.names
 ##' @param x a vector
 ##' @param check.numeric check if vector is numeric. Default is TRUE. Takes longer with this check but avoids type conversion (numeric to character).
 ##' @return character vector
-harmonize.defactor.vector <- function(x, check.numeric = TRUE) {
+harmonize_defactor_vector <- function(x, check.numeric = TRUE) {
   if(is.factor(x) & check.numeric) {
     levs <- levels(x)
     ## check if levels are numeric (longer)
@@ -214,7 +214,7 @@ harmonize.defactor.vector <- function(x, check.numeric = TRUE) {
 ##' @param x an object
 ##' @param conv2dt What to convert to data.table
 ##' @param ... 
-##' @inheritDotParams harmonize.defactor.vector
+##' @inheritDotParams harmonize_defactor_vector
 ##' @return object of the same type without factors
 ##'  
 ##' @import tibble data.table
@@ -229,24 +229,24 @@ harmonize_defactor <- function(x
   conv2dt <-  match.arg(conv2dt)
   if(is.atomic(x)) {
     if(conv2dt %in% c("only.tables", "all.but.atomic", "none"))
-      harmonize.defactor.vector(x, ...)
+      harmonize_defactor_vector(x, ...)
     else
-      data.table(harmonize.defactor.vector(x, ...))
+      data.table(harmonize_defactor_vector(x, ...))
   } else if(class(x)[1] == "list")
     if((conv2dt %in% c("only.tables", "all.but.lists", "none")))
       lapply(x, harmonize_defactor, conv2dt = "none", ...)
     else
       data.table(lapply(x, harmonize_defactor, conv2dt = "none", ...))
   else if(conv2dt != "none")
-    as.data.table(lapply(x, harmonize.defactor.vector, ...))
+    as.data.table(lapply(x, harmonize_defactor_vector, ...))
   else if(is.matrix(x))
-    as.matrix(lapply(x, harmonize.defactor.vector, ...))
+    as.matrix(lapply(x, harmonize_defactor_vector, ...))
   else if(is.data.table(x))
-    as.data.table(lapply(x, harmonize.defactor.vector, ...))
+    as.data.table(lapply(x, harmonize_defactor_vector, ...))
   else if(is_tibble(x))
-    as_tibble(lapply(x, harmonize.defactor.vector, ...))
+    as_tibble(lapply(x, harmonize_defactor_vector, ...))
   else if(is.data.frame(x))
-    as.data.frame(lapply(x, harmonize.defactor.vector, ...)
+    as.data.frame(lapply(x, harmonize_defactor_vector, ...)
                 , stringsAsFactors = FALSE)
   else x
 }
@@ -267,7 +267,7 @@ harmonize_defactor <- function(x
 ##' @return TRUE if `col` value is ok and FALSE if it is NULL
 ##' 
 ##' @md 
-harmonize.is.ok.col <- function(col, x
+harmonize_is_ok_col <- function(col, x
                         , required = FALSE
                         , allow.negative = FALSE
                         , allow.zero = FALSE
@@ -277,7 +277,7 @@ harmonize.is.ok.col <- function(col, x
   x.names <- if(is.atomic(x)) attr(x, "name", TRUE) else names(x)
   if(length(col) > 1)
     if(!several.ok) stop("'", arg.name, "' should be single column")
-    else all(sapply(col, harmonize.is.ok.col
+    else all(sapply(col, harmonize_is_ok_col
                   , x, required
                   , allow.negative = ifelse(allow.negative
                                           , all(col < 0)
@@ -315,7 +315,7 @@ harmonize.is.ok.col <- function(col, x
 ##' @return TRUE if type is match, FALSE if x is NULL and it is allowed. Through an error otherwise
 ##' 
 ##' @md 
-harmonize.is.ok.type <- function(x
+harmonize_is_ok_type <- function(x
                                , x.length = length(x)
                                , type = c("logical"
                                         , "character"
@@ -337,17 +337,17 @@ harmonize.is.ok.type <- function(x
   }
   if(allow.null & (length(x) == 0)) return(FALSE)
   else if(!(length(x) %in% x.length))
-    stop(arg.name, " has length of ", length(x), " but shoudl be of ", x.length)
+    stop("Parameter '" ,arg.name, "' has length of ", length(x), " but should be of ", x.length)
   if(allow.na & all(is.na(x))) return(TRUE)
   else if(!allow.na & any(is.na(x))) 
-    stop("NAs are not allowed in ", arg.name)
+    stop("NAs are not allowed in parameter '", arg.name, "'")
   ## Check types
   if(any(class(x) %in% type)) return(TRUE)
   if(("atomic" %in% type) && is.atomic(x)) return(TRUE)
   # need to check numerics separately because of integers and doubles
   if(("numeric" %in% type) && is.numeric(x)) return(TRUE)
   if(any(is.na(type))) return(TRUE)
-  stop(arg.name, " is type of ", class(x), " but should be one of ", type)
+  stop("Parameter '", arg.name, "' is type of ", class(x), " but should be one of ", type)
 }
 
 ##' Checks if ... (dots) arguments are valid.
@@ -357,8 +357,8 @@ harmonize.is.ok.type <- function(x
 ##' @return TRUE if arguments are ok. FALSE if no arguments are provided (NULL or list())
 ##' 
 ##' @md 
-harmonize.is.ok.dots <- function(dots.names, formals) {
-    if(harmonize.is.ok.type(dots.names
+harmonize_is_ok_dots <- function(dots.names, formals) {
+    if(harmonize_is_ok_type(dots.names
                           , type = "character"
                           , allow.na = FALSE)) {
         if(any(duplicated(dots.names))) {
@@ -417,7 +417,7 @@ harmonize.x <- function(x
   if(is.null(inset.vector)) {
     ## if nothing was provided as x.vector then make and return one
     harmonize.x.check.args()
-    harmonize.x.get()
+    harmonize_target_get()
   } else {
     ## if inset.vector is provided put it back to x according to settings
     harmonize.x.check.args()
@@ -427,6 +427,9 @@ harmonize.x <- function(x
 }
 
 
+
+
+
 ## functions that only runs within harmonize.x
 ## --------------------------------------------------------------------------------
 
@@ -434,11 +437,11 @@ harmonize.x <- function(x
 harmonize.x.check.args <- function(env = parent.frame()) {
   evalq({
     ## - check x.col
-    if(harmonize.is.ok.col(x.col, x, required = TRUE)) {
+    if(harmonize_is_ok_col(x.col, x, required = TRUE)) {
       x.col %<>% ifelse(is.numeric(.), ., match(., names(x)))
     }
     ## - check x.rows
-    if(!harmonize.is.ok.type(x.rows, harmonize_data_length(x), type = "logical")) {
+    if(!harmonize_is_ok_type(x.rows, harmonize_data_length(x), type = "logical")) {
       x.rows <- TRUE  # select all if x.rows NULL 
     }
   }, envir = env)
@@ -448,12 +451,12 @@ harmonize.x.check.args <- function(env = parent.frame()) {
 harmonize.x.inset.check.args <- function(env = parent.frame()) {
     evalq({
         ## - check inset.vector
-        harmonize.is.ok.type(inset.vector
+        harmonize_is_ok_type(inset.vector
                            , x.length = if(isTRUE(x.rows)) harmonize_data_length(x)
                                         else sum(x.rows)
                            , type = c("atomic", "list"))
         ## - check inset.omitted.val
-        if(!harmonize.is.ok.type(inset.omitted.val
+        if(!harmonize_is_ok_type(inset.omitted.val
                                , x.length = c(1, harmonize_data_length(x))
                                , type = "atomic")) {
             inset.omitted.val <- harmonize_data_get_col(x, x.col)
@@ -463,14 +466,14 @@ harmonize.x.inset.check.args <- function(env = parent.frame()) {
             inset.omitted.val %<>% harmonize_defactor
         }
         ## - check return.x.cols
-        harmonize.is.ok.type(return.x.cols.all)
+        harmonize_is_ok_type(return.x.cols.all)
         ## return.x.cols.all could be TRUE if inset.append | x.col.update
         ## if return.x.cols.all is not set manually but return.x.cols is
         ## then respect return.x.cols
         if(return.x.cols.all && (!missing(return.x.cols.all) || missing(return.x.cols)))
             ## set return.x.cols to all
             return.x.cols <- 1:harmonize_data_width(x)
-        else if(harmonize.is.ok.col(return.x.cols, x
+        else if(harmonize_is_ok_col(return.x.cols, x
                                   , allow.negative = TRUE
                                   , several.ok = TRUE))
             return.x.cols %<>% switch(is.numeric(.) + 1, match(., names(x)), .)
@@ -479,9 +482,9 @@ harmonize.x.inset.check.args <- function(env = parent.frame()) {
             return.x.cols <- 0
         }
         ## - check inset.append
-        harmonize.is.ok.type(inset.append)
+        harmonize_is_ok_type(inset.append)
         ## - check x.col.update
-        harmonize.is.ok.type(x.col.update)
+        harmonize_is_ok_type(x.col.update)
         if(x.col.update &&
            ((all(return.x.cols < 0) && (-x.col %in% return.x.cols)) ||
             (all(return.x.cols >= 0) && !(x.col %in% return.x.cols)))) {
@@ -489,45 +492,34 @@ harmonize.x.inset.check.args <- function(env = parent.frame()) {
         }
         ## - check names
         if(!x.col.update) {
-            harmonize.is.ok.type(inset.name, x.length = 1
+            harmonize_is_ok_type(inset.name, x.length = 1
                                , type = "character", allow.null = FALSE)
             if(inset.name %in% names(x)[return.x.cols]) {
                 stop("The harmonized column name: ", inset.name, " is alredy exists.")
             }
-            harmonize.is.ok.type(inset.suffix, x.length = 1
+            harmonize_is_ok_type(inset.suffix, x.length = 1
                                , type = "character"
                                , allow.na = FALSE, allow.null = FALSE)
-            harmonize.is.ok.type(x.atomic.name, x.length = 1
+            harmonize_is_ok_type(x.atomic.name, x.length = 1
                                , type = "character"
                                , allow.na = FALSE, allow.null = FALSE)
         }
     }, envir = env)
 }
 
-## gets vector to harmonize
-harmonize.x.get <- function(env = parent.frame()) {
-    evalq({
-        x %>%
-            harmonize_data_get_col(x.col) %>% 
-            extract(x.rows)
-    }, envir = env)
-}
-
-
-
 ##' Gets a target vector to harmonize.
 ##'
 ##' @param data Input data. Can be vector, data.frame or a data.table
-##' @param target_col Column of interest in the input `data`. The vector we would like to work with. This parameter is ignored if input `data` is a vector (checked by `is.atomic`)
+##' @param col Column of interest in the input `data`. The vector we would like to work with. This parameter is ignored if input `data` is a vector (checked by `is.atomic`)
+##' @param rows Rows of interest
 ##'
 ##' @return A vector. Factors in imput `data` are converted to string.
 ##'
 ##' @md
-harmonize_target_get <- function(data,
-                                 target_col,
-                                 target_rows) {
-    harmonize_data_get_col(data, target_col)[target_rows]
+harmonize_target_get <- function(data, col, rows) {
+    harmonize_data_get_col(data, col)[rows]
 }
+
 
 
 harmonize_data_get_col <- function(x, col) {
@@ -557,7 +549,7 @@ harmonize.x.inset <- function(env = parent.frame()) {
           x.names <- if(is.atomic(x)) x.atomic.name else names(x)
           inset.name %<>%
               harmonize_eval_if_empty(
-                  harmonize.add.suffix(x.names[x.col]
+                  harmonize_add_suffix(x.names[x.col]
                                      , inset.suffix
                                      , x.names[return.x.cols])) %>%
               make.names
@@ -578,6 +570,169 @@ harmonize.x.cbind <- function(inset.vector, x, append = FALSE) {
     cbind(inset.vector, x)
 }
 ## --------<<  harmonize.x:1 ends here
+
+
+
+## -------->>  [[id:org:p11ds0x069j0][inset_vector:1]]
+##' Insets target vector back to input object (`data`)
+  ##'
+  ##' @param data an object
+  ##' @param vector a vector to inset. Optional. Default is NULL
+  ##' @param col vector of interest in `data` object
+  ##' @param update Update values in `col` column. Default is FALSE. If set `append`, `name` and `name_suffix` are ignored. Also if set the default for `select_all_data_cols` will be set to TRUE.
+  ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records
+  ##' @param ommitted_rows_values If `rows` is set merge these values to the results. It should be a vector of length 1 or `nrow(data)`. If the value is NULL (default) then use original values of `col`.
+  ##' @param append If set then put `vector` as the last instead of first vector/column. Default is FALSE.
+  ##' @param name_suffix If `name` is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already edataists in `select_data_cols` it will add counter at the end to avoid variables with the same names.
+  ##' @param name Use this name for the first column in results (harmonized names). Default is NULL, which means that either name_if_data_atomic if data is vector or original col name will be used with `name_suffix` at the end.
+  ##' @param name_if_data_atomic If `data` is vector use this name for original column if it is in results. Default is "data". If `data` is table the name of `col` will be used.
+  ##' @param select_data_cols If data is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).
+  ##' @param select_all_data_cols Whether to bind all columns in `data`. Defaults depends on values of `update` and `append`. If either is set then defaut values is TRUE otherwise FALSE. If set to TRUE by user the select_data_cols is ignored.
+  ##'
+  ##' @return returns updated `data` object
+  ##'
+  ##' @md
+  ##' @import magrittr stringr data.table
+  inset_vector <- function(data
+                         , vector = NULL
+                         , col = 1
+                         , update = FALSE
+                         , append = FALSE
+                         , rows = NULL
+                         , ommitted_rows_values = NULL
+                         , name = NA
+                         , name_suffix = "harmonized"
+                         , name_if_data_atomic = "names"
+                         , select_data_cols =
+                               -ifelse(is.numeric(col), col, match(col, names(data)))
+                         , select_all_data_cols = append | update ) {
+      ## process arguments
+      check_args_col_rows()
+      check_args_for_inset_vector()    
+      ## inset filtered rows (this makes list if vector is list)
+      vector %<>% inset(ommitted_rows_values, rows, .)
+      ## inset vector to data
+      if(is.atomic(data) & isFALSE(select_data_cols == 1)) {
+          vector
+      } else if(update) {
+          data %>%
+              harmonize_defactor(conv2dt = "all") %>% 
+              inset2(col, value = vector) %>% 
+              extract(., ,select_data_cols, with = FALSE)
+      } else if(isTRUE(select_data_cols == 0)) {
+          vector
+      } else {
+          ## set harmonized name
+          data.names <- if(is.atomic(data)) name_if_data_atomic else names(data)
+          name %<>%
+              harmonize_eval_if_empty(
+                  harmonize_add_suffix(data.names[col]
+                                     , name_suffix
+                                     , data.names[select_data_cols])) %>%
+              make.names
+          ## (pre)append vector to data
+          data %<>% harmonize_defactor(conv2dt = "all") # returns data.table
+          vector %>%
+              data.table %>%          # should make one column even if inset is list
+              set_names(name) %>%
+              harmonize.x.cbind(data[, select_data_cols, with = FALSE], append)
+      }
+  }
+
+
+  ##' Gets a target vector to harmonize.
+##'
+##' @param data Input data. Can be vector, data.frame or a data.table
+##' @param col Column of interest in the input `data`. The vector we would like to work with. This parameter is ignored if input `data` is a vector (checked by `is.atomic`)
+##' @param rows Rows of interest
+##' @return A vector. Factors in imput `data` are converted to string.
+##'
+##' @md
+get_vector <- function(data, col = 1 , rows = NULL) {
+    check_args_col_rows()
+    harmonize_data_get_col(data, col)[rows]
+}
+
+
+    ## functions that only runs within get_vector and inset_vector
+    ## --------------------------------------------------------------------------------
+
+    ## Tests Arguments
+    check_args_col_rows <- function(env = parent.frame()) {
+      evalq({
+        ## - check col
+        if(harmonize_is_ok_col(col, data, required = TRUE)) {
+          col %<>% ifelse(is.numeric(.), ., match(., names(data)))
+        }
+        ## - check rows
+        if(!harmonize_is_ok_type(rows, harmonize_data_length(data), type = "logical")) {
+          rows <- TRUE  # select all if rows NULL 
+        }
+      }, envir = env)
+    }
+
+    check_args_for_inset_vector <- function(env = parent.frame()) {
+        evalq({
+            ## - check vector
+            harmonize_is_ok_type(vector
+                               , allow.null = FALSE
+                               , x.length = if(isTRUE(rows)) harmonize_data_length(data)
+                                            else sum(rows)
+                               , type = c("atomic", "list"))
+            ## - check ommitted_rows_values
+            if(!harmonize_is_ok_type(ommitted_rows_values
+                                   , x.length = c(1, harmonize_data_length(data))
+                                   , type = "atomic")) {
+                ommitted_rows_values <- harmonize_data_get_col(data, col)
+            } else if(length(ommitted_rows_values) == 1) {
+                ommitted_rows_values %<>% harmonize_defactor %>% rep(harmonize_data_length(data))
+            } else {
+                ommitted_rows_values %<>% harmonize_defactor
+            }
+            ## - check select_data_cols
+            harmonize_is_ok_type(select_all_data_cols)
+            ## select_all_data_cols could be TRUE if append | update
+            ## if select_all_data_cols is not set manually but select_data_cols is
+            ## then respect select_data_cols
+            if(select_all_data_cols && (!missing(select_all_data_cols) || missing(select_data_cols)))
+                ## set select_data_cols to all
+                select_data_cols <- 1:harmonize_data_width(data)
+            else if(harmonize_is_ok_col(select_data_cols, data
+                                      , allow.negative = TRUE
+                                      , several.ok = TRUE))
+                select_data_cols %<>% switch(is.numeric(.) + 1, match(., names(data)), .)
+            else {
+                ## set it to zero if it is null
+                select_data_cols <- 0
+            }
+            ## - check append
+            harmonize_is_ok_type(append)
+            ## - check update
+            harmonize_is_ok_type(update)
+            if(update &&
+               ((all(select_data_cols < 0) && (-col %in% select_data_cols)) ||
+                (all(select_data_cols >= 0) && !(col %in% select_data_cols)))) {
+                stop("'update' is set but 'col' is excluded by 'select_data_cols'")
+            }
+            ## - check names
+            if(!update) {
+                harmonize_is_ok_type(name, x.length = 1
+                                   , type = "character", allow.null = FALSE)
+                if(name %in% names(data)[select_data_cols]) {
+                    stop("The harmonized column name: ", name, " is alredy exists.")
+                }
+                harmonize_is_ok_type(name_suffix
+                                   , x.length = 1
+                                   , type = "character"
+                                   , allow.na = FALSE, allow.null = FALSE)
+                harmonize_is_ok_type(name_if_data_atomic
+                                   , x.length = 1
+                                   , type = "character"
+                                   , allow.na = FALSE, allow.null = FALSE)
+            }
+        }, envir = env)
+    }
+## --------<<  inset_vector:1 ends here
 
 
 
@@ -604,13 +759,13 @@ harmonize.x.dots <- function(x
     formals("harmonize.x") %>%
     names %>%
     extract(!(. %in% c("x", "inset.vector")))
-  harmonize.is.ok.dots(names(dots), formals.names)
+  harmonize_is_ok_dots(names(dots), formals.names)
   ## check ... (args) for consistensy
   args <- as.list(match.call()) %>%
     extract(-1) %>%
     extract(!(names(.) %in% c("x", "inset.vector", "dots", "env")))
   ## smart inset from ... to dots
-    if(harmonize.is.ok.dots(names(args), formals.names)) {
+    if(harmonize_is_ok_dots(names(args), formals.names)) {
         ## remove old args
         dots[names(dots) %in% names(args)] <- NULL
         ## get new args
@@ -653,11 +808,11 @@ dots.default <- function(arg.name, arg.val
 dots.and <- function(arg.name, arg.val
                    , env = parent.frame()
                    , dots = eval(expression(list(...)), envir = env)) {
-  harmonize.is.ok.type(arg.val, allow.na = FALSE, allow.null = FALSE, type = "logical")
+  harmonize_is_ok_type(arg.val, allow.na = FALSE, allow.null = FALSE, type = "logical")
   if(arg.name %in% names(dots)) {
     dots.logical <- dots[[arg.name]]
     ## dots.logical <- get(arg.name, envir = env)
-    if(!harmonize.is.ok.type(dots.logical, length(arg.val), allow.na = FALSE)) {
+    if(!harmonize_is_ok_type(dots.logical, length(arg.val), allow.na = FALSE)) {
       dots.logical <- TRUE
     }
     eval(arg.val, envir = env) & dots.logical
@@ -773,18 +928,18 @@ harmonize.squish.spaces <- function(x, wrap.in.spaces = FALSE, ...) {
 ## -------->>  [[id:org:xys0f8s0lei0][harmonize.toupper:1]]
 ##' Uppercases vector of interest in the object (table)
 ##' 
-##' @param x object
+##' @param data data
 ##' 
-##' @inheritDotParams harmonize.x
+##' @inheritDotParams inset_vector
 ##'
 ##' @import magrittr
 ##' 
-##' @return updated object
+##' @return updated data (as data.table)
 ##' @export
-harmonize.toupper <- function(x, ...) {
-  harmonize.x(x, ...) %>% 
+harmonize.toupper <- function(data, ...) {
+  get_vector(data, ...) %>% 
     toupper %>% 
-    harmonize.x(x, ., ...)
+    inset_vector(data, ., ...)
 }
 ## --------<<  harmonize.toupper:1 ends here
 
@@ -984,11 +1139,11 @@ harmonize.match.arg <- function(arg
                               , arg.call = substitute(arg)
                               , env = parent.frame()) {
   ## check arguments
-  harmonize.is.ok.type(arg, type = "atomic")
-  harmonize.is.ok.type(arg.length, type = "numeric", x.length = 1)
-  harmonize.is.ok.type(choices, type = "atomic")
-  harmonize.is.ok.type(arg.length.check, type = "logical")
-  harmonize.is.ok.type(ensure.length, type = "logical")
+  harmonize_is_ok_type(arg, type = "atomic")
+  harmonize_is_ok_type(arg.length, type = "numeric", x.length = 1)
+  harmonize_is_ok_type(choices, type = "atomic")
+  harmonize_is_ok_type(arg.length.check, type = "logical")
+  harmonize_is_ok_type(ensure.length, type = "logical")
   ## fools protection
   ## if(!missing(env) | !missing(arg.call))
   ##   stop("Arguments 'arg.call' and 'env' should not be set")
@@ -1003,7 +1158,7 @@ harmonize.match.arg <- function(arg
     arg <- choices[[1]]
   }
   ## check if arg matches choices and length
-  arg %<>% harmonize.defactor.vector
+  arg %<>% harmonize_defactor_vector
   if(all(arg %in% choices)) {
     if(arg.length.check && ensure.length && length(arg) == 1)
       return(rep(arg, arg.length))
@@ -1098,10 +1253,10 @@ evalq({
     ## patterns.vector should be ready
     if(missing(replacements) && !is.atomic(patterns)) {
       harmonize.x(patterns, x.col = patterns.replacements.col)
-    } else if(harmonize.is.ok.type(replacements
+    } else if(harmonize_is_ok_type(replacements
                                  , x.length = c(1, length(patterns.vector))
                                  , type = "atomic")) {
-        harmonize.defactor.vector(replacements) %>%
+        harmonize_defactor_vector(replacements) %>%
             {if(length(.) == 1) rep(., length(patterns.vector)) else .}
     } else {
         ## replace with nothig by default
@@ -1254,7 +1409,7 @@ harmonize.detect..check.args <- function(env = parent.frame()) {
         ## -- check patterns.type by ...
         ## -- check patterns.type.col - by harmonize.detect..get.patterns.type.vector
         ## - check patterns.as.codes
-        harmonize.is.ok.type(patterns.as.codes)
+        harmonize_is_ok_type(patterns.as.codes)
         ## -- check patterns.codes.col - by harmonize.detect..get.codes.vector
         ## -- check codes - by harmonize.detect..get.codes.vector
         ## -- check codes.name - also by harmonize.x
@@ -1262,11 +1417,11 @@ harmonize.detect..check.args <- function(env = parent.frame()) {
         ## -- check codes.omitted.val - by harmonize.x
         ## -- check codes.prepend - by harmonize.x
         ## - check x.codes.merge
-        harmonize.is.ok.type(x.codes.merge)
+        harmonize_is_ok_type(x.codes.merge)
         ## - check x.codes.update.empty
-        harmonize.is.ok.type(x.codes.update.empty)
+        harmonize_is_ok_type(x.codes.update.empty)
         ## - check x.codes.col (should not be the same as x.col)
-        if(harmonize.is.ok.col(x.codes.col, x
+        if(harmonize_is_ok_col(x.codes.col, x
                              , ban.values = dots.default("x.col", 1))) {
             x.codes.col %<>% switch(is.numeric(.) + 1, match(., names(x)), .)
             ## use x.codes.col as codes.omitted.val if it is not set
@@ -1275,7 +1430,7 @@ harmonize.detect..check.args <- function(env = parent.frame()) {
             ## set x.codes.col as last one
             x.codes.col <- harmonize_data_width(x)
             ## check codes.names just in case
-            harmonize.is.ok.type(codes.name, x.length = 1
+            harmonize_is_ok_type(codes.name, x.length = 1
                                , type = "character"
                                , allow.null = FALSE)
             if(codes.name %in% names(x)) {
@@ -1300,15 +1455,15 @@ harmonize.detect..check.args <- function(env = parent.frame()) {
             x.codes.merge <- FALSE # nothing to merge with if codes are empty
         }
         ## - check return.only.codes
-        harmonize.is.ok.type(return.only.codes)
+        harmonize_is_ok_type(return.only.codes)
         ## - check return.only.first.detected.code
-        harmonize.is.ok.type(return.only.first.detected.code)
+        harmonize_is_ok_type(return.only.first.detected.code)
     }, envir = env)
 }
 
 harmonize.detect..get.patterns.type.vector <- function(env = parent.frame()) {
   evalq({
-        if(harmonize.is.ok.col(patterns.type.col, patterns)) {
+        if(harmonize_is_ok_col(patterns.type.col, patterns)) {
             harmonize.x(patterns, x.col = patterns.type.col)
         }
         else {
@@ -1327,14 +1482,14 @@ harmonize.detect..get.patterns.vector <- function(env = parent.frame()) {
 harmonize.detect..get.codes.vector <- function(env = parent.frame()) {
     evalq({
         if(patterns.as.codes) patterns.vector
-        else if(harmonize.is.ok.type(codes
+        else if(harmonize_is_ok_type(codes
                                    , x.length = c(1, harmonize_data_length(patterns))
                                    , type = "atomic")) {
             if(length(codes) == 1)    
                 rep(harmonize_defactor(codes), harmonize_data_length(patterns))
             else harmonize_defactor(codes)
         }
-        else if(harmonize.is.ok.col(patterns.codes.col, patterns))
+        else if(harmonize_is_ok_col(patterns.codes.col, patterns))
             harmonize.x(patterns, x.col = patterns.codes.col)
         else stop("No codes provided.")
     }, envir = env)

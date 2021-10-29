@@ -4,29 +4,29 @@
 \alias{harmonize.toupper}
 \title{Uppercases vector of interest in the object (table)}
 \usage{
-harmonize.toupper(x, ...)
+harmonize.toupper(data, ...)
 }
 \arguments{
-\item{x}{object}
+\item{data}{data}
 
 \item{...}{
-  Arguments passed on to \code{\link[=harmonize.x]{harmonize.x}}
+  Arguments passed on to \code{\link[=inset_vector]{inset_vector}}
   \describe{
-    \item{\code{inset.vector}}{a vector to inset. Optional. Default is NULL}
-    \item{\code{x.col}}{vector of interest in \code{x} object}
-    \item{\code{x.col.update}}{Update values in \code{x.col} column. Default is FALSE. If set \code{inset.append}, \code{inset.name} and \code{inset.suffix} are ignored. Also if set the default for \code{return.x.cols.all} will be set to TRUE.}
-    \item{\code{x.rows}}{Logical vector to filter records of interest. Default is NULL which means do not filter records}
-    \item{\code{x.atomic.name}}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{x.col} will be used.}
-    \item{\code{inset.omitted.val}}{If \code{x.rows} is set merge these values to the results. It should be a vector of length 1 or \code{nrow(x)}. If the value is NULL (default) then use values of \code{x.col}.}
-    \item{\code{inset.append}}{If set then put \code{inset.vector} as the last instead of first vector/column. Default is FALSE.}
-    \item{\code{inset.suffix}}{If \code{inset.name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in \code{return.x.cols} it will add counter at the end to avoid variables with the same names.}
-    \item{\code{inset.name}}{Use this name for the first column in results (harmonized names). Default is NULL, which means that either x.atomic.name if x is vector or original x.col name will be used with \code{inset.suffix} at the end.}
-    \item{\code{return.x.cols}}{If x is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (x.col).}
-    \item{\code{return.x.cols.all}}{Whether to bind all columns in x. Defaults depends on values of \code{x.col.update} and \code{inset.append}. If either is set then defaut values is TRUE otherwise FALSE. If set to TRUE by user the return.x.cols is ignored.}
+    \item{\code{vector}}{a vector to inset. Optional. Default is NULL}
+    \item{\code{col}}{vector of interest in \code{data} object}
+    \item{\code{update}}{Update values in \code{col} column. Default is FALSE. If set \code{append}, \code{name} and \code{name_suffix} are ignored. Also if set the default for \code{select_all_data_cols} will be set to TRUE.}
+    \item{\code{rows}}{Logical vector to filter records of interest. Default is NULL which means do not filter records}
+    \item{\code{ommitted_rows_values}}{If \code{rows} is set merge these values to the results. It should be a vector of length 1 or \code{nrow(data)}. If the value is NULL (default) then use original values of \code{col}.}
+    \item{\code{append}}{If set then put \code{vector} as the last instead of first vector/column. Default is FALSE.}
+    \item{\code{name_suffix}}{If \code{name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already edataists in \code{select_data_cols} it will add counter at the end to avoid variables with the same names.}
+    \item{\code{name}}{Use this name for the first column in results (harmonized names). Default is NULL, which means that either name_if_data_atomic if data is vector or original col name will be used with \code{name_suffix} at the end.}
+    \item{\code{name_if_data_atomic}}{If \code{data} is vector use this name for original column if it is in results. Default is "data". If \code{data} is table the name of \code{col} will be used.}
+    \item{\code{select_data_cols}}{If data is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).}
+    \item{\code{select_all_data_cols}}{Whether to bind all columns in \code{data}. Defaults depends on values of \code{update} and \code{append}. If either is set then defaut values is TRUE otherwise FALSE. If set to TRUE by user the select_data_cols is ignored.}
   }}
 }
 \value{
-updated object
+updated data (as data.table)
 }
 \description{
 Uppercases vector of interest in the object (table)

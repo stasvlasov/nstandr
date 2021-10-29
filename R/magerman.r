@@ -462,7 +462,7 @@ magerman_replace_legal_form_middle <- function(x, ...) {
 ## , "MSlab Co. GMBH & CO.KG lalal"
 ## , "KABUSHIKI KAISHA MSlab Co. ") %>%
 ##   toupper %>%
-##   magerman.detect.legal.form.end
+##   magerman_detect_legal_form_end
 ## --------<<  Detect and replace legal forms:1 ends here
 
 
@@ -470,7 +470,7 @@ magerman_replace_legal_form_middle <- function(x, ...) {
 ## -------->>  [[id:org:yrvizmx01ei0][Detect and replace legal forms:2]]
 ##' Detects legal form
 ##' @param x table
-##' @inheritDotParams magerman.detect.legal.form.end
+##' @inheritDotParams magerman_detect_legal_form_end
 ##' @return Harmonized table
 ##'
 ##' @md
