@@ -6,7 +6,7 @@
 \usage{
 inset_vector(
   data,
-  vector = NULL,
+  vector,
   col = 1,
   update = FALSE,
   append = FALSE,

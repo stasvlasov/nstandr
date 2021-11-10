@@ -4,7 +4,7 @@
 \alias{get_vector}
 \title{Gets a target vector to harmonize.}
 \usage{
-get_vector(data, col = 1, rows = NULL)
+get_vector(data, col = 1, rows = NULL, ...)
 }
 \arguments{
 \item{data}{Input data. Can be vector, data.frame or a data.table}
@@ -12,6 +12,8 @@ get_vector(data, col = 1, rows = NULL)
 \item{col}{Column of interest in the input \code{data}. The vector we would like to work with. This parameter is ignored if input \code{data} is a vector (checked by \code{is.atomic})}
 
 \item{rows}{Rows of interest}
+
+\item{...}{Ignored arguments that are meant for \code{inset_vector}}
 }
 \value{
 A vector. Factors in imput \code{data} are converted to string.
