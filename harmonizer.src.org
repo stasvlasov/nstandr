@@ -140,7 +140,7 @@ Note: If =install.packages= is tangled to =.Rprofile= it might cause a recursive
       "man"
     , "R"
   )
-
+  
   ## remove files in dirs recursively
   sapply(dirs_to_remove
        , function(dir) {
@@ -1463,6 +1463,202 @@ Tests:
   ## inset(c(1,2,3), c(F,F,F), Inf)
   ## is.null(Inf)
 #+END_SRC
+*** get_dots
+#+name: inject-get-dots
+#+BEGIN_SRC emacs-lisp
+  (save-window-excursion
+    (let* ((dots-get-dots-block-name "get_dots")
+           (dots-r-pkg-path "~/org/research/dots/dots.src.org")
+           ;; assume running in harmonizer.src.org
+           (harmonizer-r-pkg-path (file-name-directory (buffer-file-name)))
+           (tangle-to-file (concat harmonizer-r-pkg-path "R/get_dots.r")))
+      (with-current-buffer (find-file dots-r-pkg-path)
+        (org-babel-goto-named-src-block dots-get-dots-block-name)
+        ;; With one universal prefix argument, only tangle the block at point.
+        (org-babel-tangle '(4) tangle-to-file))))
+#+END_SRC
+
+
+*** harmonize_options
+:PROPERTIES:
+:ID:       org:p323mg11m9j0
+:END:
+
+#+BEGIN_SRC R :tangle R/harmonizer.r
+  ##' Does nothing but stores (as its own default arguments) options that control vector handeling through harmonization process. These options are available in most harmonizer functions that accept `...` parameter.
+  ##' 
+  ##' @param col Column of interest in the `data` object. The one we need to harmonize
+  ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records
+  ##' @param ommitted_rows_values If `rows` is set merge these values to the results. It should be a vector of length 1 or `nrow(data). If the value is NULL (default) then use original values of `col`
+  ##' @param placement Where to inset retults (harmonized vector) in the `data` object. Default options is "replace_col" which overwrides the `col` in `data` with results. 
+  ##' @param name Use this name for the first column in results (harmonized names). Default is NULL, which means that either name_if_data_atomic if data is vector or original col name will be used with `name_suffix` at the end.
+  ##' @param name_if_input_atomic If `data` is vector use this name for original column if it is in results. Default is "data". If `data` is table the name of `col` will be used.
+  ##' @param name_suffix If `name` is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already edataists in `select_data_cols` it will add counter at the end to avoid variables with the same names.
+  ##' @param append_copy Whether to append a copy of result vector to `data` object
+  ##' @param append_copy_name_format How the append copy wiil be named
+  ##' @param select_cols If data` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).
+  ##' 
+  ##' @return Always NULL. It does nothing.
+  harmonize_options <- function(col = 1
+                              , rows = NULL
+                              , ommitted_rows_values = NULL
+                              , placement = c(
+                                    "replace_col"
+                                  , "prepend_to_data"
+                                  , "append_to_data"
+                                  , "prepend_to_col"
+                                  , "append_to_col"
+                                  , "ignore")
+                              , name = NA
+                              , name_if_input_atomic = "names"
+                              , name_suffix = "_harmonized"
+                              , append_copy = FALSE
+                              , append_copy_name_format = "%name_harmonizing_%number_%procedure"
+                              , select_cols = NA) {
+      ## do nothing
+      return()
+  }
+#+END_SRC
+
+*** get_harmonize_options
+:PROPERTIES:
+:ID:       org:y3obsm80daj0
+:END:
+
+#+BEGIN_SRC R :tangle R/harmonizer.r
+  ##' Gets `harmonize_options` at point with consistent updates up through calling stack.
+  ##'
+  ##' Limited to max stack of 3 calls and calls that include at least `data` and `...` formals (`harmonizer` functions specific) up to `.GlobalEnv` or `harmonize` call.
+  ##' 
+  ##' @return Returns list of updated arguments specified in `harmonize_options` function
+  ##' 
+  ##' 
+  ##' @md 
+  ##' @import dotsR
+  ##' @export 
+  get_harmonize_options <- function() {
+      evalq({
+          get_dots(harmonize_options
+                 , search_while_calls_have_formals = c("x", "...")
+                 , search_up_nframes = 5L
+                 , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                 , skip_checks_for_parent_call = FALSE)
+      }, envir = parent.frame())
+  }
+#+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_get_harmonize_options.r
+  expect_equal(get_harmonize_options(), as.list(formals("harmonize_options")))
+  
+  harmonize_test <- function (x, ...) get_harmonize_options()
+  
+  ## should update defauls
+  expect_equal(harmonize_test()$col, 1)
+  expect_equal(harmonize_test(col = 2)$col, 2)
+  
+  harmonize_test <- \(x, col = 2, ...) get_harmonize_options()
+  
+  expect_equal(harmonize_test()$col, 2)
+  expect_equal(harmonize_test(col = 3)$col, 3)
+  
+  ## Condkitioning on checking arguments (formals) in calls 
+  
+  ## should not update defauls (with skip_checks_for_parent_call = TRUE)
+  harmonize_test_1 <- \() get_harmonize_options()
+  harmonize_test_2 <- \(x, col = 123) harmonize_test_1()
+  expect_equal(harmonize_test_2()$col, 1)
+  
+  harmonize_test_1 <- \() get_harmonize_options()
+  harmonize_test_2 <- \(col = 123, ...) harmonize_test_1()
+  expect_equal(harmonize_test_2()$col, 1)
+  
+  
+  ## should not update defauls (with skip_checks_for_parent_call = FALSE)
+  harmonize_test <- \(x, col = 123) get_harmonize_options()
+  expect_equal(harmonize_test()$col, 1)
+  
+  harmonize_test <- \(col = 123, ...) get_harmonize_options()
+  expect_equal(harmonize_test()$col, 1)
+  
+  
+  
+  
+  ## should update defauls
+  harmonize_test <- \(x, col = 123, ...) {
+      harmonize_ <- \(x, ...) get_harmonize_options()
+      harmonize_() 
+  }
+  expect_equal(harmonize_test()$col, 123)
+  
+  ## should not update defauls
+  harmonize_test <- \(x, col = 123, ...) {
+      harmonize <- \(x, ...) get_harmonize_options()
+      harmonize() 
+  }
+  expect_equal(harmonize_test()$col, 1)
+#+END_SRC
+
+*** get_vector
+:PROPERTIES:
+:ID:       org:77wbsm80daj0
+:END:
+#+BEGIN_SRC R :tangle R/get_vector.r
+  ##' Gets a target vector to harmonize.
+  ##'
+  ##' @param data Input data. Can be vector, data.frame or a data.table
+  ##' @param col Column of interest in the input `data`. The vector we would like to work with. This parameter is ignored if input `data` is a vector (checked by `is.atomic`)
+  ##' @param rows Rows of interest
+  ##' @param ... Ignored arguments that are meant for `inset_vector`
+  ##' @return A vector. Factors in imput `data` are converted to string.
+  ##'
+  ##' @md
+  get_vector <- function(x, ...) {
+      dots <- get_dots(harmonize_options
+                     , select_args = c("col", "rows")
+                     , search_while_calls_have_formals = c("x", "...")
+                     , search_up_nframes = 5L
+                     , search_up_to_call = c("harmonize", "harmonizer::harmonize"))
+      for (i in names(dots)) assign(i, dots[[i]])
+      check_args_col_rows()
+      harmonize_data_get_col(x, col)[rows]
+  }
+  
+  
+  ## functions that only runs within get_vector and inset_vector
+  ## --------------------------------------------------------------------------------
+  
+  ## Tests Arguments
+  check_args_col_rows <- function() {
+      evalq({
+          ## - check col
+          if(harmonize_is_ok_col(col, x, required = TRUE)) {
+              col %<>% ifelse(is.numeric(.), ., match(., names(x)))
+          }
+          ## - check rows
+          if(!harmonize_is_ok_type(rows, harmonize_data_length(x), type = "logical")) {
+              rows <- TRUE  # select all if rows NULL
+          }
+      }, envir = parent.frame())
+  }
+  
+#+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_get_vector.r
+  expect_equal(
+      data.table(x.pro.30 = list(c(1,2,3,4), 2,3,4)
+               , y = c(7,8,9,0)
+               , x.pro.5 = c(0,0,0,0)) |>
+      get_vector(rows = c(T,T,F,T))
+    , list(c(1, 2, 3, 4), 2, 4))
+
+  expect_equal(
+      data.frame(c(1,2,3,4)
+               , c("7","8","9","a")) |>
+      get_vector(col = 2
+               , rows = c(T,T,F,T))
+    , c("7", "8", "a"))
+#+END_SRC
+
 
 *** inset_vector
 :PROPERTIES:
@@ -1549,7 +1745,7 @@ Tests:
   ##' @importFrom magrittr %>%
   ##' @import magrittr data.table dplyr stringr
   ##' @export 
-  inset_vector_new <- function(data
+  inset_vector_new <- function(x
                              , vector
                              , ...) {
       dots <- harmonize_options()
@@ -1588,44 +1784,7 @@ Tests:
               harmonize.x.cbind(data[, select_cols, with = FALSE], append)
       }
   }
-  
-  
-  
-  
-  ##' Gets a target vector to harmonize.
-  ##'
-  ##' @param data Input data. Can be vector, data.frame or a data.table
-  ##' @param col Column of interest in the input `data`. The vector we would like to work with. This parameter is ignored if input `data` is a vector (checked by `is.atomic`)
-  ##' @param rows Rows of interest
-  ##' @param ... Ignored arguments that are meant for `inset_vector`
-  ##' @return A vector. Factors in imput `data` are converted to string.
-  ##'
-  ##' @md
-  get_vector <- function(data, col = 1 , rows = NULL, ...) {
-      check_args_col_rows()
-      harmonize_data_get_col(data, col)[rows]
-  }
-  
-  
-  ## functions that only runs within get_vector and inset_vector
-  ## --------------------------------------------------------------------------------
-  
-  ## Tests Arguments
-  check_args_col_rows <- function() {
-      evalq({
-          ## - check col
-          if(harmonize_is_ok_col(col, data, required = TRUE)) {
-              col %<>% ifelse(is.numeric(.), ., match(., names(data)))
-          }
-          ## - check rows
-          rows |> print()
-          if(!harmonize_is_ok_type(rows, harmonize_data_length(data), type = "logical")) {
-              rows <- TRUE  # select all if rows NULL
-              rows |> print()
-          }
-      }, envir = parent.frame())
-  }
-  
+
   check_args_for_inset_vector <- function(env = parent.frame()) {
       evalq({
           ## - check vector
@@ -1709,10 +1868,6 @@ Testing
   rows <- c(T, T, F, T)
   harmonize_is_ok_type(rows, 4, type = "logical")
   
-  data.frame(c(1,2,3,4)
-           , c("7","8","9","a")) %>%
-    get_vector(col = 2
-              , rows = c(T,T,F,T))
   
   data.table(c(1,2,3,4)
            , c(7,8,9,0)) %>%
@@ -1780,138 +1935,7 @@ Testing
               , select_data_cols = NULL
               , update = FALSE)
   
-  
-  
-  ## testing lists
-  data.table(x.pro.30 = list(c(1,2,3,4), 2,3,4)
-           , y = c(7,8,9,0)
-           , x.pro.5 = c(0,0,0,0)) %>%
-    get_vector(rows = c(T,T,F,T))
 #+END_SRC
-
-*** harmonize_options
-:PROPERTIES:
-:ID:       org:p323mg11m9j0
-:END:
-
-#+BEGIN_SRC R :tangle R/harmonizer.r
-  ##' This function provides options for `harmonizer` functions that controls how the input `data` object, intermediate and end results  are handled.
-  ##'
-  ##' It solves problem of passing options parameters to some arbitrary harmonizing function that are also passed with `...` (in which case there will be an error that parameters have duplicated names). Using this function allows not to pass `...` explicitly down to calling g stack and get the options values updated by explicit parameters at any location in the stack.
-  ##' 
-  ##' @param col Column of interest in the `data` object. The one we need to harmonize
-  ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records
-  ##' @param ommitted_rows_values If `rows` is set merge these values to the results. It should be a vector of length 1 or `nrow(data). If the value is NULL (default) then use original values of `col`
-  ##' @param placement Where to inset retults (harmonized vector) in the `data` object. Default options is "replace_col" which overwrides the `col` in `data` with results. 
-  ##' @param name Use this name for the first column in results (harmonized names). Default is NULL, which means that either name_if_data_atomic if data is vector or original col name will be used with `name_suffix` at the end.
-  ##' @param name_if_input_atomic If `data` is vector use this name for original column if it is in results. Default is "data". If `data` is table the name of `col` will be used.
-  ##' @param name_suffix If `name` is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already edataists in `select_data_cols` it will add counter at the end to avoid variables with the same names.
-  ##' @param append_copy Whether to append a copy of result vector to `data` object
-  ##' @param append_copy_name_format How the append copy wiil be named
-  ##' @param select_cols If data` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).
-  ##' @return list of options updated with arguments from `harmonizer` functions calls stack up to .GlobalEnv or 'harmonize' call.
-  harmonize_options <- function(col = 1
-                              , rows = NULL
-                              , ommitted_rows_values = NULL
-                              , placement = c(
-                                    "replace_col"
-                                  , "prepend_to_data"
-                                  , "append_to_data"
-                                  , "prepend_to_col"
-                                  , "append_to_col"
-                                  , "ignore")
-                              , name = NA
-                              , name_if_input_atomic = "names"
-                              , name_suffix = "_harmonized"
-                              , append_copy = FALSE
-                              , append_copy_name_format = "%name_harmonizing_%number_%procedure"
-                              , select_cols = NA) {
-      ## get 'default' arguments
-      placement <- match.arg(placement)
-      default_args <- as.list(environment())
-      ## collect explicit args in parents
-      explicit_args <- list()
-      sp <- sys.parent()
-      for (fr in sp:1) {
-          ## stop searching frames stack deaper than 4
-          if (fr < 1 || (sp - fr) > 4) break()
-          ## check if we are looking at hamonizer 'friendly' functions:
-          ## meaning that at least these 2 args should exist: $data and $...
-          parent_default_args <- formals(sys.function(fr))
-          if (all(c("data", "...") %in% names(parent_default_args))) {
-              ## update defautls if called explicitly
-              default_args <- 
-                  c(default_args[!(names(default_args) %in% names(parent_default_args))]
-                  , parent_default_args[(names(parent_default_args) %in% names(default_args))])
-              ## if explicit arg is in args list and not already added add it       
-              parent_call <- evalq(as.list(match.call()), envir = sys.frame(fr))
-              parent_args <- parent_call[-1]
-              if (length(parent_args) > 0) {
-                  args_to_add <-
-                      (names(parent_args) %in% names(default_args)) &
-                      !(names(parent_args) %in% names(explicit_args))
-                  if (any(args_to_add)) {
-                      explicit_args <-
-                          c(explicit_args
-                          , parent_args[args_to_add] |>
-                            lapply(eval, envir = sys.frame(fr)))
-                  }
-              }
-              ## stop searching frames stack at harmonize call
-              if (parent_call[1] == "harmonize") break()
-          }
-      }
-      ## merge def and explicit args
-      arg_update <- default_args
-      if (length(explicit_args) != 0) {
-          arg_update <- 
-              c(explicit_args
-              , default_args[!(names(default_args) %in% names(explicit_args))])
-      }
-      return (arg_update)
-  }
-  
-  
-  
-#+END_SRC
-
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_options.r
-
-  harmonize_test <- \(data, ...) harmonize_options()
-  
-  ## should update defauls
-  expect_equal(harmonize_test()$col, 1)
-  expect_equal(harmonize_test(col = 2)$col, 2)
-  
-  harmonize_test <- \(data, col = 2, ...) harmonize_options()
-  
-  expect_equal(harmonize_test()$col, 2)
-  expect_equal(harmonize_test(col = 3)$col, 3)
-  
-  
-  
-  ## should not update defauls
-  harmonize_test <- \(data, col = 123) harmonize_options()
-  expect_equal(harmonize_test()$col, 1)
-  harmonize_test <- \(col = 123, ...) harmonize_options()
-  expect_equal(harmonize_test()$col, 1)
-  
-  
-  ## should update defauls
-  harmonize_test <- \(data, col = 123, ...) {
-      harmonize_ <- \(data, ...) harmonize_options()
-      harmonize_() 
-  }
-  expect_equal(harmonize_test()$col, 123)
-  
-  ## should not update defauls
-  harmonize_test <- \(data, col = 123, ...) {
-      harmonize <- \(data, ...) harmonize_options()
-      harmonize() 
-  }
-  expect_equal(harmonize_test()$col, 1)
-#+END_SRC
-
 
 *** harmonize.x.dots
 :PROPERTIES:
@@ -3615,7 +3639,7 @@ The default harmonization procedures are the following (for now):
   ##           , progress.by = 30)
 #+END_SRC
 
-* Magerman, et al. (2006) Harmonization Procedure
+* Magerman, et al. (2006) - Harmonization Procedure
 
 Notes:
 [[id:org:zy6j0m20vai0][Magerman, Van Looy & Song, 2006 - Name harmonisation]]

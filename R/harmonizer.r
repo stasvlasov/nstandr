@@ -573,6 +573,68 @@ harmonize.x.cbind <- function(inset.vector, x, append = FALSE) {
 
 
 
+## -------->>  [[id:org:p323mg11m9j0][harmonize_options:1]]
+##' Does nothing but stores (as its own default arguments) options that control vector handeling through harmonization process. These options are available in most harmonizer functions that accept `...` parameter.
+##' 
+##' @param col Column of interest in the `data` object. The one we need to harmonize
+##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records
+##' @param ommitted_rows_values If `rows` is set merge these values to the results. It should be a vector of length 1 or `nrow(data). If the value is NULL (default) then use original values of `col`
+##' @param placement Where to inset retults (harmonized vector) in the `data` object. Default options is "replace_col" which overwrides the `col` in `data` with results. 
+##' @param name Use this name for the first column in results (harmonized names). Default is NULL, which means that either name_if_data_atomic if data is vector or original col name will be used with `name_suffix` at the end.
+##' @param name_if_input_atomic If `data` is vector use this name for original column if it is in results. Default is "data". If `data` is table the name of `col` will be used.
+##' @param name_suffix If `name` is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already edataists in `select_data_cols` it will add counter at the end to avoid variables with the same names.
+##' @param append_copy Whether to append a copy of result vector to `data` object
+##' @param append_copy_name_format How the append copy wiil be named
+##' @param select_cols If data` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).
+##' 
+##' @return Always NULL. It does nothing.
+harmonize_options <- function(col = 1
+                            , rows = NULL
+                            , ommitted_rows_values = NULL
+                            , placement = c(
+                                  "replace_col"
+                                , "prepend_to_data"
+                                , "append_to_data"
+                                , "prepend_to_col"
+                                , "append_to_col"
+                                , "ignore")
+                            , name = NA
+                            , name_if_input_atomic = "names"
+                            , name_suffix = "_harmonized"
+                            , append_copy = FALSE
+                            , append_copy_name_format = "%name_harmonizing_%number_%procedure"
+                            , select_cols = NA) {
+    ## do nothing
+    return()
+}
+## --------<<  harmonize_options:1 ends here
+
+
+
+## -------->>  [[id:org:y3obsm80daj0][get_harmonize_options:1]]
+##' Gets `harmonize_options` at point with consistent updates up through calling stack.
+##'
+##' Limited to max stack of 3 calls and calls that include at least `data` and `...` formals (`harmonizer` functions specific) up to `.GlobalEnv` or `harmonize` call.
+##' 
+##' @return Returns list of updated arguments specified in `harmonize_options` function
+##' 
+##' 
+##' @md 
+##' @import dotsR
+##' @export 
+get_harmonize_options <- function() {
+    evalq({
+        get_dots(harmonize_options
+               , search_while_calls_have_formals = c("x", "...")
+               , search_up_nframes = 5L
+               , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+               , skip_checks_for_parent_call = FALSE)
+    }, envir = parent.frame())
+}
+## --------<<  get_harmonize_options:1 ends here
+
+
+
 ## -------->>  [[id:org:p11ds0x069j0][inset_vector:1]]
 ##' Insets target vector back to input object (`data`)
 ##'
@@ -654,7 +716,7 @@ inset_vector <- function(data
 ##' @importFrom magrittr %>%
 ##' @import magrittr data.table dplyr stringr
 ##' @export 
-inset_vector_new <- function(data
+inset_vector_new <- function(x
                            , vector
                            , ...) {
     dots <- harmonize_options()
@@ -692,43 +754,6 @@ inset_vector_new <- function(data
             set_names(name) %>%
             harmonize.x.cbind(data[, select_cols, with = FALSE], append)
     }
-}
-
-
-
-
-##' Gets a target vector to harmonize.
-##'
-##' @param data Input data. Can be vector, data.frame or a data.table
-##' @param col Column of interest in the input `data`. The vector we would like to work with. This parameter is ignored if input `data` is a vector (checked by `is.atomic`)
-##' @param rows Rows of interest
-##' @param ... Ignored arguments that are meant for `inset_vector`
-##' @return A vector. Factors in imput `data` are converted to string.
-##'
-##' @md
-get_vector <- function(data, col = 1 , rows = NULL, ...) {
-    check_args_col_rows()
-    harmonize_data_get_col(data, col)[rows]
-}
-
-
-## functions that only runs within get_vector and inset_vector
-## --------------------------------------------------------------------------------
-
-## Tests Arguments
-check_args_col_rows <- function() {
-    evalq({
-        ## - check col
-        if(harmonize_is_ok_col(col, data, required = TRUE)) {
-            col %<>% ifelse(is.numeric(.), ., match(., names(data)))
-        }
-        ## - check rows
-        rows |> print()
-        if(!harmonize_is_ok_type(rows, harmonize_data_length(data), type = "logical")) {
-            rows <- TRUE  # select all if rows NULL
-            rows |> print()
-        }
-    }, envir = parent.frame())
 }
 
 check_args_for_inset_vector <- function(env = parent.frame()) {
@@ -793,86 +818,6 @@ check_args_for_inset_vector <- function(env = parent.frame()) {
     }, envir = env)
 }
 ## --------<<  inset_vector:1 ends here
-
-
-
-## -------->>  [[id:org:p323mg11m9j0][harmonize_options:1]]
-##' This function provides options for `harmonizer` functions that controls how the input `data` object, intermediate and end results  are handled.
-##'
-##' It solves problem of passing options parameters to some arbitrary harmonizing function that are also passed with `...` (in which case there will be an error that parameters have duplicated names). Using this function allows not to pass `...` explicitly down to calling g stack and get the options values updated by explicit parameters at any location in the stack.
-##' 
-##' @param col Column of interest in the `data` object. The one we need to harmonize
-##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records
-##' @param ommitted_rows_values If `rows` is set merge these values to the results. It should be a vector of length 1 or `nrow(data). If the value is NULL (default) then use original values of `col`
-##' @param placement Where to inset retults (harmonized vector) in the `data` object. Default options is "replace_col" which overwrides the `col` in `data` with results. 
-##' @param name Use this name for the first column in results (harmonized names). Default is NULL, which means that either name_if_data_atomic if data is vector or original col name will be used with `name_suffix` at the end.
-##' @param name_if_input_atomic If `data` is vector use this name for original column if it is in results. Default is "data". If `data` is table the name of `col` will be used.
-##' @param name_suffix If `name` is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already edataists in `select_data_cols` it will add counter at the end to avoid variables with the same names.
-##' @param append_copy Whether to append a copy of result vector to `data` object
-##' @param append_copy_name_format How the append copy wiil be named
-##' @param select_cols If data` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).
-##' @return list of options updated with arguments from `harmonizer` functions calls stack up to .GlobalEnv or 'harmonize' call.
-harmonize_options <- function(col = 1
-                            , rows = NULL
-                            , ommitted_rows_values = NULL
-                            , placement = c(
-                                  "replace_col"
-                                , "prepend_to_data"
-                                , "append_to_data"
-                                , "prepend_to_col"
-                                , "append_to_col"
-                                , "ignore")
-                            , name = NA
-                            , name_if_input_atomic = "names"
-                            , name_suffix = "_harmonized"
-                            , append_copy = FALSE
-                            , append_copy_name_format = "%name_harmonizing_%number_%procedure"
-                            , select_cols = NA) {
-    ## get 'default' arguments
-    placement <- match.arg(placement)
-    default_args <- as.list(environment())
-    ## collect explicit args in parents
-    explicit_args <- list()
-    sp <- sys.parent()
-    for (fr in sp:1) {
-        ## stop searching frames stack deaper than 4
-        if (fr < 1 || (sp - fr) > 4) break()
-        ## check if we are looking at hamonizer 'friendly' functions:
-        ## meaning that at least these 2 args should exist: $data and $...
-        parent_default_args <- formals(sys.function(fr))
-        if (all(c("data", "...") %in% names(parent_default_args))) {
-            ## update defautls if called explicitly
-            default_args <- 
-                c(default_args[!(names(default_args) %in% names(parent_default_args))]
-                , parent_default_args[(names(parent_default_args) %in% names(default_args))])
-            ## if explicit arg is in args list and not already added add it       
-            parent_call <- evalq(as.list(match.call()), envir = sys.frame(fr))
-            parent_args <- parent_call[-1]
-            if (length(parent_args) > 0) {
-                args_to_add <-
-                    (names(parent_args) %in% names(default_args)) &
-                    !(names(parent_args) %in% names(explicit_args))
-                if (any(args_to_add)) {
-                    explicit_args <-
-                        c(explicit_args
-                        , parent_args[args_to_add] |>
-                          lapply(eval, envir = sys.frame(fr)))
-                }
-            }
-            ## stop searching frames stack at harmonize call
-            if (parent_call[1] == "harmonize") break()
-        }
-    }
-    ## merge def and explicit args
-    arg_update <- default_args
-    if (length(explicit_args) != 0) {
-        arg_update <- 
-            c(explicit_args
-            , default_args[!(names(default_args) %in% names(explicit_args))])
-    }
-    return (arg_update)
-}
-## --------<<  harmonize_options:1 ends here
 
 
 
