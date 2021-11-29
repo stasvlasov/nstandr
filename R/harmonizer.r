@@ -719,17 +719,17 @@ inset_vector <- function(data
 inset_vector_new <- function(x
                            , vector
                            , ...) {
-    dots <- harmonize_options()
+    dots <- get_harmonize_options()
     for (v in names(dots)) {
         assign(v, dots[[v]])
     }
     ## process arguments
     check_args_col_rows()
-    check_args_for_inset_vector()    
+    ## check_args_for_inset_vector()    
     ## inset filtered rows (this makes list if vector is list)
     vector %<>% inset(ommitted_rows_values, rows, .)
     ## inset vector to data
-    if(is.atomic(data) && isFALSE(select_cols == 1)) {
+    if(is.atomic(x) && isFALSE(select_cols == 1)) {
         vector
     } else if(placement == "replace_col") {
         data %>%
@@ -761,16 +761,16 @@ check_args_for_inset_vector <- function(env = parent.frame()) {
         ## - check vector
         harmonize_is_ok_type(vector
                            , allow.null = FALSE
-                           , x.length = if(isTRUE(rows)) harmonize_data_length(data)
+                           , x.length = if(isTRUE(rows)) harmonize_data_length(x)
                                         else sum(rows)
                            , type = c("atomic", "list"))
         ## - check ommitted_rows_values
         if(!harmonize_is_ok_type(ommitted_rows_values
-                               , x.length = c(1, harmonize_data_length(data))
+                               , x.length = c(1, harmonize_data_length(x))
                                , type = "atomic")) {
-            ommitted_rows_values <- harmonize_data_get_col(data, col)
+            ommitted_rows_values <- harmonize_data_get_col(x, col)
         } else if(length(ommitted_rows_values) == 1) {
-            ommitted_rows_values %<>% harmonize_defactor %>% rep(harmonize_data_length(data))
+            ommitted_rows_values %<>% harmonize_defactor %>% rep(harmonize_data_length(x))
         } else {
             ommitted_rows_values %<>% harmonize_defactor
         }
@@ -781,11 +781,11 @@ check_args_for_inset_vector <- function(env = parent.frame()) {
         ## then respect select_data_cols
         if(select_all_data_cols && (!missing(select_all_data_cols) || missing(select_cols)))
             ## set select_data_cols to all
-            select_data_cols <- 1:harmonize_data_width(data)
-        else if(harmonize_is_ok_col(select_data_cols, data
+            select_data_cols <- 1:harmonize_data_width(x)
+        else if(harmonize_is_ok_col(select_data_cols, x
                                   , allow.negative = TRUE
                                   , several.ok = TRUE))
-            select_data_cols %<>% switch(is.numeric(.) + 1, match(., names(data)), .)
+            select_data_cols %<>% switch(is.numeric(.) + 1, match(., names(x)), .)
         else {
             ## set it to zero if it is null
             select_data_cols <- 0
@@ -803,7 +803,7 @@ check_args_for_inset_vector <- function(env = parent.frame()) {
         if(!update) {
             harmonize_is_ok_type(name, x.length = 1
                                , type = "character", allow.null = FALSE)
-            if(name %in% names(data)[select_data_cols]) {
+            if(name %in% names(x)[select_data_cols]) {
                 stop("The harmonized column name: ", name, " is alredy exists.")
             }
             harmonize_is_ok_type(name_suffix

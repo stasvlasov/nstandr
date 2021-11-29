@@ -19,14 +19,15 @@ Imports:
     xml2 (>= 1.0)
 Encoding: UTF-8
 References: Magerman, T., Looy, V., Bart, & Song, X. (2006). Data
-    Production Methods for Harmonized Patent Statistics: Patentee Name
-    Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY:
-    Social Science Research Network. Retrieved from
-    http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S.,
-    Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010).
-    Harmonizing and combining large datasets - an application to
-    firm-level patent and accounting data. National Bureau of Economic
-    Research Working Paper Series, (15851). Retrieved from
-    http://www.nber.org/papers/w15851.pdf
+        Production Methods for Harmonized Patent Statistics: Patentee
+        Name Harmonization (SSRN Scholarly Paper No. ID 944470).
+        Rochester, NY: Social Science Research Network. Retrieved from
+        http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S.,
+        Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D.
+        (2010). Harmonizing and combining large datasets - an
+        application to firm-level patent and accounting data. National
+        Bureau of Economic Research Working Paper Series, (15851).
+        Retrieved from http://www.nber.org/papers/w15851.pdf
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Suggests: tinytest

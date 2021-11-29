@@ -1,6 +1,181 @@
 # - Reference from [[associate-id:org:29i4s7t0y5i0][Harmonizer R package]] on [2021-06-05 Sat 22:51]
 #+PROPERTY: header-args:R  :comments link :session :mkdirp yes :padline yes
 
+* Frontpage
+:PROPERTIES:
+:export_file_name: README.md
+:export_options: toc:nil
+:export_options+: author:nil
+:export_options+: title:nil
+:END:
+
+
+#+begin_export markdown
+[![R-CMD-check](https://github.com/stasvlasov/harmonizer/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/harmonizer/actions)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/harmonizer)
+#+end_export
+
+The R package =harmonizer= standardizes (harmonizes) organizational names.
+
+The task of merging large datasets becomes more common these days as more and more data is coming. However, there is still no standard tool for that task according to Thoma et al. (2010).
+
+Initially this task was performed manually (e.g., Griliches, 1981) and relatively recently some automatic tools start to emerge. This package is meant to a framework for name harmonization procedures and consolidate prior efforts of researchers that were working on the similar task.
+
+This R package currently includes contributions of Thoma et al. (2010), Magerman et al. (2006) and Cockburn et al. (2009) with number of additional cleaning procedures.
+
+The detailed procedures can be found here:
+- [[file:res/magerman.code.org][Magerman et al. (2006)]]
+- [[file:res/cockburn.code.org][Cockburn et al. (2009)]]
+
+Harmonization of names is a separate tasks from name matching. Most of the harmonizing procedures works separately on an individual string and independent on the corpus of names. Nevertheless, some of harmonization procedures can also consider the whole corpus of names for harmonizing, e.g., as it is a case in Magerman's umlaut harmonization procedure. Processing of such procedures can not be done now in parallel.
+
+This is work in progress. Please, file an issue or a suggestion if you have any.
+
+** References
+
+Magerman, T., Looy, V., Bart, & Song, X. (2006). /Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization/ (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470
+
+Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. /National Bureau of Economic Research Working Paper Series/, (15851). Retrieved from http://www.nber.org/papers/w15851 http://www.nber.org/papers/w15851.pdf
+
+
+** Installation
+
+#+BEGIN_SRC R
+  devtools::install_github("stasvlasov/harmonizer")
+#+END_SRC
+
+** Usage
+The package provides its main function =harmonize= that expect character vector of organization names as input and returns its harmonized version.
+
+#+BEGIN_SRC R
+  org.names.test <- c("žŸong-ÃÇÈÏ\n\u00b5&oacute;\u00b5<p>, LTD Co;  "
+                    , "<br> the $(Ldt &AMP; C&oacute;MP) Ïotta INt"
+                    , "Masha  &AMP;Lena Ltd. (Spb)"
+                    , "bla-bla-bla Ltd.")
+  data.frame(harmonized = harmonize(org.names.test)
+           , original = org.names.test)
+
+  #           harmonized                                    original
+  #  1    ZYONG ACEI UOU        žŸong-ÃÇÈÏ\nµ&oacute;µ<p>, LTD Co;  
+  #  2         IOTTA INT <br> the $(Ldt &AMP; C&oacute;MP) Ïotta INt
+  #  3      MASHA & LENA                 Masha  &AMP;Lena Ltd. (Spb)
+  #  4       BLA BLA BLA                            bla-bla-bla Ltd.
+#+END_SRC
+
+
+*** Harmonization procedures
+:PROPERTIES:
+:ID:       org:pm44dhm0fqi0
+:END:
+
+Harmonization procedures are flexible and can be specified with setting ~procedures~ option like so:
+
+#+BEGIN_SRC R
+    org.names.test %>%
+        harmonize(procedures = list(
+                      list("harmonize.toascii", detect.encoding = FALSE)
+                    , "harmonize.remove.brackets"
+                    , "harmonize.toupper"
+                    , list("harmonize.squish.spaces", wrap.in.spaces = TRUE)
+                    , "cockburn.replace.punctuation"
+                    , "harmonize.squish.spaces"))
+
+#+END_SRC
+
+The default harmonization procedures are described in the literate [[file:harmonizer.src.org::*harmonize][source file]].
+
+*** Displaying harmonization progress
+Useful for big data tables. The option ~progress.by~ tells how often to update the progress. (If you have 10^7 records it is recommended to set ~progress.by~ as 10^5 or more.) Setting this option will slow the harmonization down a little.
+
+#+BEGIN_SRC R
+  org.names.test %>%
+      harmonize(progress.by = 1)
+
+  ## Running harmonizer procedures:
+  ## * toascii ...			DONE
+  ## * remove.brackets ...		DONE
+  ## * toupper ...			DONE
+  ## * apply.nber ...			 73%
+#+END_SRC
+
+*** Visualizing harmonization algorithm
+The package can generate simple visualization for harmonization algorithm (procedures). For example:
+
+[[file:./img/harmonization.png]]
+
+*** Comparison of alternative harmonization algorithms
+
+Knowing ground truth whether any two text strings that represents organizational names are the same organizational name or assuming that some algorithm produces such ground truth the package uses simple well known statistics (see table below) of pair-wise name comparison to assess relative performance of specific algorithm.
+
+|                               | /Same set by ground truth/ | /Different sets by ground truth/ |
+|-------------------------------+----------------------------+----------------------------------|
+| /Same set by algorithm/       | True Positive (*TP*)       | False Positive (*FP*)            |
+| /Different sets by algorithm/ | False Negative (*FN*)      | True Negative (*TN*)             |
+
+
+Relative performance metrics:
+- pair-wise precision / cluster precision [TP/(TP +FP)]
+- pair-wise recall / cluster recall [TP/(TP +FN)]
+- pair-wise / cluster F1 (harmonic mean of precision and recall)
+- pairwise accuracy
+- average cluster purity
+- K metric
+
+# <img src="https://render.githubusercontent.com/render/math?math=pair-wise precision = \frac{TP}{TP + FP}">
+# <img src="https://render.githubusercontent.com/render/math?math=pair-wise recall = \frac{TP}{TP + FN}">
+
+** Other relevant literature
+
+Balasubramanian, N., & Sivadasan, J. (2010). /NBER Patent Data-BR Bridge: User Guide and Technical Documentation/ (SSRN Scholarly Paper No. ID 1695013). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=1695013
+
+Bosch-Capblanch, X. (2011). Harmonisation of variables names prior to conducting statistical analyses with multiple datasets: an automated approach. /Bmc Medical Informatics and Decision Making/, 11. http://doi.org/10.1186/1472-6947-11-33
+
+Callaert, J., Du Plessis, M., Grouwels, J., Lecocq, C., Magerman, T., Peeters, B., … Vereyen, C. (2011). Patent statistics at eurostat: Methods for regionalisation, sector allocation and name harmonisation. Retrieved from https://lirias.kuleuven.be/bitstream/123456789/312061/1/2011-07-05
+
+Codes, E. M. (2006). WORLD PATENTS INDEX. Retrieved from https://www5d.delphion.com/derwent/docs/patentee_codes.pdf
+
+Du Plessis, M., Van Looy, B., Song, X., & Magerman, T. (2010). Data production methods for harmonized patent statistics: Patentee sector allocation 2009. Retrieved from https://lirias.kuleuven.be/handle/123456789/264237
+
+Li, G.-C., Lai, R., D’Amour, A., Doolin, D. M., Sun, Y., Torvik, V. I., … Fleming, L. (2014). Disambiguation and co-authorship networks of the U.S. patent inventor database (1975–2010). /Research Policy/, 43(6), 941–955. http://doi.org/10.1016/j.respol.2014.01.012
+
+Lissoni, F., Coffano, M., Maurino, A., Pezzoni, M., & Tarasconi, G. (2010). APE-INV’s “Name Game” algorithm challenge: A guideline for benchmark data analysis & reporting. /Version/, 1, 875–889.
+
+Peeters, B., Song, X., Callaert, J., Grouwels, J., & Van Looy, B. (2010a). Harmonizing harmonized patentee names: an exploratory assessment of top patentees. Retrieved from https://lirias.kuleuven.be/handle/123456789/264238
+
+Peeters, B., Song, X., Callaert, J., Grouwels, J., & Van Looy, B. (2010b). Harmonizing harmonized patentee names: an exploratory assessment of top patentees. Retrieved from https://lirias.kuleuven.be/bitstream/123456789/264238/1/2010-03-18
+
+Pesenhofer, A., Berger, H., & Dittenbach, M. (2011). Offering New Insights by Harmonizing Patents, Taxonomies and Linked Data. In M. Lupu, K. Mayer, J. Tait, & A. J. Trippe (Eds.), /Current Challenges in Patent Information Retrieval/ (Vol. 29, pp. 357–371). Dordrecht: Springer. Retrieved from ://WOS:000290417900018
+
+Raffo, J., & Lhuillery, S. (2009). How to play the “Names Game”: Patent retrieval comparing different heuristics. /Research Policy/, 38(10), 1617–1627. http://doi.org/10.1016/j.respol.2009.08.001
+
+Van der Loo, M. P. (2014). The stringdist package for approximate string matching. /The R Journal/, 6, 111–122.
+
+Wasi, N., Flaaen, A., & others. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. /Stata Journal/, 15(3), 672–697.
+
+Winkler, W. E. (2006). /Overview of record linkage and current research directions/. Bureau of the Census. Retrieved from http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.79.1519
+
+
+
+
+
+
+** How to cite this R package
+
+#+begin_src latex
+@misc{Vlasov2020,
+  author = {Vlasov, Stanislav A.},
+  title = {harmonizer - an R package to harmonize organizational names.},
+  year = {2020},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/stasvlasov/harmonizer}},
+  commit = {5fc35d74c0f8e0421845029d4da2f050f352edbb}
+}
+#+end_src
+
+
+
+
 * Development
 
 For this package development I use Emacs' org-mode that allows literate programming. Literate programming in this case provides ways to do the following:
@@ -18,7 +193,31 @@ For this package development I use Emacs' org-mode that allows literate programm
 - Data for string substitutions, removals or pattern recognition should be named as "patterns" (e.g., harmonizer.magerman.patterns.special.characters)
 
 
-* Building
+* Deploy
+** README.md
+#+name: tangle-readme
+#+begin_src emacs-lisp
+  (require 'org-goto)
+  (save-excursion
+    (org-goto--local-search-headings "Frontpage" nil t)
+    ;; (org-pandoc-export-to-markdown nil 'subtreep)
+    (org-md-export-to-markdown nil 'subtreep))
+#+end_src
+** Set up tinytest
+#+BEGIN_SRC R
+  tinytest::setup_tinytest(".")
+#+END_SRC
+** Add github workflows and badges
+
+https://github.com/r-lib/actions/blob/v1/examples/README.md
+#+BEGIN_SRC R
+  usethis::use_github_action("check-release")
+  usethis::use_github_action("test-coverage")
+  usethis::use_github_action("pkgdown")
+  
+  usethis::use_github_actions_badge(name = "R-CMD-check")
+#+END_SRC
+
 ** Set Enviroment for making the package (.Rprofile)
 :PROPERTIES:
 :ID:       org:yeu37341cai0
@@ -401,7 +600,7 @@ To call all calls
 
 
 * Functions
-** harmonize.x
+** vector handeling
 :PROPERTIES:
 :ID:       org:kakfib50bci0
 :END:
@@ -1748,17 +1947,17 @@ Tests:
   inset_vector_new <- function(x
                              , vector
                              , ...) {
-      dots <- harmonize_options()
+      dots <- get_harmonize_options()
       for (v in names(dots)) {
           assign(v, dots[[v]])
       }
       ## process arguments
       check_args_col_rows()
-      check_args_for_inset_vector()    
+      ## check_args_for_inset_vector()    
       ## inset filtered rows (this makes list if vector is list)
       vector %<>% inset(ommitted_rows_values, rows, .)
       ## inset vector to data
-      if(is.atomic(data) && isFALSE(select_cols == 1)) {
+      if(is.atomic(x) && isFALSE(select_cols == 1)) {
           vector
       } else if(placement == "replace_col") {
           data %>%
@@ -1784,22 +1983,22 @@ Tests:
               harmonize.x.cbind(data[, select_cols, with = FALSE], append)
       }
   }
-
+  
   check_args_for_inset_vector <- function(env = parent.frame()) {
       evalq({
           ## - check vector
           harmonize_is_ok_type(vector
                              , allow.null = FALSE
-                             , x.length = if(isTRUE(rows)) harmonize_data_length(data)
+                             , x.length = if(isTRUE(rows)) harmonize_data_length(x)
                                           else sum(rows)
                              , type = c("atomic", "list"))
           ## - check ommitted_rows_values
           if(!harmonize_is_ok_type(ommitted_rows_values
-                                 , x.length = c(1, harmonize_data_length(data))
+                                 , x.length = c(1, harmonize_data_length(x))
                                  , type = "atomic")) {
-              ommitted_rows_values <- harmonize_data_get_col(data, col)
+              ommitted_rows_values <- harmonize_data_get_col(x, col)
           } else if(length(ommitted_rows_values) == 1) {
-              ommitted_rows_values %<>% harmonize_defactor %>% rep(harmonize_data_length(data))
+              ommitted_rows_values %<>% harmonize_defactor %>% rep(harmonize_data_length(x))
           } else {
               ommitted_rows_values %<>% harmonize_defactor
           }
@@ -1810,11 +2009,11 @@ Tests:
           ## then respect select_data_cols
           if(select_all_data_cols && (!missing(select_all_data_cols) || missing(select_cols)))
               ## set select_data_cols to all
-              select_data_cols <- 1:harmonize_data_width(data)
-          else if(harmonize_is_ok_col(select_data_cols, data
+              select_data_cols <- 1:harmonize_data_width(x)
+          else if(harmonize_is_ok_col(select_data_cols, x
                                     , allow.negative = TRUE
                                     , several.ok = TRUE))
-              select_data_cols %<>% switch(is.numeric(.) + 1, match(., names(data)), .)
+              select_data_cols %<>% switch(is.numeric(.) + 1, match(., names(x)), .)
           else {
               ## set it to zero if it is null
               select_data_cols <- 0
@@ -1832,7 +2031,7 @@ Tests:
           if(!update) {
               harmonize_is_ok_type(name, x.length = 1
                                  , type = "character", allow.null = FALSE)
-              if(name %in% names(data)[select_data_cols]) {
+              if(name %in% names(x)[select_data_cols]) {
                   stop("The harmonized column name: ", name, " is alredy exists.")
               }
               harmonize_is_ok_type(name_suffix
