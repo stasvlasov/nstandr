@@ -1,3 +1,6 @@
+[![R-CMD-check](https://github.com/stasvlasov/harmonizer/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/harmonizer/actions)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/harmonizer)
+
 The R package `harmonizer` standardizes (harmonizes) organizational names.
 
 The task of merging large datasets becomes more common these days as more and more data is coming. However, there is still no standard tool for that task according to Thoma et al. (2010).
