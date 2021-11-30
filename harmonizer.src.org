@@ -207,6 +207,11 @@ For this package development I use Emacs' org-mode that allows literate programm
 #+BEGIN_SRC R
   tinytest::setup_tinytest(".")
 #+END_SRC
+
+#+BEGIN_SRC R
+  rcmdcheck::rcmdcheck()
+  tinytest::setup_tinytest(".")
+#+END_SRC
 ** Add github workflows and badges
 
 https://github.com/r-lib/actions/blob/v1/examples/README.md
@@ -1666,11 +1671,16 @@ Tests:
 #+name: inject-get-dots
 #+BEGIN_SRC emacs-lisp
   (save-window-excursion
-    (let* ((dots-get-dots-block-name "get_dots")
+    (let* (tangling-from-harmonizer-R-package
+           (dots-get-dots-block-name "get_dots")
            (dots-r-pkg-path "~/org/research/dots/dots.src.org")
-           ;; assume running in harmonizer.src.org
-           (harmonizer-r-pkg-path (file-name-directory (buffer-file-name)))
-           (tangle-to-file (concat harmonizer-r-pkg-path "R/get_dots.r")))
+           ;; assume running in target pkg dir
+           (r-pkg-path (file-name-directory (buffer-file-name)))
+           (tangle-to-file (concat r-pkg-path "R/get_dots.r"))
+           ;; this is used as condition in 'bind-get-dots' call in dots.src.org
+           tangling-from-harmonizer-R-package
+           ;; turn off babel prompts
+           org-confirm-babel-evaluate)
       (with-current-buffer (find-file dots-r-pkg-path)
         (org-babel-goto-named-src-block dots-get-dots-block-name)
         ;; With one universal prefix argument, only tangle the block at point.

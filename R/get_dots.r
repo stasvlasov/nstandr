@@ -11,15 +11,14 @@
 ##' @param search_up_to_call The name of the call before which to continue looking up the call stack for updates in dots arguments.
 ##' @param skip_checks_for_parent_call Whether to skip checking `search_while_calls_have_formals` `search_while_calls_belong_to_env` `search_while_calls_regexp`
 ##' @examples
-##' # Basic example
+##' # Make get_dots available for following examples
+##' get_dots <- harmonizer:::get_dots
+##' # Basic usage
 ##' util <- function(foo = 0, bar = 0) {
-##'     # binds updated arguments into environment
-##'     dots <- dots:::get_dots()
-##'     for (v in names(dots)) {
-##'         assign(v, dots[[v]])
-##'     }
-##'     rm(dots, v)
-##'     # report argumetns
+##'     # get dots and bind updated arguments into environment
+##'     dots <- get_dots()
+##'     for (v in names(dots)) assign(v, dots[[v]])
+##'     # util just reports it arguments
 ##'     message("foo: ", foo, ", bar: ", bar)
 ##' }
 ##' 
@@ -37,15 +36,12 @@
 ##' #> foo: 1, bar: 2  # THIS WORKS NOW!
 ##' #> foo: 2, bar: 1  # THIS WORKS NOW!
 ##'
-##' # Nested calls example
+##' # Usage in nested calls
 ##' util <- function(foo = 0, bar = 0) {
-##'     dots <- dots:::get_dots(search_up_nframes = 3L)
-##'     # bind updated arguments to local environment
-##'     for (v in names(dots)) {
-##'         assign(v, dots[[v]])
-##'     }
-##'     rm(dots, v)
-##'     # report arguments
+##'     # get dots and bind updated arguments into environment
+##'     dots <- get_dots(search_up_nframes = 3L)
+##'     for (v in names(dots)) assign(v, dots[[v]])
+##'     # util just reports it arguments
 ##'     message("foo: ", foo, ", bar: ", bar)
 ##' }
 ##' 
