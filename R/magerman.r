@@ -1,4 +1,4 @@
-## -------->>  [[id:org:qwne4v20zai0][Characters:1]]
+## -------->>  [[file:../harmonizer.src.org::*Characters][Characters:1]]
 ##' Detects candidates for characters that need to be cleaned
 ##' @param x table
 ##' @inheritDotParams harmonize.detect
@@ -29,7 +29,7 @@ magerman_detect_characters <- function(x,
 
 
 
-## -------->>  [[id:org:b6l29ts0lei0][magerman.remove.html.codes:1]]
+## -------->>  [[file:../harmonizer.src.org::*magerman.remove.html.codes][magerman.remove.html.codes:1]]
 ##' Removes html codes
 ##' @param x table
 ##' @inheritDotParams harmonize.replace
@@ -51,7 +51,7 @@ magerman_remove_html_codes <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:xsagib50bci0][magerman.replace.sgml.characters:1]]
+## -------->>  [[file:../harmonizer.src.org::*magerman.replace.sgml.characters][magerman.replace.sgml.characters:1]]
 ##' Replaces sgml characters. Accept both vector and table and return either vector or a table
 ##' @param x table
 ##' @inheritDotParams harmonize.replace
@@ -80,7 +80,7 @@ magerman_replace_sgml_characters <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:zvfgib50bci0][magerman.replace.proprietary.characters:1]]
+## -------->>  [[file:../harmonizer.src.org::*magerman.replace.proprietary.characters][magerman.replace.proprietary.characters:1]]
 ##' Replaces proprietary characters
 ##' @param x table
 ##' @inheritDotParams harmonize.replace
@@ -99,7 +99,7 @@ magerman_replace_proprietary_characters <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:u6lgib50bci0][magerman.replace.accented.characters:1]]
+## -------->>  [[file:../harmonizer.src.org::*magerman.replace.accented.characters][magerman.replace.accented.characters:1]]
 ##' Replaces accented characters
 ##'
 ##' Assumes that all characters are in caps.
@@ -123,7 +123,7 @@ magerman_replace_accented_characters <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:lppgib50bci0][magerman.remove.special.characters:1]]
+## -------->>  [[file:../harmonizer.src.org::*magerman.remove.special.characters][magerman.remove.special.characters:1]]
 ##' Removes special characters. I.e., everything that is not:
 ## A-Z; 0-9; “-“; “+”; “’”; “””; “#”; “*”;“@”; “!”; “?”; “/”; “&”; “(“; “)”; “:”; “;”; “,”; “.”; “ “
 ##' @param x table
@@ -148,7 +148,7 @@ magerman_remove_special_characters <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:7zm5vw215ei0][magerman.remove.double.spaces:1]]
+## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.spaces][magerman.remove.double.spaces:1]]
 ##' Removes double spaces
 ##' @param x table
 ##' @inheritDotParams harmonize.replace
@@ -173,7 +173,7 @@ magerman_remove_double_spaces <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:4ir5vw215ei0][magerman.remove.double.quotation.marks.*:1]]
+## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:1]]
 ##' Removes double quotation irregularities
 ##' @param x table
 ##' @inheritDotParams harmonize.replace
@@ -198,7 +198,7 @@ magerman_remove_double_quotation_marks_irregularities <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:4ir5vw215ei0][magerman.remove.double.quotation.marks.*:2]]
+## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:2]]
 ##' Removes double quotation irregularities
 ##' @param x table
 ##' @inheritDotParams harmonize.replace
@@ -224,7 +224,7 @@ magerman_remove_double_quotation_marks_beginning_end <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:2az5vw215ei0][magerman.remove.non.alphanumeric.*:1]]
+## -------->>  [[file:../harmonizer.src.org::*magerman.remove.non.alphanumeric.*][magerman.remove.non.alphanumeric.*:1]]
 ##' Removes non alphanumeric characters
 ##' @param x table
 ##' @inheritDotParams harmonize.replace
@@ -269,7 +269,7 @@ magerman_remove_non_alphanumeric_at_the_end <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:5khizmx01ei0][magerman.replace.comma.period.irregularities.*:1]]
+## -------->>  [[file:../harmonizer.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:1]]
 ##' Detects comma period irregularities
 ##' @param x table
 ##' @inheritDotParams harmonize.detect
@@ -326,7 +326,7 @@ magerman_replace_comma_period_irregularities_all <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:5khizmx01ei0][magerman.replace.comma.period.irregularities.*:2]]
+## -------->>  [[file:../harmonizer.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:2]]
 ##' Replaces comma period irregularities
 ##' @param x object
 ##' @inheritDotParams harmonize.replace
@@ -353,7 +353,7 @@ magerman_replace_comma_period_irregularities <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:yrvizmx01ei0][Detect and replace legal forms:1]]
+## -------->>  [[file:../harmonizer.src.org::*Detect and replace legal forms][Detect and replace legal forms:1]]
 ##' Detects legal form
 ##' @param x table
 ##' @inheritDotParams harmonize.detect
@@ -467,7 +467,7 @@ magerman_replace_legal_form_middle <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:yrvizmx01ei0][Detect and replace legal forms:2]]
+## -------->>  [[file:../harmonizer.src.org::*Detect and replace legal forms][Detect and replace legal forms:2]]
 ##' Detects legal form
 ##' @param x table
 ##' @inheritDotParams magerman_detect_legal_form_end
@@ -543,7 +543,7 @@ magerman_remove_legal_form_and_clean <- function(x) {
 
 
 
-## -------->>  [[id:org:mabjzmx01ei0][Common Words:1]]
+## -------->>  [[file:../harmonizer.src.org::*Common Words][Common Words:1]]
 ##' Removes common words
 ##' @param x table
 ##' @inheritDotParams harmonize.replace
@@ -621,7 +621,7 @@ magerman_remove_common_words <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:dcijzmx01ei0][Spelling Variation:1]]
+## -------->>  [[file:../harmonizer.src.org::*Spelling Variation][Spelling Variation:1]]
 ##' Replaces spelling variation
 ##' @param x table
 ##' @inheritDotParams harmonize.replace
@@ -644,7 +644,7 @@ magerman_replace_spelling_variation <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:rl10al703ei0][Condensing:1]]
+## -------->>  [[file:../harmonizer.src.org::*Condensing][Condensing:1]]
 ##' Condenses string
 ##' @param x table
 ##' @inheritDotParams harmonize.replace
@@ -671,7 +671,7 @@ magerman_condense <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:6lo7ug60gei0][Umlaut Harmonization:1]]
+## -------->>  [[file:../harmonizer.src.org::*Umlaut Harmonization][Umlaut Harmonization:1]]
 ##' Detects umlauts
 ##' @param x table
 ##' @inheritDotParams harmonize.detect
@@ -782,7 +782,7 @@ magerman_replace_umlaut <- function(x,
 
 
 
-## -------->>  [[id:org:x0v7ug60gei0][Combined Magerman Procedures:2]]
+## -------->>  [[file:../harmonizer.src.org::*Combined Magerman Procedures][Combined Magerman Procedures:2]]
 ##' Harmonizes strings using exact procedures described in Magerman et al. 2009.
 ##' @param x table or vector
 ##' @param magerman.procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `harmonize.make.procedures.list` (see its help for the correct format of data.frame with procedures). Default is `magerman.procedures.table`.

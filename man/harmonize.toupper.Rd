@@ -12,17 +12,7 @@ harmonize.toupper(data, ...)
 \item{...}{
   Arguments passed on to \code{\link[=inset_vector]{inset_vector}}
   \describe{
-    \item{\code{vector}}{a vector to inset. Optional. Default is NULL}
-    \item{\code{col}}{vector of interest in \code{data} object}
-    \item{\code{update}}{Update values in \code{col} column. Default is FALSE. If set \code{append}, \code{name} and \code{name_suffix} are ignored. Also if set the default for \code{select_all_data_cols} will be set to TRUE.}
-    \item{\code{rows}}{Logical vector to filter records of interest. Default is NULL which means do not filter records}
-    \item{\code{ommitted_rows_values}}{If \code{rows} is set merge these values to the results. It should be a vector of length 1 or \code{nrow(data)}. If the value is NULL (default) then use original values of \code{col}.}
-    \item{\code{append}}{If set then put \code{vector} as the last instead of first vector/column. Default is FALSE.}
-    \item{\code{name_suffix}}{If \code{name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already edataists in \code{select_data_cols} it will add counter at the end to avoid variables with the same names.}
-    \item{\code{name}}{Use this name for the first column in results (harmonized names). Default is NULL, which means that either name_if_data_atomic if data is vector or original col name will be used with \code{name_suffix} at the end.}
-    \item{\code{name_if_data_atomic}}{If \code{data} is vector use this name for original column if it is in results. Default is "data". If \code{data} is table the name of \code{col} will be used.}
-    \item{\code{select_data_cols}}{If data is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).}
-    \item{\code{select_all_data_cols}}{Whether to bind all columns in \code{data}. Defaults depends on values of \code{update} and \code{append}. If either is set then defaut values is TRUE otherwise FALSE. If set to TRUE by user the select_data_cols is ignored.}
+    \item{\code{}}{}
   }}
 }
 \value{

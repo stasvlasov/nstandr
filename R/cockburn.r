@@ -1,4 +1,4 @@
-## -------->>  [[id:org:z3bhq6914gi0][cockburn.combabbrev:1]]
+## -------->>  [[file:../harmonizer.src.org::*cockburn.combabbrev][cockburn.combabbrev:1]]
 ##' Collapses single character sequences
 ##'
 ##' @param x Object (table or vector)
@@ -59,7 +59,7 @@ cockburn.combabbrev <- function(x
 
 
 
-## -------->>  [[id:org:y5ghq6914gi0][Derwent:1]]
+## -------->>  [[file:../harmonizer.src.org::*Derwent][Derwent:1]]
 ##' Performs Derwent standardization of organizational names
 ##'
 ##' It is a version from Cockburn, I. M., A. Agrawal, J. Bessen, J. H. S. Graham, B. H. Hall, and M. MacGarvie (2009), The NBER Patent Citations Datafile Update. It differs from original dervert standartization
@@ -80,7 +80,7 @@ cockburn.replace.derwent <- function(x
 
 
 
-## -------->>  [[id:org:5lmhq6914gi0][Compustat:1]]
+## -------->>  [[file:../harmonizer.src.org::*Compustat][Compustat:1]]
 ##' COMPUSTAT specific standardization for organizational names
 ##'
 ##' @param x object
@@ -123,7 +123,7 @@ cockburn.replace.compustat.names <- function(x
 
 
 
-## -------->>  [[id:org:fyt54a51nki0][Identify Entity Type:1]]
+## -------->>  [[file:../harmonizer.src.org::*Identify Entity Type][Identify Entity Type:1]]
 ##' Identifies Entity Type
 ##'
 ##' @param x vector or table
@@ -178,7 +178,7 @@ cockburn.replace.type <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:nvtj6q51nki0][Firms (Corporates):1]]
+## -------->>  [[file:../harmonizer.src.org::*Firms (Corporates)][Firms (Corporates):1]]
 ##' Detect Corporates (code - "firm")
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -212,7 +212,7 @@ cockburn.detect.corp <- function(x
 
 
 
-## -------->>  [[id:org:480k6q51nki0][Individuals:1]]
+## -------->>  [[file:../harmonizer.src.org::*Individuals][Individuals:1]]
 ##' Detect Individuals (Non-Corporates group)
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -259,7 +259,7 @@ cockburn.detect.indiv <- function(x
 
 
 
-## -------->>  [[id:org:r46k6q51nki0][Government:1]]
+## -------->>  [[file:../harmonizer.src.org::*Government][Government:1]]
 ##' Detect Goverment Organizations (Non-Corporates group)
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -313,7 +313,7 @@ cockburn.replace.govt <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:zdck6q51nki0][Universities:1]]
+## -------->>  [[file:../harmonizer.src.org::*Universities][Universities:1]]
 ##' Detect Universities (Non-Corporates group)
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -369,7 +369,7 @@ cockburn.replace.univ <- function(x, ...) {
 
 
 
-## -------->>  [[id:org:owhk6q51nki0][Non-profit institutes:1]]
+## -------->>  [[file:../harmonizer.src.org::*Non-profit institutes][Non-profit institutes:1]]
 ##' Detect Non-profit Institutes (Non-Corporates group)
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -402,7 +402,7 @@ cockburn.detect.inst <- function(x
 
 
 
-## -------->>  [[id:org:ajok6q51nki0][Complex conditions:1]]
+## -------->>  [[file:../harmonizer.src.org::*Complex conditions][Complex conditions:1]]
 ##' Detects Non-profit institutes with special conditions
 ##'
 ##' @param x table. Expected that x has a column with codes for universities
@@ -491,7 +491,7 @@ cockburn.detect.inst.conds <- function(x
 
 
 
-## -------->>  [[id:org:vxuk6q51nki0][German Non-profit institutes:1]]
+## -------->>  [[file:../harmonizer.src.org::*German Non-profit institutes][German Non-profit institutes:1]]
 ##' Detects German Non-profit institutes
 ##'
 ##' "EINGETRAGENER VEREIN. NON PROFIT SOCIETY/ASSOCIATION."
@@ -530,7 +530,7 @@ cockburn.detect.inst.german <- function(x
 
 
 
-## -------->>  [[id:org:pk0l6q51nki0][Hospitals:1]]
+## -------->>  [[file:../harmonizer.src.org::*Hospitals][Hospitals:1]]
 ##' Detect Hospitals (Non-Corporates group)
 ##'
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -566,7 +566,7 @@ cockburn.detect.hosp <- function(x
 
 
 
-## -------->>  [[id:org:ehachlb1cgi0][Punctuation:1]]
+## -------->>  [[file:../harmonizer.src.org::*Punctuation][Punctuation:1]]
 ##' Removes punctuation and standardise some symbols. 
 ##'
 ##' @param x object
@@ -597,7 +597,7 @@ cockburn.replace.punctuation <- function(x
 
 
 
-## -------->>  [[id:org:tnnchlb1cgi0][Standard Name:1]]
+## -------->>  [[file:../harmonizer.src.org::*Standard Name][Standard Name:1]]
 ##' Create standard name
 ##'
 ##' @param x object
@@ -618,7 +618,7 @@ cockburn.replace.standard.names <- function(x
 
 
 
-## -------->>  [[id:org:k5q64a51nki0][Stem Name:1]]
+## -------->>  [[file:../harmonizer.src.org::*Stem Name][Stem Name:1]]
 ##' Creates so called stem name (a name with all legal entity identifiers removed)
 ##'
 ##' @param x object
@@ -645,7 +645,7 @@ cockburn.remove.standard.names <- function(x
 
 
 
-## -------->>  [[id:org:mex64a51nki0][USPTO special:1]]
+## -------->>  [[file:../harmonizer.src.org::*USPTO special][USPTO special:1]]
 ##' Removes special USPTO codes.
 ##'
 ##' @param x object
@@ -695,7 +695,7 @@ cockburn.detect.uspto <- function(x
 
 
 
-## -------->>  [[id:org:ns374a51nki0][main_coname2.do:1]]
+## -------->>  [[file:../harmonizer.src.org::*main_coname2.do][main_coname2.do:1]]
 ##' Harmonizes strings using exact procedures described in Cockburn, et al. (2009)
 ##' @param x table or vector
 ##' @param cockburn.procedures list of procedures to pass to `harmonize` function. Default is `cockburn.procedures.list`

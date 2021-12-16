@@ -1,6 +1,5 @@
 # - Reference from [[associate-id:org:29i4s7t0y5i0][Harmonizer R package]] on [2021-06-05 Sat 22:51]
 #+PROPERTY: header-args:R  :comments link :session :mkdirp yes :padline yes
-
 * Frontpage
 :PROPERTIES:
 :export_file_name: README.md
@@ -273,15 +272,16 @@ Note: If =install.packages= is tangled to =.Rprofile= it might cause a recursive
   paste0(c("c('" , paste(packages$names, collapse = "'\n, '"), "')"), collapse = "")
 #+END_SRC
 
-#+BEGIN_SRC R :tangle .Rprofile :noweb tangle
-  ## --------------------------------------------------------------------------------
+.Rprofile
+#+BEGIN_SRC R :tangle no :noweb tangle
+  ## -----------------------------------------------------------------------------
   ## First load default packages getOption("defaultPackages")
   ## Otherwise it will add it at the end which can mask some funcitons
   .First.sys()
   
-  ## --------------------------------------------------------------------------------
+  ## -----------------------------------------------------------------------------
   ## Load Packages
-  ## --------------------------------------------------------------------------------
+  ## -----------------------------------------------------------------------------
   for(package in
       <<get-packages()>>) {
       require(package, character.only = TRUE)
@@ -314,7 +314,7 @@ Note: If =install.packages= is tangled to =.Rprofile= it might cause a recursive
   ## --------------------------------------------------------------------------------
 #+END_SRC
 
-** Add package documentation
+** Package documentation
 :PROPERTIES:
 :ID:       org:g5wa69d1ffi0
 :END:
@@ -512,7 +512,7 @@ To call all calls
 #+BEGIN_SRC R :tangle no
   ## Generate package description
   ## --------------------------------------------------------------------------------
-  
+
   package.packages <- c(
       "data.table"
     , "magrittr"
@@ -520,13 +520,14 @@ To call all calls
     , "stringr"
     , "tibble"
     , "xml2"
-    , "dplyr")
-  
+    , "dplyr"
+    , "checkmate")
+
   ## Print current packages verstions
   package.packages %>% sapply(function(pkg)
       paste0(pkg, " (>= ", packageVersion(pkg), ")"), USE.NAMES = FALSE) %>%
       cat(sep = "\n")
-  
+
   ## Adjust verstions manually
   package.packages.man.ver  <- c(
       "data.table (>= 1.12)"
@@ -536,9 +537,10 @@ To call all calls
     , "dplyr (>= 0.8)"
     , "tibble (>= 2.0)"
     , "xml2 (>= 1.0)"
+    , "checkmate (>= 2.0.0)"
   )
-  
-  
+
+
   use_description(fields =
                       list(Title  = "Harmonization of Organizational Names"
                          , Date = Sys.Date()
@@ -550,14 +552,14 @@ To call all calls
                          , Depends = "R (>= 3.4)"
                          , Description = "Harmonizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more."
                          , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851.pdf"))
-  
+
   ## Update name spaces and documentation for functions
   roxygenise()
-  
+
   # This function is a wrapper for the ‘roxygen2::roxygenize()’ but also load the package
   ## document()
-  
-  
+
+
 #+END_SRC
 
 ** Install package
@@ -623,6 +625,25 @@ To call all calls
      if (is.atomic(data)) length(data) else nrow(data)
   }
 
+
+  ##' Gets lengths of the object
+  ##'
+  ##' @param x input data (table)
+  ##' @return Length (`nrow`) of the object. If it is atomic it returns its length.
+  ##' @export
+  x_length <- function(x) {
+      if (is.atomic(x) || is.null(x)) {
+          length(x)
+      } else if(is.list(x)) {
+          length(x[[1]])
+      } else {
+          nrow(x)
+      }
+  }
+
+
+
+
   ##' Gets width of the object
   ##'
   ##' @param data object (table)
@@ -630,6 +651,15 @@ To call all calls
   ##' @export
   harmonize_data_width <- function(data) {
      if (is.atomic(data)) 1 else ncol(data)
+  }
+
+
+  x_width <- function(x) {
+      if (is.atomic(x)) {
+          return(1)
+      } else {
+          return(ncol(x))
+      }
   }
 #+END_SRC
 
@@ -668,7 +698,6 @@ To call all calls
     else x
   }
 #+END_SRC
-
 
 #+BEGIN_SRC R :tangle tests/testthat/harmonize_empty.tests.r
   ## list("INCORPORATED", NULL, NULL, NULL, NULL) %>% is.empty
@@ -952,7 +981,7 @@ To call all calls
 :ID:       org:ld4hpqj01li0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/check_utils.r
   ##' Checks if a column(s) name/number is valid.
   ##' 
   ##' @param col column name/number or vector of columns name/number
@@ -1001,7 +1030,10 @@ To call all calls
           else stop("'", arg.name, "' name is out of range. Check names(x).")
       else stop("'", arg.name, "' should be ethier numeric or character.")
   }
-  
+
+
+
+
   ##' Checks if object is valid type and length.
   ##' 
   ##' @param x Object to check.
@@ -1047,7 +1079,7 @@ To call all calls
       if(any(is.na(type))) return(TRUE)
       stop("Parameter '", arg.name, "' is type of ", class(x), " but should be one of ", type)
   }
-  
+
   ##' Checks if ... (dots) arguments are valid.
   ##' 
   ##' @param dots.names Character vector of names of ... (dots) arguments. Usually obtained with `names(as.list(...))`.
@@ -1073,78 +1105,6 @@ To call all calls
   }
 #+END_SRC
 
-
-
-#+name: 
-#+BEGIN_SRC R
-  ## ## test
-    ## test.col <- 2
-    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
-    ## test.col <- 4
-    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
-    ## test.col <- "drink"
-    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
-    ## test.col <- "food"
-    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
-    ## test.col <- NA
-    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
-    ## test.col <- NULL
-    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
-    ## test.col <- NULL
-    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
-    ## test.col <- c("nu", "coffee")
-    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
-    ## test.col <- c(1,2)
-    ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
-    ## test.col <- c(1,3,0)
-    ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE)
-    ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE, several.ok = FALSE)
-    ## test.col <- -c(1,2)
-    ## test.col <- c(1,-2)
-    ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE)
-  
-    ## test.col <- c(1,3)
-    ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE, ban.values = c(3,4,5))
-  
-  
-  
-  
-    ## test
-  ## test.arg <- FALSE
-  ## harmonize.is.ok.type(test.arg)
-  ## test.arg <- c(1,2,3,4,NA)
-  ## harmonize.is.ok.type(test.arg)
-  ## test.arg <- c(1,2,3,4,NA)
-  ## harmonize.is.ok.type(test.arg, type = "numeric")
-  ## test.arg <- c(T,T,F,T,NA)
-  ## harmonize.is.ok.type(test.arg)
-  ## test.arg <- c(NA, NA)
-  ## harmonize.is.ok.type(test.arg, type = "numeric")
-  ## test.arg <- NULL
-  ## harmonize.is.ok.type(test.arg, type = "numeric")
-  ## test.arg <- NA
-  ## harmonize.is.ok.type(test.arg)
-  ## test.arg <- list(1,2,3,NULL)
-  ## harmonize.is.ok.type(test.arg, type = "list")
-  ## test.arg <- list(1,2,3,NULL)
-  ## harmonize.is.ok.type(test.arg, type = c("list", "numeric"))
-  
-  
-  
-  
-    ## ## test
-  ## harmonize.is.ok.dots(names(list(x.col = 4, x.col.update = FALSE))
-  ##                      , names(formals("harmonize.x"))[-c(1:2)] )
-  
-  ## harmonize.is.ok.dots(names(list())
-  ##                      , names(formals("harmonize.x"))[-c(1:2)] )
-  
-  ## harmonize.is.ok.dots(c(NA, NA, 1)
-  ##                      , names(formals("harmonize.x"))[-c(1:2)] )
-  
-  ## harmonize.is.ok.dots(NULL
-  ##                      , names(formals("harmonize.x"))[-c(1:2)] )
-#+END_SRC
 
 *** harmonize.x
 :PROPERTIES:
@@ -1198,14 +1158,14 @@ To call all calls
       harmonize.x.inset()
     }
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   ## functions that only runs within harmonize.x
   ## --------------------------------------------------------------------------------
-  
+
   ## Tests Arguments
   harmonize.x.check.args <- function(env = parent.frame()) {
     evalq({
@@ -1219,8 +1179,8 @@ To call all calls
       }
     }, envir = env)
   }
-  
-  
+
+
   harmonize.x.inset.check.args <- function(env = parent.frame()) {
       evalq({
           ## - check inset.vector
@@ -1279,7 +1239,7 @@ To call all calls
           }
       }, envir = env)
   }
-  
+
   ##' Gets a target vector to harmonize.
   ##'
   ##' @param data Input data. Can be vector, data.frame or a data.table
@@ -1292,16 +1252,16 @@ To call all calls
   harmonize_target_get <- function(data, col, rows) {
       harmonize_data_get_col(data, col)[rows]
   }
-  
-  
-  
+
+
+
   harmonize_data_get_col <- function(x, col) {
       if(is.atomic(x))
           harmonize_defactor(x)
       else
           harmonize_defactor(x[[col]])
   }
-  
+
   ## binds to existing table
   harmonize.x.inset <- function(env = parent.frame()) {
       evalq({
@@ -1335,12 +1295,32 @@ To call all calls
           }
       }, envir = env)
   }
-  
+
   harmonize.x.cbind <- function(inset.vector, x, append = FALSE) {
     if(isTRUE(append))
       cbind(x, inset.vector)
     else
       cbind(inset.vector, x)
+  }
+
+
+  ## functions that only runs within get_vector and inset_vector
+  ## --------------------------------------------------------------------------------
+
+  ## Tests Arguments
+  check_args_col_rows <- function() {
+      .Deprecated("check_col")
+      .Deprecated("check_rows")
+      evalq({
+          ## - check col
+          if(harmonize_is_ok_col(col, x, required = TRUE)) {
+              col %<>% ifelse(is.numeric(.), ., match(., names(x)))
+          }
+          ## - check rows
+          if(!harmonize_is_ok_type(rows, harmonize_data_length(x), type = "logical")) {
+              rows <- TRUE  # select all if rows NULL
+          }
+      }, envir = parent.frame())
   }
 #+END_SRC
 
@@ -1668,8 +1648,9 @@ Tests:
   ## is.null(Inf)
 #+END_SRC
 *** get_dots
+
 #+name: inject-get-dots
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
   (save-window-excursion
     (let* (tangling-from-harmonizer-R-package
            (dots-get-dots-block-name "get_dots")
@@ -1693,37 +1674,36 @@ Tests:
 :ID:       org:p323mg11m9j0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/harmonize_options.r
   ##' Does nothing but stores (as its own default arguments) options that control vector handeling through harmonization process. These options are available in most harmonizer functions that accept `...` parameter.
   ##' 
-  ##' @param col Column of interest in the `data` object. The one we need to harmonize
-  ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records
-  ##' @param ommitted_rows_values If `rows` is set merge these values to the results. It should be a vector of length 1 or `nrow(data). If the value is NULL (default) then use original values of `col`
-  ##' @param placement Where to inset retults (harmonized vector) in the `data` object. Default options is "replace_col" which overwrides the `col` in `data` with results. 
-  ##' @param name Use this name for the first column in results (harmonized names). Default is NULL, which means that either name_if_data_atomic if data is vector or original col name will be used with `name_suffix` at the end.
-  ##' @param name_if_input_atomic If `data` is vector use this name for original column if it is in results. Default is "data". If `data` is table the name of `col` will be used.
-  ##' @param name_suffix If `name` is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already edataists in `select_data_cols` it will add counter at the end to avoid variables with the same names.
-  ##' @param append_copy Whether to append a copy of result vector to `data` object
+  ##' @param col Column of interest (the one we need to harmonize) in the `x` object (if it is data.frame like).
+  ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records.
+  ##' @param ommitted_rows_values If `rows` parameter is set then merge `ommitted_rows_values` with the results (filtered by `rows`). Either single string or a character vector of length `nrow(x)`. If NULL (the default) then original values of `col` are merged with results.
+  ##' @param placement Where to inset retults (harmonized vector) in the `x` object. Default options is 'replace_col' which overwrides the `col` in `x` with results. Other options:
+  ##' - 'omit' :: do not write results back to table (usually used when `append_copy` is set for temporary values)
+  ##' - 'prepend_to_col' :: prepend to `col`
+  ##' - 'append_to_col' :: append to `col`
+  ##' - 'prepend_to_x' :: prepend to `x` data.frame like object
+  ##' - 'append_to_x' :: append to `x` data.frame like object
+  ##' @param name Use this name for the column with results (harmonized values). Default is NA, which means that either `name_for_x_atomic` if `x` is vector or original col name will be used with `name_suffix` at the end.
+  ##' @param name_for_x_atomic If `x` is vector use this name for original column if it is in results. Default is "x". If `x` is table the name of `col` will be used.
+  ##' @param name_suffix If `name` is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in `select_x_cols` it will add counter at the end to avoid variables with the same names.
+  ##' @param append_copy Whether to append a copy of result vector to `x` object
   ##' @param append_copy_name_format How the append copy wiil be named
-  ##' @param select_cols If data` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).
+  ##' @param select_cols If x` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).
   ##' 
   ##' @return Always NULL. It does nothing.
   harmonize_options <- function(col = 1
                               , rows = NULL
                               , ommitted_rows_values = NULL
-                              , placement = c(
-                                    "replace_col"
-                                  , "prepend_to_data"
-                                  , "append_to_data"
-                                  , "prepend_to_col"
-                                  , "append_to_col"
-                                  , "ignore")
-                              , name = NA
-                              , name_if_input_atomic = "names"
+                              , placement = "replace_col"
+                              , name = NULL
+                              , name_for_x_atomic = "x"
                               , name_suffix = "_harmonized"
                               , append_copy = FALSE
                               , append_copy_name_format = "%name_harmonizing_%number_%procedure"
-                              , select_cols = NA) {
+                              , select_cols = NULL) {
       ## do nothing
       return()
   }
@@ -1734,7 +1714,7 @@ Tests:
 :ID:       org:y3obsm80daj0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/get_harmonize_options.r
   ##' Gets `harmonize_options` at point with consistent updates up through calling stack.
   ##'
   ##' Limited to max stack of 3 calls and calls that include at least `data` and `...` formals (`harmonizer` functions specific) up to `.GlobalEnv` or `harmonize` call.
@@ -1743,8 +1723,6 @@ Tests:
   ##' 
   ##' 
   ##' @md 
-  ##' @import dotsR
-  ##' @export 
   get_harmonize_options <- function() {
       evalq({
           get_dots(harmonize_options
@@ -1754,54 +1732,108 @@ Tests:
                  , skip_checks_for_parent_call = FALSE)
       }, envir = parent.frame())
   }
+
+
+  get_col_and_rows <- function() {
+      evalq({
+          get_dots(harmonize_options
+                 , select_args = c("col", "rows")
+                 , search_while_calls_have_formals = c("x", "...")
+                 , search_up_nframes = 5L
+                 , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                 , skip_checks_for_parent_call = FALSE)
+      }, envir = parent.frame())
+  }
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_get_harmonize_options.r
-  expect_equal(get_harmonize_options(), as.list(formals("harmonize_options")))
-  
-  harmonize_test <- function (x, ...) get_harmonize_options()
-  
+  ## hack to make functions available in the environment
+  harmonize_options <- harmonizer:::harmonize_options
+  ## I do not test get_harmonize_options directly (and I will not use it in general) because it referes to the parent environment where internal functions are unknown
+
+  expect_equal(harmonizer:::get_dots(harmonize_options
+                                   , search_while_calls_have_formals = c("x", "...")
+                                   , search_up_nframes = 5L
+                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , skip_checks_for_parent_call = FALSE)
+             , as.list(formals("harmonize_options")))
+
+  harmonize_test <- function (x, ...) harmonizer:::get_dots(harmonize_options
+                                                          , search_while_calls_have_formals = c("x", "...")
+                                                          , search_up_nframes = 5L
+                                                          , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                                          , skip_checks_for_parent_call = FALSE)
+
   ## should update defauls
   expect_equal(harmonize_test()$col, 1)
   expect_equal(harmonize_test(col = 2)$col, 2)
-  
-  harmonize_test <- \(x, col = 2, ...) get_harmonize_options()
-  
+
+  harmonize_test <- \(x, col = 2, ...) harmonizer:::get_dots(harmonize_options
+                                   , search_while_calls_have_formals = c("x", "...")
+                                   , search_up_nframes = 5L
+                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , skip_checks_for_parent_call = FALSE)
+
   expect_equal(harmonize_test()$col, 2)
   expect_equal(harmonize_test(col = 3)$col, 3)
-  
+
   ## Condkitioning on checking arguments (formals) in calls 
-  
+
   ## should not update defauls (with skip_checks_for_parent_call = TRUE)
-  harmonize_test_1 <- \() get_harmonize_options()
+  harmonize_test_1 <- \() harmonizer:::get_dots(harmonize_options
+                                   , search_while_calls_have_formals = c("x", "...")
+                                   , search_up_nframes = 5L
+                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , skip_checks_for_parent_call = FALSE)
   harmonize_test_2 <- \(x, col = 123) harmonize_test_1()
   expect_equal(harmonize_test_2()$col, 1)
-  
-  harmonize_test_1 <- \() get_harmonize_options()
+
+  harmonize_test_1 <- \() harmonizer:::get_dots(harmonize_options
+                                   , search_while_calls_have_formals = c("x", "...")
+                                   , search_up_nframes = 5L
+                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , skip_checks_for_parent_call = FALSE)
   harmonize_test_2 <- \(col = 123, ...) harmonize_test_1()
   expect_equal(harmonize_test_2()$col, 1)
-  
-  
+
+
   ## should not update defauls (with skip_checks_for_parent_call = FALSE)
-  harmonize_test <- \(x, col = 123) get_harmonize_options()
+  harmonize_test <- \(x, col = 123) harmonizer:::get_dots(harmonize_options
+                                   , search_while_calls_have_formals = c("x", "...")
+                                   , search_up_nframes = 5L
+                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , skip_checks_for_parent_call = FALSE)
   expect_equal(harmonize_test()$col, 1)
-  
-  harmonize_test <- \(col = 123, ...) get_harmonize_options()
+
+  harmonize_test <- \(col = 123, ...) harmonizer:::get_dots(harmonize_options
+                                   , search_while_calls_have_formals = c("x", "...")
+                                   , search_up_nframes = 5L
+                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , skip_checks_for_parent_call = FALSE)
   expect_equal(harmonize_test()$col, 1)
-  
-  
-  
-  
+
+
+
+
   ## should update defauls
   harmonize_test <- \(x, col = 123, ...) {
-      harmonize_ <- \(x, ...) get_harmonize_options()
+      harmonize_ <- \(x, ...) harmonizer:::get_dots(harmonize_options
+                                   , search_while_calls_have_formals = c("x", "...")
+                                   , search_up_nframes = 5L
+                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , skip_checks_for_parent_call = FALSE)
       harmonize_() 
   }
   expect_equal(harmonize_test()$col, 123)
-  
+
   ## should not update defauls
   harmonize_test <- \(x, col = 123, ...) {
-      harmonize <- \(x, ...) get_harmonize_options()
+      harmonize <- \(x, ...) harmonizer:::get_dots(harmonize_options
+                                   , search_while_calls_have_formals = c("x", "...")
+                                   , search_up_nframes = 5L
+                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , skip_checks_for_parent_call = FALSE)
       harmonize() 
   }
   expect_equal(harmonize_test()$col, 1)
@@ -1812,6 +1844,88 @@ Tests:
 :ID:       org:77wbsm80daj0
 :END:
 #+BEGIN_SRC R :tangle R/get_vector.r
+  get_col_as_number <- function(col, x, placement = NULL) {
+      if(is.character(col)) {
+          which(names(x) %in% col)
+      } else if(is.null(placement)) {
+          col
+      } else {
+          ## adjust for prepened cols
+          switch(
+              placement
+            , replace_col = col
+            , append_to_col = col
+            , prepend_to_col = col + 1
+            , append_to_x = col
+            , prepend_to_x = col + 1)
+      }
+  }
+
+  make_target_name <- function(col, x, name, name_suffix) {
+      if(!is.null(name)) {
+          return(name)
+      } else {
+          return(paste0(names(x)[col], name_suffix))
+      }
+  }
+
+
+  make_target_col <- function(col, x, placement) {
+      switch(placement
+           , replace_col = col
+           , append_to_col = col + 1
+           , prepend_to_col = col - 1
+           , append_to_x = ncol(x)
+           , prepend_to_x = 1)
+  }
+
+
+  make_target_col_logical <- function(col, x, placement) {
+      switch(placement
+           , replace_col = col
+           , append_to_col = col + 1
+           , prepend_to_col = col
+           , append_to_x = ncol(x) + 1
+           , prepend_to_x = 1)
+  }
+
+
+  get_moving_target <- function(dots, x, return_name_for_new_col = FALSE) {
+      with(dots, {
+          ## if we replacing things then it is the same column
+          if(placement == "replace_col") {
+              return(get_col_as_number(col, x))
+          } else {
+              col_or_new_name <- ifelse(
+                  return_name_for_new_col
+                , make_target_name(col, x, name, name_suffix)
+                , get_col_as_number(col, x)
+              )
+              col_after_prepend <- get_col_as_number(col, x, placement)
+              if(col_after_prepend > ncol(x)) {
+                  ## nothing was prepended then assume first run
+                  return(col_or_new_name)
+              }
+              target_col_candidate <- make_target_col(col_after_prepend, x, placement)
+              if(target_col_candidate == 0 ||
+                 target_col_candidate > ncol(x)) {
+                  ## if target is not valid assume first run
+                  return(col_or_new_name)
+              }
+              if(names(x)[target_col_candidate] !=
+                 make_target_name(col_after_prepend, x, name, name_suffix)) {
+                  ## case of the first call of get_vector
+                  return(col_or_new_name)
+              } else {
+                  ## case of subsequent calls
+                  return(target_col_candidate)
+              }
+          }
+      })
+  }
+
+
+
   ##' Gets a target vector to harmonize.
   ##'
   ##' @param data Input data. Can be vector, data.frame or a data.table
@@ -1822,37 +1936,32 @@ Tests:
   ##'
   ##' @md
   get_vector <- function(x, ...) {
-      dots <- get_dots(harmonize_options
-                     , select_args = c("col", "rows")
-                     , search_while_calls_have_formals = c("x", "...")
-                     , search_up_nframes = 5L
-                     , search_up_to_call = c("harmonize", "harmonizer::harmonize"))
-      for (i in names(dots)) assign(i, dots[[i]])
-      check_args_col_rows()
-      harmonize_data_get_col(x, col)[rows]
-  }
-  
-  
-  ## functions that only runs within get_vector and inset_vector
-  ## --------------------------------------------------------------------------------
-  
-  ## Tests Arguments
-  check_args_col_rows <- function() {
-      evalq({
-          ## - check col
-          if(harmonize_is_ok_col(col, x, required = TRUE)) {
-              col %<>% ifelse(is.numeric(.), ., match(., names(x)))
+      with(dots <- get_harmonize_options(), {
+          ## check arguments
+          check_harmonize_options(dots, x)
+          ## select col
+          if(is.atomic(x)) {
+              x_col <- harmonize_defactor(x)
+          } else {
+              moving_target <- get_moving_target(dots, x)
+              x_col <- harmonize_defactor(x[[moving_target]])
           }
-          ## - check rows
-          if(!harmonize_is_ok_type(rows, harmonize_data_length(x), type = "logical")) {
-              rows <- TRUE  # select all if rows NULL
+          ## select rows
+          if(is.null(rows)) {
+              return(x_col)
+          } else {
+              return(x_col[rows])
           }
-      }, envir = parent.frame())
+      })
   }
-  
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_get_vector.r
+  require("data.table")
+
+  get_vector <- harmonizer:::get_vector
+
   expect_equal(
       data.table(x.pro.30 = list(c(1,2,3,4), 2,3,4)
                , y = c(7,8,9,0)
@@ -1866,14 +1975,64 @@ Tests:
       get_vector(col = 2
                , rows = c(T,T,F,T))
     , c("7", "8", "a"))
+
+
+  ## test placementexpect_equal(
+  expect_equal(
+      data.frame(x = c(1,2,3,4)
+               , x_harmonized = c("7","8","9","a")) |>
+      get_vector(col = 1
+               , rows = c(T,T,F,T)
+               , placement = "append_to_col")
+    , c("7", "8", "a"))
+
+  expect_equal(
+      data.frame(x = c(1,2,3,4)
+               , aaa = c("7","8","9","a")) |>
+      get_vector(col = 1
+               , rows = c(T,T,F,T)
+                 , name = "aaa"
+               , placement = "append_to_col")
+    , c("7", "8", "a"))
+
+
+  expect_equal(
+  data.frame(x_harmonized = c(1,2,3,4)
+               , x = c("7","8","9","a")) |>
+      get_vector(col = 1
+               , rows = c(T,T,F,T)
+               , placement = "prepend_to_col")
+    , c(1,2,4))
+
+
+
+  expect_equal(
+      data.frame(x = c(1,2,3,4)
+               , y = TRUE
+               , x_harmonized = c("7","8","9","a")) |>
+      get_vector(col = 1
+               , rows = c(T,T,F,T)
+               , placement = "append_to_x")
+    , c("7", "8", "a"))
+
+
+  expect_equal(
+      data.frame(x_harmonized = c(1,2,3,4)
+               , y = TRUE
+               , x = c("7","8","9","a")) |>
+      get_vector(col = 2
+               , rows = c(T,T,F,T)
+               , placement = "prepend_to_x")
+    , c(1,2,4))
 #+END_SRC
 
 
-*** inset_vector
+*** inset_vector (old)
 :PROPERTIES:
 :ID:       org:p11ds0x069j0
 :END:
-#+BEGIN_SRC R :tangle R/harmonizer.r
+old version
+#+BEGIN_SRC R :tangle no
   ##' Insets target vector back to input object (`data`)
   ##'
   ##' @param data an object
@@ -1938,62 +2097,13 @@ Tests:
               harmonize.x.cbind(data[, select_data_cols, with = FALSE], append)
       }
   }
-  
-  
-  
-  
-  
-  ##' Insets target vector back to input object (`data`)
-  ##'
-  ##' @param data an object
-  ##' @param vector a vector to inset. Optional. Default is NULL
-  ##' @inheritDotParams harmonize_options
-  ##' @return returns updated `data` object
-  ##' 
-  ##' @md 
-  ##' @importFrom magrittr %>%
-  ##' @import magrittr data.table dplyr stringr
-  ##' @export 
-  inset_vector_new <- function(x
-                             , vector
-                             , ...) {
-      dots <- get_harmonize_options()
-      for (v in names(dots)) {
-          assign(v, dots[[v]])
-      }
-      ## process arguments
-      check_args_col_rows()
-      ## check_args_for_inset_vector()    
-      ## inset filtered rows (this makes list if vector is list)
-      vector %<>% inset(ommitted_rows_values, rows, .)
-      ## inset vector to data
-      if(is.atomic(x) && isFALSE(select_cols == 1)) {
-          vector
-      } else if(placement == "replace_col") {
-          data %>%
-              harmonize_defactor(conv2dt = "all") %>% 
-              inset2(col, value = vector) %>% 
-              extract(., ,select_cols, with = FALSE)
-      } else if(isTRUE(select_cols == 0)) {
-          vector
-      } else {
-          ## set harmonized name
-          data.names <- if(is.atomic(data)) name_if_data_atomic else names(data)
-          name %<>%
-              harmonize_eval_if_empty(
-                  harmonize_add_suffix(data.names[col]
-                                     , name_suffix
-                                     , data.names[select_cols])) %>%
-              make.names
-          ## (pre)append vector to data
-          data %<>% harmonize_defactor(conv2dt = "all") # returns data.table
-          vector %>%
-              data.table %>%          # should make one column even if inset is list
-              set_names(name) %>%
-              harmonize.x.cbind(data[, select_cols, with = FALSE], append)
-      }
-  }
-  
+
+
+
+
+
+
+
   check_args_for_inset_vector <- function(env = parent.frame()) {
       evalq({
           ## - check vector
@@ -2008,9 +2118,11 @@ Tests:
                                  , type = "atomic")) {
               ommitted_rows_values <- harmonize_data_get_col(x, col)
           } else if(length(ommitted_rows_values) == 1) {
-              ommitted_rows_values %<>% harmonize_defactor %>% rep(harmonize_data_length(x))
+              ommitted_rows_values <-
+                  harmonize_defactor(ommitted_rows_values) |>
+                  rep(harmonize_data_length(x))
           } else {
-              ommitted_rows_values %<>% harmonize_defactor
+              ommitted_rows_values <- harmonize_defactor(ommitted_rows_values)
           }
           ## - check select_cols
           harmonize_is_ok_type(select_all_data_cols)
@@ -2055,6 +2167,7 @@ Tests:
           }
       }, envir = env)
   }
+
 #+END_SRC
 
 Testing
@@ -2144,6 +2257,497 @@ Testing
               , select_data_cols = NULL
               , update = FALSE)
   
+#+END_SRC
+
+
+*** inset_vector
+#+BEGIN_SRC R :tangle R/inset_vector.r
+
+  ##' Insets target vector back to input object (`data`)
+  inset_vector <- function(vector, x, ...) {
+      with(dots <- get_harmonize_options(), {
+          ## check harmonize_options
+          check_harmonize_options(dots, x)
+          ## inset ommitted_rows_values if needed
+          if(!is.null(rows)
+             && ((is.logical(rows) && !all(rows))
+                 || (is.numeric(rows) && !setequal(rows, 1:x_length(x))))) {
+              ## check vector lenth
+              if(is.logical(rows)) {
+                  checkmate::assert_character(vector, len = sum(rows))
+              } else if(is.numeric(rows)){
+                  checkmate::assert_character(vector, len = length(rows))
+              }
+              ## process `ommitted_rows_values`
+              if(is.null(ommitted_rows_values)) {
+                  moving_target <- get_moving_target(dots, x)
+                  ommitted_rows_values <- harmonize_defactor(x[[moving_target]])
+              }
+              if(length(ommitted_rows_values) != x_length(x)) {
+                  ## assume `ommitted_rows_values` length 1
+                  ommitted_rows_values <- rep(ommitted_rows_values, x_length(x))
+              }
+              ## inject ommited rows
+              vector_full <- ommitted_rows_values
+              vector_full[rows] <- vector
+              vector <- vector_full
+          } else {
+              ## just check the vector length
+              checkmate::assert_character(vector, len = x_length(c))
+              if(is.numeric(rows)) {
+                  ## case of permutations for same length
+                  vector <- vector[rows]
+              }
+          }
+          ## inset full vector
+          x_w <- x_width(x)
+          col_or_name_if_new <-
+              get_moving_target(dots, x, return_name_for_new_col = TRUE)
+          ## fuckin data.table syntax is so cryptic
+          x[, (col_or_name_if_new) := vector]
+          if(x_width(x) == x_w + 1) {
+              ## if new col was added permute columns
+              target_col <-
+                  get_col_as_number(col, x, placement) |>
+                  make_target_col(x, placement)
+              target_col |>
+                  print()
+              cols_nums <- 1:x_w |> append(x_w + 1, after = target_col - 1)
+              cols_nums |>
+                  print()
+              setcolorder(x, cols_nums)
+          }
+          ## apped copy
+          ## TODO
+      })
+      return(x)
+  }
+
+#+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_inset_vector.r
+
+  ## test placement
+  inset_vector(c("a", "b", "c", "d", "e")
+             , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j")))[]
+
+  inset_vector(c("a", "b", "c", "d", "e")
+             , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
+             , placement = "prepend_to_col")[]
+
+  inset_vector(c("a", "b", "c", "d", "e")
+             , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
+             , placement = "append_to_col")[]
+
+  inset_vector(c("a", "b", "c", "d", "e")
+             , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
+             , placement = "append_to_x")[]
+
+
+  ## test omited values
+  expect_error(inset_vector(c(1,1,1,1,1), data.table(c1 = c(5,5,5,5,5), x = c("a", "b", "c", "d", "e"))))
+
+  expect_equal(
+      inset_vector(c("a", "b", "c", "d", "e")
+                 , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j")))
+    , data.table(c1 = c("a", "b", "c", "d", "e"), x = c("x", "y", "z", "i", "j")))
+
+  ## case of all rows
+  expect_equal(
+      inset_vector(c("a", "b", "c", "d", "e")
+                 , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
+                 , rows = c(TRUE, TRUE, TRUE, TRUE, TRUE))
+    , data.table(c1 = c("a", "b", "c", "d", "e"), x = c("x", "y", "z", "i", "j")))
+
+  expect_equal(
+      inset_vector(c("a", "b", "c", "d", "e")
+                 , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
+                 , rows = c(1, 2, 3, 4, 5))
+    , data.table(c1 = c("a", "b", "c", "d", "e"), x = c("x", "y", "z", "i", "j")))
+
+
+  expect_error(
+      inset_vector(c("a", "b", "c", "d", "e")
+                 , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
+                 , rows = c(5, 5, 3, 4, 5)))
+
+
+  expect_equal(
+      inset_vector(c("a", "b", "c", "d", "e")
+                 , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
+                 , rows = c(3, 2, 1, 4, 5))
+    , data.table(c1 = c("c", "b", "a", "d", "e"), x = c("x", "y", "z", "i", "j")))
+
+
+
+
+  ## error for incorrect vector length
+  expect_error(
+      inset_vector(c("a", "b", "c", "d", "e")
+                 , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
+                 , rows = c(TRUE, FALSE, TRUE, FALSE, TRUE)))
+
+  ## subsetting rows
+  expect_equal(
+      inset_vector(c("a", "b", "c")
+                 , data.table(c1 = c("1",2,3,4,5), x = c("x", "y", "z", "i", "j"))
+                 , rows = c(TRUE, FALSE, TRUE, FALSE, TRUE))
+    , data.table(c1 = c("a", "2", "b", "4", "c"), x = c("x", "y", "z", "i", "j")))
+
+
+  expect_equal(
+      inset_vector(c("a", "b", "c")
+                 , data.table(c1 = c("1",2,3,4,5), x = c("x", "y", "z", "i", "j"))
+                 , rows = c(1,3,5))
+    , data.table(c1 = c("a", "2", "b", "4", "c"), x = c("x", "y", "z", "i", "j")))
+    #+END_SRC
+
+*** check_harmonize_options
+
+#+BEGIN_SRC R :tangle R/check_harmonize_options.r
+
+
+report_arg_checks <- function (collection
+                             , report_for_call = sys.call(which = -2)) {
+    checkmate::assertClass(collection, "AssertCollection")
+    if (!collection$isEmpty()) {
+        msgs = paste("-", collection$getMessages())
+        context = "Harmonizer :: %i argument checks failed for '%s' call:"
+        err = c("\n", strwrap(sprintf(context, length(msgs), deparse1(report_for_call)))
+              , strwrap(msgs, indent = 4, exdent = 6))
+        stop(simpleError(paste0(err, collapse = "\n"), call = sys.call(1L)))
+    }
+    invisible(TRUE)
+}
+
+
+
+check_col <- function(col, x
+                    , missing_ok = FALSE
+                    , null_ok = FALSE
+                    , report_for_call = sys.call(which = -1)) {
+    assertion_fails <- checkmate::makeAssertCollection()
+    checkmate::assert_multi_class(col, c("character", "numeric"), add = assertion_fails)
+    if (is.character(col)) {
+        checkmate::assert_character(col
+                                  , min.chars = 1
+                                  , len = 1
+                                  , any.missing = missing_ok
+                                  , null.ok = null_ok
+                                  , add = assertion_fails)
+        checkmate::assert_choice(col
+                               , names(x)
+                               , null.ok = null_ok
+                               , add = assertion_fails)
+    } else if(is.numeric(col)) {
+        checkmate::assert_int(col
+                            , lower = 1
+                            , upper = x_length(x)
+                            , na.ok = missing_ok
+                            , null.ok = null_ok
+                            , add = assertion_fails)
+    }
+    report_arg_checks(assertion_fails
+                    , report_for_call)
+}
+
+
+
+
+
+
+check_x <- function(x, report_for_call = sys.call(which = -1)) {
+    assertion_fails <- checkmate::makeAssertCollection()
+    checkmate::assert_multi_class(x, c("character", "data.frame", "data.table"), add = assertion_fails)
+    report_arg_checks(assertion_fails
+                    , report_for_call)
+}
+
+
+##' Assumes that rows (if logical) are same length as x
+##' @param rows either numeric of logical vector
+##' @param x 
+##' @param null_ok 
+##' @param na_ok 
+##' @param report_for_call 
+##' @return nothing
+check_rows <- function(rows, x
+                     , null_ok = TRUE
+                     , na_ok = FALSE
+                     , report_for_call = sys.call(which = -1)) {
+    assertion_fails <- checkmate::makeAssertCollection()
+    checkmate::assert_multi_class(rows
+                                , classes = c("logical", "numeric")
+                                , null.ok = null_ok
+                                , add = assertion_fails)
+    if(is.logical(rows)) {
+        checkmate::assert_logical(rows
+                                , any.missing = na_ok
+                                , len = x_length(x)
+                                , null.ok = null_ok
+                                , add = assertion_fails)
+    } else if(is.numeric(rows)) {
+        checkmate::assert_integerish(rows
+                                   , any.missing = na_ok
+                                   , min.len = 1
+                                   , max.len = x_length(x)
+                                   , unique = TRUE
+                                   , lower = 1
+                                   , upper = x_length(x)
+                                   , null.ok = null_ok
+                                   , add = assertion_fails)
+    }
+    report_arg_checks(assertion_fails
+                    , report_for_call)
+}
+
+  
+  check_harmonize_options <- function(dots
+                                    , x
+                                    , report_for_call = sys.call(which = -1)
+                                    , check_name_duplicates = FALSE) {
+      ## check own arguments
+      checkmate::assert_class(report_for_call, classes = "call")
+      checkmate::assert_flag(check_name_duplicates)
+      ## check harmonize_options
+      assertion_fails <- checkmate::makeAssertCollection()
+      with(dots, {
+          ## check 'col'
+          check_col(col, x)
+          ## check 'rows'
+          check_rows(rows, x)
+          ## check 'ommitted_rows_values'
+          if(length(ommitted_rows_values) == 1) {
+              checkmate::assert_string(
+                             ommitted_rows_values
+                           , add = assertion_fails)
+          } else {
+              checkmate::assert_character(
+                             ommitted_rows_values
+                           , null.ok = TRUE
+                           , len = x_length(x)
+                           , add = assertion_fails)
+          }
+          ## check 'placement'
+          checkmate::assert_choice(
+                         placement
+                       , choices = c(
+                             "replace_col"
+                           , "prepend_to_col"
+                           , "append_to_col"
+                           , "prepend_to_x"
+                           , "append_to_x"
+                           , "omit")
+                       , add = assertion_fails)
+          ## check 'name'
+          checkmate::assert_string(
+                         name
+                       , null.ok = TRUE
+                       , add = assertion_fails)
+          if(check_name_duplicates && !is.null(name) && !is.atomic(x)) {
+              checkmate::assert_names(
+                             name
+                           , type = "ids"
+                           , what = "colnames"
+                           , disjunct.from = names(x)
+                           , add = assertion_fails)
+          }
+          ## check 'name_for_x_atomic'
+          checkmate::assert_string(
+                         name_for_x_atomic
+                       , add = assertion_fails)
+          checkmate::assert_names(
+                         name_for_x_atomic
+                       , type = "ids"
+                       , what = "colnames"
+                       , add = assertion_fails)
+          ## check 'name_suffix'
+          checkmate::assert_string(
+                         name_suffix
+                       , add = assertion_fails)
+          ## check if col_name + 'name_suffix' is distinct from names(x)
+          if(check_name_duplicates && !is.atomic(x) && is.null(name)) {
+              checkmate::assert_names(
+                             paste0(names(x)[[col]], name_suffix)
+                           , type = "ids"
+                           , what = "colnames"
+                           , disjunct.from = names(x)
+                           , add = assertion_fails)
+          }
+          ## check 'append_copy'
+          checkmate::assert_flag(
+                         append_copy
+                       , add = assertion_fails)
+          ## check 'append_copy_name_format'
+          checkmate::assert_string(
+                         append_copy_name_format
+                       , min.chars = 1
+                       , add = assertion_fails)
+      })
+      report_arg_checks(assertion_fails
+                      , report_for_call)
+  }
+
+
+  #+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_check_harmonize_options.r
+  require("data.table")
+
+  check_harmonize_options <- harmonizer:::check_harmonize_options
+  get_dots <- harmonizer:::get_dots
+  harmonize_options <- harmonizer:::harmonize_options
+
+
+  testing_check_arguments <- function(x, ...) {
+      dots <- get_dots(harmonize_options
+                     , search_while_calls_have_formals = c("x", "...")
+                     , search_up_nframes = 5L
+                     , search_up_to_call = c("harmonize", "harmonizer::harmonize"))
+      check_harmonize_options(dots, x)
+      return(TRUE)
+  }
+
+  expect_true(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), name = "c"))
+  ## bad placement name
+  expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), placement = "omitted"))
+
+
+  testing_check_arguments <- function(x, ...) {
+      dots <- get_dots(harmonize_options
+                     , search_while_calls_have_formals = c("x", "...")
+                     , search_up_nframes = 5L
+                     , search_up_to_call = c("harmonize", "harmonizer::harmonize"))
+      check_harmonize_options(dots, x
+                            , check_name_duplicates = TRUE)
+      return(TRUE)
+  }
+
+
+  ## taken name
+  expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), name = "b"))
+  ## testing append copy prefix (taken name)
+  expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b"), a_harmonized = TRUE)))
+  ## test rows
+  expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b"), rows = c(1,1))))
+#+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_check_utils.r
+  ## test col checks
+  check_col <- harmonizer:::check_col
+
+  fun <- function(col, x) {
+      check_col(col, x)
+      return(x[[col]])
+  }
+
+
+  expect_error(fun(list("5"), c("1" = "1","3" = 5)))
+  expect_error(fun("5", c("1" = "1","3" = 5)))
+  expect_error(fun(4, c("1" = "1","3" = 5)))
+  expect_error(fun(c(1,2), c("1" = "1","3" = 5)))
+  expect_equal(fun(2, c("1" = "1","3" = 5)), "5")
+
+
+
+
+
+  ## test rows check
+  check_rows <- harmonizer:::check_rows
+
+  fun <- function(rows, x) {
+      check_rows(rows, x)
+      return(x[rows])
+  }
+
+  expect_error(fun(list("5"), c("1" = "1","3" = 5)))
+  expect_error(fun("5", c("1" = "1","3" = 5)))
+  expect_error(fun(4, c("1" = "1","3" = 5)))
+  expect_error(fun(c(2,2), c("1" = "1","3" = 5))) # duplicates
+  expect_equal(fun(c(1,2), c("1" = "1","3" = 5)), c("1" = "1","3" = 5))
+  expect_equal(fun(2, c("1" = "1","3" = 5)), c("3" = "5"))
+
+
+
+
+
+
+
+  ## test x checks
+  check_x <- harmonizer:::check_x
+
+  expect_error(check_x(list(1,2,3)))
+  expect_error(check_x(1))
+  expect_equal(check_x(c("1", 2, 3)), TRUE)
+
+
+  ## ## test
+  ## test.col <- 2
+  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+  ## test.col <- 4
+  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+  ## test.col <- "drink"
+  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+  ## test.col <- "food"
+  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+  ## test.col <- NA
+  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+  ## test.col <- NULL
+  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+  ## test.col <- NULL
+  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
+  ## test.col <- c("nu", "coffee")
+  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
+  ## test.col <- c(1,2)
+  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
+  ## test.col <- c(1,3,0)
+  ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE)
+  ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE, several.ok = FALSE)
+  ## test.col <- -c(1,2)
+  ## test.col <- c(1,-2)
+  ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE)
+
+  ## test.col <- c(1,3)
+  ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE, ban.values = c(3,4,5))
+
+
+
+
+  ## test
+  ## test.arg <- FALSE
+  ## harmonize.is.ok.type(test.arg)
+  ## test.arg <- c(1,2,3,4,NA)
+  ## harmonize.is.ok.type(test.arg)
+  ## test.arg <- c(1,2,3,4,NA)
+  ## harmonize.is.ok.type(test.arg, type = "numeric")
+  ## test.arg <- c(T,T,F,T,NA)
+  ## harmonize.is.ok.type(test.arg)
+  ## test.arg <- c(NA, NA)
+  ## harmonize.is.ok.type(test.arg, type = "numeric")
+  ## test.arg <- NULL
+  ## harmonize.is.ok.type(test.arg, type = "numeric")
+  ## test.arg <- NA
+  ## harmonize.is.ok.type(test.arg)
+  ## test.arg <- list(1,2,3,NULL)
+  ## harmonize.is.ok.type(test.arg, type = "list")
+  ## test.arg <- list(1,2,3,NULL)
+  ## harmonize.is.ok.type(test.arg, type = c("list", "numeric"))
+
+
+
+
+  ## ## test
+  ## harmonize.is.ok.dots(names(list(x.col = 4, x.col.update = FALSE))
+  ##                      , names(formals("harmonize.x"))[-c(1:2)] )
+
+  ## harmonize.is.ok.dots(names(list())
+  ##                      , names(formals("harmonize.x"))[-c(1:2)] )
+
+  ## harmonize.is.ok.dots(c(NA, NA, 1)
+  ##                      , names(formals("harmonize.x"))[-c(1:2)] )
+
+  ## harmonize.is.ok.dots(NULL
+  ##                      , names(formals("harmonize.x"))[-c(1:2)] )
 #+END_SRC
 
 *** harmonize.x.dots
