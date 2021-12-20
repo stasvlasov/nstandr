@@ -48,6 +48,15 @@ x_length <- function(x) {
 harmonize_data_width <- function(data) {
    if (is.atomic(data)) 1 else ncol(data)
 }
+
+
+x_width <- function(x) {
+    if (is.atomic(x)) {
+        return(1)
+    } else {
+        return(ncol(x))
+    }
+}
 ## --------<<  harmonize.x.length and width:1 ends here
 
 
@@ -464,6 +473,26 @@ harmonize.x.cbind <- function(inset.vector, x, append = FALSE) {
     cbind(x, inset.vector)
   else
     cbind(inset.vector, x)
+}
+
+
+## functions that only runs within get_vector and inset_vector
+## --------------------------------------------------------------------------------
+
+## Tests Arguments
+check_args_col_rows <- function() {
+    .Deprecated("check_col")
+    .Deprecated("check_rows")
+    evalq({
+        ## - check col
+        if(harmonize_is_ok_col(col, x, required = TRUE)) {
+            col %<>% ifelse(is.numeric(.), ., match(., names(x)))
+        }
+        ## - check rows
+        if(!harmonize_is_ok_type(rows, harmonize_data_length(x), type = "logical")) {
+            rows <- TRUE  # select all if rows NULL
+        }
+    }, envir = parent.frame())
 }
 ## --------<<  harmonize.x:1 ends here
 
