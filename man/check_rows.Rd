@@ -15,13 +15,13 @@ check_rows(
 \arguments{
 \item{rows}{either numeric of logical vector}
 
-\item{x}{}
+\item{x}{The object to harmonize}
 
-\item{null_ok}{}
+\item{null_ok}{Whether NULL is valid value}
 
-\item{na_ok}{}
+\item{na_ok}{Whether NA is valid value}
 
-\item{report_for_call}{}
+\item{report_for_call}{When reporting issues which function call to indicate for reference}
 }
 \value{
 nothing

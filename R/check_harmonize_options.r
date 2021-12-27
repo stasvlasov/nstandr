@@ -58,10 +58,10 @@ check_x <- function(x, report_for_call = sys.call(which = -1)) {
 
 ##' Assumes that rows (if logical) are same length as x
 ##' @param rows either numeric of logical vector
-##' @param x 
-##' @param null_ok 
-##' @param na_ok 
-##' @param report_for_call 
+##' @param x The object to harmonize
+##' @param null_ok Whether NULL is valid value
+##' @param na_ok Whether NA is valid value
+##' @param report_for_call When reporting issues which function call to indicate for reference
 ##' @return nothing
 check_rows <- function(rows, x
                      , null_ok = TRUE

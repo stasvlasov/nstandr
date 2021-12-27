@@ -132,7 +132,7 @@ get_vector <- function(x, ...) {
 format_append_copy <- function(format, name = "") {
     procedure_number <-
         get0("harmonizer_harmonize_procedure_number", ifnotfound = "")
-    procedure_name <-
+   procedure_name <-
         get0("harmonizer_harmonize_procedure_name", ifnotfound = "")
     lowdash_procedure_number <-
         ifelse(procedure_number == "", "", paste0("_", procedure_number))

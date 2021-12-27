@@ -272,20 +272,23 @@ Note: If =install.packages= is tangled to =.Rprofile= it might cause a recursive
   paste0(c("c('" , paste(packages$names, collapse = "'\n, '"), "')"), collapse = "")
 #+END_SRC
 
-.Rprofile
-#+BEGIN_SRC R :tangle no :noweb tangle
-  ## -----------------------------------------------------------------------------
-  ## First load default packages getOption("defaultPackages")
-  ## Otherwise it will add it at the end which can mask some funcitons
-  .First.sys()
-  
-  ## -----------------------------------------------------------------------------
-  ## Load Packages
-  ## -----------------------------------------------------------------------------
-  for(package in
-      <<get-packages()>>) {
-      require(package, character.only = TRUE)
-  }
+
+#+BEGIN_SRC R :tangle .Rprofile :noweb tangle
+    ## -----------------------------------------------------------------------------
+    ## First load default packages getOption("defaultPackages")
+    ## Otherwise it will add it at the end which can mask some funcitons
+    .First.sys()
+
+  ## set default mirror
+  options(repos=structure(c(CRAN="http://cloud.r-project.org")))
+
+    ## -----------------------------------------------------------------------------
+    ## Load Packages
+    ## -----------------------------------------------------------------------------
+    for(package in
+        <<get-packages()>>) {
+        require(package, character.only = TRUE)
+    }
 #+END_SRC
 
 
@@ -508,7 +511,15 @@ To call all calls
 #+END_SRC
 
 ** Generate package description
+
+
+#+name: suggest-packages
+| names          | link                                                                |
+|----------------+---------------------------------------------------------------------|
+| tinytest       | https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md |
+
 #+name: generate-package-docs
+#+header: :var suggest_packages = suggest-packages
 #+BEGIN_SRC R :tangle no
   ## Generate package description
   ## --------------------------------------------------------------------------------
@@ -550,6 +561,7 @@ To call all calls
                          , Imports = paste(package.packages.man.ver
                                          , collapse = ", ")
                          , Depends = "R (>= 3.4)"
+                         , Suggests = paste(suggest_packages$names, collapse = ", ")
                          , Description = "Harmonizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more."
                          , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851.pdf"))
 
@@ -1773,10 +1785,10 @@ Tests:
 
   ##' Assumes that rows (if logical) are same length as x
   ##' @param rows either numeric of logical vector
-  ##' @param x 
-  ##' @param null_ok 
-  ##' @param na_ok 
-  ##' @param report_for_call 
+  ##' @param x The object to harmonize
+  ##' @param null_ok Whether NULL is valid value
+  ##' @param na_ok Whether NA is valid value
+  ##' @param report_for_call When reporting issues which function call to indicate for reference
   ##' @return nothing
   check_rows <- function(rows, x
                        , null_ok = TRUE
