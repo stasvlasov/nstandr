@@ -130,10 +130,10 @@ get_vector <- function(x, ...) {
 
 
 format_append_copy <- function(format, name = "") {
-    procedure_number <-
-        get0("harmonizer_harmonize_procedure_number", ifnotfound = "")
+    procedure_number <- 
+        get0("harmonizer_harmonize_procedure_number", ifnotfound = "", envir = parent.frame())
    procedure_name <-
-        get0("harmonizer_harmonize_procedure_name", ifnotfound = "")
+        get0("harmonizer_harmonize_procedure_name", ifnotfound = "", envir = parent.frame())
     lowdash_procedure_number <-
         ifelse(procedure_number == "", "", paste0("_", procedure_number))
     lowdash_procedure_name <-

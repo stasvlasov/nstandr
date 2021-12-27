@@ -272,8 +272,8 @@ Note: If =install.packages= is tangled to =.Rprofile= it might cause a recursive
   paste0(c("c('" , paste(packages$names, collapse = "'\n, '"), "')"), collapse = "")
 #+END_SRC
 
-
-#+BEGIN_SRC R :tangle .Rprofile :noweb tangle
+.Rprofile
+#+BEGIN_SRC R :tangle no :noweb tangle
     ## -----------------------------------------------------------------------------
     ## First load default packages getOption("defaultPackages")
     ## Otherwise it will add it at the end which can mask some funcitons
@@ -2335,10 +2335,10 @@ Tests:
 
 
   format_append_copy <- function(format, name = "") {
-      procedure_number <-
-          get0("harmonizer_harmonize_procedure_number", ifnotfound = "")
+      procedure_number <- 
+          get0("harmonizer_harmonize_procedure_number", ifnotfound = "", envir = parent.frame())
      procedure_name <-
-          get0("harmonizer_harmonize_procedure_name", ifnotfound = "")
+          get0("harmonizer_harmonize_procedure_name", ifnotfound = "", envir = parent.frame())
       lowdash_procedure_number <-
           ifelse(procedure_number == "", "", paste0("_", procedure_number))
       lowdash_procedure_name <-
