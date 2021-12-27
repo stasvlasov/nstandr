@@ -12,7 +12,8 @@ harmonize.toupper(data, ...)
 \item{...}{
   Arguments passed on to \code{\link[=inset_vector]{inset_vector}}
   \describe{
-    \item{\code{}}{}
+    \item{\code{vector}}{Character vector to inset into the \code{x} object}
+    \item{\code{x}}{Data to harmonize. Character vector or data.frame or data.table}
   }}
 }
 \value{

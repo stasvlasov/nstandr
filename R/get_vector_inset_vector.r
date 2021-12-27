@@ -86,11 +86,7 @@ infer_moving_target_from_names <- function(dots, x, return_name_for_new_col = FA
             target_name_generated <-
                 infer_post_inset_col_from_pre_inset_col(col, x, placement) |>
                 make_target_name(x, name, name_suffix)
-            target_name_generated |>
-                print()
             target <- infer_moving_target_from_pre_inset_col(col, x, placement)
-            target |>
-                print()
             if(names(x)[target] == target_name_generated) {
                 ## case of subsequent calls
                 return(target)
@@ -120,8 +116,6 @@ get_vector <- function(x, ...) {
             x_col <- harmonize_defactor(x)
         } else {
             moving_target <- infer_moving_target_from_names(dots, x)
-            moving_target |>
-                print()
             x_col <- harmonize_defactor(x[[moving_target]])
         }
         ## select rows
@@ -135,13 +129,44 @@ get_vector <- function(x, ...) {
 
 
 
+format_append_copy <- function(format, name = "") {
+    procedure_number <-
+        get0("harmonizer_harmonize_procedure_number", ifnotfound = "")
+    procedure_name <-
+        get0("harmonizer_harmonize_procedure_name", ifnotfound = "")
+    lowdash_procedure_number <-
+        ifelse(procedure_number == "", "", paste0("_", procedure_number))
+    lowdash_procedure_name <-
+        ifelse(procedure_name == "", "", paste0("_", procedure_name))
+    lowdash_name <- ifelse(name == "", "", paste0("_", name))
+    name_lowdash <- ifelse(name == "", "", paste0(name, "_"))
+    stringi::stri_replace_all_fixed(format
+                                  , pattern = c("{col_name}", "{_col_name}", "{col_name_}"
+                                              , "{procedure_number}", "{_procedure_number}"
+                                              , "{procedure_name}", "{_procedure_name}")
+                                  , replacement = c(name, lowdash_name, name_lowdash
+                                                   , procedure_number, lowdash_procedure_number
+                                                   , procedure_name, lowdash_procedure_name)
+                                  , vectorise_all = FALSE)
+}
 
-##' Insets target vector back to input object (`data`)
+
+
+
+##' Insets target vector back to input object (`x`)
+##' 
+##' @param vector Character vector to inset into the `x` object
+##' @param x Data to harmonize. Character vector or data.frame or data.table
+##' @return Data.table or character vector
+##' @inheritDotParams harmonize_options
 inset_vector <- function(vector, x, ...) {
+    vector <- harmonize_defactor_vector(vector)
     with(dots <- get_harmonize_options(), {
         ## check harmonize_options
         check_harmonize_options(dots, x)
+        ## -----
         ## inset ommitted_rows_values if needed
+        ## -----
         if(!is.null(rows)
            && ((is.logical(rows) && !all(rows))
                || (is.numeric(rows) && !setequal(rows, 1:x_length(x))))) {
@@ -166,31 +191,52 @@ inset_vector <- function(vector, x, ...) {
             vector <- vector_full
         } else {
             ## just check the vector length
-            checkmate::assert_character(vector, len = x_length(c))
+            checkmate::assert_character(vector, len = x_length(x))
             if(is.numeric(rows)) {
                 ## case of permutations for same length
                 vector <- vector[rows]
             }
         }
+        ## -----
         ## inset full vector
-        width_pre_inset <- x_width(x)
-        col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
-        col_or_name_if_new <-
-            infer_moving_target_from_names(dots, x, return_name_for_new_col = TRUE)
-        ## fuckin data.table syntax is so cryptic
-        x[, (col_or_name_if_new) := vector]
-        ## now if we added new col
-        if(x_width(x) == width_pre_inset + 1) {
-            ## if new col was added place last col into target posision
-            target <- infer_moving_target_from_post_inset_col(col_post_inset, x, placement)
-            cols_nums <-
-                1:width_pre_inset |>
-                append(width_pre_inset + 1, after = target - 1)
-            data.table::setcolorder(x, cols_nums)
+        ## -----
+        if(placement != "omit") {
+            if(is.atomic(x) && placement == "replace") {
+                ## just replace x if it is atomic
+                x <- vector
+            } else {
+                if(is.atomic(x)) {
+                    x <- harmonize_defactor(x, conv2dt = "all")
+                }
+                width_pre_inset <- x_width(x)
+                col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
+                col_or_name_if_new <-
+                    infer_moving_target_from_names(dots, x, return_name_for_new_col = TRUE)
+                ## fuckin data.table syntax is so cryptic
+                x[, (col_or_name_if_new) := vector]
+                ## now if we added new col
+                if(x_width(x) == width_pre_inset + 1) {
+                    ## if new col was added place last col into target posision
+                    target <- infer_moving_target_from_post_inset_col(col_post_inset, x, placement)
+                    cols_nums <-
+                        1:width_pre_inset |>
+                        append(width_pre_inset + 1, after = target - 1)
+                    data.table::setcolorder(x, cols_nums)
+                }
+            }
         }
+        ## -----
         ## apped copy
-        ## TODO
-        ## x[, (col_or_name_if_new) := vector]
+        ## -----
+        if(append_copy) {
+            if(is.atomic(x)) {
+                x <- harmonize_defactor(x, conv2dt = "all")
+            }
+            col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
+            append_copy_name <- format_append_copy(append_copy_name_format, name = names(x)[col_post_inset])
+            checkmate::assert_names(append_copy_name)
+            x[, (append_copy_name) := vector]
+        }
     })
     return(x)
 }

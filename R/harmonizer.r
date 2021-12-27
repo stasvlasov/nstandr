@@ -218,7 +218,7 @@ harmonize_add_suffix <- function(name, suffix, x.names
 ##' @param x a vector
 ##' @param check.numeric check if vector is numeric. Default is TRUE. Takes longer with this check but avoids type conversion (numeric to character).
 ##' @return character vector
-harmonize_defactor_vector <- function(x, check.numeric = TRUE) {
+harmonize_defactor_vector <- function(x, check.numeric = FALSE) {
   if(is.factor(x) & check.numeric) {
     levs <- levels(x)
     ## check if levels are numeric (longer)

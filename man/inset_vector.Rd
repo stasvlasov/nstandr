@@ -2,10 +2,40 @@
 % Please edit documentation in R/get_vector_inset_vector.r
 \name{inset_vector}
 \alias{inset_vector}
-\title{Insets target vector back to input object (\code{data})}
+\title{Insets target vector back to input object (\code{x})}
 \usage{
 inset_vector(vector, x, ...)
 }
+\arguments{
+\item{vector}{Character vector to inset into the \code{x} object}
+
+\item{x}{Data to harmonize. Character vector or data.frame or data.table}
+
+\item{...}{
+  Arguments passed on to \code{\link[=harmonize_options]{harmonize_options}}
+  \describe{
+    \item{\code{col}}{Column of interest (the one we need to harmonize) in the \code{x} object (if it is data.frame like).}
+    \item{\code{rows}}{Logical vector to filter records of interest. Default is NULL which means do not filter records.}
+    \item{\code{ommitted_rows_values}}{If \code{rows} parameter is set then merge \code{ommitted_rows_values} with the results (filtered by \code{rows}). Either single string or a character vector of length \code{nrow(x)}. If NULL (the default) then original values of \code{col} are merged with results.}
+    \item{\code{placement}}{Where to inset retults (harmonized vector) in the \code{x} object. Default options is 'replace_col' which overwrides the \code{col} in \code{x} with results. Other options:
+\itemize{
+\item 'omit' :: do not write results back to table (usually used when \code{append_copy} is set for temporary values)
+\item 'prepend_to_col' :: prepend to \code{col}
+\item 'append_to_col' :: append to \code{col}
+\item 'prepend_to_x' :: prepend to \code{x} data.frame like object
+\item 'append_to_x' :: append to \code{x} data.frame like object
+}}
+    \item{\code{name}}{Use this name for the column with results (harmonized values). Default is NA, which means that either \code{name_for_x_atomic} if \code{x} is vector or original col name will be used with \code{name_suffix} at the end.}
+    \item{\code{name_for_x_atomic}}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
+    \item{\code{name_suffix}}{If \code{name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in \code{select_x_cols} it will add counter at the end to avoid variables with the same names.}
+    \item{\code{append_copy}}{Whether to append a copy of result vector to \code{x} object}
+    \item{\code{append_copy_name_format}}{How the append copy wiil be named}
+    \item{\code{select_cols}}{If x` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).}
+  }}
+}
+\value{
+Data.table or character vector
+}
 \description{
-Insets target vector back to input object (\code{data})
+Insets target vector back to input object (\code{x})
 }

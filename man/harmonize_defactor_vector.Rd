@@ -4,7 +4,7 @@
 \alias{harmonize_defactor_vector}
 \title{Converts factor to character}
 \usage{
-harmonize_defactor_vector(x, check.numeric = TRUE)
+harmonize_defactor_vector(x, check.numeric = FALSE)
 }
 \arguments{
 \item{x}{a vector}
