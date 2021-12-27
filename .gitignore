@@ -13,6 +13,5 @@
 *.project.org
 *.notes.org
 materials/
-inst/
 data/
 docs
