@@ -52,7 +52,8 @@
   search_while_calls_regexp <span class="op">=</span> <span class="cn">NULL</span>,
   search_up_nframes <span class="op">=</span> <span class="fl">1L</span>,
   search_up_to_call <span class="op">=</span> <span class="cn">NULL</span>,
-  skip_checks_for_parent_call <span class="op">=</span> <span class="cn">TRUE</span>
+  skip_checks_for_parent_call <span class="op">=</span> <span class="cn">TRUE</span>,
+  eval_default_args <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -74,6 +75,8 @@
 <dd><p>The name of the call before which to continue looking up the call stack for updates in dots arguments.</p></dd>
 <dt>skip_checks_for_parent_call</dt>
 <dd><p>Whether to skip checking <code>search_while_calls_have_formals</code> <code>search_while_calls_belong_to_env</code> <code>search_while_calls_regexp</code></p></dd>
+<dt>eval_default_args</dt>
+<dd><p>Whether to evaluate default arguments. Default is do not evaluate (FALSE) assuming that all argument are simple values (i.e., evaluates to itself)</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>

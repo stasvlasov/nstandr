@@ -52,25 +52,25 @@
     <dl><dt>x</dt>
 <dd><p>table</p></dd>
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="harmonize.replace.html">harmonize.replace</a></code></p><dl><dt><code>patterns</code></dt>
-<dd><p>Accepts both vector or table. If patterns it is table can also include replacements column.</p></dd>
+<dd><p>Arguments passed on to <code><a href="harmonize_replace.html">harmonize_replace</a></code></p><dl><dt><code>patterns</code></dt>
+<dd><p>Accepts both vector or table. If patterns is a table can also include replacements column.</p></dd>
 
-    <dt><code>patterns.col</code></dt>
+    <dt><code>patterns_col</code></dt>
 <dd><p>If patterns is not a vector which column to use. Default is 1.</p></dd>
 
-    <dt><code>patterns.mode</code></dt>
+    <dt><code>patterns_mode</code></dt>
 <dd><p>Mode of matching. Could be one of c("all", "first", "last"). The default is "all" (it is 2x faster than "first" and "last" because of handy stri_replace_all_* functions). Also possible to pass a vector (same length as patterns)</p></dd>
 
-    <dt><code>patterns.mode.col</code></dt>
+    <dt><code>patterns_mode_col</code></dt>
 <dd><p>Column in patterns table with the mode of matching</p></dd>
 
-    <dt><code>patterns.type</code></dt>
+    <dt><code>patterns_type</code></dt>
 <dd><p>Kind of pattern. Default is "fixed" (calling code<a href="https://rdrr.io/pkg/stringi/man/stri_replace.html" class="external-link">stri_replace_all_fixed</a>). Other options are "begins", "ends" - which means that it should only match fixed pattern at the beginning of the string or at the and. Another possible value is "regex" (calling code<a href="https://rdrr.io/pkg/stringi/man/stri_replace.html" class="external-link">stri_replace_all_regex</a>)</p></dd>
 
-    <dt><code>patterns.type.col</code></dt>
+    <dt><code>patterns_type_col</code></dt>
 <dd><p>Column with the type of pattern in case when patterns should have different types</p></dd>
 
-    <dt><code>patterns.replacements.col</code></dt>
+    <dt><code>patterns_replacements_col</code></dt>
 <dd><p>If patterns is not a vector and includes replacements which column to use for replacements. Default is 2.</p></dd>
 
     <dt><code>replacements</code></dt>

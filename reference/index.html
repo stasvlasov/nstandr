@@ -122,7 +122,7 @@
         </td>
         <td><p>Cleanup Goverment Organizations (Non-Corporates group)</p></td>
       </tr><tr><td>
-          <p><code><a href="cockburn.replace.punctuation.html">cockburn.replace.punctuation()</a></code> </p>
+          <p><code><a href="cockburn.replace.punctuation.html">cockburn.replace.punctuation()</a></code> <code><a href="cockburn.replace.punctuation.html">cockburn.replace.punctuation()</a></code> </p>
         </td>
         <td><p>Removes punctuation and standardise some symbols.</p></td>
       </tr><tr><td>
@@ -154,9 +154,13 @@
         </td>
         <td><p>Gets <code>harmonize_options</code> at point with consistent updates up through calling stack.</p></td>
       </tr><tr><td>
-          <p><code><a href="get_vector.html">get_vector()</a></code> </p>
+          <p><code><a href="get_target.html">get_target()</a></code> <code><a href="get_target.html">get_target()</a></code> </p>
         </td>
         <td><p>Gets a target vector to harmonize.</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_vector.html">get_vector()</a></code> </p>
+        </td>
+        <td><p>Gets vector by column and defactor if needed. Optionaly one can provide a fallback_value which will be returned if col is not specified.</p></td>
       </tr><tr><td>
           <p><code><a href="harmonize.html">harmonize()</a></code> </p>
         </td>
@@ -193,10 +197,6 @@
           <p><code><a href="harmonize.remove.quotes.html">harmonize.remove.quotes()</a></code> </p>
         </td>
         <td><p>Removes double quotes (deprecated)</p></td>
-      </tr><tr><td>
-          <p><code><a href="harmonize.replace.html">harmonize.replace()</a></code> </p>
-        </td>
-        <td><p>A wrapper for string replacement and cbinding some columns.</p></td>
       </tr><tr><td>
           <p><code><a href="harmonize.squish.spaces.html">harmonize.squish.spaces()</a></code> </p>
         </td>
@@ -286,11 +286,15 @@
         </td>
         <td><p>Does nothing but stores (as its own default arguments) options that control vector handeling through harmonization process. These options are available in most harmonizer functions that accept <code>...</code> parameter.</p></td>
       </tr><tr><td>
+          <p><code><a href="harmonize_replace.html">harmonize_replace()</a></code> </p>
+        </td>
+        <td><p>A wrapper for string replacement and cbinding some columns.</p></td>
+      </tr><tr><td>
           <p><code><a href="harmonize_target_get.html">harmonize_target_get()</a></code> </p>
         </td>
         <td><p>Gets a target vector to harmonize.</p></td>
       </tr><tr><td>
-          <p><code><a href="inset_vector.html">inset_vector()</a></code> </p>
+          <p><code><a href="inset_target.html">inset_target()</a></code> <code><a href="inset_target.html">inset_target()</a></code> </p>
         </td>
         <td><p>Insets target vector back to input object (<code>x</code>)</p></td>
       </tr><tr><td>
@@ -349,10 +353,6 @@
           <p><code><a href="magerman_remove_double_quotation_marks_irregularities.html">magerman_remove_double_quotation_marks_irregularities()</a></code> </p>
         </td>
         <td><p>Removes double quotation irregularities</p></td>
-      </tr><tr><td>
-          <p><code><a href="magerman_remove_double_spaces.html">magerman_remove_double_spaces()</a></code> </p>
-        </td>
-        <td><p>Removes double spaces</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_remove_html_codes.html">magerman_remove_html_codes()</a></code> </p>
         </td>

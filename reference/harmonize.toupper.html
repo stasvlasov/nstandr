@@ -52,11 +52,41 @@
     <dl><dt>data</dt>
 <dd><p>data</p></dd>
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="inset_vector.html">inset_vector</a></code></p><dl><dt><code>vector</code></dt>
-<dd><p>Character vector to inset into the <code>x</code> object</p></dd>
+<dd><p>Arguments passed on to <code><a href="harmonize.x.html">harmonize.x</a></code></p><dl><dt><code>x</code></dt>
+<dd><p>an object</p></dd>
 
-    <dt><code>x</code></dt>
-<dd><p>Data to harmonize. Character vector or data.frame or data.table</p></dd>
+    <dt><code>inset.vector</code></dt>
+<dd><p>a vector to inset. Optional. Default is NULL</p></dd>
+
+    <dt><code>x.col</code></dt>
+<dd><p>vector of interest in <code>x</code> object</p></dd>
+
+    <dt><code>x.col.update</code></dt>
+<dd><p>Update values in <code>x.col</code> column. Default is FALSE. If set <code>inset.append</code>, <code>inset.name</code> and <code>inset.suffix</code> are ignored. Also if set the default for <code>return.x.cols.all</code> will be set to TRUE.</p></dd>
+
+    <dt><code>x.rows</code></dt>
+<dd><p>Logical vector to filter records of interest. Default is NULL which means do not filter records</p></dd>
+
+    <dt><code>x.atomic.name</code></dt>
+<dd><p>If <code>x</code> is vector use this name for original column if it is in results. Default is "x". If <code>x</code> is table the name of <code>x.col</code> will be used.</p></dd>
+
+    <dt><code>inset.omitted.val</code></dt>
+<dd><p>If <code>x.rows</code> is set merge these values to the results. It should be a vector of length 1 or <code>nrow(x)</code>. If the value is NULL (default) then use values of <code>x.col</code>.</p></dd>
+
+    <dt><code>inset.append</code></dt>
+<dd><p>If set then put <code>inset.vector</code> as the last instead of first vector/column. Default is FALSE.</p></dd>
+
+    <dt><code>inset.suffix</code></dt>
+<dd><p>If <code>inset.name</code> is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in <code>return.x.cols</code> it will add counter at the end to avoid variables with the same names.</p></dd>
+
+    <dt><code>inset.name</code></dt>
+<dd><p>Use this name for the first column in results (harmonized names). Default is NULL, which means that either x.atomic.name if x is vector or original x.col name will be used with <code>inset.suffix</code> at the end.</p></dd>
+
+    <dt><code>return.x.cols</code></dt>
+<dd><p>If x is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (x.col).</p></dd>
+
+    <dt><code>return.x.cols.all</code></dt>
+<dd><p>Whether to bind all columns in x. Defaults depends on values of <code>x.col.update</code> and <code>inset.append</code>. If either is set then defaut values is TRUE otherwise FALSE. If set to TRUE by user the return.x.cols is ignored.</p></dd>
 
   
 </dl></dd>

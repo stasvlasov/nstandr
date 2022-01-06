@@ -94,6 +94,9 @@
     <loc>/reference/get_harmonize_options.html</loc>
   </url>
   <url>
+    <loc>/reference/get_target.html</loc>
+  </url>
+  <url>
     <loc>/reference/get_vector.html</loc>
   </url>
   <url>
@@ -122,9 +125,6 @@
   </url>
   <url>
     <loc>/reference/harmonize.remove.quotes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize.replace.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize.squish.spaces.html</loc>
@@ -193,6 +193,9 @@
     <loc>/reference/harmonize_options.html</loc>
   </url>
   <url>
+    <loc>/reference/harmonize_replace.html</loc>
+  </url>
+  <url>
     <loc>/reference/harmonize_target_get.html</loc>
   </url>
   <url>
@@ -202,7 +205,7 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/inset_vector.html</loc>
+    <loc>/reference/inset_target.html</loc>
   </url>
   <url>
     <loc>/reference/magerman_condense.html</loc>
@@ -245,9 +248,6 @@
   </url>
   <url>
     <loc>/reference/magerman_remove_double_quotation_marks_irregularities.html</loc>
-  </url>
-  <url>
-    <loc>/reference/magerman_remove_double_spaces.html</loc>
   </url>
   <url>
     <loc>/reference/magerman_remove_html_codes.html</loc>
