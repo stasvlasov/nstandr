@@ -4,24 +4,18 @@
 \alias{check_rows}
 \title{Assumes that rows (if logical) are same length as x}
 \usage{
-check_rows(
-  rows,
-  x,
-  null_ok = TRUE,
-  na_ok = FALSE,
-  report_for_call = sys.call(which = -1)
-)
+check_rows(rows, x, which_call_to_report = -1L, null_ok = TRUE, na_ok = FALSE)
 }
 \arguments{
 \item{rows}{either numeric of logical vector}
 
 \item{x}{The object to harmonize}
 
+\item{which_call_to_report}{When reporting issues which function call to indicate for reference}
+
 \item{null_ok}{Whether NULL is valid value}
 
 \item{na_ok}{Whether NA is valid value}
-
-\item{report_for_call}{When reporting issues which function call to indicate for reference}
 }
 \value{
 nothing

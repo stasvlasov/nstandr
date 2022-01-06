@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*get_vector & inset_vector][get_vector & inset_vector:1]]
+## -------->>  [[file:../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:1]]
 get_col_as_number <- function(col, x) {
     if(is.character(col)) {
         which(names(x) %in% col)
@@ -98,6 +98,7 @@ infer_moving_target_from_names <- function(dots, x, return_name_for_new_col = FA
 
 
 
+
 ##' Gets a target vector to harmonize.
 ##'
 ##' @param data Input data. Can be vector, data.frame or a data.table
@@ -111,19 +112,9 @@ get_target <- function(x, ...) {
     with(dots <- get_harmonize_options(), {
         ## check arguments
         check_harmonize_options(dots, x)
-        ## select col
-        if(is.atomic(x)) {
-            x_col <- harmonize_defactor(x)
-        } else {
-            moving_target <- infer_moving_target_from_names(dots, x)
-            x_col <- harmonize_defactor(x[[moving_target]])
-        }
-        ## select rows
-        if(is.null(rows)) {
-            return(x_col)
-        } else {
-            return(x_col[rows])
-        }
+        get_vector(x
+                 , col = infer_moving_target_from_names(dots, x)
+                 , check_x_col_rows = FALSE)
     })
 }
 
@@ -150,9 +141,6 @@ format_append_copy <- function(format, name = "") {
                                   , vectorise_all = FALSE)
 }
 
-
-
-
 ##' Insets target vector back to input object (`x`)
 ##' 
 ##' @param vector Character vector to inset into the `x` object
@@ -173,26 +161,18 @@ inset_target <- function(vector, x, ...) {
             ## check vector lenth
             if(is.logical(rows)) {
                 checkmate::assert_character(vector, len = sum(rows))
-            } else if(is.numeric(rows)){
+            } else if(is.numeric(rows)) {
                 checkmate::assert_character(vector, len = length(rows))
             }
             ## process `ommitted_rows_values`
-            if(is.null(ommitted_rows_values)) {
-                if(is.atomic(x)) {
-                    ommitted_rows_values <- x
-                } else {
-                    moving_target <- infer_moving_target_from_names(dots, x)
-                    ommitted_rows_values <- harmonize_defactor(x[[moving_target]])
-                }
-            }
-            if(length(ommitted_rows_values) != x_length(x)) {
-                ## assume `ommitted_rows_values` length 1
-                ommitted_rows_values <- rep(ommitted_rows_values, x_length(x))
-            }
+            ommitted_rows_values <- get_vector(x
+                                             , col = infer_moving_target_from_names(dots, x)
+                                             , fallback_value = ommitted_rows_values
+                                             , fallback_value_ignored_if_col = FALSE
+                                             , check_x_col_rows = FALSE)
             ## inject ommited rows
-            vector_full <- ommitted_rows_values
-            vector_full[rows] <- vector
-            vector <- vector_full
+            vector <- `[<-`(ommitted_rows_values, rows, vector)
+
         } else {
             ## just check the vector length
             checkmate::assert_character(vector, len = x_length(x))
@@ -244,6 +224,6 @@ inset_target <- function(vector, x, ...) {
         return(x)
     })
 }
-## --------<<  get_vector & inset_vector:1 ends here
+## --------<<  get_target & inset_target:1 ends here
 
 

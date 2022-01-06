@@ -32,13 +32,13 @@ magerman_detect_characters <- function(x,
 ## -------->>  [[file:../harmonizer.src.org::*magerman.remove.html.codes][magerman.remove.html.codes:1]]
 ##' Removes html codes
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_remove_html_codes <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = "<BR>",
         replacements = " ",
         ...
@@ -54,13 +54,13 @@ magerman_remove_html_codes <- function(x, ...) {
 ## -------->>  [[file:../harmonizer.src.org::*magerman.replace.sgml.characters][magerman.replace.sgml.characters:1]]
 ##' Replaces sgml characters. Accept both vector and table and return either vector or a table
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_replace_sgml_characters <- function(x, ...) {
-    harmonize.replace(x, magerman.patterns.sgml.characters, ...)
+    harmonize_replace(x, magerman.patterns.sgml.characters, ...)
 }
 
 
@@ -83,13 +83,13 @@ magerman_replace_sgml_characters <- function(x, ...) {
 ## -------->>  [[file:../harmonizer.src.org::*magerman.replace.proprietary.characters][magerman.replace.proprietary.characters:1]]
 ##' Replaces proprietary characters
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_replace_proprietary_characters <- function(x, ...) {
-    harmonize.replace(x, magerman.patterns.proprietary.characters, ...)
+    harmonize_replace(x, magerman.patterns.proprietary.characters, ...)
 }
 
 ## test
@@ -104,13 +104,13 @@ magerman_replace_proprietary_characters <- function(x, ...) {
 ##'
 ##' Assumes that all characters are in caps.
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_replace_accented_characters <- function(x, ...) {
-    harmonize.replace(x, magerman.patterns.accented.characters, ...)
+    harmonize_replace(x, magerman.patterns.accented.characters, ...)
 }
 
 ## Test
@@ -127,13 +127,13 @@ magerman_replace_accented_characters <- function(x, ...) {
 ##' Removes special characters. I.e., everything that is not:
 ## A-Z; 0-9; “-“; “+”; “’”; “””; “#”; “*”;“@”; “!”; “?”; “/”; “&”; “(“; “)”; “:”; “;”; “,”; “.”; “ “
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_remove_special_characters <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         "[^A-Z0-9\\-+'\"#*;@!?/&():;,. ]",
         patterns.type = "regex",
         ...
@@ -149,26 +149,32 @@ magerman_remove_special_characters <- function(x, ...) {
 
 
 ## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.spaces][magerman.remove.double.spaces:1]]
-##' Removes double spaces
-##' @param x table
-##' @inheritDotParams harmonize.replace
-##' @return Harmonized table
+##' Removes punctuation and standardise some symbols. 
 ##'
+##' @param x object
+##' @inheritDotParams harmonize_replace
+##' @return Harmonized table
+##' 
 ##' @md
-##' @export
-magerman_remove_double_spaces <- function(x, ...) {
-    harmonize.replace(x,
-        "\\s+",
-        replacements = " ",
-        patterns.type = "regex",
-        ...
-    )
+##' @import magrittr
+##' @export 
+cockburn.replace.punctuation <- function(x
+                                         , ...) {
+  x %>%
+    harmonize_replace(patterns = cockburn.patterns.punctuation.and, ...) %>%
+    harmonize_replace(patterns = cockburn.patterns.punctuation.the
+                    , patterns.type.col = 3, ...) %>%
+    ## I swapted patstat with amadeus otherwise Ã²Ã¢ÃªÃ®Ã© will not become oaeie
+    harmonize_replace(patterns = cockburn.patterns.punctuation.patstat, ...) %>% 
+    harmonize_replace(patterns = cockburn.patterns.punctuation.amadeus, ...) %>%
+    harmonize_replace(patterns = cockburn.patterns.punctuation.char, ...)
 }
 
-
-## Test magerman.remove.double.spaces
-## "  a   string with   many      douple    spaces      " %>%
-##   magerman.remove.double.spaces
+## Test
+## c("WESTINGHOUSE, |.?^&*@ ELEC  "
+## , "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©"
+## , "GRACE (W/R) & CO Ltd.") %>% 
+##   cockburn.replace.punctuation
 ## --------<<  magerman.remove.double.spaces:1 ends here
 
 
@@ -176,13 +182,13 @@ magerman_remove_double_spaces <- function(x, ...) {
 ## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:1]]
 ##' Removes double quotation irregularities
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_remove_double_quotation_marks_irregularities <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = c("^\"\"\\s(.*)\"$", "^\"(.*)\\s\"\"$"),
         replacements = c("\"\"$1\"", "\"$1\"\""),
         patterns.type = "regex",
@@ -201,13 +207,13 @@ magerman_remove_double_quotation_marks_irregularities <- function(x, ...) {
 ## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:2]]
 ##' Removes double quotation irregularities
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_remove_double_quotation_marks_beginning_end <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = "^\"\"((?:(?!\"\").)*)\"\"$",
         replacements = "$1",
         patterns.type = "regex",
@@ -227,13 +233,13 @@ magerman_remove_double_quotation_marks_beginning_end <- function(x, ...) {
 ## -------->>  [[file:../harmonizer.src.org::*magerman.remove.non.alphanumeric.*][magerman.remove.non.alphanumeric.*:1]]
 ##' Removes non alphanumeric characters
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_remove_non_alphanumeric_at_the_beginning <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = "^[^A-Z0-9\"@('#!*/]+",
         patterns.type = "regex",
         ...
@@ -248,13 +254,13 @@ magerman_remove_non_alphanumeric_at_the_beginning <- function(x, ...) {
 
 ##' Removes non alphanumeric characters
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_remove_non_alphanumeric_at_the_end <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = "[^A-Z0-9.'\")]+$",
         patterns.type = "regex",
         ...
@@ -298,7 +304,7 @@ magerman_detect_comma_period_irregularities <- function(x,
 
 ##' Replaces comma period irregularities
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
@@ -312,7 +318,7 @@ magerman_replace_comma_period_irregularities_all <- function(x, ...) {
     ) %>%
         matrix(byrow = TRUE, ncol = 2) %>%
         data.frame() %>%
-        harmonize.replace(x,
+        harmonize_replace(x,
             patterns =  .,
             patterns.type = "regex",
             ...
@@ -329,7 +335,7 @@ magerman_replace_comma_period_irregularities_all <- function(x, ...) {
 ## -------->>  [[file:../harmonizer.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:2]]
 ##' Replaces comma period irregularities
 ##' @param x object
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
@@ -342,7 +348,7 @@ magerman_replace_comma_period_irregularities <- function(x, ...) {
         magerman.patterns.periods
     ) %>%
         rbindlist() %>%
-        harmonize.replace(x, ., patterns.type.col = 3, ...)
+        harmonize_replace(x, ., patterns.type.col = 3, ...)
 }
 
 ## Test magerman.replace.comma.period.irregularities
@@ -373,13 +379,13 @@ magerman_detect_legal_form_end <- function(x, ...) {
 
 ##' Replaces legal form
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_replace_legal_form_end <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = magerman.patterns.legal.form.end,
         patterns.type = "ends",
         ...
@@ -407,13 +413,13 @@ magerman_detect_legal_form_beginning <- function(x, ...) {
 
 ##' Replaces legal form
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_replace_legal_form_beginning <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = "KABUSHIKI KAISHA",
         patterns.type = "begins",
         ...
@@ -441,13 +447,13 @@ magerman_detect_legal_form_middle <- function(x, ...) {
 
 ##' Replaces legal form
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_replace_legal_form_middle <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = magerman.patterns.legal.form.middle,
         patterns.type = "fixed",
         ...
@@ -534,7 +540,7 @@ magerman_remove_legal_form <- function(x) {
 magerman_remove_legal_form_and_clean <- function(x) {
     x %>%
         magerman_remove_legal_form() %>%
-        harmonize.replace(
+        harmonize_replace(
             patterns = c("[-;:,&]*\\s*$", "^\\s*"),
             patterns.type = "regex"
         )
@@ -546,13 +552,13 @@ magerman_remove_legal_form_and_clean <- function(x) {
 ## -------->>  [[file:../harmonizer.src.org::*Common Words][Common Words:1]]
 ##' Removes common words
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_remove_common_words_at_the_end <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = magerman.patterns.common.words.at.the.end,
         patterns.type = "ends",
         ...
@@ -561,13 +567,13 @@ magerman_remove_common_words_at_the_end <- function(x, ...) {
 
 ##' Removes common words
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_remove_common_words_at_the_beginning <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = magerman.patterns.common.words.at.the.beginning,
         patterns.type = "begins",
         ...
@@ -578,13 +584,13 @@ magerman_remove_common_words_at_the_beginning <- function(x, ...) {
 
 ##' Removes common words
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_remove_common_words_anywhere <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = magerman.patterns.common.words.anywhere,
         patterns.type = "fixed",
         ...
@@ -594,7 +600,7 @@ magerman_remove_common_words_anywhere <- function(x, ...) {
 
 ##' Removes common words
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
@@ -624,13 +630,13 @@ magerman_remove_common_words <- function(x, ...) {
 ## -------->>  [[file:../harmonizer.src.org::*Spelling Variation][Spelling Variation:1]]
 ##' Replaces spelling variation
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_replace_spelling_variation <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = magerman.patterns.spelling.variation,
         ...
     )
@@ -647,13 +653,13 @@ magerman_replace_spelling_variation <- function(x, ...) {
 ## -------->>  [[file:../harmonizer.src.org::*Condensing][Condensing:1]]
 ##' Condenses string
 ##' @param x table
-##' @inheritDotParams harmonize.replace
+##' @inheritDotParams harmonize_replace
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_condense <- function(x, ...) {
-    harmonize.replace(x,
+    harmonize_replace(x,
         patterns = "[^a-zA-Z0-9]+",
         patterns.type = "regex",
         ...
@@ -737,13 +743,13 @@ magerman_replace_umlaut <- function(x,
         ## transform umlaut
         x.harmonized <- x.vector %>%
             ## first "AE", "OE", "UE" -> "A", "O", "U"
-            harmonize.replace(
+            harmonize_replace(
                 patterns = magerman.patterns.umlaut,
                 patterns.col = 3,
                 patterns.replacements.col = 2
             ) %>%
             ## then "A", "O", "U" -> "AE", "OE", "UE"
-            harmonize.replace(
+            harmonize_replace(
                 patterns = magerman.patterns.umlaut,
                 patterns.col = 2,
                 patterns.replacements.col = 3

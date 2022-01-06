@@ -1,26 +1,31 @@
 ## -------->>  [[file:../harmonizer.src.org::*check_harmonize_options][check_harmonize_options:1]]
 report_arg_checks <- function (collection
-                             , report_for_call = sys.call(which = -2)) {
+                             , which_call_to_report = -2L
+                             , call_to_report = NULL) {
     checkmate::assertClass(collection, "AssertCollection")
     if (!collection$isEmpty()) {
         msgs = paste("-", collection$getMessages())
-        context = "Harmonizer :: %i argument checks failed for '%s' call:"
-        err = c("\n", strwrap(sprintf(context, length(msgs), deparse1(report_for_call)))
+        context = "Harmonizer :: %i argument checks failed in '%s' call:"
+        if(is.call(try(
+            call_to_report <- sys.call(which_call_to_report)
+          , silent = TRUE))) {
+            call_to_report <- deparse1(call_to_report)
+        }
+        err = c("\n", strwrap(sprintf(context, length(msgs), call_to_report))
               , strwrap(msgs, indent = 4, exdent = 6))
         stop(simpleError(paste0(err, collapse = "\n"), call = sys.call(1L)))
     }
     invisible(TRUE)
 }
 
-
-
 check_col <- function(col, x
+                    , which_call_to_report = -1L
                     , missing_ok = FALSE
-                    , null_ok = FALSE
-                    , report_for_call = sys.call(which = -1)) {
+                    , null_ok = FALSE) {
     assertion_fails <- checkmate::makeAssertCollection()
     checkmate::assert_multi_class(col, c("character", "numeric"), add = assertion_fails)
     if (is.character(col)) {
+        checkmate::assert_multi_class(x, c("data.frame", "data.table"), add = assertion_fails)
         checkmate::assert_character(col
                                   , min.chars = 1
                                   , len = 1
@@ -40,7 +45,7 @@ check_col <- function(col, x
                             , add = assertion_fails)
     }
     report_arg_checks(assertion_fails
-                    , report_for_call)
+                    , which_call_to_report)
 }
 
 
@@ -48,11 +53,11 @@ check_col <- function(col, x
 
 
 
-check_x <- function(x, report_for_call = sys.call(which = -1)) {
+check_x <- function(x, which_call_to_report = -1L) {
     assertion_fails <- checkmate::makeAssertCollection()
     checkmate::assert_multi_class(x, c("character", "data.frame", "data.table"), add = assertion_fails)
     report_arg_checks(assertion_fails
-                    , report_for_call)
+                    , which_call_to_report)
 }
 
 
@@ -61,12 +66,12 @@ check_x <- function(x, report_for_call = sys.call(which = -1)) {
 ##' @param x The object to harmonize
 ##' @param null_ok Whether NULL is valid value
 ##' @param na_ok Whether NA is valid value
-##' @param report_for_call When reporting issues which function call to indicate for reference
+##' @param which_call_to_report When reporting issues which function call to indicate for reference
 ##' @return nothing
 check_rows <- function(rows, x
+                     , which_call_to_report = -1L
                      , null_ok = TRUE
-                     , na_ok = FALSE
-                     , report_for_call = sys.call(which = -1)) {
+                     , na_ok = FALSE) {
     assertion_fails <- checkmate::makeAssertCollection()
     checkmate::assert_multi_class(rows
                                 , classes = c("logical", "numeric")
@@ -90,24 +95,28 @@ check_rows <- function(rows, x
                                    , add = assertion_fails)
     }
     report_arg_checks(assertion_fails
-                    , report_for_call)
+                    , which_call_to_report)
 }
 
 
 check_harmonize_options <- function(dots
                                   , x
-                                  , report_for_call = sys.call(which = -1)
+                                  , which_call_to_report = -1L
                                   , check_name_duplicates = FALSE) {
     ## check own arguments
-    checkmate::assert_class(report_for_call, classes = "call")
+    checkmate::assert_int(which_call_to_report)
     checkmate::assert_flag(check_name_duplicates)
     ## check harmonize_options
     assertion_fails <- checkmate::makeAssertCollection()
     with(dots, {
+        ## check x
+        check_x(x, which_call_to_report)
         ## check 'col'
-        check_col(col, x)
+        if(!is.atomic(x)) {
+            check_col(col, x, which_call_to_report)
+        }
         ## check 'rows'
-        check_rows(rows, x)
+        check_rows(rows, x, which_call_to_report)
         ## check 'ommitted_rows_values'
         if(length(ommitted_rows_values) == 1) {
             checkmate::assert_string(
@@ -177,7 +186,7 @@ check_harmonize_options <- function(dots
                      , add = assertion_fails)
     })
     report_arg_checks(assertion_fails
-                    , report_for_call)
+                    , which_call_to_report)
 }
 ## --------<<  check_harmonize_options:1 ends here
 

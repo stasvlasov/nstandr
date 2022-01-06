@@ -11,6 +11,358 @@
 
 
 
+## -------->>  [[file:../harmonizer.src.org::*harmonize.make.procedures.list][harmonize.make.procedures.list:1]]
+##' Makes list of procedures calls from table.
+##'
+##' Table should have at least two columns - messages and fuctions calls. Each function call should be a string of the following format "'function.name', arg1 = val1, arg2 = val2" (same as arguments for `do.call` function).
+##' 
+##' @param procedures.table Table to use
+##' @param message.field name of the column with messages that will be displayed when each call is executed
+##' @param function.call.field name of the column where function (harmonization procedures) calls are listed.
+##' @param no.field name of the column where the number of procedure is specified. Also this field indicates if the row in the table is just a comment in which case it will be removed if `remove.comments` is set (which is set by default)
+##' @param remove.comments Whether to remove comments.
+##' 
+##' @return List of named function calls. Names are messages.
+##' 
+##' @md 
+##' @import magrittr data.table
+harmonize.make.procedures.list <- function(procedures.table
+                                         , message.field = "message"
+                                         , function.call.field = "function.call"
+                                         , no.field = "no"
+                                         , remove.comments = TRUE
+                                         , sort.by.no.field = TRUE
+                                         , comments = c("#", "-", "")) {
+    procedures.table %<>% harmonize_defactor
+    if(remove.comments) {
+        procedures.table %<>%
+            extract(!(procedures.table[[no.field]] %in% comments), )
+    }
+    if(sort.by.no.field) {
+        procedures.table %<>%
+            extract(order(procedures.table[[no.field]]), )
+    }
+    procedures.table %>% 
+        extract2(function.call.field) %>%
+        paste0("list(", ., ")") %>%
+        lapply(function(str) eval(parse(text = str))) %>%
+        lapply(function(lst) if(length(lst) == 1) unlist(lst) else lst) %>% 
+        set_names(procedures.table[[message.field]])
+}
+## --------<<  harmonize.make.procedures.list:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*harmonize.x.split][harmonize.x.split:1]]
+##' Splits the object (table) in chunks by rows
+##'
+##' Convenient to apply some function to the table in chunks, e.g., if you want to add display of progress.
+##'
+##' @param x object or table
+##' @param by number of rows to split by
+##' @param len length of the table (nrow)
+##' 
+##' @return List of (sub)tables
+##'
+##' @export
+ harmonize.x.split <- function(x, by, len) {
+   split(x, rep(seq(1, len %/% by +1)
+              , each = by
+              , length.out = len))
+ }
+## --------<<  harmonize.x.split:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*harmonize.squish.spaces][harmonize.squish.spaces:1]]
+#' Removes redundant whitespases
+#' @param x table or vector
+#'
+#' @param wrap.in.spaces If set then adds leaing and ending spaces. Default is FALSE.
+#'
+#' @inheritDotParams harmonize.x
+#'
+#' @return updated table or vector
+#' @import magrittr stringr
+#' @export
+harmonize.squish.spaces <- function(x, wrap.in.spaces = FALSE, ...) {
+  harmonize.x(x, ...) %>% # get x.vector
+    str_squish %>%
+    {if(wrap.in.spaces) paste0(" ", ., " ") else .} %>% 
+    harmonize.x(x, ., ...) # put x.vector to x
+}
+
+## #' Removes redundant whitespases
+## #' @param x table or vector
+## #'
+## #' @param trim Whether to trim the beging (i.e., "left"), ending (i.e., "right") or "both" whitespaces.
+## #' @inheritDotParams harmonize.x
+## #'
+## #' @return updated table or vector
+## #' @import magrittr stringr
+## #' @export
+## harmonize.clean.spaces <- function(x
+##                                  , trim = "both"
+##                                  , ...) {
+##   harmonize.x(x, ...) %>% # get x.vector
+##     str_replace_all("\\s+", " ") %>%
+##     {if(is.null(trim)) .
+##      else stri_trim(., side = trim)} %>%
+##     harmonize.x(x, ., ...) # put x.vector to x
+## }
+## --------<<  harmonize.squish.spaces:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*harmonize.toupper][harmonize.toupper:1]]
+##' Uppercases vector of interest in the object (table)
+##' 
+##' @param data data
+##' 
+##' @inheritDotParams harmonize.x
+##'
+##' @import magrittr
+##' 
+##' @return updated data (as data.table)
+##' @export
+harmonize.toupper <- function(data, ...) {
+  get_target(data, ...) %>% 
+    toupper %>% 
+    harmonize.x(data, ., ...)
+}
+## --------<<  harmonize.toupper:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*harmonize.remove.brackets][harmonize.remove.brackets:1]]
+##' Removes brackets and content in brackets
+##' @param x object (table)
+##' @inheritDotParams harmonize.x
+##' @return updated object
+##' 
+##' @import stringr magrittr
+##' @export
+harmonize.remove.brackets  <- function(x, ...) {
+  harmonize.x(x, ...) %>% 
+    str_replace_all("<[^<>]*>|\\([^()]*\\)|\\{[^{}]*\\}|\\[[^\\[\\]]*\\]", "") %>%
+    harmonize.x(x, ., ...)
+}
+## --------<<  harmonize.remove.brackets:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*harmonize.remove.quotes][harmonize.remove.quotes:1]]
+##' Removes double quotes (deprecated)
+##' 
+##' (This is a separate procedure because read.csv can not get this substitution in old version of harmonizer)
+##'
+##' @param x an object
+##' @inheritDotParams harmonize.x
+##' @return updated object
+##' 
+##' @import stringr magrittr
+harmonize.remove.quotes <- function(x, ...) {
+  harmonize.x(x, ...) %>% 
+    stri_replace_all_fixed("\"", "") %>% 
+    harmonize.x(x, ., ...)
+}
+## --------<<  harmonize.remove.quotes:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*harmonize.unlist.column][harmonize.unlist.column:1]]
+##' If column in the `x` table is list unlist it if possible
+##' @param x object
+##' @return updated object
+##' @export
+harmonize.unlist.column <- function(x) {
+  if(is.atomic(x)) x
+  else if(is.list(x)) {
+    len <- sapply(x, length)
+    if(all(len == 1))
+      unlist(x)
+    else if(all(len %in% 0:1))
+      unlist(inset(x, len == 0, NA))
+    else x
+  } else x
+}
+## --------<<  harmonize.unlist.column:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*harmonize.dehtmlize][harmonize.dehtmlize:1]]
+#' Converts HTML characters to UTF-8 (this one is 1/3 faster than htmlParse but it is still very slow)
+## from - http://stackoverflow.com/questions/5060076
+#' @param x object (table)
+#' @param as.single.string If set then collapse characters in the main column of the `x` (i.e., `x.col`) as to a single string. It will increase performance (at least for relatively short tables). Default is FALSE
+#' @param as.single.string.sep delimiter for collapsed strings to uncollapse it later. Default is "#_|".
+#' @param read.xml If set the it will parse XML. Default is FALSE which means it parses HTML
+#' @inheritDotParams harmonize.x
+#' @return updated object
+#'
+#' @import xml2 magrittr
+#' @export
+harmonize.dehtmlize <- function(x
+                              , as.single.string = FALSE
+                              , as.single.string.sep = "#_|"
+                              , read.xml = FALSE
+                              , ...) {
+  x.vector <- harmonize.x(x, ...)
+  if(as.single.string) {
+    x.vector %>%
+      paste0(collapse = as.single.string.sep) %>%
+      paste0paste0("<x>", ., "</x>") %>% 
+      {if(read.xml) read.xml(.)
+       else read_html(.)} %>%
+      xml_text %>% 
+      strsplit(as.single.string.sep, fixed = TRUE)[[1]]
+  } else {
+    sapply(x.vector, function(str) {
+      paste0("<x>", str, "</x>") %>%
+        {if(read.xml) read.xml(.)
+         else read_html(.)} %>%
+        xml_text
+    })    
+  } %>% 
+    harmonize.x(x, ., ...) %>%
+    return()
+}
+## --------<<  harmonize.dehtmlize:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*harmonize.detect.enc][harmonize.detect.enc:1]]
+#' Detects string encoding
+#' @param x object
+#' @param codes.append basically `harmonized.append` parameter passed to `harmonize.x` but with new defaults. Default is TRUE.
+#' @param codes.suffix basically `harmonized.suffix` parameter passed to `harmonize.x` but with new defaults. Default is "encoding"
+#' @param return.codes.only If set it overwrites `return.x.cols` and `x.harmonized.col.update` parameters passed to `harmonize.x`. Default is FALSE.
+#' @inheritDotParams harmonize.x
+#' @return updated object
+#'
+#' @import stringi magrittr
+#' @export
+harmonize.detect.enc <- function(x
+                               , codes.append = TRUE
+                               , codes.suffix = "encoding"
+                               , ...) {
+  available.enc.list <- iconvlist()
+  x.vector <- harmonize.x.dots(x
+                             , harmonized.suffix = codes.suffix
+                             , harmonized.append = codes.append)
+  stri_enc_detect(x.vector) %>%
+    lapply(function(enc) {
+      enc %<>% extract2("Encoding")
+      first.ok.enc <- (enc %in% available.enc.list) %>% which %>% extract(1)
+      if(length(first.ok.enc) == 0) ""
+      else enc[[first.ok.enc]]
+    }) %>%
+    unlist %>%
+    harmonize.x.dots(x, .
+                   , harmonized.suffix = codes.suffix
+                   , harmonized.append = codes.append) %>% 
+    return()
+}
+## --------<<  harmonize.detect.enc:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*harmonize.toascii][harmonize.toascii:1]]
+#' Translates non-ascii symbols to its ascii equivalent
+#' 
+#' @param str String to translate
+#' @param detect.encoding Detect encoding of individual elements
+#' @inheritDotParams harmonize.x
+#' 
+#' @import stringi stringr magrittr
+#' 
+#' @export
+harmonize.toascii <- function(x
+                            , detect.encoding = FALSE
+                            , ...) {
+  str <- harmonize.x(x, ...)
+  utf <- harmonizer.patterns.ascii$utf %>% paste(collapse = "")
+  ascii <- harmonizer.patterns.ascii$ascii %>% paste(collapse = "")
+  {if(detect.encoding)  # detect encoding of individual elements
+     mapply(function(name, enc)
+       iconv(name
+           , from = enc
+           , to = "UTF-8"
+           , sub = "") %>%
+       {chartr(utf, ascii, .)}
+     , str
+     , harmonize.detect.enc(str, return.x.cols = NULL)
+     , SIMPLIFY = FALSE, USE.NAMES = FALSE) %>%
+       unlist %>% 
+       iconv(to = "ASCII", sub = "")
+   else
+     enc2utf8(str) %>% 
+       {chartr(utf, ascii, .)} %>% 
+       iconv(to = "ASCII", sub = "")} %>%
+    harmonize.x(x, ., ...)
+}
+## --------<<  harmonize.toascii:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*harmonize.match.arg][harmonize.match.arg:1]]
+##' Matches the argument vector to (default) choices and ensures the correct length
+##' @param arg An argument vector to check if it is matches the values
+##' @param arg.length Desired length of the `arg` to check against or to ensure
+##' @param arg.length.check Whether to check `arg` length
+##' @param ensure.length Whether to repeat `arg` `length` times if `arg` is length of 1
+##' @param choices Vector of values to match `arg`
+##' @param arg.call Saves `arg` call. Do not touch!
+##' @param env Saves environment where the function was called from. Do not touch!
+##' @param length Check if the `arg` is this lenght. If `arg` is length of 1 and `ensure.length` is set to TRUE (default) then it will repeat `arg` `length` times and return
+##' @return Argument vector
+##' 
+##' @md 
+##' @import magrittr data.table dplyr stringr
+##' @export 
+harmonize.match.arg <- function(arg
+                              , arg.length = 1
+                              , arg.length.check = TRUE
+                              , ensure.length = TRUE
+                              , choices = NULL
+                              , arg.call = substitute(arg)
+                              , env = parent.frame()) {
+  ## check arguments
+  harmonize_is_ok_type(arg, type = "atomic")
+  harmonize_is_ok_type(arg.length, type = "numeric", x.length = 1)
+  harmonize_is_ok_type(choices, type = "atomic")
+  harmonize_is_ok_type(arg.length.check, type = "logical")
+  harmonize_is_ok_type(ensure.length, type = "logical")
+  ## fools protection
+  ## if(!missing(env) | !missing(arg.call))
+  ##   stop("Arguments 'arg.call' and 'env' should not be set")
+  ## if choices are missing use defaults
+  if(missing(choices)) {
+    choices <- eval(evalq(formals(), envir = env)[[deparse(arg.call)]])
+  }
+  ## if arg is missing use first element
+  if(missing(arg.call) && # allow to provide alternative defaults
+     deparse(arg) != arg.call && # check if an argument is not the value
+     eval(call("missing", arg.call), envir = env)) {
+    arg <- choices[[1]]
+  }
+  ## check if arg matches choices and length
+  arg %<>% harmonize_defactor_vector
+  if(all(arg %in% choices)) {
+    if(arg.length.check && ensure.length && length(arg) == 1)
+      return(rep(arg, arg.length))
+    else if(arg.length.check && length(arg) != arg.length)
+      stop("'", arg.name, "' should be of length ", arg.length)
+    else
+      return(arg)
+  } else {
+    stop("Argument does not match choices/defauls '", deparse(choices), "'!")
+  }
+}
+## --------<<  harmonize.match.arg:1 ends here
+
+
+
 ## -------->>  [[file:../harmonizer.src.org::*harmonize.x.length and width][harmonize.x.length and width:1]]
 ##' Gets lengths of the object
 ##'
@@ -322,7 +674,7 @@ harmonize.x <- function(x
   if(is.null(inset.vector)) {
     ## if nothing was provided as x.vector then make and return one
     harmonize.x.check.args()
-    harmonize_target_get()
+    harmonize_target_get(x, col = x.col, rows = x.rows)
   } else {
     ## if inset.vector is provided put it back to x according to settings
     harmonize.x.check.args()
@@ -364,7 +716,7 @@ harmonize.x.inset.check.args <- function(env = parent.frame()) {
         if(!harmonize_is_ok_type(inset.omitted.val
                                , x.length = c(1, harmonize_data_length(x))
                                , type = "atomic")) {
-            inset.omitted.val <- harmonize_data_get_col(x, x.col)
+            inset.omitted.val <- get_vector(x, x.col)
         } else if(length(inset.omitted.val) == 1) {
             inset.omitted.val %<>% harmonize_defactor %>% rep(harmonize_data_length(x))
         } else {
@@ -422,17 +774,21 @@ harmonize.x.inset.check.args <- function(env = parent.frame()) {
 ##'
 ##' @md
 harmonize_target_get <- function(data, col, rows) {
-    harmonize_data_get_col(data, col)[rows]
+    get_vector(data, col)[rows]
 }
 
 
 
-harmonize_data_get_col <- function(x, col) {
-    if(is.atomic(x))
-        harmonize_defactor(x)
-    else
-        harmonize_defactor(x[[col]])
-}
+## get_vector <- function(x, col, col_check = TRUE) {
+##     if (is.atomic(x)) {
+##         harmonize_defactor(x)
+##     } else {
+##         if(col_check) {
+##             check_col(col, x, report_for_call = sys.call(which = -2))
+##         }
+##         harmonize_defactor(x[[col]])
+##     }
+## }
 
 ## binds to existing table
 harmonize.x.inset <- function(env = parent.frame()) {
@@ -581,496 +937,6 @@ dots.and <- function(arg.name, arg.val
   } else eval(arg.val, envir = env)
 }
 ## --------<<  harmonize.x.dots:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.make.procedures.list][harmonize.make.procedures.list:1]]
-##' Makes list of procedures calls from table.
-##'
-##' Table should have at least two columns - messages and fuctions calls. Each function call should be a string of the following format "'function.name', arg1 = val1, arg2 = val2" (same as arguments for `do.call` function).
-##' 
-##' @param procedures.table Table to use
-##' @param message.field name of the column with messages that will be displayed when each call is executed
-##' @param function.call.field name of the column where function (harmonization procedures) calls are listed.
-##' @param no.field name of the column where the number of procedure is specified. Also this field indicates if the row in the table is just a comment in which case it will be removed if `remove.comments` is set (which is set by default)
-##' @param remove.comments Whether to remove comments.
-##' 
-##' @return List of named function calls. Names are messages.
-##' 
-##' @md 
-##' @import magrittr data.table
-harmonize.make.procedures.list <- function(procedures.table
-                                         , message.field = "message"
-                                         , function.call.field = "function.call"
-                                         , no.field = "no"
-                                         , remove.comments = TRUE
-                                         , sort.by.no.field = TRUE
-                                         , comments = c("#", "-", "")) {
-    procedures.table %<>% harmonize_defactor
-    if(remove.comments) {
-        procedures.table %<>%
-            extract(!(procedures.table[[no.field]] %in% comments), )
-    }
-    if(sort.by.no.field) {
-        procedures.table %<>%
-            extract(order(procedures.table[[no.field]]), )
-    }
-    procedures.table %>% 
-        extract2(function.call.field) %>%
-        paste0("list(", ., ")") %>%
-        lapply(function(str) eval(parse(text = str))) %>%
-        lapply(function(lst) if(length(lst) == 1) unlist(lst) else lst) %>% 
-        set_names(procedures.table[[message.field]])
-}
-## --------<<  harmonize.make.procedures.list:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.x.split][harmonize.x.split:1]]
-##' Splits the object (table) in chunks by rows
-##'
-##' Convenient to apply some function to the table in chunks, e.g., if you want to add display of progress.
-##'
-##' @param x object or table
-##' @param by number of rows to split by
-##' @param len length of the table (nrow)
-##' 
-##' @return List of (sub)tables
-##'
-##' @export
- harmonize.x.split <- function(x, by, len) {
-   split(x, rep(seq(1, len %/% by +1)
-              , each = by
-              , length.out = len))
- }
-## --------<<  harmonize.x.split:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.squish.spaces][harmonize.squish.spaces:1]]
-#' Removes redundant whitespases
-#' @param x table or vector
-#'
-#' @param wrap.in.spaces If set then adds leaing and ending spaces. Default is FALSE.
-#'
-#' @inheritDotParams harmonize.x
-#'
-#' @return updated table or vector
-#' @import magrittr stringr
-#' @export
-harmonize.squish.spaces <- function(x, wrap.in.spaces = FALSE, ...) {
-  harmonize.x(x, ...) %>% # get x.vector
-    str_squish %>%
-    {if(wrap.in.spaces) paste0(" ", ., " ") else .} %>% 
-    harmonize.x(x, ., ...) # put x.vector to x
-}
-
-## #' Removes redundant whitespases
-## #' @param x table or vector
-## #'
-## #' @param trim Whether to trim the beging (i.e., "left"), ending (i.e., "right") or "both" whitespaces.
-## #' @inheritDotParams harmonize.x
-## #'
-## #' @return updated table or vector
-## #' @import magrittr stringr
-## #' @export
-## harmonize.clean.spaces <- function(x
-##                                  , trim = "both"
-##                                  , ...) {
-##   harmonize.x(x, ...) %>% # get x.vector
-##     str_replace_all("\\s+", " ") %>%
-##     {if(is.null(trim)) .
-##      else stri_trim(., side = trim)} %>%
-##     harmonize.x(x, ., ...) # put x.vector to x
-## }
-## --------<<  harmonize.squish.spaces:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.toupper][harmonize.toupper:1]]
-##' Uppercases vector of interest in the object (table)
-##' 
-##' @param data data
-##' 
-##' @inheritDotParams inset_vector
-##'
-##' @import magrittr
-##' 
-##' @return updated data (as data.table)
-##' @export
-harmonize.toupper <- function(data, ...) {
-  get_vector(data, ...) %>% 
-    toupper %>% 
-    inset_vector(data, ., ...)
-}
-## --------<<  harmonize.toupper:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.remove.brackets][harmonize.remove.brackets:1]]
-##' Removes brackets and content in brackets
-##' @param x object (table)
-##' @inheritDotParams harmonize.x
-##' @return updated object
-##' 
-##' @import stringr magrittr
-##' @export
-harmonize.remove.brackets  <- function(x, ...) {
-  harmonize.x(x, ...) %>% 
-    str_replace_all("<[^<>]*>|\\([^()]*\\)|\\{[^{}]*\\}|\\[[^\\[\\]]*\\]", "") %>%
-    harmonize.x(x, ., ...)
-}
-## --------<<  harmonize.remove.brackets:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.remove.quotes][harmonize.remove.quotes:1]]
-##' Removes double quotes (deprecated)
-##' 
-##' (This is a separate procedure because read.csv can not get this substitution in old version of harmonizer)
-##'
-##' @param x an object
-##' @inheritDotParams harmonize.x
-##' @return updated object
-##' 
-##' @import stringr magrittr
-harmonize.remove.quotes <- function(x, ...) {
-  harmonize.x(x, ...) %>% 
-    stri_replace_all_fixed("\"", "") %>% 
-    harmonize.x(x, ., ...)
-}
-## --------<<  harmonize.remove.quotes:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.unlist.column][harmonize.unlist.column:1]]
-##' If column in the `x` table is list unlist it if possible
-##' @param x object
-##' @return updated object
-##' @export
-harmonize.unlist.column <- function(x) {
-  if(is.atomic(x)) x
-  else if(is.list(x)) {
-    len <- sapply(x, length)
-    if(all(len == 1))
-      unlist(x)
-    else if(all(len %in% 0:1))
-      unlist(inset(x, len == 0, NA))
-    else x
-  } else x
-}
-## --------<<  harmonize.unlist.column:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.dehtmlize][harmonize.dehtmlize:1]]
-#' Converts HTML characters to UTF-8 (this one is 1/3 faster than htmlParse but it is still very slow)
-## from - http://stackoverflow.com/questions/5060076
-#' @param x object (table)
-#' @param as.single.string If set then collapse characters in the main column of the `x` (i.e., `x.col`) as to a single string. It will increase performance (at least for relatively short tables). Default is FALSE
-#' @param as.single.string.sep delimiter for collapsed strings to uncollapse it later. Default is "#_|".
-#' @param read.xml If set the it will parse XML. Default is FALSE which means it parses HTML
-#' @inheritDotParams harmonize.x
-#' @return updated object
-#'
-#' @import xml2 magrittr
-#' @export
-harmonize.dehtmlize <- function(x
-                              , as.single.string = FALSE
-                              , as.single.string.sep = "#_|"
-                              , read.xml = FALSE
-                              , ...) {
-  x.vector <- harmonize.x(x, ...)
-  if(as.single.string) {
-    x.vector %>%
-      paste0(collapse = as.single.string.sep) %>%
-      paste0paste0("<x>", ., "</x>") %>% 
-      {if(read.xml) read.xml(.)
-       else read_html(.)} %>%
-      xml_text %>% 
-      strsplit(as.single.string.sep, fixed = TRUE)[[1]]
-  } else {
-    sapply(x.vector, function(str) {
-      paste0("<x>", str, "</x>") %>%
-        {if(read.xml) read.xml(.)
-         else read_html(.)} %>%
-        xml_text
-    })    
-  } %>% 
-    harmonize.x(x, ., ...) %>%
-    return()
-}
-## --------<<  harmonize.dehtmlize:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.detect.enc][harmonize.detect.enc:1]]
-#' Detects string encoding
-#' @param x object
-#' @param codes.append basically `harmonized.append` parameter passed to `harmonize.x` but with new defaults. Default is TRUE.
-#' @param codes.suffix basically `harmonized.suffix` parameter passed to `harmonize.x` but with new defaults. Default is "encoding"
-#' @param return.codes.only If set it overwrites `return.x.cols` and `x.harmonized.col.update` parameters passed to `harmonize.x`. Default is FALSE.
-#' @inheritDotParams harmonize.x
-#' @return updated object
-#'
-#' @import stringi magrittr
-#' @export
-harmonize.detect.enc <- function(x
-                               , codes.append = TRUE
-                               , codes.suffix = "encoding"
-                               , ...) {
-  available.enc.list <- iconvlist()
-  x.vector <- harmonize.x.dots(x
-                             , harmonized.suffix = codes.suffix
-                             , harmonized.append = codes.append)
-  stri_enc_detect(x.vector) %>%
-    lapply(function(enc) {
-      enc %<>% extract2("Encoding")
-      first.ok.enc <- (enc %in% available.enc.list) %>% which %>% extract(1)
-      if(length(first.ok.enc) == 0) ""
-      else enc[[first.ok.enc]]
-    }) %>%
-    unlist %>%
-    harmonize.x.dots(x, .
-                   , harmonized.suffix = codes.suffix
-                   , harmonized.append = codes.append) %>% 
-    return()
-}
-## --------<<  harmonize.detect.enc:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.toascii][harmonize.toascii:1]]
-#' Translates non-ascii symbols to its ascii equivalent
-#' 
-#' @param str String to translate
-#' @param detect.encoding Detect encoding of individual elements
-#' @inheritDotParams harmonize.x
-#' 
-#' @import stringi stringr magrittr
-#' 
-#' @export
-harmonize.toascii <- function(x
-                            , detect.encoding = FALSE
-                            , ...) {
-  str <- harmonize.x(x, ...)
-  utf <- harmonizer.patterns.ascii$utf %>% paste(collapse = "")
-  ascii <- harmonizer.patterns.ascii$ascii %>% paste(collapse = "")
-  {if(detect.encoding)  # detect encoding of individual elements
-     mapply(function(name, enc)
-       iconv(name
-           , from = enc
-           , to = "UTF-8"
-           , sub = "") %>%
-       {chartr(utf, ascii, .)}
-     , str
-     , harmonize.detect.enc(str, return.x.cols = NULL)
-     , SIMPLIFY = FALSE, USE.NAMES = FALSE) %>%
-       unlist %>% 
-       iconv(to = "ASCII", sub = "")
-   else
-     enc2utf8(str) %>% 
-       {chartr(utf, ascii, .)} %>% 
-       iconv(to = "ASCII", sub = "")} %>%
-    harmonize.x(x, ., ...)
-}
-## --------<<  harmonize.toascii:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.match.arg][harmonize.match.arg:1]]
-##' Matches the argument vector to (default) choices and ensures the correct length
-##' @param arg An argument vector to check if it is matches the values
-##' @param arg.length Desired length of the `arg` to check against or to ensure
-##' @param arg.length.check Whether to check `arg` length
-##' @param ensure.length Whether to repeat `arg` `length` times if `arg` is length of 1
-##' @param choices Vector of values to match `arg`
-##' @param arg.call Saves `arg` call. Do not touch!
-##' @param env Saves environment where the function was called from. Do not touch!
-##' @param length Check if the `arg` is this lenght. If `arg` is length of 1 and `ensure.length` is set to TRUE (default) then it will repeat `arg` `length` times and return
-##' @return Argument vector
-##' 
-##' @md 
-##' @import magrittr data.table dplyr stringr
-##' @export 
-harmonize.match.arg <- function(arg
-                              , arg.length = 1
-                              , arg.length.check = TRUE
-                              , ensure.length = TRUE
-                              , choices = NULL
-                              , arg.call = substitute(arg)
-                              , env = parent.frame()) {
-  ## check arguments
-  harmonize_is_ok_type(arg, type = "atomic")
-  harmonize_is_ok_type(arg.length, type = "numeric", x.length = 1)
-  harmonize_is_ok_type(choices, type = "atomic")
-  harmonize_is_ok_type(arg.length.check, type = "logical")
-  harmonize_is_ok_type(ensure.length, type = "logical")
-  ## fools protection
-  ## if(!missing(env) | !missing(arg.call))
-  ##   stop("Arguments 'arg.call' and 'env' should not be set")
-  ## if choices are missing use defaults
-  if(missing(choices)) {
-    choices <- eval(evalq(formals(), envir = env)[[deparse(arg.call)]])
-  }
-  ## if arg is missing use first element
-  if(missing(arg.call) && # allow to provide alternative defaults
-     deparse(arg) != arg.call && # check if an argument is not the value
-     eval(call("missing", arg.call), envir = env)) {
-    arg <- choices[[1]]
-  }
-  ## check if arg matches choices and length
-  arg %<>% harmonize_defactor_vector
-  if(all(arg %in% choices)) {
-    if(arg.length.check && ensure.length && length(arg) == 1)
-      return(rep(arg, arg.length))
-    else if(arg.length.check && length(arg) != arg.length)
-      stop("'", arg.name, "' should be of length ", arg.length)
-    else
-      return(arg)
-  } else {
-    stop("Argument does not match choices/defauls '", deparse(choices), "'!")
-  }
-}
-## --------<<  harmonize.match.arg:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.replace][harmonize.replace:1]]
-#' A wrapper for string replacement and cbinding some columns.
-#'
-#' Optionally matches only at the beginning or at the end of the string.
-#' 
-#' @param x Vector or table to harmonize.
-#' @param patterns Accepts both vector or table. If patterns it is table can also include replacements column.
-#' @param patterns.col If patterns is not a vector which column to use. Default is 1.
-#' @param patterns.mode Mode of matching. Could be one of c("all", "first", "last"). The default is "all" (it is 2x faster than "first" and "last" because of handy stri_replace_all_* functions). Also possible to pass a vector (same length as patterns)
-#' @param patterns.mode.col  Column in patterns table with the mode of matching
-#' @param patterns.type Kind of pattern. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are "begins", "ends" - which means that it should only match fixed pattern at the beginning of the string or at the and. Another possible value is "regex" (calling code{\link[stringi]{stri_replace_all_regex}})
-#' @param patterns.type.col Column with the type of pattern in case when patterns should have different types
-#' @param patterns.replacements.col If patterns is not a vector and includes replacements which column to use for replacements. Default is 2.
-#' @param replacements If patterns does not have column with replacements provide it here.
-#' @inheritDotParams harmonize.x
-#'
-#' @return If nothing was indicated to cbind to results then it returns harmonized vector. If something is needs to be cbind then it returns data.table
-#' @import stringi stringr magrittr
-#' 
-#' @export
-harmonize.replace <- function(x
-                            , patterns
-                            , patterns.col = 1
-                            , patterns.mode = c("all", "first", "last")
-                            , patterns.mode.col = NULL
-                            , patterns.type = c("fixed"
-                                              , "begins"
-                                              , "begins.trimmed"
-                                              , "ends"
-                                              , "ends.trimmed"
-                                              , "regex"
-                                              , "exact"
-                                              , "exact.trimmed")
-                            , patterns.type.col = NULL
-                            , patterns.replacements.col = 2
-                            , replacements = NULL
-                            , ...) {
-    ## check arguments and get vectors
-    x.vector <- harmonize.x(x, ...)
-    patterns.vector <- harmonize.x(patterns, x.col = patterns.col)
-    types.vector <- harmonize.replace..get.types.vector()
-    modes.vector <- harmonize.replace..get.modes.vector()
-    replacements.vector <- harmonize.replace..get.replacements.vector()
-    ## do replace and return
-    harmonize.replace..do() %>% harmonize.x(x, ., ...)
-}
-
-harmonize.replace..get.types.vector <- function(env = parent.frame()) {
-  evalq({
-    ## patterns.vector should be ready
-    if(missing(patterns.type.col)) {
-      harmonize.match.arg(patterns.type
-                        , arg.length = length(patterns.vector))
-    } else {
-      harmonize.match.arg(arg = harmonize.x(patterns, x.col = patterns.type.col)
-                        , arg.length = length(patterns.vector)
-                        , arg.call = quote(patterns.type))
-    }
-  }, envir = env)
-}
-
-harmonize.replace..get.modes.vector <- function(env = parent.frame()) {
-    evalq({
-    ## patterns.vector should be ready
-    if(missing(patterns.mode.col)) {
-      harmonize.match.arg(patterns.mode, arg.length = length(patterns.vector))
-    } else {
-      harmonize.match.arg(arg = harmonize.x(patterns, x.col = patterns.mode.col)
-                        , arg.length = length(patterns.vector)
-                        , arg.call = quote(patterns.mode))
-    }
-  }, envir = env)
-}
-
-harmonize.replace..get.replacements.vector <- function(env = parent.frame()) {
-evalq({
-    ## patterns.vector should be ready
-    if(missing(replacements) && !is.atomic(patterns)) {
-      harmonize.x(patterns, x.col = patterns.replacements.col)
-    } else if(harmonize_is_ok_type(replacements
-                                 , x.length = c(1, length(patterns.vector))
-                                 , type = "atomic")) {
-        harmonize_defactor_vector(replacements) %>%
-            {if(length(.) == 1) rep(., length(patterns.vector)) else .}
-    } else {
-        ## replace with nothig by default
-        rep("", length(patterns.vector))
-    }
-  }, envir = env)
-}
-
-## a wrapple for stri_replace to use in Reduce
-stri_replace.do <- function(str, arg.list) {
-  do.call(stri_replace, c(list(str), arg.list))
-}
-
-harmonize.replace..do <- function(env = parent.frame()) {
-  evalq({
-    ## make patterns.vector excaped according to types.vector
-    patterns.vector %<>% harmonize_escape_types(types.vector)
-    ## conditions are organized from fastest to slowest replace procedures
-    if(all(types.vector == "exact") || all(types.vector == "exact.trimmed")) {
-      x.vector %>% 
-        {if(all(types.vector == "exact.trimmed")) str_trim(.) else .} %>% 
-        match(patterns.vector) %>% 
-        extract(replacements.vector, .) %>% 
-        inset(x.vector, !is.na(.), .)
-    } else if(all(modes.vector == "all")) {
-      if(all(types.vector == "fixed")) {
-        stri_replace_all_fixed(x.vector
-                             , patterns.vector
-                             , replacements.vector
-                             , vectorize_all = FALSE)
-      } else {
-        stri_replace_all_regex(x.vector
-                             , patterns.vector
-                             , replacements.vector
-                             , vectorize_all = FALSE)
-      }
-    } else if(all(types.vector == "fixed")) {
-      Map(list
-        , fixed = patterns.vector
-        , replacement = replacements.vector
-        , mode = modes.vector) %>%
-        Reduce(stri_replace.do, ., init = x.vector) # same as for loop
-    } else {
-      Map(list
-        , regex = patterns.vector
-        , replacement = replacements.vector
-        , mode = modes.vector) %>%
-        Reduce(stri_replace.do, ., init = x.vector) # same as for loop
-    }
-  }, envir = env)
-}
-## --------<<  harmonize.replace:1 ends here
 
 
 

@@ -10,15 +10,15 @@ magerman_replace_legal_form_beginning(x, ...)
 \item{x}{table}
 
 \item{...}{
-  Arguments passed on to \code{\link[=harmonize.replace]{harmonize.replace}}
+  Arguments passed on to \code{\link[=harmonize_replace]{harmonize_replace}}
   \describe{
-    \item{\code{patterns}}{Accepts both vector or table. If patterns it is table can also include replacements column.}
-    \item{\code{patterns.col}}{If patterns is not a vector which column to use. Default is 1.}
-    \item{\code{patterns.mode}}{Mode of matching. Could be one of c("all", "first", "last"). The default is "all" (it is 2x faster than "first" and "last" because of handy stri_replace_all_* functions). Also possible to pass a vector (same length as patterns)}
-    \item{\code{patterns.mode.col}}{Column in patterns table with the mode of matching}
-    \item{\code{patterns.type}}{Kind of pattern. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are "begins", "ends" - which means that it should only match fixed pattern at the beginning of the string or at the and. Another possible value is "regex" (calling code{\link[stringi]{stri_replace_all_regex}})}
-    \item{\code{patterns.type.col}}{Column with the type of pattern in case when patterns should have different types}
-    \item{\code{patterns.replacements.col}}{If patterns is not a vector and includes replacements which column to use for replacements. Default is 2.}
+    \item{\code{patterns}}{Accepts both vector or table. If patterns is a table can also include replacements column.}
+    \item{\code{patterns_col}}{If patterns is not a vector which column to use. Default is 1.}
+    \item{\code{patterns_mode}}{Mode of matching. Could be one of c("all", "first", "last"). The default is "all" (it is 2x faster than "first" and "last" because of handy stri_replace_all_* functions). Also possible to pass a vector (same length as patterns)}
+    \item{\code{patterns_mode_col}}{Column in patterns table with the mode of matching}
+    \item{\code{patterns_type}}{Kind of pattern. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are "begins", "ends" - which means that it should only match fixed pattern at the beginning of the string or at the and. Another possible value is "regex" (calling code{\link[stringi]{stri_replace_all_regex}})}
+    \item{\code{patterns_type_col}}{Column with the type of pattern in case when patterns should have different types}
+    \item{\code{patterns_replacements_col}}{If patterns is not a vector and includes replacements which column to use for replacements. Default is 2.}
     \item{\code{replacements}}{If patterns does not have column with replacements provide it here.}
   }}
 }

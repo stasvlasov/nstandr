@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*get_vector & inset_vector][get_vector & inset_vector:2]]
+## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:2]]
 format_append_copy <- harmonizer:::format_append_copy
 
 expect_equal({
@@ -8,6 +8,6 @@ expect_equal({
         format_append_copy("col")
 }
 , "col_harmonizing_6_nber_replacement")
-## --------<<  get_vector & inset_vector:2 ends here
+## --------<<  get_target & inset_target:2 ends here
 
 

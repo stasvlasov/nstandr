@@ -12,7 +12,8 @@ get_dots(
   search_while_calls_regexp = NULL,
   search_up_nframes = 1L,
   search_up_to_call = NULL,
-  skip_checks_for_parent_call = TRUE
+  skip_checks_for_parent_call = TRUE,
+  eval_default_args = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ get_dots(
 \item{search_up_to_call}{The name of the call before which to continue looking up the call stack for updates in dots arguments.}
 
 \item{skip_checks_for_parent_call}{Whether to skip checking \code{search_while_calls_have_formals} \code{search_while_calls_belong_to_env} \code{search_while_calls_regexp}}
+
+\item{eval_default_args}{Whether to evaluate default arguments. Default is do not evaluate (FALSE) assuming that all argument are simple values (i.e., evaluates to itself)}
 }
 \value{
 List of updated dots arguments

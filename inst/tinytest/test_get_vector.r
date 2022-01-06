@@ -1,71 +1,70 @@
-## -------->>  [[file:../../harmonizer.src.org::*get_vector & inset_vector][get_vector & inset_vector:3]]
-require("data.table")
+## -------->>  [[file:../../harmonizer.src.org::*get_vector][get_vector:2]]
+## missing col
+expect_error(get_vector(c("a", "b", "c")))
 
-get_vector <- harmonizer:::get_vector
-
+## select rows
 expect_equal(
-    data.table(x.pro.30 = list(c(1,2,3,4), 2,3,4)
-             , y = c(7,8,9,0)
-             , x.pro.5 = c(0,0,0,0)) |>
-    get_vector(rows = c(T,T,F,T))
-  , list(c(1, 2, 3, 4), 2, 4))
+    get_vector(c("a", "b", "c"), 1, rows = c(1,3))
+  , c("a", "c"))
 
+## select col
 expect_equal(
-    data.frame(c(1,2,3,4)
-             , c("7","8","9","a")) |>
-    get_vector(col = 2
-             , rows = c(T,T,F,T))
-  , c("7", "8", "a"))
+    data.table(NA
+             , c("a", "b", "c")
+             , c(1,2,3)) |>
+    get_vector(2, rows = c(1,3))
+  , c("a", "c"))
 
-
-## test placement
-
+## fallback
 expect_equal(
-    data.frame(x = c(1,2,3,4)
-             , x_harmonized = c("7","8","9","a")) |>
-    get_vector(col = 1
-             , rows = c(T,T,F,T)
-             , placement = "append_to_col")
-  , c("7", "8", "a"))
-
-expect_equal(
-    data.frame(x = c(1,2,3,4)
-             , aaa = c("7","8","9","a")) |>
-    get_vector(col = 1
-             , rows = c(T,T,F,T)
-               , name = "aaa"
-             , placement = "append_to_col")
-  , c("7", "8", "a"))
+    data.table(NA
+             , c("a", "b", "c")
+             , c(1,2,3)) |>
+    get_vector(2, rows = c(1,3), fallback_value = c("x"))
+  , c("a", "c"))
 
 
 expect_equal(
-data.frame(x_harmonized = c(1,2,3,4)
-             , x = c("7","8","9","a")) |>
-    get_vector(col = 1
-             , rows = c(T,T,F,T)
-             , placement = "prepend_to_col")
-  , c(1,2,4))
-
-
-
-expect_equal(
-    data.frame(x = c(1,2,3,4)
-             , y = TRUE
-             , x_harmonized = c("7","8","9","a")) |>
-    get_vector(col = 1
-             , rows = c(T,T,F,T)
-             , placement = "append_to_x")
-  , c("7", "8", "a"))
-
+    data.table(NA
+             , c("a", "b", "c")
+             , c(1,2,3)) |>
+    get_vector(2, rows = c(1,3)
+             , fallback_value = c("x")
+             , fallback_value_ignored_if_col = FALSE)
+  , c("x", "x"))
 
 expect_equal(
-    data.frame(x_harmonized = c(1,2,3,4)
-             , y = TRUE
-             , x = c("7","8","9","a")) |>
-    get_vector(col = 2
-             , rows = c(T,T,F,T)
-             , placement = "prepend_to_x")
-  , c(1,2,4))
-## --------<<  get_vector & inset_vector:3 ends here
+    data.table(NA
+             , c("a", "b", "c")
+             , c(1,2,3)) |>
+    get_vector(NULL, rows = c(1,3)
+             , fallback_value = c("x"))
+  , c("x", "x"))
+
+expect_equal(
+    data.table(NA
+             , c("a", "b", "c")
+             , c(1,2,3)) |>
+    get_vector(NULL, rows = c(1,3)
+             , fallback_value = c("x", "y", "z"))
+  , c("x", "z"))
+
+## choises
+expect_error(
+    data.table(NA
+             , c("a", "b", "c")
+             , c(1,2,3)) |>
+    get_vector(NULL, rows = c(1,3)
+             , fallback_value = c("x")
+             , choices = "a"
+             , fallback_value_ignored_if_col = FALSE))
+
+expect_error(
+    data.table(NA
+             , c("a", "b", "c")
+             , c(1,2,3)) |>
+    get_vector(2, rows = c(1,3)
+             , choices = "x"))
+## --------<<  get_vector:2 ends here
 
 
