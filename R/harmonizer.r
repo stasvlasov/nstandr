@@ -432,7 +432,8 @@ harmonize_is_data_empty <- function(data) {
 ##' @return updated vector with empty elements removed
 ##' @export
 harmonize_omit_empty <- function(x) {
-  x[!sapply(harmonize_is_data_empty(x), isTRUE)]
+    if(length(x) == 0) return(x)
+    x[!sapply(harmonize_is_data_empty(x), isTRUE)]
 }
 
 
@@ -444,83 +445,6 @@ harmonize_eval_if_empty <- function(x, ..., env = parent.frame()) {
   else x
 }
 ## --------<<  harmonize.empty:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.escape.regex][harmonize.escape.regex:1]]
-##' Escapes special for regex characters
-##' @param string character vector
-##' @return character vector with all special to regex characters escaped
-##'
-##' @import stringr
-##' @export
-harmonize_escape_regex <- function(string) str_replace_all(string, "(\\W)", "\\\\\\1")
-
-##' Escapes special for different types of pattern
-##' @param string character vector
-##' @return character vector with all special to regex characters
-##'     escaped
-##' @param type whether it should escape regex ("fixed") add beginning
-##'     ("begins") or ending ("ends") matcher. Or if value is "regex"
-##'     then do not change the string. Also possible to escape a regex
-##'     for exact match ("exact") or exact match after trimming spaces
-##'     ("trim.exact")
-##' @import stringr
-##' @export
-harmonize_escape_type <- function(string
-                                , type = c("fixed"
-                                         , "begins"
-                                         , "begins.trimmed"
-                                         , "ends"
-                                         , "ends.trimmed"
-                                         , "regex"
-                                         , "exact"
-                                         , "exact.trimmed")
-                                , all.regex = TRUE) {
-    type <- match.arg(type)
-    if(type == "regex")
-        string
-    else if(type == "fixed")
-        if(all.regex) harmonize_escape_regex(string)
-        else string
-    else if(type == "begins")
-        paste0("^", harmonize_escape_regex(string))
-    else if(type == "begins.trimmed")
-        paste0("^\\s*", harmonize_escape_regex(string))
-    else if(type == "ends")
-        paste0(harmonize_escape_regex(string), "$")
-    else if(type == "ends.trimmed")
-        paste0(harmonize_escape_regex(string), "\\s*$")
-    else if(type == "exact")
-        if(all.regex) paste0("^", harmonize_escape_regex(string), "$")
-        else string
-    else if(type == "exact.trimmed")
-        if(all.regex)  paste0("^\\s*", harmonize_escape_regex(string), "\\s*$")
-        else str_trim(string)
-}
-
-##' Escapes special for regex characters conditionally
-##' @param strings character vector
-##' @param conds character vector of the same length as `strings` with instructions whether to escape regex ("fixed") add beginning ("begins") or ending ("ends") matcher. Or if value is "regex" then do not change the string. Also possible to escape a regex for exact match ("exact") or exact match after trimming spaces ("trim.exact")
-##' @param all.regex ......
-##' @return string with all special to regex characters escaped
-##'
-##' @import stringr
-harmonize_escape_types <- function(patterns, conds, all.regex = FALSE) {
-    if(length(conds) == 1 || length(unique(conds)) == 1) {
-        conds %<>% extract(1)
-        harmonize_escape_type(patterns, conds, all.regex = all.regex)
-    }
-    else if(length(conds) == length(patterns))
-        mapply(function(pattern, cond) {
-            harmonize_escape_type(pattern, cond)
-        }
-      , patterns
-      , conds
-      , SIMPLIFY = TRUE)
-    else stop("patterns.type misspecified - wrong length!")
-}
-## --------<<  harmonize.escape.regex:1 ends here
 
 
 
@@ -543,7 +467,7 @@ harmonize_add_suffix <- function(name, suffix, x.names
                else name
   name.with.suffix <- paste0(name.base, ".", suffix)
   name.with.suffix.regex.nbr <-
-    paste0("(?<=", harmonize_escape_regex(name.with.suffix), "\\.)", "\\d+$")
+    paste0("(?<=", escape_regex(name.with.suffix), "\\.)", "\\d+$")
   suffix.nbr.init <- if(name.with.suffix %in% x.names)
                        suffix.nbr.init - 1
                      else NULL
@@ -940,7 +864,7 @@ dots.and <- function(arg.name, arg.val
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*harmonize.detect][harmonize.detect:1]]
+## -------->>  [[file:../harmonizer.src.org::*harmonize.detect][harmonize.detect:2]]
 #' This function is basically meant for coding names based on certain pattern
 #'
 #' Optionally matches only at the beginning or at the end of the string.
@@ -1103,7 +1027,7 @@ harmonize.detect..get.patterns.type.vector <- function(env = parent.frame()) {
 harmonize.detect..get.patterns.vector <- function(env = parent.frame()) {
   evalq({
         harmonize.x(patterns, x.col = patterns.col) %>% 
-            harmonize_escape_types(patterns.type.vector, all.regex = FALSE)
+            escape_regex_for_types(patterns.type.vector, all.regex = FALSE)
     }, envir = env)
 }
 
@@ -1170,7 +1094,7 @@ harmonize.detect..do.vector <- function(env = parent.frame()) {
           harmonize.unlist.column
     }, envir = env)
 }
-## --------<<  harmonize.detect:1 ends here
+## --------<<  harmonize.detect:2 ends here
 
 
 

@@ -233,28 +233,29 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 
 There packages are used for building ~harmonizer~
 #+name: packages
-| names          | link                                                                |
-|----------------+---------------------------------------------------------------------|
-| devtools       |                                                                     |
-| roxygen2       |                                                                     |
-| languageserver |                                                                     |
-| xml2           |                                                                     |
-| tibble         |                                                                     |
-| stringi        |                                                                     |
-| stringr        |                                                                     |
-| magrittr       |                                                                     |
-| lubridate      |                                                                     |
-| plyr           |                                                                     |
-| data.table     |                                                                     |
-| dplyr          |                                                                     |
-| tinytest       | https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md |
-| checkmate      | https://mllg.github.io/checkmate/                                   |
+| names          | link                                                                 |
+|----------------+----------------------------------------------------------------------|
+| devtools       |                                                                      |
+| roxygen2       |                                                                      |
+| languageserver |                                                                      |
+| xml2           |                                                                      |
+| tibble         |                                                                      |
+| stringi        |                                                                      |
+| stringr        |                                                                      |
+| magrittr       |                                                                      |
+| lubridate      |                                                                      |
+| plyr           |                                                                      |
+| data.table     |                                                                      |
+| dplyr          |                                                                      |
+| tinytest       | https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md  |
+| checkmate      | https://mllg.github.io/checkmate/                                    |
+| boomer         | [[https://moodymudskipper.github.io/boomer/][Debugging Tools to Inspect the Intermediate Steps of a Call]]          |
 
 Note: If =install.packages= is tangled to =.Rprofile= it might cause a recursive installation because installers can runs R sessions in the same folder.
 
 #+name: install-packages
 #+header: :var packages = packages
-#+BEGIN_SRC R :tangle no :session 
+#+BEGIN_SRC R :tangle no
   ## --------------------------------------------------------------------------------
   ## Install Packages if not installed
   ## --------------------------------------------------------------------------------
@@ -1364,7 +1365,8 @@ Tests:
   ##' @return updated vector with empty elements removed
   ##' @export
   harmonize_omit_empty <- function(x) {
-    x[!sapply(harmonize_is_data_empty(x), isTRUE)]
+      if(length(x) == 0) return(x)
+      x[!sapply(harmonize_is_data_empty(x), isTRUE)]
   }
 
 
@@ -1408,104 +1410,6 @@ Tests:
 
 
 
-*** harmonize.escape.regex
-:PROPERTIES:
-:ID:       org:uj31f8s0lei0
-:END:
-
-#+BEGIN_SRC R :tangle R/harmonizer.r
-  ##' Escapes special for regex characters
-  ##' @param string character vector
-  ##' @return character vector with all special to regex characters escaped
-  ##'
-  ##' @import stringr
-  ##' @export
-  harmonize_escape_regex <- function(string) str_replace_all(string, "(\\W)", "\\\\\\1")
-
-  ##' Escapes special for different types of pattern
-  ##' @param string character vector
-  ##' @return character vector with all special to regex characters
-  ##'     escaped
-  ##' @param type whether it should escape regex ("fixed") add beginning
-  ##'     ("begins") or ending ("ends") matcher. Or if value is "regex"
-  ##'     then do not change the string. Also possible to escape a regex
-  ##'     for exact match ("exact") or exact match after trimming spaces
-  ##'     ("trim.exact")
-  ##' @import stringr
-  ##' @export
-  harmonize_escape_type <- function(string
-                                  , type = c("fixed"
-                                           , "begins"
-                                           , "begins.trimmed"
-                                           , "ends"
-                                           , "ends.trimmed"
-                                           , "regex"
-                                           , "exact"
-                                           , "exact.trimmed")
-                                  , all.regex = TRUE) {
-      type <- match.arg(type)
-      if(type == "regex")
-          string
-      else if(type == "fixed")
-          if(all.regex) harmonize_escape_regex(string)
-          else string
-      else if(type == "begins")
-          paste0("^", harmonize_escape_regex(string))
-      else if(type == "begins.trimmed")
-          paste0("^\\s*", harmonize_escape_regex(string))
-      else if(type == "ends")
-          paste0(harmonize_escape_regex(string), "$")
-      else if(type == "ends.trimmed")
-          paste0(harmonize_escape_regex(string), "\\s*$")
-      else if(type == "exact")
-          if(all.regex) paste0("^", harmonize_escape_regex(string), "$")
-          else string
-      else if(type == "exact.trimmed")
-          if(all.regex)  paste0("^\\s*", harmonize_escape_regex(string), "\\s*$")
-          else str_trim(string)
-  }
-
-  ##' Escapes special for regex characters conditionally
-  ##' @param strings character vector
-  ##' @param conds character vector of the same length as `strings` with instructions whether to escape regex ("fixed") add beginning ("begins") or ending ("ends") matcher. Or if value is "regex" then do not change the string. Also possible to escape a regex for exact match ("exact") or exact match after trimming spaces ("trim.exact")
-  ##' @param all.regex ......
-  ##' @return string with all special to regex characters escaped
-  ##'
-  ##' @import stringr
-  harmonize_escape_types <- function(patterns, conds, all.regex = FALSE) {
-      if(length(conds) == 1 || length(unique(conds)) == 1) {
-          conds %<>% extract(1)
-          harmonize_escape_type(patterns, conds, all.regex = all.regex)
-      }
-      else if(length(conds) == length(patterns))
-          mapply(function(pattern, cond) {
-              harmonize_escape_type(pattern, cond)
-          }
-        , patterns
-        , conds
-        , SIMPLIFY = TRUE)
-      else stop("patterns.type misspecified - wrong length!")
-  }
-#+END_SRC
-
-
-#+name: 
-#+BEGIN_SRC R
-    ## alternative:
-  ## escape.regex  <- function (string) {
-  ##   gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", string)
-  ## }  
-  
-  ## Test escape.regex.cond
-    ## c("MSlab$", "TriloBit.?", "(^0-3)", "Ltd.", "lalala") %>%
-    ##   harmonize.escape.types(c("regex", "fixed", "regex", "ends", "trim.exact"))
-    
-    ## c("MSlab$", "TriloBit.?", "(^0-3)", "Ltd.", "lalala") %>%
-    ##   harmonize.escape.types(c("regex", "fixed", "regex", "ends", "trim.exact")
-    ##                               , all.regex = FALSE)
-#+END_SRC
-
-
 *** harmonize.add.suffix
 :PROPERTIES:
 :ID:       org:c77b69d1ffi0
@@ -1529,7 +1433,7 @@ Tests:
                  else name
     name.with.suffix <- paste0(name.base, ".", suffix)
     name.with.suffix.regex.nbr <-
-      paste0("(?<=", harmonize_escape_regex(name.with.suffix), "\\.)", "\\d+$")
+      paste0("(?<=", escape_regex(name.with.suffix), "\\.)", "\\d+$")
     suffix.nbr.init <- if(name.with.suffix %in% x.names)
                          suffix.nbr.init - 1
                        else NULL
@@ -2935,8 +2839,6 @@ Tests:
 
   #+END_SRC
 
-
-
 #+BEGIN_SRC R :tangle inst/tinytest/test_get_vector.r
     ## missing col
   expect_error(get_vector(c("a", "b", "c")))
@@ -3071,6 +2973,7 @@ Tests:
   }
 
 
+  ## this assumes that nothing else was never added...
   infer_moving_target_from_pre_inset_col <- function(col, x, placement, as_name = FALSE) {
       col <- get_col_as_number(col, x)
       return_col <- switch(
@@ -3087,24 +2990,23 @@ Tests:
       }
   }
 
+  ## assume that other stuff is always append to x or col so inference will keep working
   infer_moving_target_from_names <- function(dots, x, return_name_for_new_col = FALSE) {
       with(dots, {
           if(placement == "replace_col") {
               return(get_col_as_number(col, x))
+          } else if(infer_if_post_inset_col_possible(col, x, placement)) {
+              target_name_generated <-
+                  infer_post_inset_col_from_pre_inset_col(col, x, placement) |>
+                  make_target_name(x, name, name_suffix)
+              if(target_name_generated %in% names(x)[target]) {
+                  ## case of subsequent calls
+                  return(get_col_as_number(target_name_generated, x))
+              }
           }
           col_or_new_name <- ifelse(return_name_for_new_col
                                   , make_target_name(col, x, name, name_suffix)
                                   , get_col_as_number(col, x))
-          if(infer_if_post_inset_col_possible(col, x, placement)) {
-              target_name_generated <-
-                  infer_post_inset_col_from_pre_inset_col(col, x, placement) |>
-                  make_target_name(x, name, name_suffix)
-              target <- infer_moving_target_from_pre_inset_col(col, x, placement)
-              if(names(x)[target] == target_name_generated) {
-                  ## case of subsequent calls
-                  return(target)
-              }
-          }
           return(col_or_new_name)
       })
   }
@@ -3127,6 +3029,7 @@ Tests:
           check_harmonize_options(dots, x)
           get_vector(x
                    , col = infer_moving_target_from_names(dots, x)
+                   , rows = rows
                    , check_x_col_rows = FALSE)
       })
   }
@@ -3202,9 +3105,7 @@ Tests:
                   ## just replace x if it is atomic
                   x <- vector
               } else {
-                  if(is.atomic(x)) {
-                      x <- harmonize_defactor(x, conv2dt = "all")
-                  }
+                  x <- harmonize_defactor(x, conv2dt = "all")
                   width_pre_inset <- x_width(x)
                   col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
                   col_or_name_if_new <-
@@ -3226,9 +3127,7 @@ Tests:
           ## apped copy
           ## -----
           if(append_copy) {
-              if(is.atomic(x)) {
-                  x <- harmonize_defactor(x, conv2dt = "all")
-              }
+              x <- harmonize_defactor(x, conv2dt = "all")
               col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
               append_copy_name <- format_append_copy(append_copy_name_format, name = names(x)[col_post_inset])
               checkmate::assert_names(append_copy_name)
@@ -3794,7 +3693,151 @@ Testing
 
 #+END_SRC
 
-** harmonize_replace
+** replace and detect functions
+
+*** harmonize_escape_regex
+:PROPERTIES:
+:ID:       org:uj31f8s0lei0
+:END:
+
+#+BEGIN_SRC R :tangle R/escape_patterns.r
+  ##' Escapes special for regex characters
+  ##' @param string character vector
+  ##' @return character vector with all special to regex characters escaped
+  ##'
+  ##' @export
+  escape_regex <- function(string) stringi::stri_replace_all_regex(string, "(\\W)", "\\\\$1")
+
+  ##' Escapes special for different types of pattern
+  ##' @param string character vector (patterns)
+  ##' @param type How the characters in patterns should be 'escaped' for
+  ##'     proper matching. The options are:
+  ##' @param return_regex Always return regex. Default is
+  ##'     true. Otherwise return unescaped string for 'fixed' and
+  ##'     'exact' types and just trimmed string for "trim_exact"
+  ##' @param return_docs Return character vector of documentation for
+  ##'     each type (for using with roxygen2 documentations in many
+  ##'     places)
+  ##' @param return_choices Return character vector of available escape
+  ##'     types
+  ##' @return character vector with all special to regex characters
+  ##'     escaped
+  ##' @eval escape_regex_for_type(return_docs = TRUE)
+  ##' @md
+  escape_regex_for_type <- function(string
+                                  , type
+                                  , return_regex = TRUE
+                                  , return_docs = FALSE
+                                  , return_choices = FALSE) {
+      types_specs <- list(
+          list(type = "fixed"
+             , docs = "Match pattern string as it is within the target vector"
+             , func = \(string, return_regex) {
+                 if(return_regex) escape_regex(string)
+                 else string
+             })
+        , list(type = "begins"
+             , docs = "Match pattern string as it is in the beggining of the target vector"
+             , func = \(string, return_regex) {
+                 paste0("^", escape_regex(string))
+             })
+        , list(type = "trim_begins"
+             , docs = "Match pattern string as it is in the beginning of the target vector ignoring preceding white-spaces"
+             , func = \(string, return_regex){
+                 paste0("^\\s*", escape_regex(string))
+             })
+        , list(type = "ends"
+             , docs = "Match pattern string as it is in the end of the target vector"
+             , func = \(string, return_regex) {
+                 paste0(escape_regex(string), "$")
+             })
+        , list(type = "trim_ends"
+             , docs = "Match pattern string as it is in the end of the target vector ignoring leading white-spaces"
+             , func = \(string, return_regex) {
+                 paste0(escape_regex(string), "\\s*$")
+             })
+        , list(type = "exact"
+             , docs = "Match pattern string exactly (i.e., match equal strings)"
+             , func = \(string, return_regex) {
+                 if(return_regex) paste0("^", escape_regex(string), "$")
+                 else string
+             })
+        , list(type = "trim_exact"
+             , docs = "Match pattern string exactly (i.e., match equal strings) ignoring surrounding white-spaces"
+             , func = \(string, return_regex) {
+                 if(return_regex) paste0("^\\s*", escape_regex(string), "\\s*$")
+                 else stringi::stri_trim_both(string)
+             })
+        , list(type = "regex"
+             , docs = "Match regex pattern"
+             , func = \(string, return_regex) {
+                 string
+             }))
+      if(return_docs) {
+          return(sapply(types_specs, \(x) paste("* ", x$type, " - ", x$docs)))
+      }
+      if(return_choices) {
+          return(sapply(types_specs, `[[`, "type"))
+      }
+      types_funcs <- lapply(types_specs, `[[`, "func")
+      names(types_funcs) <- lapply(types_specs, `[[`, "type")
+      ## this will return the right func and call it
+      do.call(switch, c(list(EXPR = type), types_funcs))(string, return_regex)
+  }
+
+  ##' Escapes special for regex characters conditionally
+  ##' @param patterns character vector
+  ##' @param return_regex Always return regex. Default is
+  ##'     true. Otherwise return unescaped string for 'fixed' and
+  ##'     'exact' types and just trimmed string for "trim_exact"
+  ##' @param types character vector of the same length as `strings` with
+  ##'     instructions whether and how to to escape regex characters. Options are:
+  ##' @eval escape_regex_for_type(return_docs = TRUE)
+  ##' @return string with all special to regex characters escaped
+  ##'
+  ##' @import stringr
+  escape_regex_for_types <- function(patterns, types, return_regex = FALSE) {
+      if(length(types) == 1 || length(unique(types)) == 1) {
+          type <- types[1]
+          checkmate::assert_choice(type
+                                 , choices = escape_regex_for_type(return_choices = TRUE)
+                                 , fmatch = TRUE)
+          escape_regex_for_type(patterns, type, return_regex = return_regex)
+      } else {
+          checkmate::assert_subset(types
+                                 , choices = escape_regex_for_type(return_choices = TRUE)
+                                 , fmatch = TRUE)
+          mapply(\(pattern, type) escape_regex_for_type(pattern, type)
+               , patterns , types
+               , SIMPLIFY = TRUE)
+      }
+  }
+#+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_escape_regex_for_types.r
+  expect_equal(
+      c("MSlab$", "TriloBit.?", "(^0-3)", "Ltd.", "lalala") |>
+      escape_regex_for_types(c("regex", "fixed", "regex", "ends", "trim_exact"))
+    , c(`MSlab$` = "MSlab$", `TriloBit.?` = "TriloBit\\.\\?", `(^0-3)` = "(^0-3)", Ltd. = "Ltd\\.$", lalala = "^\\s*lalala\\s*$")
+  )
+
+  expect_equal(
+      c("MSlab$", "TriloBit.?", "(^0-3)", "Ltd.", "lalala") |>
+      escape_regex_for_types(c("regex", "fixed", "regex", "ends", "trim_exact")
+                           , return_regex = FALSE)
+    , c(`MSlab$` = "MSlab$", `TriloBit.?` = "TriloBit\\.\\?", `(^0-3)` = "(^0-3)", 
+        Ltd. = "Ltd\\.$", lalala = "^\\s*lalala\\s*$")
+  )
+  #+END_SRC
+
+#+BEGIN_SRC R
+  ## alternative:
+  ## escape.regex  <- function (string) {
+  ##   gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", string)
+  ## }
+#+END_SRC
+
+*** harmonize_replace
 :PROPERTIES:
 :ID:       org:xcpfib50bci0
 :END:
@@ -3803,31 +3846,84 @@ Testing
 :END:
 
 #+BEGIN_SRC R :tangle R/harmonize_replace.r
-  ## a wrapper for stri_replace to use in Reduce
+  replace_exact <- function(x
+                          , patterns
+                          , replacements) {
+      if ((requireNamespace("fastmatch", quietly=TRUE))) {
+          match <- fmatch
+      }
+      matches <- match(x, patterns)
+      x[!is.na(matches)] <- replacements[matches][!is.na(matches)]
+      return(x)
+  }
+
   stri_replace_do <- function(str, arg_list) {
-      do.call(stri_replace, c(list(str), arg_list))
+      do.call(stringi::stri_replace, c(list(str), arg_list))
+  }
+
+  replace_fixed_by_mode <- function(x
+                                  , patterns
+                                  , replacements
+                                  , modes) {
+      Reduce(stri_replace_do
+               , Map(list
+                   , fixed = patterns
+                   , replacement = replacements
+                   , mode = modes)
+               , init = x)
+  }
+
+  replace_regex_by_mode <- function(x
+                                  , patterns
+                                  , replacements
+                                  , modes) {
+      Reduce(stri_replace_do
+               , Map(list
+                   , regex = patterns
+                   , replacement = replacements
+                   , mode = modes)
+               , init = x)
   }
 
 
-  #' A wrapper for string replacement and cbinding some columns.
-  #'
-  #' Optionally matches only at the beginning or at the end of the string.
-  #' 
-  #' @param x Vector or table to harmonize.
-  #' @param patterns Accepts both vector or table. If patterns is a table can also include replacements column.
-  #' @param patterns_col If patterns is not a vector which column to use. Default is 1.
-  #' @param patterns_mode Mode of matching. Could be one of c("all", "first", "last"). The default is "all" (it is 2x faster than "first" and "last" because of handy stri_replace_all_* functions). Also possible to pass a vector (same length as patterns)
-  #' @param patterns_mode_col  Column in patterns table with the mode of matching
-  #' @param patterns_type Kind of pattern. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are "begins", "ends" - which means that it should only match fixed pattern at the beginning of the string or at the and. Another possible value is "regex" (calling code{\link[stringi]{stri_replace_all_regex}})
-  #' @param patterns_type_col Column with the type of pattern in case when patterns should have different types
-  #' @param patterns_replacements_col If patterns is not a vector and includes replacements which column to use for replacements. Default is 2.
-  #' @param replacements If patterns does not have column with replacements provide it here.
-  #' @inheritDotParams harmonize_options
-  #'
-  #' @return If nothing was indicated to cbind to results then it returns harmonized vector. If something is needs to be cbind then it returns data.table
-  #' @import stringi stringr magrittr
-  #' 
-  #' @export
+
+  ##' A wrapper for string replacement and cbinding some columns.
+  ##'
+  ##' Optionally matches only at the beginning or at the end of the
+  ##' string.
+  ##' 
+  ##' @param x Vector or table to harmonize.
+  ##' @param patterns Accepts both vector or table. If patterns is a
+  ##'     table can also include replacements column.
+  ##' @param patterns_col If patterns is not a vector which column to
+  ##'     use. Default is 1.
+  ##' @param patterns_mode Mode of matching. Could be one of c("all",
+  ##'     "first", "last"). The default is "all" (it is 2x faster than
+  ##'     "first" and "last" because of handy stri_replace_all_*
+  ##'     functions). Also possible to pass a vector (same length as
+  ##'     patterns)
+  ##' @param patterns_mode_col Column in patterns table with the mode of
+  ##'     matching
+  ##' @param patterns_type Type of pattern for matching. Default is
+  ##'     "fixed" (calling
+  ##'     code{\link[stringi]{stri_replace_all_fixed}}). Other options
+  ##'     are:
+  ##' @eval escape_regex_for_type(return_docs = TRUE)
+  ##' @param patterns_type_col Column with the type of pattern in case
+  ##'     when patterns should have different types
+  ##' @param patterns_replacements_col If patterns is not a vector and
+  ##'     includes replacements which column to use for
+  ##'     replacements. Default is 2.
+  ##' @param replacements If patterns does not have column with
+  ##'     replacements provide it here.
+  ##' @inheritDotParams harmonize_options
+  ##'
+  ##' @return If nothing was indicated to cbind to results then it
+  ##'     returns harmonized vector. If something is needs to be cbind
+  ##'     then it returns data.table
+  ##' @import stringi stringr magrittr
+  ##' 
+  ##' @export
   harmonize_replace <- function(x
                               , patterns
                               , patterns_col = 1
@@ -3836,72 +3932,176 @@ Testing
                               , patterns_type = "fixed"
                               , patterns_type_col = NULL
                               , patterns_replacements_col = 2
-                              , replacements = ifelse(is.atomic(patterns), "", NULL)
+                              , replacements = if(is.atomic(patterns)) "" else NULL
                               , ...) {
-      ## check arguments
-
-      ## get vectors
-      x.vector <- get_target(x)
-      patterns.vector <- get_vector(patterns, patterns_col)
-      ## types
-      types.vector <- get_vector(patterns, patterns_type_col
-                               , fallback_value = patterns_type
-                               , choices = c("fixed"
-                                                , "begins"
-                                                , "begins.trimmed"
-                                                , "ends"
-                                                , "ends.trimmed"
-                                                , "regex"
-                                                , "exact"
-                                                , "exact.trimmed"))
+      ## get vectors and check arguments
+      x_vector <- get_target(x)
+      ## types (choices are checked in escape_regex_for_types)
+      types_vector <- get_vector(patterns, patterns_type_col
+                               , fallback_value = patterns_type)
+      ## get patterns excaped according to types.vector
+      patterns_vector <-
+          get_vector(patterns, patterns_col) |>
+          escape_regex_for_types(types_vector)
       ## modes
-      modes.vector <- get_vector(patterns, patterns_mode_col
+      modes_vector <- get_vector(patterns, patterns_mode_col
                                , fallback_value = patterns_mode
                                , choices = c("all", "first", "last"))
       ## replacements
-      replacements.vector <- get_vector(patterns, patterns_replacements_col
+      replacements_vector <- get_vector(patterns, patterns_replacements_col
                                       , fallback_value = replacements
                                       , fallback_value_ignored_if_col = FALSE)
-      ## do replace and return
-      ## make patterns.vector excaped according to types.vector
-        patterns.vector <- harmonize_escape_types(patterns.vector, types.vector)
-        ## conditions are organized from fastest to slowest replace procedures
-        if(all(types.vector == "exact") || all(types.vector == "exact.trimmed")) {
-          x.vector %>% 
-            {if(all(types.vector == "exact.trimmed")) str_trim(.) else .} %>% 
-            match(patterns.vector) %>% 
-            extract(replacements.vector, .) %>% 
-            inset(x.vector, !is.na(.), .)
-        } else if(all(modes.vector == "all")) {
-          if(all(types.vector == "fixed")) {
-            stri_replace_all_fixed(x.vector
-                                 , patterns.vector
-                                 , replacements.vector
-                                 , vectorize_all = FALSE)
-          } else {
-            stri_replace_all_regex(x.vector
-                                 , patterns.vector
-                                 , replacements.vector
-                                 , vectorize_all = FALSE)
+      ## conditions are organized from fastest to slowest replace procedures
+      if (all(types_vector == "exact") || all(types_vector == "trim_exact")) {
+          if (all(types_vector == "trim_exact")) {
+              x_vector <- stringi::stri_trim_both(x_vector)
           }
-        } else if(all(types.vector == "fixed")) {
-            Reduce(stri_replace_do
-                 , Map(list
-                     , fixed = patterns.vector
-                     , replacement = replacements.vector
-                     , mode = modes.vector)
-                 , init = x.vector)
-        } else {
-            Reduce(stri_replace_do
-                 , Map(list
-                     , regex = patterns.vector
-                     , replacement = replacements.vector
-                     , mode = modes.vector)
-                 , init = x.vector)
-        }
+          x_vector <- replace_exact(x_vector
+                                  , patterns_vector
+                                  , replacements_vector)
+      } else if (all(modes_vector == "all")) {
+          if (all(types_vector == "fixed")) {
+              x_vector <- stringi::stri_replace_all_fixed(x_vector
+                                            , patterns_vector
+                                            , replacements_vector
+                                            , vectorize_all = FALSE)
+          } else {
+              x_vector <- stringi::stri_replace_all_regex(x_vector
+                                            , patterns_vector
+                                            , replacements_vector
+                                            , vectorize_all = FALSE)
+          }
+      } else if (all(types_vector == "fixed")) {
+          x_vector <- replace_fixed_by_mode(x_vector
+                              , patterns_vector
+                              , replacements_vector
+                              , modes_vector)
+      } else {
+          x_vector <- replace_regex_by_mode(x_vector
+                              , patterns_vector
+                              , replacements_vector
+                              , modes_vector)
+      }
+      inset_target(x_vector, x)
   }
   #+END_SRC
 
+#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_replace.r
+  require(data.table)
+  ## Test harmonize_replace
+
+  expect_equal(
+  harmonize_replace(data.table(x.lala = c("lala MSlab MSlab"
+                                        , "this company called TriloBit.? maybe"
+                                        , "MS007lab, Ltd. Ltd.")
+                             , x.rows = c(TRUE, TRUE, FALSE)
+                             , harm = c(1,25,"MSlab"))
+                  , patterns = c("MSlab", "TriloBit.?", "[0-3]+", "Ltd.")
+                  , patterns_type = c("regex", "fixed", "regex", "ends")
+                  , col = 1
+                  , rows = c(TRUE, TRUE, FALSE)
+                  , patterns_replacements_col = 1
+                  , patterns_mode = "first")
+  , data.table(x.lala = c("lala  MSlab", "this company called  maybe", 
+                          "MS007lab, Ltd. Ltd."), x.rows = c(TRUE, TRUE, FALSE), harm = c("1", 
+                                                                                          "25", "MSlab")))
+
+
+
+  ## multy mode test
+  expect_equal(
+    harmonize_replace(data.table(x.lala = c("lala MSlab MSlab"
+                 , "this company called TriloBit.? maybe TriloBit.?"
+                 , "MS007lab, Ltd. Ltd.")
+           , x.rows = c(TRUE, FALSE, TRUE)
+           , harm = c(1,25,"MSlab"))
+            , patterns = c("MSlab", "TriloBit.?", "[0-3]+", "Ltd.")
+                    , patterns_type = c("regex", "fixed", "regex", "fixed")
+                    , col = 1
+                    , x.rows = c(TRUE, FALSE, TRUE)
+                    , patterns_replacements_col = 1
+           , patterns_mode = c("last", "first", "all", "all"))[] 
+  , data.table(x.lala = c("lala MSlab ", "this company called  maybe TriloBit.?", 
+  "MS7lab,  "), x.rows = c(TRUE, FALSE, TRUE), harm = c("1", "25", 
+  "MSlab")))
+
+
+
+
+  ## patterns as table test
+  expect_equal(
+    harmonize_replace(data.frame(x.lala = c("lala MSlab MSlab"
+                 , "this company called TriloBit.? maybe TriloBit.?"
+                 , "MS007lab, Ltd. Ltd.")
+           , x.rows = c(TRUE, FALSE, TRUE)
+           , harm = c(1,25,"MSlab"))
+             , patterns =
+                        data.frame(pats = c("MSlab", "TriloBit.?", "[0-3]+", "Ltd.")
+                                 , type = c("regex", "fixed", "regex", "ends")
+                                 , mode = c("all", "first", "all", "all")
+                                 , replacements = c("MSMS", "TBTB", "NRNR", "COMP"))
+                    , col = 1
+                    , rows = c(TRUE, FALSE, TRUE)
+                    , patterns_mode_col = 3
+                    , patterns_type_col = "type" 
+           , patterns_replacements_col = "replacements")
+  , data.table(x.lala = c("lala MSMS MSMS", "this company called TriloBit.? maybe TriloBit.?", 
+  "MSNRNR7lab, Ltd. COMP"), x.rows = c(TRUE, FALSE, TRUE), harm = c("1", 
+                                                                    "25", "MSlab"))
+  )
+
+
+  ## test for all x.rows FALSE
+  expect_equal(
+      harmonize_replace(data.frame(x.lala = c("lala MSlab MSlab"
+                 , "this company called TriloBit.? maybe TriloBit.?"
+                 , "MS007lab, Ltd. Ltd.")
+           , x.rows = c(TRUE, FALSE, TRUE)
+           , harm = c(1,25,"MSlab"))
+             , patterns =
+                        data.frame(pats = c("MSlab", "TriloBit.?", "[0-3]+", "Ltd.")
+                                 , type = c("regex", "fixed", "regex", "ends")
+                                 , mode = c("all", "first", "all", "all")
+                                 , replacements = c("MSMS", "TBTB", "NRNR", "COMP"))
+                    , patterns_type_col = "type"
+                    , col = 1
+                    , col.update = TRUE
+                    , rows = c(FALSE, FALSE, FALSE)
+                    , patterns_replacements_col = "replacements"
+           , patterns_mode_col = 3)
+  , data.table(x.lala = c("lala MSlab MSlab", "this company called TriloBit.? maybe TriloBit.?", 
+  "MS007lab, Ltd. Ltd."), x.rows = c(TRUE, FALSE, TRUE), harm = c("1", 
+  "25", "MSlab")))
+
+
+
+
+
+
+#+END_SRC
+
+testing performance
+#+BEGIN_SRC R
+  ## Test for stri_replace_all_regex(vectorize_all = FALSE) timing vs for loop
+  ## for loop ~2.5 times longer!!!
+  system.time(stri_replace_all_regex(rep(words, 100)
+                                   , paste0("^"
+                                          , combn(letters, 2) %>%
+                                            apply(2, paste, collapse = ""))
+                                   , "!!"
+                                   , vectorize_all = FALSE))
+
+  system.time({
+    str <- rep(words, 100)
+    for (i in paste0("^"
+                   , combn(letters, 2) %>%
+                     apply(2, paste, collapse = ""))) {
+      str %<>% stri_replace_all_regex(i, "!!", vectorize_all = TRUE)
+    }
+  })
+#+END_SRC
+
+**** old code
 old R/harmonize.replace.r
 #+BEGIN_SRC R :tangle no
   #' A wrapper for string replacement and cbinding some columns.
@@ -4039,109 +4239,8 @@ old R/harmonize.replace.r
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle no
-  ## Test harmonize.replace
 
-  harmonize.replace(data.table(x.lala = c("lala MSlab MSlab"
-                                        , "this company called TriloBit.? maybe"
-                                        , "MS007lab, Ltd. Ltd.")
-                             , x.rows = c(TRUE, TRUE, FALSE)
-                             , harm = c(1,2,"MSlab"))
-                  , patterns = c("MSlab", "TriloBit.?", "[0-3]+", "Ltd.")
-                  , patterns.type = c("regex", "fixed", "regex", "ends")
-                  , col = 1
-                  , rows = c(TRUE, TRUE, FALSE)
-                  , patterns.replacements.col = 1
-                  , patterns.mode = "first")[]
-
-
-
-
-  ## multy mode test
-    harmonize.replace(data.table(x.lala = c("lala MSlab MSlab"
-                 , "this company called TriloBit.? maybe TriloBit.?"
-                 , "MS007lab, Ltd. Ltd.")
-           , x.rows = c(TRUE, FALSE, TRUE)
-           , harm = c(1,2,"MSlab"))
-            , patterns = c("MSlab", "TriloBit.?", "[0-3]+", "Ltd.")
-                    , patterns.type = c("regex", "fixed", "regex", "ends")
-                    , x.col = 1
-                    , x.col.update = FALSE
-                    , x.rows = c(TRUE, FALSE, TRUE)
-                    ## , return.x.cols = 3
-                    , patterns.replacements.col = 1
-                    , patterns.mode = c("all", "first", "all", "all"))[]
-
-
-
-
-
-  ## multy mode test
-  data.frame(x.lala = c("lala MSlab MSlab"
-                 , "this company called TriloBit.? maybe TriloBit.?"
-                 , "MS007lab, Ltd. Ltd.")
-           , x.rows = c(TRUE, FALSE, TRUE)
-           , harm = c(1,2,"MSlab")) %>%
-    harmonize.replace(patterns =
-                        data.frame(pats = c("MSlab", "TriloBit.?", "[0-3]+", "Ltd.")
-                                 , type = c("regex", "fixed", "regex", "ends")
-                                 , mode = c("all", "first", "all", "all")
-                                 , replacements = c("MSMS", "TBTB", "NRNR", "COMP"))
-                    , patterns.type.col = "type"
-                    , x.col = 1
-                    , x.col.update = FALSE
-                    , x.rows = c(TRUE, FALSE, TRUE)
-                    ## , return.x.cols = 3
-                    , patterns.replacements.col = "replacements"
-                    , patterns.mode.col = 3)
-
-
-
-
-  ## test for all x.rows FALSE
-  data.frame(x.lala = c("lala MSlab MSlab"
-                 , "this company called TriloBit.? maybe TriloBit.?"
-                 , "MS007lab, Ltd. Ltd.")
-           , x.rows = c(TRUE, FALSE, TRUE)
-           , harm = c(1,2,"MSlab")) %>%
-    harmonize.replace(patterns =
-                        data.frame(pats = c("MSlab", "TriloBit.?", "[0-3]+", "Ltd.")
-                                 , type = c("regex", "fixed", "regex", "ends")
-                                 , mode = c("all", "first", "all", "all")
-                                 , replacements = c("MSMS", "TBTB", "NRNR", "COMP"))
-                    , patterns.type.col = "type"
-                    , x.col = 1
-                    , x.col.update = TRUE
-                    , x.rows = c(FALSE, FALSE, FALSE)
-                    ## , return.x.cols = 3
-                    , patterns.replacements.col = "replacements"
-                    , patterns.mode.col = 3)
-
-
-
-
-  ## Test for stri_replace_all_regex(vectorize_all = FALSE) timing vs for loop
-  ## for loop ~2.5 times longer!!!
-  ## system.time(stri_replace_all_regex(rep(words, 100)
-  ##                                  , paste0("^"
-  ##                                         , combn(letters, 2) %>%
-  ##                                           apply(2, paste, collapse = ""))
-  ##                                  , "!!"
-  ##                                  , vectorize_all = FALSE))
-  ## system.time({
-  ##   str <- rep(words, 100)
-  ##   for (i in paste0("^"
-  ##                  , combn(letters, 2) %>%
-  ##                    apply(2, paste, collapse = ""))) {
-  ##     str %<>% stri_replace_all_regex(i, "!!", vectorize_all = TRUE)
-  ##   }
-  ## })
-
-
-
-#+END_SRC
-
-*** old code
+even older
 #+BEGIN_SRC R :tangle no
   #' A wrapper for string replacement and cbinding some columns.
   #'
@@ -4262,11 +4361,184 @@ old R/harmonize.replace.r
 #+END_SRC
 
 
-** harmonize.detect
+*** harmonize.detect
 :PROPERTIES:
 :ID:       org:bb21tpb0wei0
 :END:
 
+new
+#+BEGIN_SRC R :tangle R/harmonize_detect.r
+
+  ##' transpose list of vectors
+  transpose_list_of_vectors <- function(l) {
+      do.call(Map, c(f = list(c), l))
+  }
+
+
+  #' This function is basically meant for coding names based on certain pattern
+  #'
+  #' Optionally matches only at the beginning or at the end of the string.
+  #' 
+  #' @param x Vector or table to detect in.
+  #' @param patterns Accepts both vector or table. If patterns it is table can also include replacements column.
+  #' @param patterns.col If patterns is not a vector specifies which column to use. Default is 1.
+  #' @param patterns.as.codes If set then use patterns as codes. In that case codes are ignored and there is no need to provide them. Default is FALSE.
+  #' @param patterns.codes.col If patterns is table which column to use as codes column. Default is 2.
+  #' @param patterns.type Specifies kind(s) of patterns. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are "begins", "ends" - which means that it should only match fixed pattern at the beginning of the string or at the and. Another possible value is "regex" (calling code{\link[stringi]{stri_replace_all_regex}}). Another possible options are "exact" and "trim.exact" which matches a pattern string exactly or its trimmed version (i.e., white spaces are ignored at the beginning and at the end of the pattern)
+  #' @param patterns.type.col Column in patterns table where you can specify types of patterns for each pattern. If set then `patterns.type` is ignored. Default is NULL
+  #' @param codes If provided use it as codes. Should be the same length as patterns. Default is NULL.
+  #' @param codes.name If provided use it as a name for codes column in results. It also will work as `x.codes.col` if `x.codes.merge` or `x.codes.update.empyty` are set. In case if `x.codes.merge` or `x.codes.update.empyty` are set and names(`x`) does not have column name `codes.name` it will reset both `x.codes.merge` and `x.codes.update.empyty` to FALSE and will (pre)append a new column `codes.name`.
+  #' @param codes.suffix If `codes.name` is not provided use this suffix to append to `x.col` name or `x.atomic.name` if x is vector (see harmonize.x function).
+  #' @param codes.omitted.val If `x.rows` is set. Use this value to fill the omitted rows. Default is vector of NAs of `x` length. When we update existing codes column (i.e., `x.codes.col` is set and valid) and the value is not set explicitly it resets to NULL which means that we use initial values for omitted rows.
+  #' @param x.codes.col If `x` is table, which column to use for making/merging/adding newly detected codes. Default is NULL. When it is not set explicitly and `x.codes.merge` or `x.codes.update.empty` are set it will first try to use `codes.name` if it is provided or if not will set the last column of `x` as `x.codes.col`.
+  #' @param x.codes.update.empty If set then detect and add new codes only for records (rows) that were not yet coded (i.e., related codes are either "", NA or length == 0).
+  #' @param x.codes.merge If set then merge (append or prepend) new codes to existing ones. It might turn the codes column to list of vectors.
+  #' @param x.codes.merge.prepend If set then it will prepend new codes if not then it will append (default). It is ignored if `x.codes.merge` is not set.
+  #' @param return.only.codes If set then just return codes vector. Default is FALSE. Basically when it is set it changes `return.x.cols` to 0.
+  #' @param return.only.first.detected.code If TRUE then return only codes for the first detected pattern. If FALSE return list of vectors of all matched codes. Default is TRUE.
+  #' 
+  #' @inheritDotParams harmonize.x
+  #' 
+  #' @return The updated `x` table with codes column or just codes if `return.only.codes` is set.
+  #'
+  #' @import stringi stringr magrittr
+  #' 
+  #' @export
+  harmonize_detect <- function(x
+                             , patterns
+                             , patterns_col = 1
+                             , patterns_codes_col = 2
+                             , patterns_type = "fixed"
+                             , patterns_type_col = NULL
+                             , codes = NULL
+                             , codes_name = NA
+                             , codes_suffix = "coded"
+                             , codes_omitted_val = NA
+                             , x_codes_col = NULL
+                             , x_codes_update_empty = FALSE
+                             , x_codes_merge = FALSE
+                             , x_codes_merge_prepend = FALSE
+                             , return_only_codes = FALSE
+                             , return_only_first_detected_code = FALSE
+                             , ...) {
+      ## set x.rows.codes.update for dots.and("x.rows")
+      x_rows_codes_update <- rep(TRUE, harmonize_data_length(x)) # by defaults updates all codes
+      ## harmonize.detect..check.args()                           # also sets x.rows.codes.update
+      ## - check x.codes.col (should not be the same as x.col)
+      if(harmonize_is_ok_col(x_codes_col, x
+                           , ban.values = dots.default("x.col", 1))) {
+          x_codes_col %<>% switch(is.numeric(.) + 1, match(., names(x)), .)
+          ## use x.codes.col as codes.omitted.val if it is not set
+          if(missing(codes.omitted.val)) codes.omitted.val <- NULL
+      } else if(x_codes_merge | x_codes_update_empty) {
+          ## set x.codes.col as last one
+          x.codes.col <- harmonize_data_width(x)
+          ## check codes.names just in case
+          harmonize_is_ok_type(codes_name, x.length = 1
+                             , type = "character"
+                             , allow.null = FALSE)
+          if(codes_name %in% names(x)) {
+              ## set as x.codes.col as codes.name
+              x.codes.col <- match(codes_name, names(x))
+              if(missing(codes.omitted.val)) codes.omitted.val <- NULL
+          } else if(!is.na(codes_name)) {
+              ## if codes.name is provided and it is a new name then append codes
+              x.codes.merge <- FALSE
+              x.codes.update.empty <- FALSE
+          } else {
+              ## use x.codes.col as codes.omitted.val if it is not set
+              if(missing(codes.omitted.val)) codes.omitted.val <- NULL
+          }
+      } else {
+          ## set x.codes.col as last one anyway
+          x.codes.col <- harmonize_data_width(x)
+      }
+      ## set x.rows.codes.update for dots.and("x.rows")
+      if(x_codes_update_empty) {
+          x.rows.codes.update <- harmonize_is_data_empty(x[[x_codes_col]])
+          x.codes.merge <- FALSE # nothing to merge with if codes are empty
+      }
+      ## --------------------------------------------------------------------------------
+      rows_to_code <-  get_options(select_args = "rows") & x_rows_codes_update
+      x_vector <- get_target(x, rows = rows_to_code)
+      ## check if there is something to code
+      if(length(x_vector) == 0) return(character(0))
+      ## types (choices are checked in escape_regex_for_types)
+      types_vector <- get_vector(patterns, patterns_type_col
+                               , fallback_value = patterns_type)
+      ## get patterns excaped according to types.vector
+      patterns_vector <-
+          get_vector(patterns, patterns_col) |>
+          escape_regex_for_types(types_vector)
+      ## get codes
+      codes_vector <- get_vector(patterns, patterns_codes_col
+                               , fallback_value = codes
+                               , fallback_value_ignored_if_col = FALSE)
+      ## get existing codes (to add to)
+      x_codes_vector <- get_vector(x, x_codes_col
+                                 , rows = rows_to_code
+                                 , fallback_value = codes_omitted_val)
+      ## --------------------------------------------------------------------------------
+      ## if there is something to detect in
+      x_inset_vector <-
+          mapply(\(pattern, pattern_type, code)
+                 switch(pattern_type
+                      , "fixed" = stringi::stri_detect_fixed(x_vector, pattern)
+                      , "exact" = x_vector == pattern
+                      , "trim_exact" = stringi::stri_trim_both(x_vector) == pattern
+                      , stringi::stri_detect_regex(x_vector, pattern)
+                        ) |> ifelse(code, NA)
+               , patterns_vector
+               , types_vector
+               , codes_vector
+               , SIMPLIFY = FALSE
+               , USE.NAMES = FALSE) |>
+          transpose_list_of_vectors |>
+          ## remove empty codes
+          lapply(harmonize_omit_empty)
+      ## check if only first detected code is needed
+      if(return_only_first_detected_code) {
+          x_inset_vector <- lapply(x_inset_vector
+                                 , \(x) if(length(x) == 0) NULL
+                                        else x[1])
+      }
+      ## check if we need to merge
+      if(x_codes_merge) {
+          if(x_codes_merge_prepend) {
+              x_inset_vector <- Map(c, x_codes_vector, x_inset_vector)
+          } else {
+              x_inset_vector <- Map(c, x_inset_vector, x_codes_vector)
+          }
+      }
+
+      x_inset_vector |>
+          harmonize.unlist.column |>
+
+      ## inset codes
+      harmonize.x.dots(x, x_inset_vector
+                     , x.rows = dots.and("x.rows", x_rows_codes_update)
+                     , x.col = x_codes_col
+                     , x.col.update = if(return_only_codes) FALSE
+                                      else dots.default("x.col.update"
+                                                      , x_codes_update_empty | x_codes_merge)
+                     , inset.omitted.val = codes_omitted_val
+                     , inset.name = codes_name
+                     , inset.suffix = codes_suffix
+                     , inset.append = dots.default("inset.append", !codes.prepend)
+                     , return.x.cols = if(return_only_codes) NULL
+                                       else dots.default("return.x.cols"
+                                                       , 1:harmonize_data_width(x)))
+      ## only append codes (if prepend allowed it will break target col inference)
+      inset_target(x_inset_vector, x
+                 , rows = rows_to_code
+                 , col = codes_col)
+  }
+  #+END_SRC
+
+
+
+
+old
 #+BEGIN_SRC R :tangle R/harmonizer.r
   #' This function is basically meant for coding names based on certain pattern
   #'
@@ -4430,7 +4702,7 @@ old R/harmonize.replace.r
   harmonize.detect..get.patterns.vector <- function(env = parent.frame()) {
     evalq({
           harmonize.x(patterns, x.col = patterns.col) %>% 
-              harmonize_escape_types(patterns.type.vector, all.regex = FALSE)
+              escape_regex_for_types(patterns.type.vector, all.regex = FALSE)
       }, envir = env)
   }
 
@@ -4497,6 +4769,7 @@ old R/harmonize.replace.r
             harmonize.unlist.column
       }, envir = env)
   }
+
 #+END_SRC
 
 Tests:
@@ -4897,24 +5170,28 @@ The function below can be used to detect candidates for characters that need to 
 :END:
 
 #+BEGIN_SRC R :tangle ./R/magerman.r
-  ##' Removes html codes
-  ##' @param x table
-  ##' @inheritDotParams harmonize_replace
-  ##' @return harmonized table
-  ##'
-  ##' @md
-  ##' @export
-  magerman_remove_html_codes <- function(x, ...) {
-      harmonize_replace(x,
-          patterns = "<BR>",
-          replacements = " ",
-          ...
-      )
-  }
+   ##' Removes html codes
+   ##' @param x table
+   ##' @inheritDotParams harmonize_options
+   ##' @return harmonized table
+   ##'
+   ##' @md
+   ##' @export
+   magerman_remove_html_codes <- function(x, ...) {
+       harmonize_replace(x
+           , patterns = "<BR>"
+           , replacements = " ")
+   }
 
-  ## ## Tests
-  ## "bla bla <BR>" %>% magerman.remove.html.codes
 #+END_SRC
+
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_html_codes.r
+  expect_equal(
+      magerman_remove_html_codes("bla bla <BR>")
+    , "bla bla  "
+  )
+  #+END_SRC
 
 *** magerman.replace.sgml.characters
 :PROPERTIES:

@@ -32,21 +32,16 @@ magerman_detect_characters <- function(x,
 ## -------->>  [[file:../harmonizer.src.org::*magerman.remove.html.codes][magerman.remove.html.codes:1]]
 ##' Removes html codes
 ##' @param x table
-##' @inheritDotParams harmonize_replace
+##' @inheritDotParams harmonize_options
 ##' @return harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_remove_html_codes <- function(x, ...) {
-    harmonize_replace(x,
-        patterns = "<BR>",
-        replacements = " ",
-        ...
-    )
+    harmonize_replace(x
+        , patterns = "<BR>"
+        , replacements = " ")
 }
-
-## ## Tests
-## "bla bla <BR>" %>% magerman.remove.html.codes
 ## --------<<  magerman.remove.html.codes:1 ends here
 
 

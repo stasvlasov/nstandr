@@ -8,34 +8,47 @@ harmonize_replace(
   x,
   patterns,
   patterns_col = 1,
-  patterns_mode = c("all", "first", "last"),
+  patterns_mode = "all",
   patterns_mode_col = NULL,
-  patterns_type = c("fixed", "begins", "begins.trimmed", "ends", "ends.trimmed",
-    "regex", "exact", "exact.trimmed"),
+  patterns_type = "fixed",
   patterns_type_col = NULL,
   patterns_replacements_col = 2,
-  replacements = NULL,
+  replacements = if (is.atomic(patterns)) "" else NULL,
   ...
 )
 }
 \arguments{
 \item{x}{Vector or table to harmonize.}
 
-\item{patterns}{Accepts both vector or table. If patterns is a table can also include replacements column.}
+\item{patterns}{Accepts both vector or table. If patterns is a
+table can also include replacements column.}
 
-\item{patterns_col}{If patterns is not a vector which column to use. Default is 1.}
+\item{patterns_col}{If patterns is not a vector which column to
+use. Default is 1.}
 
-\item{patterns_mode}{Mode of matching. Could be one of c("all", "first", "last"). The default is "all" (it is 2x faster than "first" and "last" because of handy stri_replace_all_* functions). Also possible to pass a vector (same length as patterns)}
+\item{patterns_mode}{Mode of matching. Could be one of c("all",
+"first", "last"). The default is "all" (it is 2x faster than
+"first" and "last" because of handy stri_replace_all_*
+functions). Also possible to pass a vector (same length as
+patterns)}
 
-\item{patterns_mode_col}{Column in patterns table with the mode of matching}
+\item{patterns_mode_col}{Column in patterns table with the mode of
+matching}
 
-\item{patterns_type}{Kind of pattern. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are "begins", "ends" - which means that it should only match fixed pattern at the beginning of the string or at the and. Another possible value is "regex" (calling code{\link[stringi]{stri_replace_all_regex}})}
+\item{patterns_type}{Type of pattern for matching. Default is
+"fixed" (calling
+code{\link[stringi]{stri_replace_all_fixed}}). Other options
+are:}
 
-\item{patterns_type_col}{Column with the type of pattern in case when patterns should have different types}
+\item{patterns_type_col}{Column with the type of pattern in case
+when patterns should have different types}
 
-\item{patterns_replacements_col}{If patterns is not a vector and includes replacements which column to use for replacements. Default is 2.}
+\item{patterns_replacements_col}{If patterns is not a vector and
+includes replacements which column to use for
+replacements. Default is 2.}
 
-\item{replacements}{If patterns does not have column with replacements provide it here.}
+\item{replacements}{If patterns does not have column with
+replacements provide it here.}
 
 \item{...}{
   Arguments passed on to \code{\link[=harmonize_options]{harmonize_options}}
@@ -60,8 +73,11 @@ harmonize_replace(
   }}
 }
 \value{
-If nothing was indicated to cbind to results then it returns harmonized vector. If something is needs to be cbind then it returns data.table
+If nothing was indicated to cbind to results then it
+returns harmonized vector. If something is needs to be cbind
+then it returns data.table
 }
 \description{
-Optionally matches only at the beginning or at the end of the string.
+Optionally matches only at the beginning or at the end of the
+string.
 }

@@ -58,6 +58,7 @@ infer_moving_target_from_post_inset_col <- function(col, x, placement, as_name =
 }
 
 
+## this assumes that nothing else was never added...
 infer_moving_target_from_pre_inset_col <- function(col, x, placement, as_name = FALSE) {
     col <- get_col_as_number(col, x)
     return_col <- switch(
@@ -74,24 +75,23 @@ infer_moving_target_from_pre_inset_col <- function(col, x, placement, as_name = 
     }
 }
 
+## assume that other stuff is always append to x or col so inference will keep working
 infer_moving_target_from_names <- function(dots, x, return_name_for_new_col = FALSE) {
     with(dots, {
         if(placement == "replace_col") {
             return(get_col_as_number(col, x))
+        } else if(infer_if_post_inset_col_possible(col, x, placement)) {
+            target_name_generated <-
+                infer_post_inset_col_from_pre_inset_col(col, x, placement) |>
+                make_target_name(x, name, name_suffix)
+            if(target_name_generated %in% names(x)[target]) {
+                ## case of subsequent calls
+                return(get_col_as_number(target_name_generated, x))
+            }
         }
         col_or_new_name <- ifelse(return_name_for_new_col
                                 , make_target_name(col, x, name, name_suffix)
                                 , get_col_as_number(col, x))
-        if(infer_if_post_inset_col_possible(col, x, placement)) {
-            target_name_generated <-
-                infer_post_inset_col_from_pre_inset_col(col, x, placement) |>
-                make_target_name(x, name, name_suffix)
-            target <- infer_moving_target_from_pre_inset_col(col, x, placement)
-            if(names(x)[target] == target_name_generated) {
-                ## case of subsequent calls
-                return(target)
-            }
-        }
         return(col_or_new_name)
     })
 }
@@ -114,6 +114,7 @@ get_target <- function(x, ...) {
         check_harmonize_options(dots, x)
         get_vector(x
                  , col = infer_moving_target_from_names(dots, x)
+                 , rows = rows
                  , check_x_col_rows = FALSE)
     })
 }
@@ -189,9 +190,7 @@ inset_target <- function(vector, x, ...) {
                 ## just replace x if it is atomic
                 x <- vector
             } else {
-                if(is.atomic(x)) {
-                    x <- harmonize_defactor(x, conv2dt = "all")
-                }
+                x <- harmonize_defactor(x, conv2dt = "all")
                 width_pre_inset <- x_width(x)
                 col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
                 col_or_name_if_new <-
@@ -213,9 +212,7 @@ inset_target <- function(vector, x, ...) {
         ## apped copy
         ## -----
         if(append_copy) {
-            if(is.atomic(x)) {
-                x <- harmonize_defactor(x, conv2dt = "all")
-            }
+            x <- harmonize_defactor(x, conv2dt = "all")
             col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
             append_copy_name <- format_append_copy(append_copy_name_format, name = names(x)[col_post_inset])
             checkmate::assert_names(append_copy_name)
