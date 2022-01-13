@@ -88,6 +88,15 @@
     <loc>/reference/dots.default.html</loc>
   </url>
   <url>
+    <loc>/reference/escape_regex.html</loc>
+  </url>
+  <url>
+    <loc>/reference/escape_regex_for_type.html</loc>
+  </url>
+  <url>
+    <loc>/reference/escape_regex_for_types.html</loc>
+  </url>
+  <url>
     <loc>/reference/get_dots.html</loc>
   </url>
   <url>
@@ -136,9 +145,6 @@
     <loc>/reference/harmonize.toupper.html</loc>
   </url>
   <url>
-    <loc>/reference/harmonize.unlist.column.html</loc>
-  </url>
-  <url>
     <loc>/reference/harmonize.x.dots.html</loc>
   </url>
   <url>
@@ -163,13 +169,7 @@
     <loc>/reference/harmonize_defactor_vector.html</loc>
   </url>
   <url>
-    <loc>/reference/harmonize_escape_regex.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_escape_type.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_escape_types.html</loc>
+    <loc>/reference/harmonize_detect.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize_is_data_empty.html</loc>
@@ -296,6 +296,12 @@
   </url>
   <url>
     <loc>/reference/magerman_replace_umlaut.html</loc>
+  </url>
+  <url>
+    <loc>/reference/transpose_list_of_vectors.html</loc>
+  </url>
+  <url>
+    <loc>/reference/unlist_if_possible.html</loc>
   </url>
   <url>
     <loc>/reference/x_length.html</loc>
