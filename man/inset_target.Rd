@@ -4,12 +4,22 @@
 \alias{inset_target}
 \title{Insets target vector back to input object (\code{x})}
 \usage{
-inset_target(vector, x, ...)
+inset_target(
+  vector,
+  x,
+  ommitted_rows_values_for_new_col = NULL,
+  allow_na_in_vector = TRUE,
+  ...
+)
 }
 \arguments{
 \item{vector}{Character vector to inset into the \code{x} object}
 
 \item{x}{Data to harmonize. Character vector or data.frame or data.table}
+
+\item{ommitted_rows_values_for_new_col}{}
+
+\item{allow_na_in_vector}{}
 
 \item{...}{
   Arguments passed on to \code{\link[=harmonize_options]{harmonize_options}}

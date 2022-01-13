@@ -19,15 +19,16 @@ get_vector <- function(x, col
                      , choices = NULL
                      , fallback_value = NULL
                      , fallback_value_ignored_if_col = TRUE
-                     , fallback_value_any_missing = FALSE
+                     , fallback_value_any_missing = TRUE
                      , fallback_value_ensure_length = TRUE
                      , check_x_col_rows = TRUE
                      , which_call_to_report = -1L) {
+    assertion_fails <- checkmate::makeAssertCollection()
     ## arg checks
-    if (check_x_col_rows) check_x(x, which_call_to_report = which_call_to_report)
-    checkmate::assert_flag(fallback_value_ignored_if_col)
-    checkmate::assert_flag(fallback_value_any_missing)
-    checkmate::assert_flag(fallback_value_ensure_length)
+    if (check_x_col_rows) check_x(x, which_call_to_report)
+    checkmate::assert_flag(fallback_value_ignored_if_col, add = assertion_fails)
+    checkmate::assert_flag(fallback_value_any_missing, add = assertion_fails)
+    checkmate::assert_flag(fallback_value_ensure_length, add = assertion_fails)
     ## get vector
     if ((!fallback_value_ignored_if_col || is.null(col))
         && !is.null(fallback_value)) {
@@ -35,18 +36,21 @@ get_vector <- function(x, col
         if (!is.null(choices)) {
             checkmate::assert_subset(fallback_value
                                    , choices = choices
-                                   , fmatch = TRUE)
+                                   , fmatch = TRUE
+                                   , add = assertion_fails)
         }
         ## get fallback vector
         if (fallback_value_ensure_length &&
             length(fallback_value) == 1) {
             checkmate::assert_string(fallback_value
-                                   , na.ok = fallback_value_any_missing)
+                                   , na.ok = fallback_value_any_missing
+                                   , add = assertion_fails)
             v <- rep(fallback_value, x_length(x))
         } else {
             checkmate::assert_character(fallback_value
                                       , any.missing = fallback_value_any_missing
-                                      , len = x_length(x))
+                                      , len = x_length(x)
+                                      , add = assertion_fails)
             v <- fallback_value
         }
     } else {
@@ -54,7 +58,7 @@ get_vector <- function(x, col
         if (is.atomic(x)) {
             v <- harmonize_defactor(x)
         } else {
-            if (check_x_col_rows) check_col(col, x, which_call_to_report = which_call_to_report)
+            if (check_x_col_rows) check_col(col, x, which_call_to_report)
             v <- harmonize_defactor(x[[col]])
         }
         ## check choices
@@ -63,7 +67,8 @@ get_vector <- function(x, col
                                    , choices = choices
                                    , fmatch = TRUE
                                    , .var.name =
-                                         paste0("x[[", checkmate::vname(col), "]]"))
+                                         paste0("x[[", checkmate::vname(col), "]]")
+                                   , add = assertion_fails)
         }
     }
     ## select rows
@@ -71,6 +76,7 @@ get_vector <- function(x, col
         if (check_x_col_rows) check_rows(rows, x, which_call_to_report = which_call_to_report)
         v <- v[rows]
     }
+    report_arg_checks(assertion_fails, which_call_to_report)
     return(v)
 }
 ## --------<<  get_vector:1 ends here

@@ -175,7 +175,7 @@ harmonize.remove.quotes <- function(x, ...) {
 ##' @param x object
 ##' @return updated object
 ##' @export
-harmonize.unlist.column <- function(x) {
+unlist_if_possible <- function(x) {
   if(is.atomic(x)) x
   else if(is.list(x)) {
     len <- sapply(x, length)
@@ -433,7 +433,7 @@ harmonize_is_data_empty <- function(data) {
 ##' @export
 harmonize_omit_empty <- function(x) {
     if(length(x) == 0) return(x)
-    x[!sapply(harmonize_is_data_empty(x), isTRUE)]
+    x[!sapply(harmonize_is_data_empty(x), isTRUE, USE.NAMES = FALSE)]
 }
 
 
@@ -864,7 +864,7 @@ dots.and <- function(arg.name, arg.val
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*harmonize.detect][harmonize.detect:2]]
+## -------->>  [[file:../harmonizer.src.org::*harmonize_detect][harmonize_detect:2]]
 #' This function is basically meant for coding names based on certain pattern
 #'
 #' Optionally matches only at the beginning or at the end of the string.
@@ -1091,10 +1091,10 @@ harmonize.detect..do.vector <- function(env = parent.frame()) {
            else .} %>% 
           ## remove empty codes
           lapply(harmonize_omit_empty) %>%
-          harmonize.unlist.column
+          unlist_if_possible
     }, envir = env)
 }
-## --------<<  harmonize.detect:2 ends here
+## --------<<  harmonize_detect:2 ends here
 
 
 

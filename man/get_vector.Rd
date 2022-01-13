@@ -11,7 +11,7 @@ get_vector(
   choices = NULL,
   fallback_value = NULL,
   fallback_value_ignored_if_col = TRUE,
-  fallback_value_any_missing = FALSE,
+  fallback_value_any_missing = TRUE,
   fallback_value_ensure_length = TRUE,
   check_x_col_rows = TRUE,
   which_call_to_report = -1L

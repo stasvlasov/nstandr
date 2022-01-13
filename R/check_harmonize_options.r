@@ -121,6 +121,7 @@ check_harmonize_options <- function(dots
         if(length(ommitted_rows_values) == 1) {
             checkmate::assert_string(
                            ommitted_rows_values
+                         , na.ok = TRUE
                          , add = assertion_fails)
         } else {
             checkmate::assert_character(

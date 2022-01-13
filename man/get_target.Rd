@@ -4,7 +4,7 @@
 \alias{get_target}
 \title{Gets a target vector to harmonize.}
 \usage{
-get_target(x, ...)
+get_target(x, return_null_for_new_col = FALSE, ...)
 }
 \arguments{
 \item{...}{Ignored arguments that are meant for \code{inset_vector}}
