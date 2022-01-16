@@ -10,7 +10,7 @@ cockburn.replace.derwent(x, ...)
 \item{x}{object}
 
 \item{...}{
-  Arguments passed on to \code{\link[=harmonize_replace]{harmonize_replace}}
+  Arguments passed on to \code{\link[=replace_patterns]{replace_patterns}}
   \describe{
     \item{\code{patterns}}{Accepts both vector or table. If patterns is a
 table can also include replacements column.}

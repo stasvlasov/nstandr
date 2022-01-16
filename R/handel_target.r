@@ -157,6 +157,7 @@ format_append_copy <- function(format, name = "") {
 inset_target <- function(vector, x
                        , ommitted_rows_values_for_new_col = NULL
                        , allow_na_in_vector = TRUE
+                       , which_call_to_report = -5L
                        , ...) {
     vector <- harmonize_defactor_vector(vector)
     with(dots <- get_harmonize_options(), {
@@ -167,7 +168,7 @@ inset_target <- function(vector, x
         ## inset ommitted_rows_values if needed
         ## -----
         checkmate::assert_multi_class(vector
-                                    , classes = c("list", "character")
+                                    , classes = c("list", "character", "logical", "numeric")
                                     , add = assertion_fails)
         if(!is.null(rows)
            && ((is.logical(rows) && !all(rows))
@@ -179,6 +180,7 @@ inset_target <- function(vector, x
               , any.missing = allow_na_in_vector
               , add = assertion_fails
             )
+            report_arg_checks(assertion_fails, which_call_to_report)
             ## process `ommitted_rows_values`
             ommitted_rows_values_col <-
                 infer_moving_target_from_names(
@@ -206,6 +208,7 @@ inset_target <- function(vector, x
               , any.missing = allow_na_in_vector
               , add = assertion_fails
             )
+            report_arg_checks(assertion_fails, which_call_to_report)
             if(is.numeric(rows)) {
                 ## case of permutations for same length
                 vector <- vector[rows]
@@ -245,6 +248,7 @@ inset_target <- function(vector, x
             col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
             append_copy_name <- format_append_copy(append_copy_name_format, name = names(x)[col_post_inset])
             checkmate::assert_names(append_copy_name, add = assertion_fails)
+            report_arg_checks(assertion_fails, which_call_to_report)
             x[, (append_copy_name) := vector]
         }
         report_arg_checks(assertion_fails, which_call_to_report)

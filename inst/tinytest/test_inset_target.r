@@ -47,7 +47,6 @@ expect_equal(
                                             "j"), c1_harmonized = c("a", "b", "c", "d", "e")))
 
 ## test omited values
-expect_error(inset_target(c(1,1,1,1,1), data.table(c1 = c(5,5,5,5,5), x = c("a", "b", "c", "d", "e"))))
 
 expect_equal(
     inset_target(c("a", "b", "c", "d", "e")
@@ -84,8 +83,7 @@ expect_equal(
 
 
 ## error for incorrect vector length
-expect_error(
-    inset_target(c("a", "b", "c", "d", "e")
+expect_error(inset_target(c("a", "b", "c", "d", "e")
                , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
                , rows = c(TRUE, FALSE, TRUE, FALSE, TRUE)))
 

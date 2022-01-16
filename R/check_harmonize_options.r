@@ -4,12 +4,12 @@ report_arg_checks <- function (collection
                              , call_to_report = NULL) {
     checkmate::assertClass(collection, "AssertCollection")
     if (!collection$isEmpty()) {
-        msgs = paste("-", collection$getMessages())
-        context = "Harmonizer :: %i argument checks failed in '%s' call:"
+        msgs <- paste("-", collection$getMessages())
+        context <- "Harmonizer :: %i argument checks failed in '%s' call:"
         if(is.call(try(
-            call_to_report <- sys.call(which_call_to_report)
+            call <- sys.call(which_call_to_report)
           , silent = TRUE))) {
-            call_to_report <- deparse1(call_to_report)
+            call_to_report <- deparse1(call)
         }
         err = c("\n", strwrap(sprintf(context, length(msgs), call_to_report))
               , strwrap(msgs, indent = 4, exdent = 6))

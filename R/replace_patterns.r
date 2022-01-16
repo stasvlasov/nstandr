@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*harmonize_replace][harmonize_replace:1]]
+## -------->>  [[file:../harmonizer.src.org::*replace_patterns][replace_patterns:1]]
 replace_exact <- function(x
                         , patterns
                         , replacements) {
@@ -77,7 +77,7 @@ replace_regex_by_mode <- function(x
 ##' @import stringi stringr magrittr
 ##' 
 ##' @export
-harmonize_replace <- function(x
+replace_patterns <- function(x
                             , patterns
                             , patterns_col = 1
                             , patterns_mode = "all"
@@ -92,7 +92,7 @@ harmonize_replace <- function(x
     ## types (choices are checked in escape_regex_for_types)
     types_vector <- get_vector(patterns, patterns_type_col
                              , fallback_value = patterns_type)
-    ## get patterns excaped according to types.vector
+    ## get patterns and escape regex if types are heterogeneous
     patterns_vector <-
         get_vector(patterns, patterns_col) |>
         escape_regex_for_types(types_vector)
@@ -114,15 +114,17 @@ harmonize_replace <- function(x
                                 , replacements_vector)
     } else if (all(modes_vector == "all")) {
         if (all(types_vector == "fixed")) {
-            x_vector <- stringi::stri_replace_all_fixed(x_vector
-                                          , patterns_vector
-                                          , replacements_vector
-                                          , vectorize_all = FALSE)
+            x_vector <-
+                stringi::stri_replace_all_fixed(x_vector
+                                              , patterns_vector
+                                              , replacements_vector
+                                              , vectorize_all = FALSE)
         } else {
-            x_vector <- stringi::stri_replace_all_regex(x_vector
-                                          , patterns_vector
-                                          , replacements_vector
-                                          , vectorize_all = FALSE)
+            x_vector <-
+                stringi::stri_replace_all_regex(x_vector
+                                              , patterns_vector
+                                              , replacements_vector
+                                              , vectorize_all = FALSE)
         }
     } else if (all(types_vector == "fixed")) {
         x_vector <- replace_fixed_by_mode(x_vector
@@ -131,12 +133,12 @@ harmonize_replace <- function(x
                             , modes_vector)
     } else {
         x_vector <- replace_regex_by_mode(x_vector
-                            , patterns_vector
-                            , replacements_vector
-                            , modes_vector)
+                                        , patterns_vector
+                                        , replacements_vector
+                                        , modes_vector)
     }
     inset_target(x_vector, x)
 }
-## --------<<  harmonize_replace:1 ends here
+## --------<<  replace_patterns:1 ends here
 
 

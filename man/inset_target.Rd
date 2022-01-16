@@ -9,6 +9,7 @@ inset_target(
   x,
   ommitted_rows_values_for_new_col = NULL,
   allow_na_in_vector = TRUE,
+  which_call_to_report = -5L,
   ...
 )
 }

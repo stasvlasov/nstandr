@@ -1,9 +1,9 @@
-## -------->>  [[file:../../harmonizer.src.org::*harmonize_replace][harmonize_replace:2]]
+## -------->>  [[file:../../harmonizer.src.org::*replace_patterns][replace_patterns:2]]
 require(data.table)
-## Test harmonize_replace
+## Test replace_patterns
 
 expect_equal(
-harmonize_replace(data.table(x.lala = c("lala MSlab MSlab"
+replace_patterns(data.table(x.lala = c("lala MSlab MSlab"
                                       , "this company called TriloBit.? maybe"
                                       , "MS007lab, Ltd. Ltd.")
                            , x.rows = c(TRUE, TRUE, FALSE)
@@ -22,7 +22,7 @@ harmonize_replace(data.table(x.lala = c("lala MSlab MSlab"
 
 ## multy mode test
 expect_equal(
-  harmonize_replace(data.table(x.lala = c("lala MSlab MSlab"
+  replace_patterns(data.table(x.lala = c("lala MSlab MSlab"
                , "this company called TriloBit.? maybe TriloBit.?"
                , "MS007lab, Ltd. Ltd.")
          , x.rows = c(TRUE, FALSE, TRUE)
@@ -42,7 +42,7 @@ expect_equal(
 
 ## patterns as table test
 expect_equal(
-  harmonize_replace(data.frame(x.lala = c("lala MSlab MSlab"
+  replace_patterns(data.frame(x.lala = c("lala MSlab MSlab"
                , "this company called TriloBit.? maybe TriloBit.?"
                , "MS007lab, Ltd. Ltd.")
          , x.rows = c(TRUE, FALSE, TRUE)
@@ -65,7 +65,7 @@ expect_equal(
 
 ## test for all x.rows FALSE
 expect_equal(
-    harmonize_replace(data.frame(x.lala = c("lala MSlab MSlab"
+    replace_patterns(data.frame(x.lala = c("lala MSlab MSlab"
                , "this company called TriloBit.? maybe TriloBit.?"
                , "MS007lab, Ltd. Ltd.")
          , x.rows = c(TRUE, FALSE, TRUE)
@@ -84,6 +84,6 @@ expect_equal(
 , data.table(x.lala = c("lala MSlab MSlab", "this company called TriloBit.? maybe TriloBit.?", 
 "MS007lab, Ltd. Ltd."), x.rows = c(TRUE, FALSE, TRUE), harm = c("1", 
 "25", "MSlab")))
-## --------<<  harmonize_replace:2 ends here
+## --------<<  replace_patterns:2 ends here
 
 

@@ -64,14 +64,14 @@ cockburn.combabbrev <- function(x
 ##'
 ##' It is a version from Cockburn, I. M., A. Agrawal, J. Bessen, J. H. S. Graham, B. H. Hall, and M. MacGarvie (2009), The NBER Patent Citations Datafile Update. It differs from original dervert standartization
 ##' @param x object
-##' @inheritDotParams harmonize_replace
+##' @inheritDotParams replace_patterns
 ##' @return Harmonized table
 ##' 
 ##' @md 
 ##' @export 
 cockburn.replace.derwent <- function(x
                            , ...) {
-  harmonize_replace(x
+  replace_patterns(x
                   , patterns = cockburn.patterns.derwent
                   , patterns.mode = "first"
                   , ...)
@@ -84,14 +84,14 @@ cockburn.replace.derwent <- function(x
 ##' COMPUSTAT specific standardization for organizational names
 ##'
 ##' @param x object
-##' @inheritDotParams harmonize_replace
+##' @inheritDotParams replace_patterns
 ##' @return Harmonized table
 ##' 
 ##' @md 
 ##' @export 
 cockburn.replace.compustat <- function(x
                              , ...) {
-  harmonize_replace(x
+  replace_patterns(x
                   , patterns = cockburn.patterns.compustat
                   , ...)
 }
@@ -101,14 +101,14 @@ cockburn.replace.compustat <- function(x
 ##' COMPUSTAT specific standardization for organizational names. Full name replacements.
 ##'
 ##' @param x object
-##' @inheritDotParams harmonize_replace
+##' @inheritDotParams replace_patterns
 ##' @return Harmonized table
 ##' 
 ##' @md 
 ##' @export 
 cockburn.replace.compustat.names <- function(x
                                    , ...) {
-  harmonize_replace(x
+  replace_patterns(x
                   , patterns = cockburn.patterns.compustat.names
                   , patterns.type = "trim.exact"
                   , ...)
@@ -163,7 +163,7 @@ cockburn.detect.type <- function(x
 ##' Cleanup Entity Type
 ##'
 ##' @param x vector or table
-##' @inheritDotParams harmonize_replace
+##' @inheritDotParams replace_patterns
 ##' @return Harmonized table
 ##' 
 ##' @md 
@@ -301,7 +301,7 @@ cockburn.detect.govt <- function(x
 ##' @md 
 ##' @export 
 cockburn.replace.govt <- function(x, ...) {
-    harmonize_replace(x
+    replace_patterns(x
                     , patterns = cockburn.patterns.govt.cleanup
                     , ...)
 }
@@ -355,7 +355,7 @@ cockburn.detect.univ <- function(x
 ##' @md 
 ##' @export 
 cockburn.replace.univ <- function(x, ...) {
-    harmonize_replace(x
+    replace_patterns(x
                     , patterns = cockburn.patterns.univ.cleanup
                     , ...)
 }
@@ -570,7 +570,7 @@ cockburn.detect.hosp <- function(x
 ##' Removes punctuation and standardise some symbols. 
 ##'
 ##' @param x object
-##' @inheritDotParams harmonize_replace
+##' @inheritDotParams replace_patterns
 ##' @return Harmonized table
 ##' 
 ##' @md
@@ -601,7 +601,7 @@ cockburn.replace.punctuation <- function(x
 ##' Create standard name
 ##'
 ##' @param x object
-##' @inheritDotParams harmonize_replace
+##' @inheritDotParams replace_patterns
 ##' @return Harmonized table
 ##' 
 ##' @md
@@ -611,8 +611,8 @@ cockburn.replace.standard.names <- function(x
                                             , ...) {
   x %>%
     cockburn.replace.derwent(...) %>% 
-    harmonize_replace(patterns = cockburn.patterns.standard.names.additional, ...) %>% 
-    harmonize_replace(patterns = cockburn.patterns.standard.names.country.specific, ...)
+    replace_patterns(patterns = cockburn.patterns.standard.names.additional, ...) %>% 
+    replace_patterns(patterns = cockburn.patterns.standard.names.country.specific, ...)
 }
 ## --------<<  Standard Name:1 ends here
 
@@ -622,7 +622,7 @@ cockburn.replace.standard.names <- function(x
 ##' Creates so called stem name (a name with all legal entity identifiers removed)
 ##'
 ##' @param x object
-##' @inheritDotParams harmonize_replace
+##' @inheritDotParams replace_patterns
 ##' @return Harmonized table
 ##' 
 ##' @md
@@ -630,7 +630,7 @@ cockburn.replace.standard.names <- function(x
 ##' @export 
 cockburn.remove.standard.names <- function(x
                                             , ...) {
-  harmonize_replace(x
+  replace_patterns(x
                   , patterns = cockburn.patterns.stem.name
                   , replacements = " "
                   , ...) 
@@ -649,7 +649,7 @@ cockburn.remove.standard.names <- function(x
 ##' Removes special USPTO codes.
 ##'
 ##' @param x object
-##' @inheritDotParams harmonize_replace
+##' @inheritDotParams replace_patterns
 ##' @return Harmonized table
 ##' 
 ##' @md
@@ -657,7 +657,7 @@ cockburn.remove.standard.names <- function(x
 ##' @export 
 cockburn.remove.uspto <- function(x
                                      , ...) {
-  harmonize_replace(x, patterns = cockburn.patterns.uspto, ...) 
+  replace_patterns(x, patterns = cockburn.patterns.uspto, ...) 
 }
 
 

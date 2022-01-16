@@ -7,7 +7,7 @@
 escape_regex_for_type(
   string,
   type,
-  return_regex = TRUE,
+  escape_fixed = FALSE,
   return_docs = FALSE,
   return_choices = FALSE
 )
@@ -18,9 +18,8 @@ escape_regex_for_type(
 \item{type}{How the characters in patterns should be 'escaped' for
 proper matching. The options are:}
 
-\item{return_regex}{Always return regex. Default is
-true. Otherwise return unescaped string for 'fixed' and
-'exact' types and just trimmed string for "trim_exact"}
+\item{escape_fixed}{Whether to escape string for 'fixed' and
+'exact' types and just trimmed string for "trim_exact". Default is FALSE}
 
 \item{return_docs}{Return character vector of documentation for
 each type (for using with roxygen2 documentations in many

@@ -10,7 +10,7 @@ magerman_remove_common_words(x, ...)
 \item{x}{table}
 
 \item{...}{
-  Arguments passed on to \code{\link[=harmonize_replace]{harmonize_replace}}
+  Arguments passed on to \code{\link[=replace_patterns]{replace_patterns}}
   \describe{
     \item{\code{patterns}}{Accepts both vector or table. If patterns is a
 table can also include replacements column.}

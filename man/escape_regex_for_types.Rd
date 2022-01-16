@@ -4,17 +4,19 @@
 \alias{escape_regex_for_types}
 \title{Escapes special for regex characters conditionally}
 \usage{
-escape_regex_for_types(patterns, types, return_regex = FALSE)
+escape_regex_for_types(patterns, types, escape_fixed = FALSE)
 }
 \arguments{
 \item{patterns}{character vector}
 
 \item{types}{character vector of the same length as \code{strings} with
-instructions whether and how to to escape regex characters. Options are:}
+instructions whether and how to to escape regex
+characters. Options are:}
 
-\item{return_regex}{Always return regex. Default is
-true. Otherwise return unescaped string for 'fixed' and
-'exact' types and just trimmed string for "trim_exact"}
+\item{escape_fixed}{Whether to escape strings for 'fixed' and
+'exact' types in case all types are the same
+(length(unique(types)) == 1). The "trim_exact" types get
+trimed if not escaped. Otherwise if types heterogenious}
 }
 \value{
 string with all special to regex characters escaped

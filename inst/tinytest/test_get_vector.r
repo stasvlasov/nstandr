@@ -1,4 +1,6 @@
 ## -------->>  [[file:../../harmonizer.src.org::*get_vector][get_vector:2]]
+get_vector <- harmonizer:::get_vector
+
 ## missing col
 expect_error(get_vector(c("a", "b", "c")))
 

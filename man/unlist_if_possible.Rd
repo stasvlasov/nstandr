@@ -4,10 +4,12 @@
 \alias{unlist_if_possible}
 \title{If column in the \code{x} table is list unlist it if possible}
 \usage{
-unlist_if_possible(x)
+unlist_if_possible(x, replace_zero_length_with = NA_character_)
 }
 \arguments{
 \item{x}{object}
+
+\item{replace_zero_length_with}{Default is replace NULLs with NA_character_ because vector of just NA is a logical class}
 }
 \value{
 updated object

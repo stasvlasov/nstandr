@@ -173,18 +173,24 @@ harmonize.remove.quotes <- function(x, ...) {
 ## -------->>  [[file:../harmonizer.src.org::*harmonize.unlist.column][harmonize.unlist.column:1]]
 ##' If column in the `x` table is list unlist it if possible
 ##' @param x object
+##' @param replace_zero_length_with Default is replace NULLs with NA_character_ because vector of just NA is a logical class
 ##' @return updated object
 ##' @export
-unlist_if_possible <- function(x) {
-  if(is.atomic(x)) x
-  else if(is.list(x)) {
-    len <- sapply(x, length)
-    if(all(len == 1))
-      unlist(x)
-    else if(all(len %in% 0:1))
-      unlist(inset(x, len == 0, NA))
-    else x
-  } else x
+unlist_if_possible <- function(x, replace_zero_length_with = NA_character_) {
+    if(is.list(x)) {
+        len <- sapply(x, length)
+        if(all(len == 1)) {
+            unlist(x, recursive = FALSE, use.names = FALSE)
+        } else if(all(len %in% 0:1)) {
+            x[len == 0] <- replace_zero_length_with
+            unlist(x, recursive = FALSE, use.names = FALSE)
+        } else {
+            return(x)
+        }
+    } else {
+        ## assume that x is atomic
+        return(x)
+    }
 }
 ## --------<<  harmonize.unlist.column:1 ends here
 
@@ -433,7 +439,7 @@ harmonize_is_data_empty <- function(data) {
 ##' @export
 harmonize_omit_empty <- function(x) {
     if(length(x) == 0) return(x)
-    x[!sapply(harmonize_is_data_empty(x), isTRUE, USE.NAMES = FALSE)]
+    x[!sapply(harmonize_is_data_empty(x), isTRUE)]
 }
 
 
@@ -864,7 +870,7 @@ dots.and <- function(arg.name, arg.val
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*harmonize_detect][harmonize_detect:2]]
+## -------->>  [[file:../harmonizer.src.org::*old][old:1]]
 #' This function is basically meant for coding names based on certain pattern
 #'
 #' Optionally matches only at the beginning or at the end of the string.
@@ -1094,7 +1100,7 @@ harmonize.detect..do.vector <- function(env = parent.frame()) {
           unlist_if_possible
     }, envir = env)
 }
-## --------<<  harmonize_detect:2 ends here
+## --------<<  old:1 ends here
 
 
 
