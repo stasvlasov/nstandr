@@ -527,7 +527,7 @@ defactor_vector <- function(x, check.numeric = FALSE) {
 ##' @inheritDotParams defactor_vector
 ##' @return object of the same type without factors
 ##'  
-##' @import tibble data.table
+##' @import data.table
 ##' 
 ##' @export
 defactor <- function(x
