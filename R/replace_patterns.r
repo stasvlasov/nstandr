@@ -2,7 +2,7 @@
 replace_exact <- function(x
                         , patterns
                         , replacements) {
-    if ((requireNamespace("fastmatch", quietly=TRUE))) {
+    if ((requireNamespace("fastmatch", quietly = TRUE))) {
         match <- fmatch
     }
     matches <- match(x, patterns)

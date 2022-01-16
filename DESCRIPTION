@@ -1,7 +1,7 @@
 Package: harmonizer
 Title: Harmonization of Organizational Names
 Version: 0.3
-Date: 2021-12-27
+Date: 2022-01-16
 Authors@R: 
     person("Stanislav", "Vlasov", , "s.vlasov@uvt.nl", role = c("aut", "cre"))
 Description: Harmonizes organizational names using steps described in
@@ -19,6 +19,7 @@ Imports:
     tibble (>= 2.0),
     xml2 (>= 1.0)
 Suggests: 
+    fastmatch,
     tinytest
 Encoding: UTF-8
 References: Magerman, T., Looy, V., Bart, & Song, X. (2006). Data

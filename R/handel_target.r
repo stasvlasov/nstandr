@@ -148,10 +148,17 @@ format_append_copy <- function(format, name = "") {
 ##' Insets target vector back to input object (`x`)
 ##' 
 ##' @param vector Character vector to inset into the `x` object
-##' @param x Data to harmonize. Character vector or data.frame or data.table
-##' @param omitted_rows_values_for_new_col 
-##' @param allow_na_in_vector 
-##' @param ... 
+##' @param x Data to harmonize. Character vector or data.frame or
+##'     data.table
+##' @param omitted_rows_values_for_new_col Alternative value
+##'     `omitted_rows_values` to use in case we create new column in
+##'     x. For example, it is use in insetting codes to avoid the
+##'     default `omitted_rows_values` use initial `col` in which case
+##'     codes will be mixed with input values
+##' @param allow_na_in_vector Whether to allow NA in inset vector
+##' @param which_call_to_report System call number (e.g., -2L) to
+##'     include in report if arguments checks fails
+##' @param ...
 ##' @return Data.table or character vector
 ##' @inheritDotParams harmonize_options
 inset_target <- function(vector, x

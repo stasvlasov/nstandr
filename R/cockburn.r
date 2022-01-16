@@ -184,6 +184,9 @@ cockburn.replace.type <- function(x, ...) {
 ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' 
 ##' @param x vector or table
+##' @param codes.name 
+##' @param x.codes.merge 
+##' @param ... 
 ##' @inheritDotParams harmonize.detect
 ##' @return Harmonized table
 ##' 
