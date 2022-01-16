@@ -16,11 +16,19 @@ inset_target(
 \arguments{
 \item{vector}{Character vector to inset into the \code{x} object}
 
-\item{x}{Data to harmonize. Character vector or data.frame or data.table}
+\item{x}{Data to harmonize. Character vector or data.frame or
+data.table}
 
-\item{omitted_rows_values_for_new_col}{}
+\item{omitted_rows_values_for_new_col}{Alternative value
+\code{omitted_rows_values} to use in case we create new column in
+x. For example, it is use in insetting codes to avoid the
+default \code{omitted_rows_values} use initial \code{col} in which case
+codes will be mixed with input values}
 
-\item{allow_na_in_vector}{}
+\item{allow_na_in_vector}{Whether to allow NA in inset vector}
+
+\item{which_call_to_report}{System call number (e.g., -2L) to
+include in report if arguments checks fails}
 
 \item{...}{
   Arguments passed on to \code{\link[=harmonize_options]{harmonize_options}}

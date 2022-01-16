@@ -324,7 +324,7 @@ harmonize.toascii <- function(x
 ##' @return Argument vector
 ##' 
 ##' @md 
-##' @import magrittr data.table dplyr stringr
+##' @import magrittr data.table stringr
 ##' @export 
 harmonize.match.arg <- function(arg
                               , arg.length = 1
@@ -553,8 +553,6 @@ defactor <- function(x
     as.matrix(lapply(x, defactor_vector, ...))
   else if(is.data.table(x))
     as.data.table(lapply(x, defactor_vector, ...))
-  else if(is_tibble(x))
-    as_tibble(lapply(x, defactor_vector, ...))
   else if(is.data.frame(x))
     as.data.frame(lapply(x, defactor_vector, ...)
                 , stringsAsFactors = FALSE)
@@ -1033,7 +1031,7 @@ harmonize.detect..get.patterns.type.vector <- function(env = parent.frame()) {
 harmonize.detect..get.patterns.vector <- function(env = parent.frame()) {
   evalq({
         harmonize.x(patterns, x.col = patterns.col) %>% 
-            escape_regex_for_types(patterns.type.vector, all.regex = FALSE)
+            escape_regex_for_types(patterns.type.vector, escape_fixed = TRUE)
     }, envir = env)
 }
 

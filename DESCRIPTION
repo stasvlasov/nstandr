@@ -12,11 +12,9 @@ Depends:
 Imports: 
     checkmate (>= 2.0.0),
     data.table (>= 1.12),
-    dplyr (>= 0.8),
     magrittr (>= 1.5),
     stringi (>= 1.4),
     stringr (>= 1.4),
-    tibble (>= 2.0),
     xml2 (>= 1.0)
 Suggests: 
     fastmatch,

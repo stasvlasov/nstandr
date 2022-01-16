@@ -520,6 +520,17 @@ To call all calls
 | tinytest  | https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md |
 | fastmatch | [[https://cran.r-project.org/web/packages/fastmatch/index.html][CRAN - Package fastmatch]]                                            |
 
+
+#+name: dependencies-packages
+| names      | link |
+|------------+------|
+| data.table |      |
+| stringi    |      |
+| xml2       |      |
+| checkmate  |      |
+| magrittr   |      |
+| stringr    |      |
+
 #+name: generate-package-docs
 #+header: :var suggest_packages = suggest-packages
 #+BEGIN_SRC R :tangle no
@@ -547,8 +558,8 @@ To call all calls
     , "magrittr (>= 1.5)"
     , "stringi (>= 1.4)"
     , "stringr (>= 1.4)"
-    , "dplyr (>= 0.8)"
-    , "tibble (>= 2.0)"
+    ## , "dplyr (>= 0.8)"
+    ## , "tibble (>= 2.0)"
     , "xml2 (>= 1.0)"
     , "checkmate (>= 2.0.0)"
   )
@@ -1200,7 +1211,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##' @return Argument vector
   ##' 
   ##' @md 
-  ##' @import magrittr data.table dplyr stringr
+  ##' @import magrittr data.table stringr
   ##' @export 
   harmonize.match.arg <- function(arg
                                 , arg.length = 1
@@ -1531,8 +1542,6 @@ Tests:
       as.matrix(lapply(x, defactor_vector, ...))
     else if(is.data.table(x))
       as.data.table(lapply(x, defactor_vector, ...))
-    else if(is_tibble(x))
-      as_tibble(lapply(x, defactor_vector, ...))
     else if(is.data.frame(x))
       as.data.frame(lapply(x, defactor_vector, ...)
                   , stringsAsFactors = FALSE)
@@ -3101,7 +3110,7 @@ Tests:
   ##' @param allow_na_in_vector Whether to allow NA in inset vector
   ##' @param which_call_to_report System call number (e.g., -2L) to
   ##'     include in report if arguments checks fails
-  ##' @param ...
+  ##' 
   ##' @return Data.table or character vector
   ##' @inheritDotParams harmonize_options
   inset_target <- function(vector, x
@@ -5102,7 +5111,7 @@ even older
   harmonize.detect..get.patterns.vector <- function(env = parent.frame()) {
     evalq({
           harmonize.x(patterns, x.col = patterns.col) %>% 
-              escape_regex_for_types(patterns.type.vector, all.regex = FALSE)
+              escape_regex_for_types(patterns.type.vector, escape_fixed = TRUE)
       }, envir = env)
   }
 

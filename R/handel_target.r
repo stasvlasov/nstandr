@@ -158,7 +158,7 @@ format_append_copy <- function(format, name = "") {
 ##' @param allow_na_in_vector Whether to allow NA in inset vector
 ##' @param which_call_to_report System call number (e.g., -2L) to
 ##'     include in report if arguments checks fails
-##' @param ...
+##' 
 ##' @return Data.table or character vector
 ##' @inheritDotParams harmonize_options
 inset_target <- function(vector, x
