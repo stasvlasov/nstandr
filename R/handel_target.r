@@ -149,23 +149,23 @@ format_append_copy <- function(format, name = "") {
 ##' 
 ##' @param vector Character vector to inset into the `x` object
 ##' @param x Data to harmonize. Character vector or data.frame or data.table
-##' @param ommitted_rows_values_for_new_col 
+##' @param omitted_rows_values_for_new_col 
 ##' @param allow_na_in_vector 
 ##' @param ... 
 ##' @return Data.table or character vector
 ##' @inheritDotParams harmonize_options
 inset_target <- function(vector, x
-                       , ommitted_rows_values_for_new_col = NULL
+                       , omitted_rows_values_for_new_col = NULL
                        , allow_na_in_vector = TRUE
                        , which_call_to_report = -5L
-                       , ...) {
+              defactor_vector
     vector <- harmonize_defactor_vector(vector)
     with(dots <- get_harmonize_options(), {
         ## check harmonize_options
         check_harmonize_options(dots, x)
         assertion_fails <- checkmate::makeAssertCollection()
         ## -----
-        ## inset ommitted_rows_values if needed
+        ## inset omitted_rows_values if needed
         ## -----
         checkmate::assert_multi_class(vector
                                     , classes = c("list", "character", "logical", "numeric")
@@ -181,25 +181,25 @@ inset_target <- function(vector, x
               , add = assertion_fails
             )
             report_arg_checks(assertion_fails, which_call_to_report)
-            ## process `ommitted_rows_values`
-            ommitted_rows_values_col <-
+            ## process `omitted_rows_values`
+            omitted_rows_values_col <-
                 infer_moving_target_from_names(
                     dots
                   , x
                   , return_null_for_new_col =
-                        !is.null(ommitted_rows_values_for_new_col))
-            if(is.null(ommitted_rows_values_col) &&
-               is.null(ommitted_rows_values)) {
-                ommitted_rows_values <- ommitted_rows_values_for_new_col
+                        !is.null(omitted_rows_values_for_new_col))
+            if(is.null(omitted_rows_values_col) &&
+               is.null(omitted_rows_values)) {
+                omitted_rows_values <- omitted_rows_values_for_new_col
             }
-            ommitted_rows_values <-
+            omitted_rows_values <-
                 get_vector(x
-                         , col = ommitted_rows_values_col
-                         , fallback_value = ommitted_rows_values
-                         , fallback_value_ignored_if_col = FALSE
+                         , col = omitted_rows_values_col
+                         , fallback_value = omitted_rows_values
+                         , fallback_value_supersedes = TRUE
                          , check_x_col_rows = FALSE)
             ## inject ommited rows
-            vector <- `[<-`(ommitted_rows_values, rows, vector)
+            vector <- `[<-`(omitted_rows_values, rows, vector)
         } else {
             ## just check the vector length
             getFromNamespace(paste0("assert_", class(vector)), "checkmate")(
@@ -222,7 +222,7 @@ inset_target <- function(vector, x
                 ## just replace x if it is atomic
                 x <- vector
             } else {
-                x <- harmonize_defactor(x, conv2dt = "all")
+                x <- defactor(x, conv2dt = "all")
                 width_pre_inset <- x_width(x)
                 col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
                 col_or_name_if_new <-
@@ -244,7 +244,7 @@ inset_target <- function(vector, x
         ## apped copy
         ## -----
         if(append_copy) {
-            x <- harmonize_defactor(x, conv2dt = "all")
+            x <- defactor(x, conv2dt = "all")
             col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
             append_copy_name <- format_append_copy(append_copy_name_format, name = names(x)[col_post_inset])
             checkmate::assert_names(append_copy_name, add = assertion_fails)

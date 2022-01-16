@@ -117,15 +117,15 @@ check_harmonize_options <- function(dots
         }
         ## check 'rows'
         check_rows(rows, x, which_call_to_report)
-        ## check 'ommitted_rows_values'
-        if(length(ommitted_rows_values) == 1) {
+        ## check 'omitted_rows_values'
+        if(length(omitted_rows_values) == 1) {
             checkmate::assert_string(
-                           ommitted_rows_values
+                           omitted_rows_values
                          , na.ok = TRUE
                          , add = assertion_fails)
         } else {
             checkmate::assert_character(
-                           ommitted_rows_values
+                           omitted_rows_values
                          , null.ok = TRUE
                          , len = x_length(x)
                          , add = assertion_fails)

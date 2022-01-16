@@ -3,7 +3,7 @@
 ##' 
 ##' @param col Column of interest (the one we need to harmonize) in the `x` object (if it is data.frame like).
 ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records.
-##' @param ommitted_rows_values If `rows` parameter is set then merge `ommitted_rows_values` with the results (filtered by `rows`). Either single string or a character vector of length `nrow(x)`. If NULL (the default) then original values of `col` are merged with results.
+##' @param omitted_rows_values If `rows` parameter is set then merge `omitted_rows_values` with the results (filtered by `rows`). Either single string or a character vector of length `nrow(x)`. If NULL (the default) then original values of `col` are merged with results.
 ##' @param placement Where to inset retults (harmonized vector) in the `x` object. Default options is 'replace_col' which overwrides the `col` in `x` with results. Other options:
 ##' - 'omit' :: do not write results back to table (usually used when `append_copy` is set for temporary values)
 ##' - 'prepend_to_col' :: prepend to `col`
@@ -20,7 +20,7 @@
 ##' @return Always NULL. It does nothing.
 harmonize_options <- function(col = 1
                             , rows = NULL
-                            , ommitted_rows_values = NULL
+                            , omitted_rows_values = NULL
                             , placement = "replace_col"
                             , name = NULL
                             , name_for_x_atomic = "x"

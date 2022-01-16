@@ -103,7 +103,7 @@ replace_patterns <- function(x
     ## replacements
     replacements_vector <- get_vector(patterns, patterns_replacements_col
                                     , fallback_value = replacements
-                                    , fallback_value_ignored_if_col = FALSE)
+                                    , fallback_value_supersedes = TRUE)
     ## conditions are organized from fastest to slowest replace procedures
     if (all(types_vector == "exact") || all(types_vector == "trim_exact")) {
         if (all(types_vector == "trim_exact")) {

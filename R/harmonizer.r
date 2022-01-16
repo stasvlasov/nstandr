@@ -33,7 +33,7 @@ harmonize.make.procedures.list <- function(procedures.table
                                          , remove.comments = TRUE
                                          , sort.by.no.field = TRUE
                                          , comments = c("#", "-", "")) {
-    procedures.table %<>% harmonize_defactor
+    procedures.table %<>% defactor
     if(remove.comments) {
         procedures.table %<>%
             extract(!(procedures.table[[no.field]] %in% comments), )
@@ -353,7 +353,7 @@ harmonize.match.arg <- function(arg
     arg <- choices[[1]]
   }
   ## check if arg matches choices and length
-  arg %<>% harmonize_defactor_vector
+  arg %<>% defactor_vector
   if(all(arg %in% choices)) {
     if(arg.length.check && ensure.length && length(arg) == 1)
       return(rep(arg, arg.length))
@@ -500,7 +500,7 @@ harmonize_add_suffix <- function(name, suffix, x.names
 ##' @param x a vector
 ##' @param check.numeric check if vector is numeric. Default is TRUE. Takes longer with this check but avoids type conversion (numeric to character).
 ##' @return character vector
-harmonize_defactor_vector <- function(x, check.numeric = FALSE) {
+defactor_vector <- function(x, check.numeric = FALSE) {
   if(is.factor(x) & check.numeric) {
     levs <- levels(x)
     ## check if levels are numeric (longer)
@@ -530,7 +530,7 @@ harmonize_defactor_vector <- function(x, check.numeric = FALSE) {
 ##' @import tibble data.table
 ##' 
 ##' @export
-harmonize_defactor <- function(x
+defactor <- function(x
                              , conv2dt = c("only.tables"
                                             , "all.but.atomic"
                                             , "all.but.lists"
@@ -539,24 +539,24 @@ harmonize_defactor <- function(x
   conv2dt <-  match.arg(conv2dt)
   if(is.atomic(x)) {
     if(conv2dt %in% c("only.tables", "all.but.atomic", "none"))
-      harmonize_defactor_vector(x, ...)
+      defactor_vector(x, ...)
     else
-      data.table(harmonize_defactor_vector(x, ...))
+      data.table(defactor_vector(x, ...))
   } else if(class(x)[1] == "list")
     if((conv2dt %in% c("only.tables", "all.but.lists", "none")))
-      lapply(x, harmonize_defactor, conv2dt = "none", ...)
+      lapply(x, defactor, conv2dt = "none", ...)
     else
-      data.table(lapply(x, harmonize_defactor, conv2dt = "none", ...))
+      data.table(lapply(x, defactor, conv2dt = "none", ...))
   else if(conv2dt != "none")
-    as.data.table(lapply(x, harmonize_defactor_vector, ...))
+    as.data.table(lapply(x, defactor_vector, ...))
   else if(is.matrix(x))
-    as.matrix(lapply(x, harmonize_defactor_vector, ...))
+    as.matrix(lapply(x, defactor_vector, ...))
   else if(is.data.table(x))
-    as.data.table(lapply(x, harmonize_defactor_vector, ...))
+    as.data.table(lapply(x, defactor_vector, ...))
   else if(is_tibble(x))
-    as_tibble(lapply(x, harmonize_defactor_vector, ...))
+    as_tibble(lapply(x, defactor_vector, ...))
   else if(is.data.frame(x))
-    as.data.frame(lapply(x, harmonize_defactor_vector, ...)
+    as.data.frame(lapply(x, defactor_vector, ...)
                 , stringsAsFactors = FALSE)
   else x
 }
@@ -648,9 +648,9 @@ harmonize.x.inset.check.args <- function(env = parent.frame()) {
                                , type = "atomic")) {
             inset.omitted.val <- get_vector(x, x.col)
         } else if(length(inset.omitted.val) == 1) {
-            inset.omitted.val %<>% harmonize_defactor %>% rep(harmonize_data_length(x))
+            inset.omitted.val %<>% defactor %>% rep(harmonize_data_length(x))
         } else {
-            inset.omitted.val %<>% harmonize_defactor
+            inset.omitted.val %<>% defactor
         }
         ## - check return.x.cols
         harmonize_is_ok_type(return.x.cols.all)
@@ -730,7 +730,7 @@ harmonize.x.inset <- function(env = parent.frame()) {
             inset.vector
         } else if(x.col.update) {
             x %>%
-              harmonize_defactor(conv2dt = "all") %>% 
+              defactor(conv2dt = "all") %>% 
               inset2(x.col, value = inset.vector) %>% 
               extract(., ,return.x.cols, with = FALSE)
         } else if(isTRUE(return.x.cols == 0)) {
@@ -745,7 +745,7 @@ harmonize.x.inset <- function(env = parent.frame()) {
                                      , x.names[return.x.cols])) %>%
               make.names
           ## (pre)append inset.vector to x
-          x %<>% harmonize_defactor(conv2dt = "all") # returns data.table
+          x %<>% defactor(conv2dt = "all") # returns data.table
             inset.vector %>%
                 data.table %>%          # should make one column even if inset is list
                 set_names(inset.name) %>%
@@ -1044,8 +1044,8 @@ harmonize.detect..get.codes.vector <- function(env = parent.frame()) {
                                    , x.length = c(1, harmonize_data_length(patterns))
                                    , type = "atomic")) {
             if(length(codes) == 1)    
-                rep(harmonize_defactor(codes), harmonize_data_length(patterns))
-            else harmonize_defactor(codes)
+                rep(defactor(codes), harmonize_data_length(patterns))
+            else defactor(codes)
         }
         else if(harmonize_is_ok_col(patterns.codes.col, patterns))
             harmonize.x(patterns, x.col = patterns.codes.col)

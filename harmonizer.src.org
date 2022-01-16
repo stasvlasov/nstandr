@@ -670,7 +670,7 @@ To call all calls
                                            , remove.comments = TRUE
                                            , sort.by.no.field = TRUE
                                            , comments = c("#", "-", "")) {
-      procedures.table %<>% harmonize_defactor
+      procedures.table %<>% defactor
       if(remove.comments) {
           procedures.table %<>%
               extract(!(procedures.table[[no.field]] %in% comments), )
@@ -1229,7 +1229,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
       arg <- choices[[1]]
     }
     ## check if arg matches choices and length
-    arg %<>% harmonize_defactor_vector
+    arg %<>% defactor_vector
     if(all(arg %in% choices)) {
       if(arg.length.check && ensure.length && length(arg) == 1)
         return(rep(arg, arg.length))
@@ -1478,7 +1478,7 @@ Tests:
   ##' @param x a vector
   ##' @param check.numeric check if vector is numeric. Default is TRUE. Takes longer with this check but avoids type conversion (numeric to character).
   ##' @return character vector
-  harmonize_defactor_vector <- function(x, check.numeric = FALSE) {
+  defactor_vector <- function(x, check.numeric = FALSE) {
     if(is.factor(x) & check.numeric) {
       levs <- levels(x)
       ## check if levels are numeric (longer)
@@ -1508,7 +1508,7 @@ Tests:
   ##' @import tibble data.table
   ##' 
   ##' @export
-  harmonize_defactor <- function(x
+  defactor <- function(x
                                , conv2dt = c("only.tables"
                                               , "all.but.atomic"
                                               , "all.but.lists"
@@ -1517,24 +1517,24 @@ Tests:
     conv2dt <-  match.arg(conv2dt)
     if(is.atomic(x)) {
       if(conv2dt %in% c("only.tables", "all.but.atomic", "none"))
-        harmonize_defactor_vector(x, ...)
+        defactor_vector(x, ...)
       else
-        data.table(harmonize_defactor_vector(x, ...))
+        data.table(defactor_vector(x, ...))
     } else if(class(x)[1] == "list")
       if((conv2dt %in% c("only.tables", "all.but.lists", "none")))
-        lapply(x, harmonize_defactor, conv2dt = "none", ...)
+        lapply(x, defactor, conv2dt = "none", ...)
       else
-        data.table(lapply(x, harmonize_defactor, conv2dt = "none", ...))
+        data.table(lapply(x, defactor, conv2dt = "none", ...))
     else if(conv2dt != "none")
-      as.data.table(lapply(x, harmonize_defactor_vector, ...))
+      as.data.table(lapply(x, defactor_vector, ...))
     else if(is.matrix(x))
-      as.matrix(lapply(x, harmonize_defactor_vector, ...))
+      as.matrix(lapply(x, defactor_vector, ...))
     else if(is.data.table(x))
-      as.data.table(lapply(x, harmonize_defactor_vector, ...))
+      as.data.table(lapply(x, defactor_vector, ...))
     else if(is_tibble(x))
-      as_tibble(lapply(x, harmonize_defactor_vector, ...))
+      as_tibble(lapply(x, defactor_vector, ...))
     else if(is.data.frame(x))
-      as.data.frame(lapply(x, harmonize_defactor_vector, ...)
+      as.data.frame(lapply(x, defactor_vector, ...)
                   , stringsAsFactors = FALSE)
     else x
   }
@@ -1782,9 +1782,9 @@ Tests:
                                  , type = "atomic")) {
               inset.omitted.val <- get_vector(x, x.col)
           } else if(length(inset.omitted.val) == 1) {
-              inset.omitted.val %<>% harmonize_defactor %>% rep(harmonize_data_length(x))
+              inset.omitted.val %<>% defactor %>% rep(harmonize_data_length(x))
           } else {
-              inset.omitted.val %<>% harmonize_defactor
+              inset.omitted.val %<>% defactor
           }
           ## - check return.x.cols
           harmonize_is_ok_type(return.x.cols.all)
@@ -1864,7 +1864,7 @@ Tests:
               inset.vector
           } else if(x.col.update) {
               x %>%
-                harmonize_defactor(conv2dt = "all") %>% 
+                defactor(conv2dt = "all") %>% 
                 inset2(x.col, value = inset.vector) %>% 
                 extract(., ,return.x.cols, with = FALSE)
           } else if(isTRUE(return.x.cols == 0)) {
@@ -1879,7 +1879,7 @@ Tests:
                                        , x.names[return.x.cols])) %>%
                 make.names
             ## (pre)append inset.vector to x
-            x %<>% harmonize_defactor(conv2dt = "all") # returns data.table
+            x %<>% defactor(conv2dt = "all") # returns data.table
               inset.vector %>%
                   data.table %>%          # should make one column even if inset is list
                   set_names(inset.name) %>%
@@ -2249,7 +2249,7 @@ Tests:
   ##' 
   ##' @param col Column of interest (the one we need to harmonize) in the `x` object (if it is data.frame like).
   ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records.
-  ##' @param ommitted_rows_values If `rows` parameter is set then merge `ommitted_rows_values` with the results (filtered by `rows`). Either single string or a character vector of length `nrow(x)`. If NULL (the default) then original values of `col` are merged with results.
+  ##' @param omitted_rows_values If `rows` parameter is set then merge `omitted_rows_values` with the results (filtered by `rows`). Either single string or a character vector of length `nrow(x)`. If NULL (the default) then original values of `col` are merged with results.
   ##' @param placement Where to inset retults (harmonized vector) in the `x` object. Default options is 'replace_col' which overwrides the `col` in `x` with results. Other options:
   ##' - 'omit' :: do not write results back to table (usually used when `append_copy` is set for temporary values)
   ##' - 'prepend_to_col' :: prepend to `col`
@@ -2266,7 +2266,7 @@ Tests:
   ##' @return Always NULL. It does nothing.
   harmonize_options <- function(col = 1
                               , rows = NULL
-                              , ommitted_rows_values = NULL
+                              , omitted_rows_values = NULL
                               , placement = "replace_col"
                               , name = NULL
                               , name_for_x_atomic = "x"
@@ -2403,15 +2403,15 @@ Tests:
           }
           ## check 'rows'
           check_rows(rows, x, which_call_to_report)
-          ## check 'ommitted_rows_values'
-          if(length(ommitted_rows_values) == 1) {
+          ## check 'omitted_rows_values'
+          if(length(omitted_rows_values) == 1) {
               checkmate::assert_string(
-                             ommitted_rows_values
+                             omitted_rows_values
                            , na.ok = TRUE
                            , add = assertion_fails)
           } else {
               checkmate::assert_character(
-                             ommitted_rows_values
+                             omitted_rows_values
                            , null.ok = TRUE
                            , len = x_length(x)
                            , add = assertion_fails)
@@ -2769,18 +2769,32 @@ Tests:
 *** get_vector
 
 #+BEGIN_SRC R :tangle R/get_vector.r
-  ##' Gets vector by column and defactor if needed. Optionaly one can provide a fallback_value which will be returned if col is not specified.
+  ##' Gets vector by column and defactor if needed. Optionaly one can
+  ##' provide a fallback_value which will be returned if col is not
+  ##' specified.
   ##'
   ##' @param x Input data. Can be vector, data.frame or a data.table
-  ##' @param col Column of interest in the input data `x`. The vector we would like to work with. Ignored if input `x` is a atomic vector.
+  ##' @param col Column of interest in the input data `x`. The vector we
+  ##'     would like to work with. Ignored if input `x` is a atomic
+  ##'     vector.
   ##' @param rows Rows of interest
-  ##' @param choices Optional set of choices that return value should be subset of. Do no check if it is NULL.
-  ##' @param fallback_value If col is NULL then return this value (but see `fallback_value_ignored_if_col` argument). Also check if it is a character vector and same lenght as x. If it is of length 1 then replicate it to match x's length.
-  ##' @param fallback_value_ignored_if_col A bolean toggle. When set if col is provided then fallback_value_is_simply ignored. Otherwise col is ignored when fallback_value is provided.
-  ##' @param fallback_value_any_missing Toggle check if missing values are allowed in fallback_value
-  ##' @param fallback_value_ensure_length Toggle if fallback_value should we make it same length as `x`
-  ##' @param check_x_col_rows Toggle wheather to use check_x, check_col, check_rows?
-  ##' @param which_call_to_report Which call to report if argument checks fail.
+  ##' @param choices Optional set of choices that return value should be
+  ##'     subset of. Do no check if it is NULL.
+  ##' @param fallback_value If col is NULL then return this value (but
+  ##'     see `fallback_value_supersedes` argument). Also check if it is
+  ##'     a character vector and same lenght as x. If it is of length 1
+  ##'     then replicate it to match x's length.
+  ##' @param fallback_value_supersedes A bolean toggle. When set col is
+  ##'     ignored when fallback_value is provided. Otherwise (the
+  ##'     default) if col is provided then fallback_value is ignored.
+  ##' @param fallback_value_any_missing Toggle check if missing values
+  ##'     are allowed in fallback_value
+  ##' @param fallback_value_ensure_length Toggle if fallback_value
+  ##'     should we make it same length as `x`
+  ##' @param check_x_col_rows Toggle wheather to use check_x, check_col,
+  ##'     check_rows?
+  ##' @param which_call_to_report Which call to report if argument
+  ##'     checks fail.
   ##' @return A vector. Factors in imput `data` are converted to string.
   ##'
   ##' @md
@@ -2788,7 +2802,7 @@ Tests:
                        , rows = NULL
                        , choices = NULL
                        , fallback_value = NULL
-                       , fallback_value_ignored_if_col = TRUE
+                       , fallback_value_supersedes = FALSE
                        , fallback_value_any_missing = TRUE
                        , fallback_value_ensure_length = TRUE
                        , check_x_col_rows = TRUE
@@ -2796,11 +2810,11 @@ Tests:
       assertion_fails <- checkmate::makeAssertCollection()
       ## arg checks
       if (check_x_col_rows) check_x(x, which_call_to_report)
-      checkmate::assert_flag(fallback_value_ignored_if_col, add = assertion_fails)
+      checkmate::assert_flag(fallback_value_supersedes, add = assertion_fails)
       checkmate::assert_flag(fallback_value_any_missing, add = assertion_fails)
       checkmate::assert_flag(fallback_value_ensure_length, add = assertion_fails)
       ## get vector
-      if ((!fallback_value_ignored_if_col || is.null(col))
+      if ((fallback_value_supersedes || is.null(col))
           && !is.null(fallback_value)) {
           ## check choices
           if (!is.null(choices)) {
@@ -2826,10 +2840,10 @@ Tests:
       } else {
           ## get column
           if (is.atomic(x)) {
-              v <- harmonize_defactor(x)
+              v <- defactor(x)
           } else {
               if (check_x_col_rows) check_col(col, x, which_call_to_report)
-              v <- harmonize_defactor(x[[col]])
+              v <- defactor(x[[col]])
           }
           ## check choices
           if (!is.null(choices)) {
@@ -2849,7 +2863,6 @@ Tests:
       report_arg_checks(assertion_fails, which_call_to_report)
       return(v)
   }
-
   #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_get_vector.r
@@ -2886,7 +2899,7 @@ Tests:
                , c(1,2,3)) |>
       get_vector(2, rows = c(1,3)
                , fallback_value = c("x")
-               , fallback_value_ignored_if_col = FALSE)
+               , fallback_value_supersedes = TRUE)
     , c("x", "x"))
 
   expect_equal(
@@ -2913,7 +2926,7 @@ Tests:
       get_vector(NULL, rows = c(1,3)
                , fallback_value = c("x")
                , choices = "a"
-               , fallback_value_ignored_if_col = FALSE))
+               , fallback_value_supersedes = TRUE))
 
   expect_error(
       data.table(NA
@@ -3079,23 +3092,23 @@ Tests:
   ##' 
   ##' @param vector Character vector to inset into the `x` object
   ##' @param x Data to harmonize. Character vector or data.frame or data.table
-  ##' @param ommitted_rows_values_for_new_col 
+  ##' @param omitted_rows_values_for_new_col 
   ##' @param allow_na_in_vector 
   ##' @param ... 
   ##' @return Data.table or character vector
   ##' @inheritDotParams harmonize_options
   inset_target <- function(vector, x
-                         , ommitted_rows_values_for_new_col = NULL
+                         , omitted_rows_values_for_new_col = NULL
                          , allow_na_in_vector = TRUE
                          , which_call_to_report = -5L
-                         , ...) {
+                defactor_vector
       vector <- harmonize_defactor_vector(vector)
       with(dots <- get_harmonize_options(), {
           ## check harmonize_options
           check_harmonize_options(dots, x)
           assertion_fails <- checkmate::makeAssertCollection()
           ## -----
-          ## inset ommitted_rows_values if needed
+          ## inset omitted_rows_values if needed
           ## -----
           checkmate::assert_multi_class(vector
                                       , classes = c("list", "character", "logical", "numeric")
@@ -3111,25 +3124,25 @@ Tests:
                 , add = assertion_fails
               )
               report_arg_checks(assertion_fails, which_call_to_report)
-              ## process `ommitted_rows_values`
-              ommitted_rows_values_col <-
+              ## process `omitted_rows_values`
+              omitted_rows_values_col <-
                   infer_moving_target_from_names(
                       dots
                     , x
                     , return_null_for_new_col =
-                          !is.null(ommitted_rows_values_for_new_col))
-              if(is.null(ommitted_rows_values_col) &&
-                 is.null(ommitted_rows_values)) {
-                  ommitted_rows_values <- ommitted_rows_values_for_new_col
+                          !is.null(omitted_rows_values_for_new_col))
+              if(is.null(omitted_rows_values_col) &&
+                 is.null(omitted_rows_values)) {
+                  omitted_rows_values <- omitted_rows_values_for_new_col
               }
-              ommitted_rows_values <-
+              omitted_rows_values <-
                   get_vector(x
-                           , col = ommitted_rows_values_col
-                           , fallback_value = ommitted_rows_values
-                           , fallback_value_ignored_if_col = FALSE
+                           , col = omitted_rows_values_col
+                           , fallback_value = omitted_rows_values
+                           , fallback_value_supersedes = TRUE
                            , check_x_col_rows = FALSE)
               ## inject ommited rows
-              vector <- `[<-`(ommitted_rows_values, rows, vector)
+              vector <- `[<-`(omitted_rows_values, rows, vector)
           } else {
               ## just check the vector length
               getFromNamespace(paste0("assert_", class(vector)), "checkmate")(
@@ -3152,7 +3165,7 @@ Tests:
                   ## just replace x if it is atomic
                   x <- vector
               } else {
-                  x <- harmonize_defactor(x, conv2dt = "all")
+                  x <- defactor(x, conv2dt = "all")
                   width_pre_inset <- x_width(x)
                   col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
                   col_or_name_if_new <-
@@ -3174,7 +3187,7 @@ Tests:
           ## apped copy
           ## -----
           if(append_copy) {
-              x <- harmonize_defactor(x, conv2dt = "all")
+              x <- defactor(x, conv2dt = "all")
               col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
               append_copy_name <- format_append_copy(append_copy_name_format, name = names(x)[col_post_inset])
               checkmate::assert_names(append_copy_name, add = assertion_fails)
@@ -3386,7 +3399,7 @@ old version
   ##' @param col vector of interest in `data` object
   ##' @param update Update values in `col` column. Default is FALSE. If set `append`, `name` and `name_suffix` are ignored. Also if set the default for `select_all_data_cols` will be set to TRUE.
   ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records
-  ##' @param ommitted_rows_values If `rows` is set merge these values to the results. It should be a vector of length 1 or `nrow(data)`. If the value is NULL (default) then use original values of `col`.
+  ##' @param omitted_rows_values If `rows` is set merge these values to the results. It should be a vector of length 1 or `nrow(data)`. If the value is NULL (default) then use original values of `col`.
   ##' @param append If set then put `vector` as the last instead of first vector/column. Default is FALSE.
   ##' @param name_suffix If `name` is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already edataists in `select_data_cols` it will add counter at the end to avoid variables with the same names.
   ##' @param name Use this name for the first column in results (harmonized names). Default is NULL, which means that either name_if_data_atomic if data is vector or original col name will be used with `name_suffix` at the end.
@@ -3404,7 +3417,7 @@ old version
                          , update = FALSE
                          , append = FALSE
                          , rows = NULL
-                         , ommitted_rows_values = NULL
+                         , omitted_rows_values = NULL
                          , name = NA
                          , name_suffix = "harmonized"
                          , name_if_data_atomic = "names"
@@ -3415,7 +3428,7 @@ old version
       check_args_col_rows()
       check_args_for_inset_vector()    
       ## inset filtered rows (this makes list if vector is list)
-      vector %<>% inset(ommitted_rows_values, rows, .)
+      vector %<>% inset(omitted_rows_values, rows, .)
       ## inset vector to data
       if(is.atomic(data) & isFALSE(select_data_cols == 1)) {
           vector
@@ -3458,17 +3471,17 @@ old version
                              , x.length = if(isTRUE(rows)) harmonize_data_length(x)
                                           else sum(rows)
                              , type = c("atomic", "list"))
-          ## - check ommitted_rows_values
-          if(!harmonize_is_ok_type(ommitted_rows_values
+          ## - check omitted_rows_values
+          if(!harmonize_is_ok_type(omitted_rows_values
                                  , x.length = c(1, harmonize_data_length(x))
                                  , type = "atomic")) {
-              ommitted_rows_values <- harmonize_data_get_col(x, col)
-          } else if(length(ommitted_rows_values) == 1) {
-              ommitted_rows_values <-
-                  harmonize_defactor(ommitted_rows_values) |>
+              omitted_rows_values <- harmonize_data_get_col(x, col)
+          } else if(length(omitted_rows_values) == 1) {
+              omitted_rows_values <-
+                  harmonize_defactor(omitted_rows_values) |>
                   rep(harmonize_data_length(x))
           } else {
-              ommitted_rows_values <- harmonize_defactor(ommitted_rows_values)
+              omitted_rows_values <- harmonize_defactor(omitted_rows_values)
           }
           ## - check select_cols
           harmonize_is_ok_type(select_all_data_cols)
@@ -3565,7 +3578,7 @@ Testing
     inset_vector_new(vector = c(5,5,5)
               , col = "str"
               , rows = .$rows
-              , ommitted_rows_values = .$str
+              , omitted_rows_values = .$str
               , select_data_cols = -c(1, 3)
               , update = TRUE)
   
@@ -3587,7 +3600,7 @@ Testing
     inset_vector_new(vector = c(5,5,0)
               , col = "str"
               , rows = .$rows
-              , ommitted_rows_values = .$str
+              , omitted_rows_values = .$str
               , select_data_cols = -c(1, 3)
               , update = TRUE)
   
@@ -3599,7 +3612,7 @@ Testing
     inset_vector(vector = c(5,5,0)
               , col = "num"
               , rows = .$rows
-              , ommitted_rows_values = .$str
+              , omitted_rows_values = .$str
               , select_data_cols = NULL
               , update = FALSE)
   
@@ -3997,7 +4010,7 @@ Testing
       ## replacements
       replacements_vector <- get_vector(patterns, patterns_replacements_col
                                       , fallback_value = replacements
-                                      , fallback_value_ignored_if_col = FALSE)
+                                      , fallback_value_supersedes = TRUE)
       ## conditions are organized from fastest to slowest replace procedures
       if (all(types_vector == "exact") || all(types_vector == "trim_exact")) {
           if (all(types_vector == "trim_exact")) {
@@ -4518,7 +4531,7 @@ even older
       ## get codes
       codes_vector <- get_vector(patterns, patterns_codes_col
                                , fallback_value = patterns_codes
-                               , fallback_value_ignored_if_col = FALSE)
+                               , fallback_value_supersedes = TRUE)
       if(length(patterns_vector) == 0) return(x)
       ## --------------------------------------------------------------------------------
       ## detect and clean up
@@ -4577,8 +4590,8 @@ even older
                  , placement = "append_to_x"
                  , name = codes_col_name
                  , name_suffix = codes_col_name_suffix
-                 , ommitted_rows_values = codes_omitted_rows_value
-                 , ommitted_rows_values_for_new_col = NA_character_)
+                 , omitted_rows_values = codes_omitted_rows_value
+                 , omitted_rows_values_for_new_col = NA_character_)
   }
 
   #+END_SRC
@@ -5093,8 +5106,8 @@ even older
                                      , x.length = c(1, harmonize_data_length(patterns))
                                      , type = "atomic")) {
               if(length(codes) == 1)    
-                  rep(harmonize_defactor(codes), harmonize_data_length(patterns))
-              else harmonize_defactor(codes)
+                  rep(defactor(codes), harmonize_data_length(patterns))
+              else defactor(codes)
           }
           else if(harmonize_is_ok_col(patterns.codes.col, patterns))
               harmonize.x(patterns, x.col = patterns.codes.col)

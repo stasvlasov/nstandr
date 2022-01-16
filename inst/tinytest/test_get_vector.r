@@ -32,7 +32,7 @@ expect_equal(
              , c(1,2,3)) |>
     get_vector(2, rows = c(1,3)
              , fallback_value = c("x")
-             , fallback_value_ignored_if_col = FALSE)
+             , fallback_value_supersedes = TRUE)
   , c("x", "x"))
 
 expect_equal(
@@ -59,7 +59,7 @@ expect_error(
     get_vector(NULL, rows = c(1,3)
              , fallback_value = c("x")
              , choices = "a"
-             , fallback_value_ignored_if_col = FALSE))
+             , fallback_value_supersedes = TRUE))
 
 expect_error(
     data.table(NA

@@ -101,7 +101,7 @@ detect_patterns <- function(x
     ## get codes
     codes_vector <- get_vector(patterns, patterns_codes_col
                              , fallback_value = patterns_codes
-                             , fallback_value_ignored_if_col = FALSE)
+                             , fallback_value_supersedes = TRUE)
     if(length(patterns_vector) == 0) return(x)
     ## --------------------------------------------------------------------------------
     ## detect and clean up
@@ -160,8 +160,8 @@ detect_patterns <- function(x
                , placement = "append_to_x"
                , name = codes_col_name
                , name_suffix = codes_col_name_suffix
-               , ommitted_rows_values = codes_omitted_rows_value
-               , ommitted_rows_values_for_new_col = NA_character_)
+               , omitted_rows_values = codes_omitted_rows_value
+               , omitted_rows_values_for_new_col = NA_character_)
 }
 ## --------<<  detect_patterns:1 ends here
 
