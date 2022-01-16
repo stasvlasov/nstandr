@@ -44,13 +44,15 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">unlist_if_possible</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">unlist_if_possible</span><span class="op">(</span><span class="va">x</span>, replace_zero_length_with <span class="op">=</span> <span class="cn">NA_character_</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>object</p></dd>
+<dt>replace_zero_length_with</dt>
+<dd><p>Default is replace NULLs with NA_character_ because vector of just NA is a logical class</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -69,7 +71,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer></div>

@@ -63,7 +63,7 @@ regex  -  Match regex pattern
 </ul></div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">escape_regex_for_types</span><span class="op">(</span><span class="va">patterns</span>, <span class="va">types</span>, return_regex <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">escape_regex_for_types</span><span class="op">(</span><span class="va">patterns</span>, <span class="va">types</span>, escape_fixed <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -72,11 +72,13 @@ regex  -  Match regex pattern
 <dd><p>character vector</p></dd>
 <dt>types</dt>
 <dd><p>character vector of the same length as <code>strings</code> with
-instructions whether and how to to escape regex characters. Options are:</p></dd>
-<dt>return_regex</dt>
-<dd><p>Always return regex. Default is
-true. Otherwise return unescaped string for 'fixed' and
-'exact' types and just trimmed string for "trim_exact"</p></dd>
+instructions whether and how to to escape regex
+characters. Options are:</p></dd>
+<dt>escape_fixed</dt>
+<dd><p>Whether to escape strings for 'fixed' and
+'exact' types in case all types are the same
+(length(unique(types)) == 1). The "trim_exact" types get
+trimed if not escaped. Otherwise if types heterogenious</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -95,7 +97,7 @@ true. Otherwise return unescaped string for 'fixed' and
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer></div>

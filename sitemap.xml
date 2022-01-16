@@ -82,6 +82,9 @@
     <loc>/reference/cockburn.replace.univ.html</loc>
   </url>
   <url>
+    <loc>/reference/detect_patterns.html</loc>
+  </url>
+  <url>
     <loc>/reference/dots.and.html</loc>
   </url>
   <url>
@@ -169,9 +172,6 @@
     <loc>/reference/harmonize_defactor_vector.html</loc>
   </url>
   <url>
-    <loc>/reference/harmonize_detect.html</loc>
-  </url>
-  <url>
     <loc>/reference/harmonize_is_data_empty.html</loc>
   </url>
   <url>
@@ -191,9 +191,6 @@
   </url>
   <url>
     <loc>/reference/harmonize_options.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_replace.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize_target_get.html</loc>
@@ -296,6 +293,9 @@
   </url>
   <url>
     <loc>/reference/magerman_replace_umlaut.html</loc>
+  </url>
+  <url>
+    <loc>/reference/replace_patterns.html</loc>
   </url>
   <url>
     <loc>/reference/transpose_list_of_vectors.html</loc>
