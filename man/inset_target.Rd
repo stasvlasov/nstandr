@@ -7,7 +7,7 @@
 inset_target(
   vector,
   x,
-  ommitted_rows_values_for_new_col = NULL,
+  omitted_rows_values_for_new_col = NULL,
   allow_na_in_vector = TRUE,
   which_call_to_report = -5L,
   ...
@@ -18,7 +18,7 @@ inset_target(
 
 \item{x}{Data to harmonize. Character vector or data.frame or data.table}
 
-\item{ommitted_rows_values_for_new_col}{}
+\item{omitted_rows_values_for_new_col}{}
 
 \item{allow_na_in_vector}{}
 
@@ -27,8 +27,8 @@ inset_target(
   \describe{
     \item{\code{col}}{Column of interest (the one we need to harmonize) in the \code{x} object (if it is data.frame like).}
     \item{\code{rows}}{Logical vector to filter records of interest. Default is NULL which means do not filter records.}
-    \item{\code{ommitted_rows_values}}{If \code{rows} parameter is set then merge \code{ommitted_rows_values} with the results (filtered by \code{rows}). Either single string or a character vector of length \code{nrow(x)}. If NULL (the default) then original values of \code{col} are merged with results.}
-    \item{\code{placement}}{Where to inset retults (harmonized vector) in the \code{x} object. Default options is 'replace_col' which overwrides the \code{col} in \code{x} with results. Other options:
+    \item{\code{omitted_rows_values}}{If \code{rows} parameter is set then merge \code{omitted_rows_values} with the results (filtered by \code{rows}). Either single string or a character vector of length \code{nrow(x)}. If NULL (the default) then original values of \code{col} are merged with results.}
+    \item{\code{output}}{Where to inset retults (harmonized vector) in the \code{x} object. Default options is 'replace_col' which overwrides the \code{col} in \code{x} with results. Other options:
 \itemize{
 \item 'omit' :: do not write results back to table (usually used when \code{append_copy} is set for temporary values)
 \item 'prepend_to_col' :: prepend to \code{col}

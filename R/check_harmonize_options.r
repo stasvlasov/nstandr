@@ -132,7 +132,7 @@ check_harmonize_options <- function(dots
         }
         ## check 'placement'
         checkmate::assert_choice(
-                       placement
+                       output
                      , choices = c(
                            "replace_col"
                          , "prepend_to_col"

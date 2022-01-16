@@ -1502,7 +1502,7 @@ Tests:
   ##' @param x an object
   ##' @param conv2dt What to convert to data.table
   ##' @param ... 
-  ##' @inheritDotParams harmonize_defactor_vector
+  ##' @inheritDotParams defactor_vector
   ##' @return object of the same type without factors
   ##'  
   ##' @import tibble data.table
@@ -1542,7 +1542,7 @@ Tests:
 
 #+BEGIN_SRC R :tangle no
     ## Test
-  ## factor(sample(c("a", "b", "b"), 20, replace = TRUE)) %>% harmonize_defactor_vector
+  ## factor(sample(c("a", "b", "b"), 20, replace = TRUE)) %>% defactor_vector
 
   
   ## Tests
@@ -2250,7 +2250,7 @@ Tests:
   ##' @param col Column of interest (the one we need to harmonize) in the `x` object (if it is data.frame like).
   ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records.
   ##' @param omitted_rows_values If `rows` parameter is set then merge `omitted_rows_values` with the results (filtered by `rows`). Either single string or a character vector of length `nrow(x)`. If NULL (the default) then original values of `col` are merged with results.
-  ##' @param placement Where to inset retults (harmonized vector) in the `x` object. Default options is 'replace_col' which overwrides the `col` in `x` with results. Other options:
+  ##' @param output Where to inset retults (harmonized vector) in the `x` object. Default options is 'replace_col' which overwrides the `col` in `x` with results. Other options:
   ##' - 'omit' :: do not write results back to table (usually used when `append_copy` is set for temporary values)
   ##' - 'prepend_to_col' :: prepend to `col`
   ##' - 'append_to_col' :: append to `col`
@@ -2267,7 +2267,7 @@ Tests:
   harmonize_options <- function(col = 1
                               , rows = NULL
                               , omitted_rows_values = NULL
-                              , placement = "replace_col"
+                              , output = "replace_col"
                               , name = NULL
                               , name_for_x_atomic = "x"
                               , name_suffix = "_harmonized"
@@ -2418,7 +2418,7 @@ Tests:
           }
           ## check 'placement'
           checkmate::assert_choice(
-                         placement
+                         output
                        , choices = c(
                              "replace_col"
                            , "prepend_to_col"
@@ -2495,8 +2495,8 @@ Tests:
   }
 
   expect_true(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), name = "c"))
-  ## bad placement name
-  expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), placement = "omitted"))
+  ## bad output name
+  expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), output = "omitted"))
 
 
   testing_check_arguments <- function(x, ...) {
@@ -2958,12 +2958,12 @@ Tests:
       }
   }
 
-  infer_post_inset_col_from_pre_inset_col <- function(col, x, placement) {
+  infer_post_inset_col_from_pre_inset_col <- function(col, x, output) {
       if(is.character(col)) {
           which(names(x) %in% col)
       } else {
           switch(
-              placement
+              output
             , replace_col = col
             , append_to_col = col
             , prepend_to_col = col + 1
@@ -2972,10 +2972,10 @@ Tests:
       }
   }
 
-  infer_if_post_inset_col_possible <- function(col, x, placement) {
+  infer_if_post_inset_col_possible <- function(col, x, output) {
       col <- get_col_as_number(col, x)
       switch(
-          placement
+          output
         , replace_col = TRUE
         , append_to_col = ifelse(col == ncol(x), FALSE, TRUE)
         , prepend_to_col = ifelse(col == 1, FALSE, TRUE)
@@ -2984,10 +2984,10 @@ Tests:
   }
 
 
-  infer_moving_target_from_post_inset_col <- function(col, x, placement, as_name = FALSE) {
+  infer_moving_target_from_post_inset_col <- function(col, x, output, as_name = FALSE) {
       col <- get_col_as_number(col, x)
       return_col <- switch(
-          placement
+          output
         , replace_col = col
         , append_to_col = col + 1
         , prepend_to_col = col - 1
@@ -3002,10 +3002,10 @@ Tests:
 
 
   ## this assumes that nothing else was never added...
-  infer_moving_target_from_pre_inset_col <- function(col, x, placement, as_name = FALSE) {
+  infer_moving_target_from_pre_inset_col <- function(col, x, output, as_name = FALSE) {
       col <- get_col_as_number(col, x)
       return_col <- switch(
-          placement
+          output
         , replace_col = col
         , append_to_col = col + 1
         , prepend_to_col = col
@@ -3023,10 +3023,10 @@ Tests:
                                            , return_null_for_new_col = FALSE
                                            , return_name_for_new_col = FALSE) {
       with(dots, {
-          if(placement == "replace_col") return(get_col_as_number(col, x))
-          if(infer_if_post_inset_col_possible(col, x, placement)) {
+          if(output == "replace_col") return(get_col_as_number(col, x))
+          if(infer_if_post_inset_col_possible(col, x, output)) {
               target_name_generated <-
-                  infer_post_inset_col_from_pre_inset_col(col, x, placement) |>
+                  infer_post_inset_col_from_pre_inset_col(col, x, output) |>
                   make_target_name(x, name, name_suffix)
               if(target_name_generated %in% names(x)) {
                   ## case of subsequent calls
@@ -3101,8 +3101,8 @@ Tests:
                          , omitted_rows_values_for_new_col = NULL
                          , allow_na_in_vector = TRUE
                          , which_call_to_report = -5L
-                defactor_vector
-      vector <- harmonize_defactor_vector(vector)
+                         , ...) {
+      vector <- defactor_vector(vector)
       with(dots <- get_harmonize_options(), {
           ## check harmonize_options
           check_harmonize_options(dots, x)
@@ -3160,14 +3160,14 @@ Tests:
           ## -----
           ## inset full vector
           ## -----
-          if(placement != "omit") {
-              if(is.atomic(x) && placement == "replace_col") {
+          if(output != "omit") {
+              if(is.atomic(x) && output == "replace_col") {
                   ## just replace x if it is atomic
                   x <- vector
               } else {
                   x <- defactor(x, conv2dt = "all")
                   width_pre_inset <- x_width(x)
-                  col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
+                  col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output)
                   col_or_name_if_new <-
                       infer_moving_target_from_names(dots, x, return_name_for_new_col = TRUE)
                   ## fuckin data.table syntax is so cryptic
@@ -3175,7 +3175,7 @@ Tests:
                   ## now if we added new col
                   if(x_width(x) == width_pre_inset + 1) {
                       ## if new col was added place last col into target posision
-                      target <- infer_moving_target_from_post_inset_col(col_post_inset, x, placement)
+                      target <- infer_moving_target_from_post_inset_col(col_post_inset, x, output)
                       cols_nums <-
                           1:width_pre_inset |>
                           append(width_pre_inset + 1, after = target - 1)
@@ -3188,7 +3188,7 @@ Tests:
           ## -----
           if(append_copy) {
               x <- defactor(x, conv2dt = "all")
-              col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
+              col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output)
               append_copy_name <- format_append_copy(append_copy_name_format, name = names(x)[col_post_inset])
               checkmate::assert_names(append_copy_name, add = assertion_fails)
               report_arg_checks(assertion_fails, which_call_to_report)
@@ -3232,14 +3232,14 @@ Tests:
     , c("7", "8", "a"))
 
 
-  ## test placement
+  ## test output
 
   expect_equal(
       data.frame(x = c(1,2,3,4)
                , x_harmonized = c("7","8","9","a")) |>
       get_target(col = 1
                , rows = c(T,T,F,T)
-               , placement = "append_to_col")
+               , output = "append_to_col")
     , c("7", "8", "a"))
 
   expect_equal(
@@ -3248,7 +3248,7 @@ Tests:
       get_target(col = 1
                , rows = c(T,T,F,T)
                  , name = "aaa"
-               , placement = "append_to_col")
+               , output = "append_to_col")
     , c("7", "8", "a"))
 
 
@@ -3257,7 +3257,7 @@ Tests:
                , x = c("7","8","9","a")) |>
       get_target(col = 1
                , rows = c(T,T,F,T)
-               , placement = "prepend_to_col")
+               , output = "prepend_to_col")
     , c(1,2,4))
 
 
@@ -3268,7 +3268,7 @@ Tests:
                , x_harmonized = c("7","8","9","a")) |>
       get_target(col = 1
                , rows = c(T,T,F,T)
-               , placement = "append_to_x")
+               , output = "append_to_x")
     , c("7", "8", "a"))
 
 
@@ -3278,7 +3278,7 @@ Tests:
                , x = c("7","8","9","a")) |>
       get_target(col = 2
                , rows = c(T,T,F,T)
-               , placement = "prepend_to_x")
+               , output = "prepend_to_x")
     , c(1,2,4))
 #+END_SRC
 
@@ -3302,7 +3302,7 @@ Tests:
     , c("a", "b", "3", "d", "e"))
 
 
-  ## test placement
+  ## test output
   expect_equal(
       inset_target(c("a", "b", "c", "d", "e")
                  , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j")))
@@ -3311,14 +3311,14 @@ Tests:
   expect_equal(
       inset_target(c("a", "b", "c", "d", "e")
                  , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
-                 , placement = "prepend_to_col")
+                 , output = "prepend_to_col")
       , data.table(c1_harmonized = c("a", "b", "c", "d", "e"), c1 = c(1, 2, 3, 4, 5), x = c("x", "y", "z", "i", "j")))
 
 
   expect_equal(
       inset_target(c("a", "b", "c", "d", "e")
                  , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
-                 , placement = "append_to_col")
+                 , output = "append_to_col")
     , data.table(c1 = c(1, 2, 3, 4, 5), c1_harmonized = c("a", 
                                                           "b", "c", "d", "e"), x = c("x", "y", "z", "i", "j")))
 
@@ -3326,7 +3326,7 @@ Tests:
   expect_equal(
       inset_target(c("a", "b", "c", "d", "e")
                  , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
-                 , placement = "append_to_x")
+                 , output = "append_to_x")
     , data.table(c1 = c(1, 2, 3, 4, 5), x = c("x", "y", "z", "i", 
                                               "j"), c1_harmonized = c("a", "b", "c", "d", "e")))
 
@@ -4247,7 +4247,7 @@ old R/harmonize.replace.r
       } else if(harmonize_is_ok_type(replacements
                                    , x.length = c(1, length(patterns.vector))
                                    , type = "atomic")) {
-          harmonize_defactor_vector(replacements) %>%
+          defactor_vector(replacements) %>%
               {if(length(.) == 1) rep(., length(patterns.vector)) else .}
       } else {
           ## replace with nothig by default
@@ -4509,7 +4509,7 @@ even older
                            , rows = NULL
                            , name = codes_col_name
                            , name_suffix = codes_col_name_suffix
-                           , placement = "append_to_x"
+                           , output = "append_to_x"
                            , return_null_for_new_col = TRUE) |>
               harmonize_is_data_empty() |>
               and_rows(rows, x)
@@ -4568,7 +4568,7 @@ even older
                                      , rows = rows
                                      , name = codes_col_name
                                      , name_suffix = codes_col_name_suffix
-                                     , placement = "append_to_x"
+                                     , output = "append_to_x"
                                      , return_null_for_new_col = TRUE)
           if(!is.null(x_codes_vector)) {
               if(codes_merge_prepend) {
@@ -4587,7 +4587,7 @@ even older
       ## append codes (if prepend allowed it will break target col inference)
       inset_target(x_inset_vector, x
                  , rows = rows
-                 , placement = "append_to_x"
+                 , output = "append_to_x"
                  , name = codes_col_name
                  , name_suffix = codes_col_name_suffix
                  , omitted_rows_values = codes_omitted_rows_value

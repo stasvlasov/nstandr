@@ -79,7 +79,7 @@ detect_patterns <- function(x
                          , rows = NULL
                          , name = codes_col_name
                          , name_suffix = codes_col_name_suffix
-                         , placement = "append_to_x"
+                         , output = "append_to_x"
                          , return_null_for_new_col = TRUE) |>
             harmonize_is_data_empty() |>
             and_rows(rows, x)
@@ -138,7 +138,7 @@ detect_patterns <- function(x
                                    , rows = rows
                                    , name = codes_col_name
                                    , name_suffix = codes_col_name_suffix
-                                   , placement = "append_to_x"
+                                   , output = "append_to_x"
                                    , return_null_for_new_col = TRUE)
         if(!is.null(x_codes_vector)) {
             if(codes_merge_prepend) {
@@ -157,7 +157,7 @@ detect_patterns <- function(x
     ## append codes (if prepend allowed it will break target col inference)
     inset_target(x_inset_vector, x
                , rows = rows
-               , placement = "append_to_x"
+               , output = "append_to_x"
                , name = codes_col_name
                , name_suffix = codes_col_name_suffix
                , omitted_rows_values = codes_omitted_rows_value

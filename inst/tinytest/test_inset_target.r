@@ -18,7 +18,7 @@ expect_equal(
   , c("a", "b", "3", "d", "e"))
 
 
-## test placement
+## test output
 expect_equal(
     inset_target(c("a", "b", "c", "d", "e")
                , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j")))
@@ -27,14 +27,14 @@ expect_equal(
 expect_equal(
     inset_target(c("a", "b", "c", "d", "e")
                , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
-               , placement = "prepend_to_col")
+               , output = "prepend_to_col")
     , data.table(c1_harmonized = c("a", "b", "c", "d", "e"), c1 = c(1, 2, 3, 4, 5), x = c("x", "y", "z", "i", "j")))
 
 
 expect_equal(
     inset_target(c("a", "b", "c", "d", "e")
                , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
-               , placement = "append_to_col")
+               , output = "append_to_col")
   , data.table(c1 = c(1, 2, 3, 4, 5), c1_harmonized = c("a", 
                                                         "b", "c", "d", "e"), x = c("x", "y", "z", "i", "j")))
 
@@ -42,7 +42,7 @@ expect_equal(
 expect_equal(
     inset_target(c("a", "b", "c", "d", "e")
                , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
-               , placement = "append_to_x")
+               , output = "append_to_x")
   , data.table(c1 = c(1, 2, 3, 4, 5), x = c("x", "y", "z", "i", 
                                             "j"), c1_harmonized = c("a", "b", "c", "d", "e")))
 

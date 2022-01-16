@@ -7,8 +7,8 @@
 harmonize_options(
   col = 1,
   rows = NULL,
-  ommitted_rows_values = NULL,
-  placement = "replace_col",
+  omitted_rows_values = NULL,
+  output = "replace_col",
   name = NULL,
   name_for_x_atomic = "x",
   name_suffix = "_harmonized",
@@ -22,9 +22,9 @@ harmonize_options(
 
 \item{rows}{Logical vector to filter records of interest. Default is NULL which means do not filter records.}
 
-\item{ommitted_rows_values}{If \code{rows} parameter is set then merge \code{ommitted_rows_values} with the results (filtered by \code{rows}). Either single string or a character vector of length \code{nrow(x)}. If NULL (the default) then original values of \code{col} are merged with results.}
+\item{omitted_rows_values}{If \code{rows} parameter is set then merge \code{omitted_rows_values} with the results (filtered by \code{rows}). Either single string or a character vector of length \code{nrow(x)}. If NULL (the default) then original values of \code{col} are merged with results.}
 
-\item{placement}{Where to inset retults (harmonized vector) in the \code{x} object. Default options is 'replace_col' which overwrides the \code{col} in \code{x} with results. Other options:
+\item{output}{Where to inset retults (harmonized vector) in the \code{x} object. Default options is 'replace_col' which overwrides the \code{col} in \code{x} with results. Other options:
 \itemize{
 \item 'omit' :: do not write results back to table (usually used when \code{append_copy} is set for temporary values)
 \item 'prepend_to_col' :: prepend to \code{col}

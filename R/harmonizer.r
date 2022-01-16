@@ -524,7 +524,7 @@ defactor_vector <- function(x, check.numeric = FALSE) {
 ##' @param x an object
 ##' @param conv2dt What to convert to data.table
 ##' @param ... 
-##' @inheritDotParams harmonize_defactor_vector
+##' @inheritDotParams defactor_vector
 ##' @return object of the same type without factors
 ##'  
 ##' @import tibble data.table

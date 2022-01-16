@@ -16,8 +16,8 @@ testing_check_arguments <- function(x, ...) {
 }
 
 expect_true(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), name = "c"))
-## bad placement name
-expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), placement = "omitted"))
+## bad output name
+expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), output = "omitted"))
 
 
 testing_check_arguments <- function(x, ...) {

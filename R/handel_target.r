@@ -15,12 +15,12 @@ make_target_name <- function(col, x, name, name_suffix) {
     }
 }
 
-infer_post_inset_col_from_pre_inset_col <- function(col, x, placement) {
+infer_post_inset_col_from_pre_inset_col <- function(col, x, output) {
     if(is.character(col)) {
         which(names(x) %in% col)
     } else {
         switch(
-            placement
+            output
           , replace_col = col
           , append_to_col = col
           , prepend_to_col = col + 1
@@ -29,10 +29,10 @@ infer_post_inset_col_from_pre_inset_col <- function(col, x, placement) {
     }
 }
 
-infer_if_post_inset_col_possible <- function(col, x, placement) {
+infer_if_post_inset_col_possible <- function(col, x, output) {
     col <- get_col_as_number(col, x)
     switch(
-        placement
+        output
       , replace_col = TRUE
       , append_to_col = ifelse(col == ncol(x), FALSE, TRUE)
       , prepend_to_col = ifelse(col == 1, FALSE, TRUE)
@@ -41,10 +41,10 @@ infer_if_post_inset_col_possible <- function(col, x, placement) {
 }
 
 
-infer_moving_target_from_post_inset_col <- function(col, x, placement, as_name = FALSE) {
+infer_moving_target_from_post_inset_col <- function(col, x, output, as_name = FALSE) {
     col <- get_col_as_number(col, x)
     return_col <- switch(
-        placement
+        output
       , replace_col = col
       , append_to_col = col + 1
       , prepend_to_col = col - 1
@@ -59,10 +59,10 @@ infer_moving_target_from_post_inset_col <- function(col, x, placement, as_name =
 
 
 ## this assumes that nothing else was never added...
-infer_moving_target_from_pre_inset_col <- function(col, x, placement, as_name = FALSE) {
+infer_moving_target_from_pre_inset_col <- function(col, x, output, as_name = FALSE) {
     col <- get_col_as_number(col, x)
     return_col <- switch(
-        placement
+        output
       , replace_col = col
       , append_to_col = col + 1
       , prepend_to_col = col
@@ -80,10 +80,10 @@ infer_moving_target_from_names <- function(dots, x
                                          , return_null_for_new_col = FALSE
                                          , return_name_for_new_col = FALSE) {
     with(dots, {
-        if(placement == "replace_col") return(get_col_as_number(col, x))
-        if(infer_if_post_inset_col_possible(col, x, placement)) {
+        if(output == "replace_col") return(get_col_as_number(col, x))
+        if(infer_if_post_inset_col_possible(col, x, output)) {
             target_name_generated <-
-                infer_post_inset_col_from_pre_inset_col(col, x, placement) |>
+                infer_post_inset_col_from_pre_inset_col(col, x, output) |>
                 make_target_name(x, name, name_suffix)
             if(target_name_generated %in% names(x)) {
                 ## case of subsequent calls
@@ -158,8 +158,8 @@ inset_target <- function(vector, x
                        , omitted_rows_values_for_new_col = NULL
                        , allow_na_in_vector = TRUE
                        , which_call_to_report = -5L
-              defactor_vector
-    vector <- harmonize_defactor_vector(vector)
+                       , ...) {
+    vector <- defactor_vector(vector)
     with(dots <- get_harmonize_options(), {
         ## check harmonize_options
         check_harmonize_options(dots, x)
@@ -217,14 +217,14 @@ inset_target <- function(vector, x
         ## -----
         ## inset full vector
         ## -----
-        if(placement != "omit") {
-            if(is.atomic(x) && placement == "replace_col") {
+        if(output != "omit") {
+            if(is.atomic(x) && output == "replace_col") {
                 ## just replace x if it is atomic
                 x <- vector
             } else {
                 x <- defactor(x, conv2dt = "all")
                 width_pre_inset <- x_width(x)
-                col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
+                col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output)
                 col_or_name_if_new <-
                     infer_moving_target_from_names(dots, x, return_name_for_new_col = TRUE)
                 ## fuckin data.table syntax is so cryptic
@@ -232,7 +232,7 @@ inset_target <- function(vector, x
                 ## now if we added new col
                 if(x_width(x) == width_pre_inset + 1) {
                     ## if new col was added place last col into target posision
-                    target <- infer_moving_target_from_post_inset_col(col_post_inset, x, placement)
+                    target <- infer_moving_target_from_post_inset_col(col_post_inset, x, output)
                     cols_nums <-
                         1:width_pre_inset |>
                         append(width_pre_inset + 1, after = target - 1)
@@ -245,7 +245,7 @@ inset_target <- function(vector, x
         ## -----
         if(append_copy) {
             x <- defactor(x, conv2dt = "all")
-            col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, placement)
+            col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output)
             append_copy_name <- format_append_copy(append_copy_name_format, name = names(x)[col_post_inset])
             checkmate::assert_names(append_copy_name, add = assertion_fails)
             report_arg_checks(assertion_fails, which_call_to_report)
