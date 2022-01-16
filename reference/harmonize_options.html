@@ -47,8 +47,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">harmonize_options</span><span class="op">(</span>
   col <span class="op">=</span> <span class="fl">1</span>,
   rows <span class="op">=</span> <span class="cn">NULL</span>,
-  ommitted_rows_values <span class="op">=</span> <span class="cn">NULL</span>,
-  placement <span class="op">=</span> <span class="st">"replace_col"</span>,
+  omitted_rows_values <span class="op">=</span> <span class="cn">NULL</span>,
+  output <span class="op">=</span> <span class="st">"replace_col"</span>,
   name <span class="op">=</span> <span class="cn">NULL</span>,
   name_for_x_atomic <span class="op">=</span> <span class="st">"x"</span>,
   name_suffix <span class="op">=</span> <span class="st">"_harmonized"</span>,
@@ -64,9 +64,9 @@
 <dd><p>Column of interest (the one we need to harmonize) in the <code>x</code> object (if it is data.frame like).</p></dd>
 <dt>rows</dt>
 <dd><p>Logical vector to filter records of interest. Default is NULL which means do not filter records.</p></dd>
-<dt>ommitted_rows_values</dt>
-<dd><p>If <code>rows</code> parameter is set then merge <code>ommitted_rows_values</code> with the results (filtered by <code>rows</code>). Either single string or a character vector of length <code>nrow(x)</code>. If NULL (the default) then original values of <code>col</code> are merged with results.</p></dd>
-<dt>placement</dt>
+<dt>omitted_rows_values</dt>
+<dd><p>If <code>rows</code> parameter is set then merge <code>omitted_rows_values</code> with the results (filtered by <code>rows</code>). Either single string or a character vector of length <code>nrow(x)</code>. If NULL (the default) then original values of <code>col</code> are merged with results.</p></dd>
+<dt>output</dt>
 <dd><p>Where to inset retults (harmonized vector) in the <code>x</code> object. Default options is 'replace_col' which overwrides the <code>col</code> in <code>x</code> with results. Other options:</p><ul><li><p>'omit' :: do not write results back to table (usually used when <code>append_copy</code> is set for temporary values)</p></li>
 <li><p>'prepend_to_col' :: prepend to <code>col</code></p></li>
 <li><p>'append_to_col' :: append to <code>col</code></p></li>

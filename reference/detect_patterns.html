@@ -125,10 +125,10 @@ regex  -  Match regex pattern
     <dt><code>rows</code></dt>
 <dd><p>Logical vector to filter records of interest. Default is NULL which means do not filter records.</p></dd>
 
-    <dt><code>ommitted_rows_values</code></dt>
-<dd><p>If <code>rows</code> parameter is set then merge <code>ommitted_rows_values</code> with the results (filtered by <code>rows</code>). Either single string or a character vector of length <code>nrow(x)</code>. If NULL (the default) then original values of <code>col</code> are merged with results.</p></dd>
+    <dt><code>omitted_rows_values</code></dt>
+<dd><p>If <code>rows</code> parameter is set then merge <code>omitted_rows_values</code> with the results (filtered by <code>rows</code>). Either single string or a character vector of length <code>nrow(x)</code>. If NULL (the default) then original values of <code>col</code> are merged with results.</p></dd>
 
-    <dt><code>placement</code></dt>
+    <dt><code>output</code></dt>
 <dd><p>Where to inset retults (harmonized vector) in the <code>x</code> object. Default options is 'replace_col' which overwrides the <code>col</code> in <code>x</code> with results. Other options:</p><ul><li><p>'omit' :: do not write results back to table (usually used when <code>append_copy</code> is set for temporary values)</p></li>
 <li><p>'prepend_to_col' :: prepend to <code>col</code></p></li>
 <li><p>'append_to_col' :: append to <code>col</code></p></li>

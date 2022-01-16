@@ -82,6 +82,12 @@
     <loc>/reference/cockburn.replace.univ.html</loc>
   </url>
   <url>
+    <loc>/reference/defactor.html</loc>
+  </url>
+  <url>
+    <loc>/reference/defactor_vector.html</loc>
+  </url>
+  <url>
     <loc>/reference/detect_patterns.html</loc>
   </url>
   <url>
@@ -164,12 +170,6 @@
   </url>
   <url>
     <loc>/reference/harmonize_data_width.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_defactor.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_defactor_vector.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize_is_data_empty.html</loc>
