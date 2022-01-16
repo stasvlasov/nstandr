@@ -59,11 +59,19 @@
     <dl><dt>vector</dt>
 <dd><p>Character vector to inset into the <code>x</code> object</p></dd>
 <dt>x</dt>
-<dd><p>Data to harmonize. Character vector or data.frame or data.table</p></dd>
+<dd><p>Data to harmonize. Character vector or data.frame or
+data.table</p></dd>
 <dt>omitted_rows_values_for_new_col</dt>
-<dd></dd>
+<dd><p>Alternative value
+<code>omitted_rows_values</code> to use in case we create new column in
+x. For example, it is use in insetting codes to avoid the
+default <code>omitted_rows_values</code> use initial <code>col</code> in which case
+codes will be mixed with input values</p></dd>
 <dt>allow_na_in_vector</dt>
-<dd></dd>
+<dd><p>Whether to allow NA in inset vector</p></dd>
+<dt>which_call_to_report</dt>
+<dd><p>System call number (e.g., -2L) to
+include in report if arguments checks fails</p></dd>
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="harmonize_options.html">harmonize_options</a></code></p><dl><dt><code>col</code></dt>
 <dd><p>Column of interest (the one we need to harmonize) in the <code>x</code> object (if it is data.frame like).</p></dd>

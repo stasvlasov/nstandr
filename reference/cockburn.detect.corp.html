@@ -51,6 +51,10 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>vector or table</p></dd>
+<dt>codes.name</dt>
+<dd></dd>
+<dt>x.codes.merge</dt>
+<dd></dd>
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="harmonize.detect.html">harmonize.detect</a></code></p><dl><dt><code>patterns</code></dt>
 <dd><p>Accepts both vector or table. If patterns it is table can also include replacements column.</p></dd>
@@ -73,9 +77,6 @@
     <dt><code>codes</code></dt>
 <dd><p>If provided use it as codes. Should be the same length as patterns. Default is NULL.</p></dd>
 
-    <dt><code>codes.name</code></dt>
-<dd><p>If provided use it as a name for codes column in results. It also will work as <code>x.codes.col</code> if <code>x.codes.merge</code> or <code>x.codes.update.empyty</code> are set. In case if <code>x.codes.merge</code> or <code>x.codes.update.empyty</code> are set and names(<code>x</code>) does not have column name <code>codes.name</code> it will reset both <code>x.codes.merge</code> and <code>x.codes.update.empyty</code> to FALSE and will (pre)append a new column <code>codes.name</code>.</p></dd>
-
     <dt><code>codes.suffix</code></dt>
 <dd><p>If <code>codes.name</code> is not provided use this suffix to append to <code>x.col</code> name or <code>x.atomic.name</code> if x is vector (see harmonize.x function).</p></dd>
 
@@ -90,9 +91,6 @@
 
     <dt><code>x.codes.update.empty</code></dt>
 <dd><p>If set then detect and add new codes only for records (rows) that were not yet coded (i.e., related codes are either "", NA or length == 0).</p></dd>
-
-    <dt><code>x.codes.merge</code></dt>
-<dd><p>If set then merge (append or prepend) new codes to existing ones. It might turn the codes column to list of vectors.</p></dd>
 
     <dt><code>x.codes.merge.prepend</code></dt>
 <dd><p>If set then it will prepend new codes if not then it will append (default). It is ignored if <code>x.codes.merge</code> is not set.</p></dd>
