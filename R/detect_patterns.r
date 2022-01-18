@@ -66,7 +66,7 @@ detect_patterns <- function(x
                            , return_only_first_detected_code = FALSE
                            , ...) {
     ## check some arguments that are not checked elsewhere
-    checkmate::assert_string(no_match_code, null.ok = TRUE, na.ok = TRUE)
+    checkmate::assert_atomic(no_match_code, min.len = 0, max.len = 1)
     checkmate::assert_flag(codes_update_empty)
     checkmate::assert_flag(codes_merge)
     checkmate::assert_flag(codes_merge_prepend)
@@ -75,12 +75,13 @@ detect_patterns <- function(x
     ## set rows and excule those that coded
     rows <- get_col_and_rows()$rows
     if(codes_update_empty) {
-        rows <- get_target(x
-                         , rows = NULL
-                         , name = codes_col_name
-                         , name_suffix = codes_col_name_suffix
-                         , output = "append_to_x"
-                         , return_null_for_new_col = TRUE) |>
+        existent_codes <- get_target(x
+                                   , rows = NULL
+                                   , name = codes_col_name
+                                   , name_suffix = codes_col_name_suffix
+                                   , output = "append_to_x"
+                                   , return_null_for_new_col = TRUE)
+        rows <- existent_codes |>
             harmonize_is_data_empty() |>
             and_rows(rows, x)
     }

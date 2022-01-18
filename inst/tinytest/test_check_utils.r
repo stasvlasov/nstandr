@@ -12,11 +12,10 @@ expect_error(fun(list("5"), c("1" = "1","3" = 5)))
 expect_error(fun("5", c("1" = "1","3" = 5)))
 expect_error(fun(4, c("1" = "1","3" = 5)))
 expect_error(fun(c(1,2), c("1" = "1","3" = 5)))
-expect_equal(fun(2, c("1" = "1","3" = 5)), "5")
+expect_equal(fun(1, c("1" = "1","3" = 5)), "1")
 
-
-
-
+expect_error(fun(3, data.frame(a = 1, b = 2)))
+expect_equal(fun(2, data.frame(a = 1, b = 2)), 2)
 
 ## test rows check
 check_rows <- harmonizer:::check_rows

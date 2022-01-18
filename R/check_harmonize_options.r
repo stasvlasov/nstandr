@@ -39,7 +39,7 @@ check_col <- function(col, x
     } else if(is.numeric(col)) {
         checkmate::assert_int(col
                             , lower = 1
-                            , upper = x_length(x)
+                            , upper = x_width(x)
                             , na.ok = missing_ok
                             , null.ok = null_ok
                             , add = assertion_fails)

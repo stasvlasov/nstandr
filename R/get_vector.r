@@ -56,15 +56,18 @@ get_vector <- function(x, col
         ## get fallback vector
         if (fallback_value_ensure_length &&
             length(fallback_value) == 1) {
-            checkmate::assert_string(fallback_value
-                                   , na.ok = fallback_value_any_missing
-                                   , add = assertion_fails)
+            checkmate::assert_atomic_vector(
+                           fallback_value
+                         , any.missing = fallback_value_any_missing
+                         , len = 1
+                         , add = assertion_fails)
             v <- rep(fallback_value, x_length(x))
         } else {
-            checkmate::assert_character(fallback_value
-                                      , any.missing = fallback_value_any_missing
-                                      , len = x_length(x)
-                                      , add = assertion_fails)
+            checkmate::assert_atomic_vector(
+                           fallback_value
+                         , any.missing = fallback_value_any_missing
+                         , len = x_length(x)
+                         , add = assertion_fails)
             v <- fallback_value
         }
     } else {

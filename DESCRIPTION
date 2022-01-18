@@ -1,21 +1,21 @@
 Package: harmonizer
 Title: Harmonization of Organizational Names
-Version: 0.3
-Date: 2022-01-16
+Version: 0.4
+Date: 2022-01-17
 Authors@R: 
     person("Stanislav", "Vlasov", , "s.vlasov@uvt.nl", role = c("aut", "cre"))
 Description: Harmonizes organizational names using steps described in
     Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more.
 License: MIT License
 Depends: 
-    R (>= 3.4)
+    R (>= 3.5.0)
 Imports: 
     checkmate (>= 2.0.0),
-    data.table (>= 1.12),
-    magrittr (>= 1.5),
-    stringi (>= 1.4),
-    stringr (>= 1.4),
-    xml2 (>= 1.0)
+    data.table (>= 1.13.0),
+    magrittr (>= 1.5.0),
+    stringi (>= 1.6.0),
+    stringr (>= 1.4.0),
+    xml2 (>= 1.0.0)
 Suggests: 
     fastmatch,
     tinytest

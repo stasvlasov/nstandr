@@ -34,9 +34,9 @@ infer_if_post_inset_col_possible <- function(col, x, output) {
     switch(
         output
       , replace_col = TRUE
-      , append_to_col = ifelse(col == ncol(x), FALSE, TRUE)
+      , append_to_col = ifelse(col == x_width(x), FALSE, TRUE)
       , prepend_to_col = ifelse(col == 1, FALSE, TRUE)
-      , append_to_x = ifelse(col == ncol(x), FALSE, TRUE)
+      , append_to_x = ifelse(col == x_width(x), FALSE, TRUE)
       , prepend_to_x = ifelse(col == 1, FALSE, TRUE))
 }
 
@@ -48,7 +48,7 @@ infer_moving_target_from_post_inset_col <- function(col, x, output, as_name = FA
       , replace_col = col
       , append_to_col = col + 1
       , prepend_to_col = col - 1
-      , append_to_x = ncol(x)
+      , append_to_x = x_width(x)
       , prepend_to_x = 1)
     if(as_name) {
         names(x)(return_col)
@@ -66,7 +66,7 @@ infer_moving_target_from_pre_inset_col <- function(col, x, output, as_name = FAL
       , replace_col = col
       , append_to_col = col + 1
       , prepend_to_col = col
-      , append_to_x = ncol(x)
+      , append_to_x = x_width(x)
       , prepend_to_x = 1)
     if(as_name) {
         names(x)(return_col)

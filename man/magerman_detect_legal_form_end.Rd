@@ -4,31 +4,43 @@
 \alias{magerman_detect_legal_form_end}
 \title{Detects legal form}
 \usage{
-magerman_detect_legal_form_end(x, ...)
+magerman_detect_legal_form_end(
+  x,
+  return_only_codes = FALSE,
+  patterns_codes = NULL,
+  no_match_code = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{table}
 
+\item{return_only_codes}{same as in \code{detect_patterns}}
+
+\item{patterns_codes}{same as in \code{detect_patterns}}
+
+\item{no_match_code}{same as in \code{detect_patterns}}
+
 \item{...}{
-  Arguments passed on to \code{\link[=harmonize.detect]{harmonize.detect}}
+  Arguments passed on to \code{\link[=harmonize_options]{harmonize_options}}
   \describe{
-    \item{\code{patterns}}{Accepts both vector or table. If patterns it is table can also include replacements column.}
-    \item{\code{patterns.col}}{If patterns is not a vector specifies which column to use. Default is 1.}
-    \item{\code{patterns.as.codes}}{If set then use patterns as codes. In that case codes are ignored and there is no need to provide them. Default is FALSE.}
-    \item{\code{patterns.codes.col}}{If patterns is table which column to use as codes column. Default is 2.}
-    \item{\code{patterns.type}}{Specifies kind(s) of patterns. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are "begins", "ends" - which means that it should only match fixed pattern at the beginning of the string or at the and. Another possible value is "regex" (calling code{\link[stringi]{stri_replace_all_regex}}). Another possible options are "exact" and "trim.exact" which matches a pattern string exactly or its trimmed version (i.e., white spaces are ignored at the beginning and at the end of the pattern)}
-    \item{\code{patterns.type.col}}{Column in patterns table where you can specify types of patterns for each pattern. If set then \code{patterns.type} is ignored. Default is NULL}
-    \item{\code{codes}}{If provided use it as codes. Should be the same length as patterns. Default is NULL.}
-    \item{\code{codes.name}}{If provided use it as a name for codes column in results. It also will work as \code{x.codes.col} if \code{x.codes.merge} or \code{x.codes.update.empyty} are set. In case if \code{x.codes.merge} or \code{x.codes.update.empyty} are set and names(\code{x}) does not have column name \code{codes.name} it will reset both \code{x.codes.merge} and \code{x.codes.update.empyty} to FALSE and will (pre)append a new column \code{codes.name}.}
-    \item{\code{codes.suffix}}{If \code{codes.name} is not provided use this suffix to append to \code{x.col} name or \code{x.atomic.name} if x is vector (see harmonize.x function).}
-    \item{\code{codes.omitted.val}}{If \code{x.rows} is set. Use this value to fill the omitted rows. Default is vector of NAs of \code{x} length. When we update existing codes column (i.e., \code{x.codes.col} is set and valid) and the value is not set explicitly it resets to NULL which means that we use initial values for omitted rows.}
-    \item{\code{codes.prepend}}{Whether to prepend codes column to the \code{x}. Default is FALSE. If set it will prepend codes column to \code{x} instead of append.}
-    \item{\code{x.codes.col}}{If \code{x} is table, which column to use for making/merging/adding newly detected codes. Default is NULL. When it is not set explicitly and \code{x.codes.merge} or \code{x.codes.update.empty} are set it will first try to use \code{codes.name} if it is provided or if not will set the last column of \code{x} as \code{x.codes.col}.}
-    \item{\code{x.codes.update.empty}}{If set then detect and add new codes only for records (rows) that were not yet coded (i.e., related codes are either "", NA or length == 0).}
-    \item{\code{x.codes.merge}}{If set then merge (append or prepend) new codes to existing ones. It might turn the codes column to list of vectors.}
-    \item{\code{x.codes.merge.prepend}}{If set then it will prepend new codes if not then it will append (default). It is ignored if \code{x.codes.merge} is not set.}
-    \item{\code{return.only.codes}}{If set then just return codes vector. Default is FALSE. Basically when it is set it changes \code{return.x.cols} to 0.}
-    \item{\code{return.only.first.detected.code}}{If TRUE then return only codes for the first detected pattern. If FALSE return list of vectors of all matched codes. Default is TRUE.}
+    \item{\code{col}}{Column of interest (the one we need to harmonize) in the \code{x} object (if it is data.frame like).}
+    \item{\code{rows}}{Logical vector to filter records of interest. Default is NULL which means do not filter records.}
+    \item{\code{omitted_rows_values}}{If \code{rows} parameter is set then merge \code{omitted_rows_values} with the results (filtered by \code{rows}). Either single string or a character vector of length \code{nrow(x)}. If NULL (the default) then original values of \code{col} are merged with results.}
+    \item{\code{output}}{Where to inset retults (harmonized vector) in the \code{x} object. Default options is 'replace_col' which overwrides the \code{col} in \code{x} with results. Other options:
+\itemize{
+\item 'omit' :: do not write results back to table (usually used when \code{append_copy} is set for temporary values)
+\item 'prepend_to_col' :: prepend to \code{col}
+\item 'append_to_col' :: append to \code{col}
+\item 'prepend_to_x' :: prepend to \code{x} data.frame like object
+\item 'append_to_x' :: append to \code{x} data.frame like object
+}}
+    \item{\code{name}}{Use this name for the column with results (harmonized values). Default is NA, which means that either \code{name_for_x_atomic} if \code{x} is vector or original col name will be used with \code{name_suffix} at the end.}
+    \item{\code{name_for_x_atomic}}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
+    \item{\code{name_suffix}}{If \code{name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in \code{select_x_cols} it will add counter at the end to avoid variables with the same names.}
+    \item{\code{append_copy}}{Whether to append a copy of result vector to \code{x} object}
+    \item{\code{append_copy_name_format}}{How the append copy wiil be named}
+    \item{\code{select_cols}}{If x` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).}
   }}
 }
 \value{
