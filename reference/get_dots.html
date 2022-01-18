@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">harmonizer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4</span>
       </span>
     </div>
 
@@ -53,7 +53,8 @@
   search_up_nframes <span class="op">=</span> <span class="fl">1L</span>,
   search_up_to_call <span class="op">=</span> <span class="cn">NULL</span>,
   skip_checks_for_parent_call <span class="op">=</span> <span class="cn">TRUE</span>,
-  eval_default_args <span class="op">=</span> <span class="cn">FALSE</span>
+  eval_default_args <span class="op">=</span> <span class="cn">FALSE</span>,
+  return_unlisted_if_single_arg <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -77,6 +78,8 @@
 <dd><p>Whether to skip checking <code>search_while_calls_have_formals</code> <code>search_while_calls_belong_to_env</code> <code>search_while_calls_regexp</code></p></dd>
 <dt>eval_default_args</dt>
 <dd><p>Whether to evaluate default arguments. Default is do not evaluate (FALSE) assuming that all argument are simple values (i.e., evaluates to itself)</p></dd>
+<dt>return_unlisted_if_single_arg</dt>
+<dd><p>Toggle wether unlist when returning a single argument. Default is TRUE</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>

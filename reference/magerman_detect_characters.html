@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">harmonizer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4</span>
       </span>
     </div>
 
@@ -46,7 +46,7 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">magerman_detect_characters</span><span class="op">(</span>
   <span class="va">x</span>,
-  codes.name <span class="op">=</span> <span class="st">"characters.cleaning.candidates"</span>,
+  codes_col_name <span class="op">=</span> <span class="st">"characters_cleaning_candidates"</span>,
   <span class="va">...</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -55,57 +55,43 @@
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>table</p></dd>
+<dt>codes_col_name</dt>
+<dd><p>Same as in <code>detect_patterns</code></p></dd>
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="harmonize.detect.html">harmonize.detect</a></code></p><dl><dt><code>patterns</code></dt>
-<dd><p>Accepts both vector or table. If patterns it is table can also include replacements column.</p></dd>
+<dd><p>Arguments passed on to <code><a href="harmonize_options.html">harmonize_options</a></code></p><dl><dt><code>col</code></dt>
+<dd><p>Column of interest (the one we need to harmonize) in the <code>x</code> object (if it is data.frame like).</p></dd>
 
-    <dt><code>patterns.col</code></dt>
-<dd><p>If patterns is not a vector specifies which column to use. Default is 1.</p></dd>
+    <dt><code>rows</code></dt>
+<dd><p>Logical vector to filter records of interest. Default is NULL which means do not filter records.</p></dd>
 
-    <dt><code>patterns.as.codes</code></dt>
-<dd><p>If set then use patterns as codes. In that case codes are ignored and there is no need to provide them. Default is FALSE.</p></dd>
+    <dt><code>omitted_rows_values</code></dt>
+<dd><p>If <code>rows</code> parameter is set then merge <code>omitted_rows_values</code> with the results (filtered by <code>rows</code>). Either single string or a character vector of length <code>nrow(x)</code>. If NULL (the default) then original values of <code>col</code> are merged with results.</p></dd>
 
-    <dt><code>patterns.codes.col</code></dt>
-<dd><p>If patterns is table which column to use as codes column. Default is 2.</p></dd>
+    <dt><code>output</code></dt>
+<dd><p>Where to inset retults (harmonized vector) in the <code>x</code> object. Default options is 'replace_col' which overwrides the <code>col</code> in <code>x</code> with results. Other options:</p><ul><li><p>'omit' :: do not write results back to table (usually used when <code>append_copy</code> is set for temporary values)</p></li>
+<li><p>'prepend_to_col' :: prepend to <code>col</code></p></li>
+<li><p>'append_to_col' :: append to <code>col</code></p></li>
+<li><p>'prepend_to_x' :: prepend to <code>x</code> data.frame like object</p></li>
+<li><p>'append_to_x' :: append to <code>x</code> data.frame like object</p></li>
+</ul></dd>
 
-    <dt><code>patterns.type</code></dt>
-<dd><p>Specifies kind(s) of patterns. Default is "fixed" (calling code<a href="https://rdrr.io/pkg/stringi/man/stri_replace.html" class="external-link">stri_replace_all_fixed</a>). Other options are "begins", "ends" - which means that it should only match fixed pattern at the beginning of the string or at the and. Another possible value is "regex" (calling code<a href="https://rdrr.io/pkg/stringi/man/stri_replace.html" class="external-link">stri_replace_all_regex</a>). Another possible options are "exact" and "trim.exact" which matches a pattern string exactly or its trimmed version (i.e., white spaces are ignored at the beginning and at the end of the pattern)</p></dd>
+    <dt><code>name</code></dt>
+<dd><p>Use this name for the column with results (harmonized values). Default is NA, which means that either <code>name_for_x_atomic</code> if <code>x</code> is vector or original col name will be used with <code>name_suffix</code> at the end.</p></dd>
 
-    <dt><code>patterns.type.col</code></dt>
-<dd><p>Column in patterns table where you can specify types of patterns for each pattern. If set then <code>patterns.type</code> is ignored. Default is NULL</p></dd>
+    <dt><code>name_for_x_atomic</code></dt>
+<dd><p>If <code>x</code> is vector use this name for original column if it is in results. Default is "x". If <code>x</code> is table the name of <code>col</code> will be used.</p></dd>
 
-    <dt><code>codes</code></dt>
-<dd><p>If provided use it as codes. Should be the same length as patterns. Default is NULL.</p></dd>
+    <dt><code>name_suffix</code></dt>
+<dd><p>If <code>name</code> is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in <code>select_x_cols</code> it will add counter at the end to avoid variables with the same names.</p></dd>
 
-    <dt><code>codes.name</code></dt>
-<dd><p>If provided use it as a name for codes column in results. It also will work as <code>x.codes.col</code> if <code>x.codes.merge</code> or <code>x.codes.update.empyty</code> are set. In case if <code>x.codes.merge</code> or <code>x.codes.update.empyty</code> are set and names(<code>x</code>) does not have column name <code>codes.name</code> it will reset both <code>x.codes.merge</code> and <code>x.codes.update.empyty</code> to FALSE and will (pre)append a new column <code>codes.name</code>.</p></dd>
+    <dt><code>append_copy</code></dt>
+<dd><p>Whether to append a copy of result vector to <code>x</code> object</p></dd>
 
-    <dt><code>codes.suffix</code></dt>
-<dd><p>If <code>codes.name</code> is not provided use this suffix to append to <code>x.col</code> name or <code>x.atomic.name</code> if x is vector (see harmonize.x function).</p></dd>
+    <dt><code>append_copy_name_format</code></dt>
+<dd><p>How the append copy wiil be named</p></dd>
 
-    <dt><code>codes.omitted.val</code></dt>
-<dd><p>If <code>x.rows</code> is set. Use this value to fill the omitted rows. Default is vector of NAs of <code>x</code> length. When we update existing codes column (i.e., <code>x.codes.col</code> is set and valid) and the value is not set explicitly it resets to NULL which means that we use initial values for omitted rows.</p></dd>
-
-    <dt><code>codes.prepend</code></dt>
-<dd><p>Whether to prepend codes column to the <code>x</code>. Default is FALSE. If set it will prepend codes column to <code>x</code> instead of append.</p></dd>
-
-    <dt><code>x.codes.col</code></dt>
-<dd><p>If <code>x</code> is table, which column to use for making/merging/adding newly detected codes. Default is NULL. When it is not set explicitly and <code>x.codes.merge</code> or <code>x.codes.update.empty</code> are set it will first try to use <code>codes.name</code> if it is provided or if not will set the last column of <code>x</code> as <code>x.codes.col</code>.</p></dd>
-
-    <dt><code>x.codes.update.empty</code></dt>
-<dd><p>If set then detect and add new codes only for records (rows) that were not yet coded (i.e., related codes are either "", NA or length == 0).</p></dd>
-
-    <dt><code>x.codes.merge</code></dt>
-<dd><p>If set then merge (append or prepend) new codes to existing ones. It might turn the codes column to list of vectors.</p></dd>
-
-    <dt><code>x.codes.merge.prepend</code></dt>
-<dd><p>If set then it will prepend new codes if not then it will append (default). It is ignored if <code>x.codes.merge</code> is not set.</p></dd>
-
-    <dt><code>return.only.codes</code></dt>
-<dd><p>If set then just return codes vector. Default is FALSE. Basically when it is set it changes <code>return.x.cols</code> to 0.</p></dd>
-
-    <dt><code>return.only.first.detected.code</code></dt>
-<dd><p>If TRUE then return only codes for the first detected pattern. If FALSE return list of vectors of all matched codes. Default is TRUE.</p></dd>
+    <dt><code>select_cols</code></dt>
+<dd><p>If x` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).</p></dd>
 
   
 </dl></dd>

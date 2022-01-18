@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">harmonizer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4</span>
       </span>
     </div>
 
@@ -52,56 +52,50 @@
     <dl><dt>x</dt>
 <dd><p>table</p></dd>
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="harmonize.detect.html">harmonize.detect</a></code></p><dl><dt><code>patterns</code></dt>
+<dd><p>Arguments passed on to <code><a href="detect_patterns.html">detect_patterns</a></code></p><dl><dt><code>patterns</code></dt>
 <dd><p>Accepts both vector or table. If patterns it is table can also include replacements column.</p></dd>
 
-    <dt><code>patterns.col</code></dt>
-<dd><p>If patterns is not a vector specifies which column to use. Default is 1.</p></dd>
+    <dt><code>patterns_col</code></dt>
+<dd><p>If patterns is a table this specifies which column to use. Default is 1.</p></dd>
 
-    <dt><code>patterns.as.codes</code></dt>
-<dd><p>If set then use patterns as codes. In that case codes are ignored and there is no need to provide them. Default is FALSE.</p></dd>
-
-    <dt><code>patterns.codes.col</code></dt>
+    <dt><code>patterns_codes_col</code></dt>
 <dd><p>If patterns is table which column to use as codes column. Default is 2.</p></dd>
 
-    <dt><code>patterns.type</code></dt>
-<dd><p>Specifies kind(s) of patterns. Default is "fixed" (calling code<a href="https://rdrr.io/pkg/stringi/man/stri_replace.html" class="external-link">stri_replace_all_fixed</a>). Other options are "begins", "ends" - which means that it should only match fixed pattern at the beginning of the string or at the and. Another possible value is "regex" (calling code<a href="https://rdrr.io/pkg/stringi/man/stri_replace.html" class="external-link">stri_replace_all_regex</a>). Another possible options are "exact" and "trim.exact" which matches a pattern string exactly or its trimmed version (i.e., white spaces are ignored at the beginning and at the end of the pattern)</p></dd>
+    <dt><code>patterns_type</code></dt>
+<dd><p>Specifies kind(s) of patterns. Default is "fixed" (calling code<a href="https://rdrr.io/pkg/stringi/man/stri_replace.html" class="external-link">stri_replace_all_fixed</a>). Other options are:</p></dd>
 
-    <dt><code>patterns.type.col</code></dt>
-<dd><p>Column in patterns table where you can specify types of patterns for each pattern. If set then <code>patterns.type</code> is ignored. Default is NULL</p></dd>
+    <dt><code>patterns_type_col</code></dt>
+<dd><p>Column in patterns table where you can specify types of patterns for each pattern. If set then <code>patterns.type</code> is ignored. Default is NULL.</p></dd>
 
-    <dt><code>codes</code></dt>
+    <dt><code>patterns_codes</code></dt>
 <dd><p>If provided use it as codes. Should be the same length as patterns. Default is NULL.</p></dd>
 
-    <dt><code>codes.name</code></dt>
-<dd><p>If provided use it as a name for codes column in results. It also will work as <code>x.codes.col</code> if <code>x.codes.merge</code> or <code>x.codes.update.empyty</code> are set. In case if <code>x.codes.merge</code> or <code>x.codes.update.empyty</code> are set and names(<code>x</code>) does not have column name <code>codes.name</code> it will reset both <code>x.codes.merge</code> and <code>x.codes.update.empyty</code> to FALSE and will (pre)append a new column <code>codes.name</code>.</p></dd>
+    <dt><code>codes_col_name</code></dt>
+<dd><p>If provided use it as a name for codes column (new if it does not exist or the one to update) in results.</p></dd>
 
-    <dt><code>codes.suffix</code></dt>
-<dd><p>If <code>codes.name</code> is not provided use this suffix to append to <code>x.col</code> name or <code>x.atomic.name</code> if x is vector (see harmonize.x function).</p></dd>
+    <dt><code>codes_col_name_suffix</code></dt>
+<dd><p>If <code>codes_col_name</code> is not provided use this suffix to append to <code>col</code> name or <code>x_atomic_name</code>  (see<code>harmonize_options</code>).</p></dd>
 
-    <dt><code>codes.omitted.val</code></dt>
-<dd><p>If <code>x.rows</code> is set. Use this value to fill the omitted rows. Default is vector of NAs of <code>x</code> length. When we update existing codes column (i.e., <code>x.codes.col</code> is set and valid) and the value is not set explicitly it resets to NULL which means that we use initial values for omitted rows.</p></dd>
+    <dt><code>codes_omitted_rows_value</code></dt>
+<dd><p>If <code>rows</code> is set. Use this value to fill the omitted rows. When we update existing codes column Default is NULL which means that we use initial codes values for omitted rows. If there is no codes col to update omited rows will be filled with NA.</p></dd>
 
-    <dt><code>codes.prepend</code></dt>
-<dd><p>Whether to prepend codes column to the <code>x</code>. Default is FALSE. If set it will prepend codes column to <code>x</code> instead of append.</p></dd>
+    <dt><code>no_match_code</code></dt>
+<dd><p>If provided code records that did not get any match with it.</p></dd>
 
-    <dt><code>x.codes.col</code></dt>
-<dd><p>If <code>x</code> is table, which column to use for making/merging/adding newly detected codes. Default is NULL. When it is not set explicitly and <code>x.codes.merge</code> or <code>x.codes.update.empty</code> are set it will first try to use <code>codes.name</code> if it is provided or if not will set the last column of <code>x</code> as <code>x.codes.col</code>.</p></dd>
+    <dt><code>codes_update_empty</code></dt>
+<dd><p>If toggled on then detect and add new codes only for records (rows) that were not yet coded (i.e., related codes are either "", NA or length == 0).</p></dd>
 
-    <dt><code>x.codes.update.empty</code></dt>
-<dd><p>If set then detect and add new codes only for records (rows) that were not yet coded (i.e., related codes are either "", NA or length == 0).</p></dd>
-
-    <dt><code>x.codes.merge</code></dt>
+    <dt><code>codes_merge</code></dt>
 <dd><p>If set then merge (append or prepend) new codes to existing ones. It might turn the codes column to list of vectors.</p></dd>
 
-    <dt><code>x.codes.merge.prepend</code></dt>
+    <dt><code>codes_merge_prepend</code></dt>
 <dd><p>If set then it will prepend new codes if not then it will append (default). It is ignored if <code>x.codes.merge</code> is not set.</p></dd>
 
-    <dt><code>return.only.codes</code></dt>
-<dd><p>If set then just return codes vector. Default is FALSE. Basically when it is set it changes <code>return.x.cols</code> to 0.</p></dd>
+    <dt><code>return_only_codes</code></dt>
+<dd><p>If toggled on then just return codes vector.</p></dd>
 
-    <dt><code>return.only.first.detected.code</code></dt>
-<dd><p>If TRUE then return only codes for the first detected pattern. If FALSE return list of vectors of all matched codes. Default is TRUE.</p></dd>
+    <dt><code>return_only_first_detected_code</code></dt>
+<dd><p>If TRUE then return only codes for the first detected pattern. If FALSE return list of all matched codes. Default is TRUE. (Currently does affect performance)</p></dd>
 
   
 </dl></dd>
