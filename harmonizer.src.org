@@ -2474,8 +2474,8 @@ Tests:
 
   testing_check_arguments <- function(x, ...) {
       dots <- get_dots(harmonize_options
-                     , search_while_calls_have_formals = c("x", "...")
-                     , search_up_nframes = 5L
+                     , search_calls_with_formals = c("x", "...")
+                     , search_depth = 5L
                      , search_up_to_call = c("harmonize", "harmonizer::harmonize"))
       check_harmonize_options(dots, x)
       return(TRUE)
@@ -2488,8 +2488,8 @@ Tests:
 
   testing_check_arguments <- function(x, ...) {
       dots <- get_dots(harmonize_options
-                     , search_while_calls_have_formals = c("x", "...")
-                     , search_up_nframes = 5L
+                     , search_calls_with_formals = c("x", "...")
+                     , search_depth = 5L
                      , search_up_to_call = c("harmonize", "harmonizer::harmonize"))
       check_harmonize_options(dots, x
                             , check_name_duplicates = TRUE)
@@ -2639,8 +2639,8 @@ Tests:
   get_harmonize_options <- function() {
       evalq({
           get_dots(harmonize_options
-                 , search_while_calls_have_formals = c("x", "...")
-                 , search_up_nframes = 50L
+                 , search_calls_with_formals = c("x", "...")
+                 , search_depth = 500L
                  , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                  , skip_checks_for_parent_call = FALSE)
       }, envir = parent.frame())
@@ -2651,8 +2651,8 @@ Tests:
       evalq({
           get_dots(harmonize_options
                  , select_args = c("col", "rows")
-                 , search_while_calls_have_formals = c("x", "...")
-                 , search_up_nframes = 5L
+                 , search_calls_with_formals = c("x", "...")
+                 , search_depth = 500L
                  , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                  , skip_checks_for_parent_call = FALSE)
       }, envir = parent.frame())
@@ -2666,15 +2666,15 @@ Tests:
   ## I do not test get_harmonize_options directly (and I will not use it in general) because it referes to the parent environment where internal functions are unknown
 
   expect_equal(harmonizer:::get_dots(harmonize_options
-                                   , search_while_calls_have_formals = c("x", "...")
-                                   , search_up_nframes = 5L
+                                   , search_calls_with_formals = c("x", "...")
+                                   , search_depth = 5L
                                    , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                                    , skip_checks_for_parent_call = FALSE)
              , as.list(formals("harmonize_options")))
 
   harmonize_test <- function (x, ...) harmonizer:::get_dots(harmonize_options
-                                                          , search_while_calls_have_formals = c("x", "...")
-                                                          , search_up_nframes = 5L
+                                                          , search_calls_with_formals = c("x", "...")
+                                                          , search_depth = 5L
                                                           , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                                                           , skip_checks_for_parent_call = FALSE)
 
@@ -2683,8 +2683,8 @@ Tests:
   expect_equal(harmonize_test(col = 2)$col, 2)
 
   harmonize_test <- \(x, col = 2, ...) harmonizer:::get_dots(harmonize_options
-                                   , search_while_calls_have_formals = c("x", "...")
-                                   , search_up_nframes = 5L
+                                   , search_calls_with_formals = c("x", "...")
+                                   , search_depth = 5L
                                    , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                                    , skip_checks_for_parent_call = FALSE)
 
@@ -2695,16 +2695,16 @@ Tests:
 
   ## should not update defauls (with skip_checks_for_parent_call = TRUE)
   harmonize_test_1 <- \() harmonizer:::get_dots(harmonize_options
-                                   , search_while_calls_have_formals = c("x", "...")
-                                   , search_up_nframes = 5L
+                                   , search_calls_with_formals = c("x", "...")
+                                   , search_depth = 5L
                                    , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                                    , skip_checks_for_parent_call = FALSE)
   harmonize_test_2 <- \(x, col = 123) harmonize_test_1()
   expect_equal(harmonize_test_2()$col, 1)
 
   harmonize_test_1 <- \() harmonizer:::get_dots(harmonize_options
-                                   , search_while_calls_have_formals = c("x", "...")
-                                   , search_up_nframes = 5L
+                                   , search_calls_with_formals = c("x", "...")
+                                   , search_depth = 5L
                                    , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                                    , skip_checks_for_parent_call = FALSE)
   harmonize_test_2 <- \(col = 123, ...) harmonize_test_1()
@@ -2713,15 +2713,15 @@ Tests:
 
   ## should not update defauls (with skip_checks_for_parent_call = FALSE)
   harmonize_test <- \(x, col = 123) harmonizer:::get_dots(harmonize_options
-                                   , search_while_calls_have_formals = c("x", "...")
-                                   , search_up_nframes = 5L
+                                   , search_calls_with_formals = c("x", "...")
+                                   , search_depth = 5L
                                    , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                                    , skip_checks_for_parent_call = FALSE)
   expect_equal(harmonize_test()$col, 1)
 
   harmonize_test <- \(col = 123, ...) harmonizer:::get_dots(harmonize_options
-                                   , search_while_calls_have_formals = c("x", "...")
-                                   , search_up_nframes = 5L
+                                   , search_calls_with_formals = c("x", "...")
+                                   , search_depth = 5L
                                    , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                                    , skip_checks_for_parent_call = FALSE)
   expect_equal(harmonize_test()$col, 1)
@@ -2732,8 +2732,8 @@ Tests:
   ## should update defauls
   harmonize_test <- \(x, col = 123, ...) {
       harmonize_ <- \(x, ...) harmonizer:::get_dots(harmonize_options
-                                   , search_while_calls_have_formals = c("x", "...")
-                                   , search_up_nframes = 5L
+                                   , search_calls_with_formals = c("x", "...")
+                                   , search_depth = 5L
                                    , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                                    , skip_checks_for_parent_call = FALSE)
       harmonize_() 
@@ -2743,8 +2743,8 @@ Tests:
   ## should not update defauls
   harmonize_test <- \(x, col = 123, ...) {
       harmonize <- \(x, ...) harmonizer:::get_dots(harmonize_options
-                                   , search_while_calls_have_formals = c("x", "...")
-                                   , search_up_nframes = 5L
+                                   , search_calls_with_formals = c("x", "...")
+                                   , search_depth = 5L
                                    , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                                    , skip_checks_for_parent_call = FALSE)
       harmonize() 
@@ -2967,9 +2967,10 @@ Tests:
           output
         , replace_col = TRUE
         , append_to_col = ifelse(col == x_width(x), FALSE, TRUE)
-        , prepend_to_col = ifelse(col == 1, FALSE, TRUE)
         , append_to_x = ifelse(col == x_width(x), FALSE, TRUE)
-        , prepend_to_x = ifelse(col == 1, FALSE, TRUE))
+        , prepend_to_x = ifelse(col == 1, FALSE, TRUE)
+        , prepend_to_col = ifelse(col == 1, FALSE, TRUE)
+      )
   }
 
 
@@ -3013,10 +3014,10 @@ Tests:
                                            , return_name_for_new_col = FALSE) {
       with(dots, {
           if(output == "replace_col") return(get_col_as_number(col, x))
-          if(infer_if_post_inset_col_possible(col, x, output)) {
+          col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output)
+          if(infer_if_post_inset_col_possible(col_post_inset, x, output)) {
               target_name_generated <-
-                  infer_post_inset_col_from_pre_inset_col(col, x, output) |>
-                  make_target_name(x, name, name_suffix)
+                  make_target_name(col_post_inset, x, name, name_suffix)
               if(target_name_generated %in% names(x)) {
                   ## case of subsequent calls
                   return(get_col_as_number(target_name_generated, x))
@@ -3168,6 +3169,7 @@ Tests:
                       infer_moving_target_from_names(dots, x, return_name_for_new_col = TRUE)
                   ## fuckin data.table syntax is so cryptic
                   x[, (col_or_name_if_new) := vector]
+                  ## x[[col_or_name_if_new]] <- vector
                   ## now if we added new col
                   if(x_width(x) == width_pre_inset + 1) {
                       ## if new col was added place last col into target posision
@@ -4485,7 +4487,7 @@ even older
                              , codes_col_name_suffix = "_coded"
                              , codes_omitted_rows_value = NULL
                              , no_match_code = NULL
-                             , codes_update_empty = FALSE
+                             , codes_update_empty = TRUE
                              , codes_merge = FALSE
                              , codes_merge_prepend = FALSE
                              , return_only_codes = FALSE
@@ -4501,13 +4503,14 @@ even older
       ## set rows and excule those that coded
       rows <- get_col_and_rows()$rows
       if(codes_update_empty) {
-          existent_codes <- get_target(x
-                                     , rows = NULL
-                                     , name = codes_col_name
-                                     , name_suffix = codes_col_name_suffix
-                                     , output = "append_to_x"
-                                     , return_null_for_new_col = TRUE)
-          rows <- existent_codes |>
+          ## why does it returns previous values without forcing x? magic?
+          force(x)
+          rows <- get_target(x
+                           , rows = NULL
+                           , name = codes_col_name
+                           , name_suffix = codes_col_name_suffix
+                           , output = "append_to_x"
+                           , return_null_for_new_col = TRUE) |>
               harmonize_is_data_empty() |>
               and_rows(rows, x)
       }
@@ -4926,6 +4929,23 @@ even older
       ),
       structure(list(V1 = c("MSlab Co.", "IBM Corp.", "Tilburg University"), V1_coded = c("corp2", "no_match", "no_match")), row.names = c(NA, -3L), class = c("data.table", "data.frame"))
   )
+
+
+  ## test and_rows
+  expect_equal(data.table(a = c("MSlab Co."
+                              , "IBM Corp."
+                              , "Tilburg University Co.")
+                        , a_coded = c(NA, "existing corp code", NA)) |>
+               detect_patterns(
+                   data.table(c("Corp.", "Co.", "Uni")
+                            , type = c("corp", "corp2", "Uni")
+                            , some.extra.col = c(1, 2, 3))
+                 , codes_update_empty = TRUE
+                 , return_only_first_detected_code = FALSE
+                 , rows = c( TRUE, TRUE, FALSE)
+                 , no_match_code = "no_match")
+             , structure(list(a = c("MSlab Co.", "IBM Corp.", "Tilburg University Co."  ), a_coded = c("corp2", "existing corp code", NA)), row.names = c(NA, -3L), class = c("data.table", "data.frame")))
+
 #+END_SRC
 
 **** old
@@ -7071,11 +7091,7 @@ Appendix 2: All search and replace statements for all legal forms to be removed 
 :ID:       org:yrvizmx01ei0
 :END:
 
-"The search and replace statements were executed in three groups: firstly, a group of 1,060
-statements to remove legal forms at the end of a name (see Appendix 2); then a group of 1
-statement to remove legal forms at the beginning of a name (remove 1216 occurrences of
-“KABUSHIKI KAISHA” at the beginning of a name); and finally, a group of 17 statements to
-remove legal forms anywhere in a name (see Table 18)." (p. 39)
+"The search and replace statements were executed in three groups: firstly, a group of 1,060 statements to remove legal forms at the end of a name (see Appendix 2); then a group of 1 statement to remove legal forms at the beginning of a name (remove 1216 occurrences of “KABUSHIKI KAISHA” at the beginning of a name); and finally, a group of 17 statements to remove legal forms anywhere in a name (see Table 18)." (p. 39)
 
 #+BEGIN_SRC R :tangle ./R/magerman.r
   ##' Detects legal form
@@ -7101,8 +7117,7 @@ remove legal forms anywhere in a name (see Table 18)." (p. 39)
            , patterns_type = "ends"
            , return_only_first_detected_code = TRUE
            , return_only_codes = return_only_codes
-           , no_match_code = no_match_code
-           , codes_update_empty = TRUE)
+           , no_match_code = no_match_code)
   }
 
 
@@ -7125,7 +7140,7 @@ remove legal forms anywhere in a name (see Table 18)." (p. 39)
   ##' Detects legal form
   ##' @param x table
   ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @return Harmonzed table
   ##'
   ##' @md
   ##' @export
@@ -7134,8 +7149,7 @@ remove legal forms anywhere in a name (see Table 18)." (p. 39)
           , patterns = data.table(pattern = "KABUSHIKI KAISHA"
                                 , legal.form = "KAISHA")
           , patterns_type = "begins"
-          , return_only_first_detected_code = TRUE
-          , codes_update_empty = TRUE)
+          , return_only_first_detected_code = TRUE)
   }
 
   ##' Replaces legal form
@@ -7165,8 +7179,7 @@ remove legal forms anywhere in a name (see Table 18)." (p. 39)
           , patterns = magerman_patterns_legal_form_middle
           , patterns_codes_col = 3
           , patterns_type = "fixed"
-          , return_only_first_detected_code = TRUE
-          , codes_update_empty = TRUE)
+          , return_only_first_detected_code = TRUE)
   }
 
   ##' Replaces legal form
@@ -7219,12 +7232,13 @@ remove legal forms anywhere in a name (see Table 18)." (p. 39)
                                             , return_only_codes = TRUE)
              , c(TRUE, TRUE, TRUE, FALSE, FALSE))
 
-  expect_equal(magerman_detect_legal_form_middle(c("lksdjf MFG. CO, INC"
+  expect_equal(
+      magerman_detect_legal_form_middle(c("lksdjf MFG. CO, INC"
                                                  , "MSlab Co."
                                                  , "IBM Corp."
                                                  , "MSlab Co. GMBH & CO.KG lalal"
                                                  , "KABUSHIKI KAISHA MSlab Co. ") |>
-                                                 toupper())
+                                        toupper())
              , structure(list(V1 = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP."
                                     ,"MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "
                                      ), V1_coded = c(NA, NA, NA, "GMBH", NA))
@@ -7235,8 +7249,7 @@ remove legal forms anywhere in a name (see Table 18)." (p. 39)
                                                     , "IBM Corp."
                                                     , "MSlab Co. GMBH & CO.KG lalal"
                                                     , "KABUSHIKI KAISHA MSlab Co. ") |>
-                                                    toupper())
-             , structure(list(V1 = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP.", 
+                                                    toupper()), structure(list(V1 = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP.", 
                                      "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "
                                      ), V1_coded = c(NA, NA, NA, NA, "KAISHA")), row.names = c(NA, 
                                                                                                -5L), class = c("data.table", "data.frame")))
@@ -7277,12 +7290,9 @@ plus trim..."
                                        , patterns_codes = TRUE
                                        , no_match_code = FALSE)
       x |>
-          magerman_replace_legal_form_end() |>
-          magerman_replace_legal_form_beginning(
-              rows = !legal_form_end_rows)
-      ## |>
-      ##     magerman_replace_legal_form_middle(
-      ##         rows = !legal_form_end_rows)
+          magerman_replace_legal_form_beginning() |>
+          magerman_replace_legal_form_middle(rows = !legal_form_end_rows) |>
+          magerman_replace_legal_form_end()        
   }
 
   ##' Removes legal form
@@ -7302,125 +7312,73 @@ plus trim..."
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_legal_form.r
-
   expect_equal(
       c("lksdjf MFG. GMBH CO, INC"
+      , "MSlab Co."
+      , "IBM Corp."
+      , "MSlab Co. GMBH & CO.KG lalal CO."
+      , "KABUSHIKI KAISHA MSlab Co.") |>
+      toupper() |>
+      magerman_detect_legal_form()
+    , structure(list(V1 = c("LKSDJF MFG. GMBH CO, INC", "MSLAB CO.", "IBM CORP.", "MSLAB CO. GMBH & CO.KG LALAL CO.", "KABUSHIKI KAISHA MSLAB CO."  ), V1_coded = c("INCORPORATED", NA, NA, "GMBH", "KAISHA")), row.names = c(NA, -5L), class = c("data.table", "data.frame")))
+
+
+
+
+  ## testing pecular (but intendent) behaviour of magerman_remove_legal_form
+  ## in the last string the middle part should not be replaced because of legal form at the end
+  expect_equal(c("lksdjf MFG. GMBH CO, INC"
                , "MSlab Co."
                , "IBM Corp."
                , "MSlab Co. GMBH & CO.KG lalal"
-               , "KABUSHIKI KAISHA MSlab Co. ") |>
+               , "KABUSHIKI KAISHA MSlab Co. "
+               , "KABUSHIKI KAISHA MSlab Co.") |>
                toupper() |>
-               magerman_detect_legal_form()
-    , structure(list(V1 = c("LKSDJF MFG. GMBH CO, INC", "MSLAB CO."
-                                   , "IBM CORP.", "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. ")
-                            , V1_coded = c("INCORPORATED", NA, NA, "GMBH", "KAISHA")), row.names = c(NA,-5L)
-                       , class = c("data.table", "data.frame")))
+               magerman_remove_legal_form()
+             , c("LKSDJF MFG. GMBH COMPANY", "MSLAB COMPANY", "IBM CORPORATION", "MSLAB CO. & COMPANY LALAL", " MSLAB CO. ", "KABUSHIKI KAISHA MSLAB COMPANY"))
 
 
 
-  ## debug(get_dots)
-
-  ## undebug(get_dots)
-
-
-
-      c("lksdjf MFG. GMBH CO, INC"
-               , "MSlab Co."
-               , "IBM Corp."
-               , "MSlab Co. GMBH & CO.KG lalal"
-               , "KABUSHIKI KAISHA MSlab Co. ") |>
-               toupper() |>
-               magerman_remove_legal_form(output = "append_to_col")
+  expect_equal(
+      c("lksdjf MFG. GMBH CO,; INC"
+      , "MSlab Co."
+      , "IBM Corp."
+      , " MSlab Co. GMBH & CO.KG lalal  "
+      , "KABUSHIKI KAISHA MSlab Co.") |>
+      toupper() |>
+      magerman_remove_legal_form_and_clean()
+    , c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", "IBM CORPORATION", 
+        " MSLAB CO. & COMPANY LALAL  ", "KABUSHIKI KAISHA MSLAB COMPANY"))
 
 
-
-
-  #                              V1                V1_harmonized
-  # 1:     LKSDJF MFG. GMBH COMPANY     LKSDJF MFG. GMBH COMPANY
-  # 2:                MSLAB COMPANY                MSLAB COMPANY
-  # 3:              IBM CORPORATION              IBM CORPORATION
-  # 4: MSLAB CO. GMBH & CO.KG LALAL MSLAB CO. GMBH & CO.KG LALAL
-  # 5:  KABUSHIKI KAISHA MSLAB CO.                    MSLAB CO. 
-
-
-
-  #                              V1                V1_harmonized
-  # 1:     LKSDJF MFG. GMBH COMPANY     LKSDJF MFG. GMBH COMPANY
-  # 2:                MSLAB COMPANY                MSLAB COMPANY
-  # 3:              IBM CORPORATION              IBM CORPORATION
-  # 4: MSLAB CO. GMBH & CO.KG LALAL MSLAB CO. GMBH & CO.KG LALAL
-  # 5:  KABUSHIKI KAISHA MSLAB CO.                    MSLAB CO. 
-
-
-
-  #                              V1                V1_harmonized
-  # 1:     LKSDJF MFG. GMBH CO, INC     LKSDJF MFG. GMBH COMPANY
-  # 2:                    MSLAB CO.                MSLAB COMPANY
-  # 3:                    IBM CORP.              IBM CORPORATION
-  # 4: MSLAB CO. GMBH & CO.KG LALAL MSLAB CO. GMBH & CO.KG LALAL
-  # 5:  KABUSHIKI KAISHA MSLAB CO.   KABUSHIKI KAISHA MSLAB CO. 
-
-
-
-  #                              V1                V1_harmonized
-  # 1:     LKSDJF MFG. GMBH CO, INC     LKSDJF MFG. GMBH COMPANY
-  # 2:                    MSLAB CO.                MSLAB COMPANY
-  # 3:                    IBM CORP.              IBM CORPORATION
-  # 4: MSLAB CO. GMBH & CO.KG LALAL MSLAB CO. GMBH & CO.KG LALAL
-  # 5:  KABUSHIKI KAISHA MSLAB CO.   KABUSHIKI KAISHA MSLAB CO. 
-
-
-
-
-
+  expect_equal(data.table(c("lksdjf MFG. GMBH CO,; INC"
+                          , "MSlab Co."
+                          , "IBM Corp."
+                          , " MSlab Co. GMBH & CO.KG lalal  "
+                          , "KABUSHIKI KAISHA MSlab Co.") |> toupper()
+                        , somevar = c(1,2,3,4,5)) |>
+               magerman_remove_legal_form_and_clean(output = "append_to_col")
+  , structure(list(V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", 
+  "IBM CORP.", " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO."
+  ), V1_harmonized = c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", 
+  "IBM CORPORATION", " MSLAB CO. & COMPANY LALAL  ", "KABUSHIKI KAISHA MSLAB COMPANY"
+  ), somevar = c(1, 2, 3, 4, 5)), row.names = c(NA, -5L), class = c("data.table", 
+  "data.frame")))
 
   expect_equal(
       c("lksdjf MFG. GMBH CO,; INC"
                , "MSlab Co."
                , "IBM Corp."
                , " MSlab Co. GMBH & CO.KG lalal  "
-               , "KABUSHIKI KAISHA MSlab Co.") |>
+               , "KABUSHIKI KAISHA MSlab Co. ") |>
                toupper() |>
-               magerman_remove_legal_form_and_clean()
-  , c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", "IBM CORPORATION", 
-  " MSLAB CO. & COMPANY LALAL  ", "KABUSHIKI KAISHA MSLAB COMPANY")
-  )
-
-
-    data.table(c("lksdjf MFG. GMBH CO,; INC"
-               , "MSlab Co."
-               , "IBM Corp."
-               , " MSlab Co. GMBH & CO.KG lalal  "
-               , "KABUSHIKI KAISHA MSlab Co.") |> toupper()
-             , somevar = c(1,2,3,4,5)) |>
-        magerman_remove_legal_form_and_clean(output = "append_to_col")
-
-  #                                V1                  V1_harmonized somevar
-  # 1:          LKSDJF MFG. GMBH CO,;          LKSDJF MFG. GMBH CO,;       1
-  # 2:                  MSLAB COMPANY                  MSLAB COMPANY       2
-  # 3:                IBM CORPORATION                IBM CORPORATION       3
-  # 4:    MSLAB CO. & COMPANY LALAL      MSLAB CO. & COMPANY LALAL         4
-  # 5: KABUSHIKI KAISHA MSLAB COMPANY KABUSHIKI KAISHA MSLAB COMPANY       5
-
-
-
-  replace_patterns(c("lksdjf MFG. GMBH CO,; INC"
-               , "MSlab Co."
-               , "IBM Corp."
-               , " MSlab Co. GMBH & CO.KG lalal  "
-               , "KABUSHIKI KAISHA MSlab Co.")
-               , magerman_patterns_legal_form_middle
-               , output = "prepend_to_x")[]
-
-
-
-
-  , structure(list(V1 = c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", 
-  "IBM CORPORATION", " MSLAB CO. & COMPANY LALAL  ", " MSLAB COMPANY"
-  ), somevar = c(1, 2, 3, 4, 5)), row.names = c(NA, -5L), class = c("data.table", 
-  "data.frame"))
-
-
+               magerman_remove_legal_form_and_clean(output = "prepend_to_x")
+  , structure(list(V1_harmonized = c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", 
+  "IBM CORPORATION", " MSLAB CO. & COMPANY LALAL  ", " MSLAB CO. "
+  ), V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", "IBM CORP.", 
+  " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO. "
+  )), row.names = c(NA, -5L), class = c("data.table", "data.frame"
+  )))
 
 #+END_SRC
 

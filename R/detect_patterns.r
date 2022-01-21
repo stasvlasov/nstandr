@@ -59,7 +59,7 @@ detect_patterns <- function(x
                            , codes_col_name_suffix = "_coded"
                            , codes_omitted_rows_value = NULL
                            , no_match_code = NULL
-                           , codes_update_empty = FALSE
+                           , codes_update_empty = TRUE
                            , codes_merge = FALSE
                            , codes_merge_prepend = FALSE
                            , return_only_codes = FALSE
@@ -75,13 +75,14 @@ detect_patterns <- function(x
     ## set rows and excule those that coded
     rows <- get_col_and_rows()$rows
     if(codes_update_empty) {
-        existent_codes <- get_target(x
-                                   , rows = NULL
-                                   , name = codes_col_name
-                                   , name_suffix = codes_col_name_suffix
-                                   , output = "append_to_x"
-                                   , return_null_for_new_col = TRUE)
-        rows <- existent_codes |>
+        ## why does it returns previous values without forcing x? magic?
+        force(x)
+        rows <- get_target(x
+                         , rows = NULL
+                         , name = codes_col_name
+                         , name_suffix = codes_col_name_suffix
+                         , output = "append_to_x"
+                         , return_null_for_new_col = TRUE) |>
             harmonize_is_data_empty() |>
             and_rows(rows, x)
     }

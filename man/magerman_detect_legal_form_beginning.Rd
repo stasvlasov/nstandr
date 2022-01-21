@@ -32,7 +32,7 @@ magerman_detect_legal_form_beginning(x, ...)
   }}
 }
 \value{
-Harmonized table
+Harmonzed table
 }
 \description{
 Detects legal form

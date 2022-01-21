@@ -278,8 +278,7 @@ magerman_detect_legal_form_end <- function(x
          , patterns_type = "ends"
          , return_only_first_detected_code = TRUE
          , return_only_codes = return_only_codes
-         , no_match_code = no_match_code
-         , codes_update_empty = TRUE)
+         , no_match_code = no_match_code)
 }
 
 
@@ -302,7 +301,7 @@ magerman_replace_legal_form_end <- function(x, ...) {
 ##' Detects legal form
 ##' @param x table
 ##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @return Harmonzed table
 ##'
 ##' @md
 ##' @export
@@ -311,8 +310,7 @@ magerman_detect_legal_form_beginning <- function(x, ...) {
         , patterns = data.table(pattern = "KABUSHIKI KAISHA"
                               , legal.form = "KAISHA")
         , patterns_type = "begins"
-        , return_only_first_detected_code = TRUE
-        , codes_update_empty = TRUE)
+        , return_only_first_detected_code = TRUE)
 }
 
 ##' Replaces legal form
@@ -342,8 +340,7 @@ magerman_detect_legal_form_middle <- function(x, ...) {
         , patterns = magerman_patterns_legal_form_middle
         , patterns_codes_col = 3
         , patterns_type = "fixed"
-        , return_only_first_detected_code = TRUE
-        , codes_update_empty = TRUE)
+        , return_only_first_detected_code = TRUE)
 }
 
 ##' Replaces legal form
@@ -389,12 +386,9 @@ magerman_remove_legal_form <- function(x, ...) {
                                      , patterns_codes = TRUE
                                      , no_match_code = FALSE)
     x |>
-        magerman_replace_legal_form_end() |>
-        magerman_replace_legal_form_beginning(
-            rows = !legal_form_end_rows)
-    ## |>
-    ##     magerman_replace_legal_form_middle(
-    ##         rows = !legal_form_end_rows)
+        magerman_replace_legal_form_beginning() |>
+        magerman_replace_legal_form_middle(rows = !legal_form_end_rows) |>
+        magerman_replace_legal_form_end()        
 }
 
 ##' Removes legal form

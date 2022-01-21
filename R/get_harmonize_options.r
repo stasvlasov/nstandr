@@ -10,8 +10,8 @@
 get_harmonize_options <- function() {
     evalq({
         get_dots(harmonize_options
-               , search_while_calls_have_formals = c("x", "...")
-               , search_up_nframes = 50L
+               , search_calls_with_formals = c("x", "...")
+               , search_depth = 500L
                , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                , skip_checks_for_parent_call = FALSE)
     }, envir = parent.frame())
@@ -22,8 +22,8 @@ get_col_and_rows <- function() {
     evalq({
         get_dots(harmonize_options
                , select_args = c("col", "rows")
-               , search_while_calls_have_formals = c("x", "...")
-               , search_up_nframes = 5L
+               , search_calls_with_formals = c("x", "...")
+               , search_depth = 500L
                , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                , skip_checks_for_parent_call = FALSE)
     }, envir = parent.frame())

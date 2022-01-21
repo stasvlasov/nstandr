@@ -8,8 +8,8 @@ harmonize_options <- harmonizer:::harmonize_options
 
 testing_check_arguments <- function(x, ...) {
     dots <- get_dots(harmonize_options
-                   , search_while_calls_have_formals = c("x", "...")
-                   , search_up_nframes = 5L
+                   , search_calls_with_formals = c("x", "...")
+                   , search_depth = 5L
                    , search_up_to_call = c("harmonize", "harmonizer::harmonize"))
     check_harmonize_options(dots, x)
     return(TRUE)
@@ -22,8 +22,8 @@ expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), ou
 
 testing_check_arguments <- function(x, ...) {
     dots <- get_dots(harmonize_options
-                   , search_while_calls_have_formals = c("x", "...")
-                   , search_up_nframes = 5L
+                   , search_calls_with_formals = c("x", "...")
+                   , search_depth = 5L
                    , search_up_to_call = c("harmonize", "harmonizer::harmonize"))
     check_harmonize_options(dots, x
                           , check_name_duplicates = TRUE)

@@ -35,9 +35,10 @@ infer_if_post_inset_col_possible <- function(col, x, output) {
         output
       , replace_col = TRUE
       , append_to_col = ifelse(col == x_width(x), FALSE, TRUE)
-      , prepend_to_col = ifelse(col == 1, FALSE, TRUE)
       , append_to_x = ifelse(col == x_width(x), FALSE, TRUE)
-      , prepend_to_x = ifelse(col == 1, FALSE, TRUE))
+      , prepend_to_x = ifelse(col == 1, FALSE, TRUE)
+      , prepend_to_col = ifelse(col == 1, FALSE, TRUE)
+    )
 }
 
 
@@ -81,10 +82,10 @@ infer_moving_target_from_names <- function(dots, x
                                          , return_name_for_new_col = FALSE) {
     with(dots, {
         if(output == "replace_col") return(get_col_as_number(col, x))
-        if(infer_if_post_inset_col_possible(col, x, output)) {
+        col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output)
+        if(infer_if_post_inset_col_possible(col_post_inset, x, output)) {
             target_name_generated <-
-                infer_post_inset_col_from_pre_inset_col(col, x, output) |>
-                make_target_name(x, name, name_suffix)
+                make_target_name(col_post_inset, x, name, name_suffix)
             if(target_name_generated %in% names(x)) {
                 ## case of subsequent calls
                 return(get_col_as_number(target_name_generated, x))
@@ -236,6 +237,7 @@ inset_target <- function(vector, x
                     infer_moving_target_from_names(dots, x, return_name_for_new_col = TRUE)
                 ## fuckin data.table syntax is so cryptic
                 x[, (col_or_name_if_new) := vector]
+                ## x[[col_or_name_if_new]] <- vector
                 ## now if we added new col
                 if(x_width(x) == width_pre_inset + 1) {
                     ## if new col was added place last col into target posision

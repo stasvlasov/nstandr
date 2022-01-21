@@ -331,6 +331,22 @@ expect_equal(
     ),
     structure(list(V1 = c("MSlab Co.", "IBM Corp.", "Tilburg University"), V1_coded = c("corp2", "no_match", "no_match")), row.names = c(NA, -3L), class = c("data.table", "data.frame"))
 )
+
+
+## test and_rows
+expect_equal(data.table(a = c("MSlab Co."
+                            , "IBM Corp."
+                            , "Tilburg University Co.")
+                      , a_coded = c(NA, "existing corp code", NA)) |>
+             detect_patterns(
+                 data.table(c("Corp.", "Co.", "Uni")
+                          , type = c("corp", "corp2", "Uni")
+                          , some.extra.col = c(1, 2, 3))
+               , codes_update_empty = TRUE
+               , return_only_first_detected_code = FALSE
+               , rows = c( TRUE, TRUE, FALSE)
+               , no_match_code = "no_match")
+           , structure(list(a = c("MSlab Co.", "IBM Corp.", "Tilburg University Co."  ), a_coded = c("corp2", "existing corp code", NA)), row.names = c(NA, -3L), class = c("data.table", "data.frame")))
 ## --------<<  detect_patterns:2 ends here
 
 

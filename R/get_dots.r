@@ -1,15 +1,15 @@
-##' An alternative way to interact with `...` arguments
+##' Provides access to arguments of nested functions. Sort of an alterative mechanism to passing `...` arguments but with more features.
 ##'
-##' Provides access to `...` dots arguments without explicitly passing it through calling stack and allows updating default values that are explicitly set throughout calling stack (lower calls take prevalence).
+##' Provides access to higher level call's arguments (including `...` dots arguments) without explicitly passing it through calling stack and allows updating default values that are explicitly set throughout calling stack (i.e., lower calls take prevalence).
 ##'
 ##' @param function_or_arg_list The end function that meant to accept dots arguments (default arguments accessed with `formals(function_or_arg_list)`) or just explicit list of default dots arguments that will be searched up in calling stack and updated if set explicitly in higher calls. If set to NULL then use formals of the parent call (assessed with `sys.function(-1L)`).
 ##' @param select_args Which arguments to select from `function_or_arg_list`. Ether character or numeric vector.
-##' @param search_while_calls_have_formals Formals (parameters, arguments) that should be present in each upper call to continue looking up the call stack for updates in dots arguments.
-##' @param search_while_calls_belong_to_env Environment/package name (character string) to which each function in upper calls to should belong to continue looking up the call stack for updates in dots arguments.
-##' @param search_while_calls_regexp Regular expression that each function name in upper calls to should matched to continue looking up the call stack for updates in dots arguments.
-##' @param search_up_nframes Number of frames (aka environments) in calling stack to look up for updates in dots arguments.
+##' @param search_calls_with_formals Formals (parameters, arguments) that should be present in each upper call to continue looking up the call stack for updates in dots arguments.
+##' @param search_calls_of_env Environment/package name (character string) to which each function in upper calls to should belong to continue looking up the call stack for updates in dots arguments.
+##' @param search_calls_regexp Regular expression that each function name in upper calls to should matched to continue looking up the call stack for updates in dots arguments.
+##' @param search_depth Number of frames (aka environments) down in calling stack to look up arguments.
 ##' @param search_up_to_call The name of the call before which to continue looking up the call stack for updates in dots arguments.
-##' @param skip_checks_for_parent_call Whether to skip checking `search_while_calls_have_formals` `search_while_calls_belong_to_env` `search_while_calls_regexp`
+##' @param skip_checks_for_parent_call Whether to skip checking `search_calls_with_formals` `search_calls_of_env` `search_calls_regexp`
 ##' @param eval_default_args Whether to evaluate default arguments. Default is do not evaluate (FALSE) assuming that all argument are simple values (i.e., evaluates to itself)
 ##' @param return_unlisted_if_single_arg Toggle wether unlist when returning a single argument. Default is TRUE
 ##' @examples
@@ -41,7 +41,7 @@
 ##' # Usage in nested calls
 ##' util <- function(foo = 0, bar = 0) {
 ##'     # get dots and bind updated arguments into environment
-##'     dots <- get_dots(search_up_nframes = 3L)
+##'     dots <- get_dots(search_depth = 3L)
 ##'     for (v in names(dots)) assign(v, dots[[v]])
 ##'     # util just reports it arguments
 ##'     message("foo: ", foo, ", bar: ", bar)
@@ -71,10 +71,10 @@
 ##' @md 
 get_dots <- function(function_or_arg_list = NULL
                    , select_args = NULL
-                   , search_while_calls_have_formals = "..."
-                   , search_while_calls_belong_to_env = NULL
-                   , search_while_calls_regexp = NULL
-                   , search_up_nframes = 1L
+                   , search_calls_with_formals = "..."
+                   , search_calls_of_env = NULL
+                   , search_calls_regexp = NULL
+                   , search_depth = 1L
                    , search_up_to_call = NULL
                    , skip_checks_for_parent_call = TRUE
                    , eval_default_args = FALSE
@@ -85,10 +85,10 @@ get_dots <- function(function_or_arg_list = NULL
         checkmate::assert(checkmate::check_function(function_or_arg_list, null.ok = TRUE)
                         , checkmate::check_list(function_or_arg_list))
         checkmate::assert_character(select_args, null.ok = TRUE)
-        checkmate::assert_character(search_while_calls_have_formals, null.ok = TRUE)
-        checkmate::assert_character(search_while_calls_belong_to_env, null.ok = TRUE)
-        checkmate::assert_character(search_while_calls_regexp, null.ok = TRUE)
-        checkmate::assert_integer(search_up_nframes)
+        checkmate::assert_character(search_calls_with_formals, null.ok = TRUE)
+        checkmate::assert_character(search_calls_of_env, null.ok = TRUE)
+        checkmate::assert_character(search_calls_regexp, null.ok = TRUE)
+        checkmate::assert_integer(search_depth)
         checkmate::assert_character(search_up_to_call, null.ok = TRUE)
         checkmate::assert_flag(eval_default_args)
         checkmate::assert_flag(return_unlisted_if_single_arg)
@@ -121,24 +121,24 @@ get_dots <- function(function_or_arg_list = NULL
     ## collect explicit args in parents
     explicit_args <- list()
     sp <- sys.parent()
-    for (fr in sp:1) {
-        ## stop searching frames stack deeper than search_up_nframes
-        if (fr < 1 || (sp - fr) > search_up_nframes) break()
+    for (fr in unique(rev(sys.parents()))) {
+        ## stop searching frames stack deeper than search_depth
+        if (fr < 1 || (sp - fr) > search_depth) break()
         ## check if we are searching only in 'friendly' functions:
-        ## meaning that at least search_while_calls_have_formals should exist in calls
+        ## meaning that at least search_calls_with_formals should exist in calls
         parent_fun <- sys.function(fr)
         parent_default_args <- formals(parent_fun) |> as.list()
         if (!(skip_checks_for_parent_call && fr == sp) &&
-            !all(search_while_calls_have_formals %in% names(parent_default_args))) break()
+            !all(search_calls_with_formals %in% names(parent_default_args))) next()
         ## check if call belongs to an env (package)
         if (!(skip_checks_for_parent_call && fr == sp) &&
-            !is.null(search_while_calls_belong_to_env) &&
-            !(environmentName(environment(parent_fun)) %in% search_while_calls_belong_to_env)) break()
+            !is.null(search_calls_of_env) &&
+            !(environmentName(environment(parent_fun)) %in% search_calls_of_env)) next()
         ## check if call matches regexp
         parent_call <- sys.call(fr) |> as.list()
         if (!(skip_checks_for_parent_call && fr == sp) &&
-            !is.null(search_while_calls_regexp) &&
-            !grepl(search_while_calls_regexp, as.character(parent_call[[1]]), perl = TRUE)) break()
+            !is.null(search_calls_regexp) &&
+            !grepl(search_calls_regexp, as.character(parent_call[[1]]), perl = TRUE)) next()
         ## update defautls other parent defaults
         if(any(default_args_update <-
                    names(parent_default_args) %in% names(default_args))) {
@@ -170,15 +170,15 @@ get_dots <- function(function_or_arg_list = NULL
         if (parent_call[1] %in% search_up_to_call) break()
     }
     ## merge default and explicit args
-    arg_update <- default_args
+    args_updated <- default_args
     if (length(explicit_args) != 0) {
-        arg_update <- 
+        args_updated <- 
             c(explicit_args
             , default_args[!(names(default_args) %in% names(explicit_args))])
     }
     ## just return argument if it is single argument
-    if(return_unlisted_if_single_arg && length(arg_update) == 1) {
-        arg_update <- arg_update[[1]]
+    if(return_unlisted_if_single_arg && length(args_updated) == 1) {
+        args_updated <- args_updated[[1]]
     }
-    return (arg_update)
+    return (args_updated)
 }

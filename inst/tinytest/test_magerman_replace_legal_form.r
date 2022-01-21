@@ -33,12 +33,13 @@ expect_equal(magerman_detect_legal_form_end(c("lksdjf MFG. CO, INC"
                                           , return_only_codes = TRUE)
            , c(TRUE, TRUE, TRUE, FALSE, FALSE))
 
-expect_equal(magerman_detect_legal_form_middle(c("lksdjf MFG. CO, INC"
+expect_equal(
+    magerman_detect_legal_form_middle(c("lksdjf MFG. CO, INC"
                                                , "MSlab Co."
                                                , "IBM Corp."
                                                , "MSlab Co. GMBH & CO.KG lalal"
                                                , "KABUSHIKI KAISHA MSlab Co. ") |>
-                                               toupper())
+                                      toupper())
            , structure(list(V1 = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP."
                                   ,"MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "
                                    ), V1_coded = c(NA, NA, NA, "GMBH", NA))
@@ -49,8 +50,7 @@ expect_equal(magerman_detect_legal_form_beginning(c("lksdjf MFG. CO, INC"
                                                   , "IBM Corp."
                                                   , "MSlab Co. GMBH & CO.KG lalal"
                                                   , "KABUSHIKI KAISHA MSlab Co. ") |>
-                                                  toupper())
-           , structure(list(V1 = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP.", 
+                                                  toupper()), structure(list(V1 = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP.", 
                                    "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "
                                    ), V1_coded = c(NA, NA, NA, NA, "KAISHA")), row.names = c(NA, 
                                                                                              -5L), class = c("data.table", "data.frame")))

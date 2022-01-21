@@ -16,7 +16,7 @@ detect_patterns(
   codes_col_name_suffix = "_coded",
   codes_omitted_rows_value = NULL,
   no_match_code = NULL,
-  codes_update_empty = FALSE,
+  codes_update_empty = TRUE,
   codes_merge = FALSE,
   codes_merge_prepend = FALSE,
   return_only_codes = FALSE,
