@@ -6,35 +6,41 @@
 \usage{
 magerman_replace_umlaut(
   x,
-  x.umlaut.col = NULL,
-  drop.umlaut.col = TRUE,
-  replace.accented.characters = FALSE,
+  has_umlaut_col = NULL,
+  drop_has_umlaut_col = TRUE,
+  replace_accented_characters = FALSE,
   ...
 )
 }
 \arguments{
 \item{x}{Data}
 
-\item{x.umlaut.col}{Column with logical values indicating weather a corresponding string has an umlaut. Default is NULL so it detects is automatically first}
+\item{has_umlaut_col}{Column with logical values indicating weather a corresponding string has an umlaut. Default is NULL so it detects is automatically first}
 
-\item{drop.umlaut.col}{Whether to drop \code{umlaut.col}. Default is FALSE}
+\item{drop_has_umlaut_col}{Whether to drop \code{has_umlaut_col}. Default is FALSE}
 
-\item{replace.accented.characters}{Whether to replace accented characters first. Default is FALSE}
+\item{replace_accented_characters}{Whether to replace accented characters first. Default is FALSE}
 
 \item{...}{
-  Arguments passed on to \code{\link[=harmonize.x]{harmonize.x}}
+  Arguments passed on to \code{\link[=harmonize_options]{harmonize_options}}
   \describe{
-    \item{\code{inset.vector}}{a vector to inset. Optional. Default is NULL}
-    \item{\code{x.col}}{vector of interest in \code{x} object}
-    \item{\code{x.col.update}}{Update values in \code{x.col} column. Default is FALSE. If set \code{inset.append}, \code{inset.name} and \code{inset.suffix} are ignored. Also if set the default for \code{return.x.cols.all} will be set to TRUE.}
-    \item{\code{x.rows}}{Logical vector to filter records of interest. Default is NULL which means do not filter records}
-    \item{\code{x.atomic.name}}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{x.col} will be used.}
-    \item{\code{inset.omitted.val}}{If \code{x.rows} is set merge these values to the results. It should be a vector of length 1 or \code{nrow(x)}. If the value is NULL (default) then use values of \code{x.col}.}
-    \item{\code{inset.append}}{If set then put \code{inset.vector} as the last instead of first vector/column. Default is FALSE.}
-    \item{\code{inset.suffix}}{If \code{inset.name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in \code{return.x.cols} it will add counter at the end to avoid variables with the same names.}
-    \item{\code{inset.name}}{Use this name for the first column in results (harmonized names). Default is NULL, which means that either x.atomic.name if x is vector or original x.col name will be used with \code{inset.suffix} at the end.}
-    \item{\code{return.x.cols}}{If x is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (x.col).}
-    \item{\code{return.x.cols.all}}{Whether to bind all columns in x. Defaults depends on values of \code{x.col.update} and \code{inset.append}. If either is set then defaut values is TRUE otherwise FALSE. If set to TRUE by user the return.x.cols is ignored.}
+    \item{\code{col}}{Column of interest (the one we need to harmonize) in the \code{x} object (if it is data.frame like).}
+    \item{\code{rows}}{Logical vector to filter records of interest. Default is NULL which means do not filter records.}
+    \item{\code{omitted_rows_values}}{If \code{rows} parameter is set then merge \code{omitted_rows_values} with the results (filtered by \code{rows}). Either single string or a character vector of length \code{nrow(x)}. If NULL (the default) then original values of \code{col} are merged with results.}
+    \item{\code{output}}{Where to inset retults (harmonized vector) in the \code{x} object. Default options is 'replace_col' which overwrides the \code{col} in \code{x} with results. Other options:
+\itemize{
+\item 'omit' :: do not write results back to table (usually used when \code{append_copy} is set for temporary values)
+\item 'prepend_to_col' :: prepend to \code{col}
+\item 'append_to_col' :: append to \code{col}
+\item 'prepend_to_x' :: prepend to \code{x} data.frame like object
+\item 'append_to_x' :: append to \code{x} data.frame like object
+}}
+    \item{\code{name}}{Use this name for the column with results (harmonized values). Default is NA, which means that either \code{name_for_x_atomic} if \code{x} is vector or original col name will be used with \code{name_suffix} at the end.}
+    \item{\code{name_for_x_atomic}}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
+    \item{\code{name_suffix}}{If \code{name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in \code{select_x_cols} it will add counter at the end to avoid variables with the same names.}
+    \item{\code{append_copy}}{Whether to append a copy of result vector to \code{x} object}
+    \item{\code{append_copy_name_format}}{How the append copy wiil be named}
+    \item{\code{select_cols}}{If x` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).}
   }}
 }
 \value{

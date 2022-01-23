@@ -4,29 +4,33 @@
 \alias{magerman_detect_umlaut}
 \title{Detects umlauts}
 \usage{
-magerman_detect_umlaut(x, ...)
+magerman_detect_umlaut(x, return_only_codes = FALSE, ...)
 }
 \arguments{
 \item{x}{table}
 
+\item{return_only_codes}{same as \code{detect_patterns}}
+
 \item{...}{
-  Arguments passed on to \code{\link[=detect_patterns]{detect_patterns}}
+  Arguments passed on to \code{\link[=harmonize_options]{harmonize_options}}
   \describe{
-    \item{\code{patterns}}{Accepts both vector or table. If patterns it is table can also include replacements column.}
-    \item{\code{patterns_col}}{If patterns is a table this specifies which column to use. Default is 1.}
-    \item{\code{patterns_codes_col}}{If patterns is table which column to use as codes column. Default is 2.}
-    \item{\code{patterns_type}}{Specifies kind(s) of patterns. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are:}
-    \item{\code{patterns_type_col}}{Column in patterns table where you can specify types of patterns for each pattern. If set then \code{patterns.type} is ignored. Default is NULL.}
-    \item{\code{patterns_codes}}{If provided use it as codes. Should be the same length as patterns. Default is NULL.}
-    \item{\code{codes_col_name}}{If provided use it as a name for codes column (new if it does not exist or the one to update) in results.}
-    \item{\code{codes_col_name_suffix}}{If \code{codes_col_name} is not provided use this suffix to append to \code{col} name or \code{x_atomic_name}  (see\code{harmonize_options}).}
-    \item{\code{codes_omitted_rows_value}}{If \code{rows} is set. Use this value to fill the omitted rows. When we update existing codes column Default is NULL which means that we use initial codes values for omitted rows. If there is no codes col to update omited rows will be filled with NA.}
-    \item{\code{no_match_code}}{If provided code records that did not get any match with it.}
-    \item{\code{codes_update_empty}}{If toggled on then detect and add new codes only for records (rows) that were not yet coded (i.e., related codes are either "", NA or length == 0).}
-    \item{\code{codes_merge}}{If set then merge (append or prepend) new codes to existing ones. It might turn the codes column to list of vectors.}
-    \item{\code{codes_merge_prepend}}{If set then it will prepend new codes if not then it will append (default). It is ignored if \code{x.codes.merge} is not set.}
-    \item{\code{return_only_codes}}{If toggled on then just return codes vector.}
-    \item{\code{return_only_first_detected_code}}{If TRUE then return only codes for the first detected pattern. If FALSE return list of all matched codes. Default is TRUE. (Currently does affect performance)}
+    \item{\code{col}}{Column of interest (the one we need to harmonize) in the \code{x} object (if it is data.frame like).}
+    \item{\code{rows}}{Logical vector to filter records of interest. Default is NULL which means do not filter records.}
+    \item{\code{omitted_rows_values}}{If \code{rows} parameter is set then merge \code{omitted_rows_values} with the results (filtered by \code{rows}). Either single string or a character vector of length \code{nrow(x)}. If NULL (the default) then original values of \code{col} are merged with results.}
+    \item{\code{output}}{Where to inset retults (harmonized vector) in the \code{x} object. Default options is 'replace_col' which overwrides the \code{col} in \code{x} with results. Other options:
+\itemize{
+\item 'omit' :: do not write results back to table (usually used when \code{append_copy} is set for temporary values)
+\item 'prepend_to_col' :: prepend to \code{col}
+\item 'append_to_col' :: append to \code{col}
+\item 'prepend_to_x' :: prepend to \code{x} data.frame like object
+\item 'append_to_x' :: append to \code{x} data.frame like object
+}}
+    \item{\code{name}}{Use this name for the column with results (harmonized values). Default is NA, which means that either \code{name_for_x_atomic} if \code{x} is vector or original col name will be used with \code{name_suffix} at the end.}
+    \item{\code{name_for_x_atomic}}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
+    \item{\code{name_suffix}}{If \code{name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in \code{select_x_cols} it will add counter at the end to avoid variables with the same names.}
+    \item{\code{append_copy}}{Whether to append a copy of result vector to \code{x} object}
+    \item{\code{append_copy_name_format}}{How the append copy wiil be named}
+    \item{\code{select_cols}}{If x` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).}
   }}
 }
 \value{

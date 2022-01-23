@@ -7388,7 +7388,7 @@ plus trim..."
 :END:
 
 Table 19: Common company words to be removed at the end of a name
-#+NAME: magerman.patterns.common.words.at.the.end
+#+NAME: magerman_patterns_common_words_at_the_end
 | KEYWORD        |
 |----------------|
 | 'CORPORATION'  |
@@ -7399,11 +7399,11 @@ Table 19: Common company words to be removed at the end of a name
 | ' KG'          |
 | 'GESELLSCHAFT' |
 
-#+call: make-rds-patterns-table(data = magerman.patterns.common.words.at.the.end, data.name = "magerman.patterns.common.words.at.the.end")
+#+call: make-rds-patterns-table(data = magerman_patterns_common_words_at_the_end, data.name = "magerman_patterns_common_words_at_the_end")
 
 
 Table 20: Common company words to be removed at the beginning of a name
-#+NAME: magerman.patterns.common.words.at.the.beginning
+#+NAME: magerman_patterns_common_words_at_the_beginning
 | KEYWORD                                 |
 |-----------------------------------------|
 | 'SOCIETE A RESPONSABILITE LIMITEE DITE' |
@@ -7423,11 +7423,11 @@ Table 20: Common company words to be removed at the beginning of a name
 | 'SOCIETE D''                            |
 | 'SOCIETE '                              |
 
-#+call: make-rds-patterns-table(data = magerman.patterns.common.words.at.the.beginning, data.name = "magerman.patterns.common.words.at.the.beginning")
+#+call: make-rds-patterns-table(data = magerman_patterns_common_words_at_the_beginning, data.name = "magerman_patterns_common_words_at_the_beginning")
 
 
 Table 21: Common company words to be removed anywhere in a name
-#+NAME: magerman.patterns.common.words.anywhere
+#+NAME: magerman_patterns_common_words_anywhere
 | KEYWORD          |
 |------------------|
 | ' AND CO '       |
@@ -7449,83 +7449,80 @@ Table 21: Common company words to be removed anywhere in a name
 | ' AG,'           |
 | ' AG.'           |
 
-#+call: make-rds-patterns-table(data = magerman.patterns.common.words.anywhere, data.name = "magerman.patterns.common.words.anywhere")
+#+call: make-rds-patterns-table(data = magerman_patterns_common_words_anywhere, data.name = "magerman_patterns_common_words_anywhere")
 
 
 #+BEGIN_SRC R :tangle ./R/magerman.r
   ##' Removes common words
   ##' @param x table
-  ##' @inheritDotParams replace_patterns
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##'
   ##' @md
   ##' @export
   magerman_remove_common_words_at_the_end <- function(x, ...) {
-      replace_patterns(x,
-          patterns = magerman.patterns.common.words.at.the.end,
-          patterns.type = "ends",
-          ...
-      )
+      replace_patterns(x
+          , patterns = magerman_patterns_common_words_at_the_end
+          , patterns_type = "ends")
   }
 
   ##' Removes common words
   ##' @param x table
-  ##' @inheritDotParams replace_patterns
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##'
   ##' @md
   ##' @export
   magerman_remove_common_words_at_the_beginning <- function(x, ...) {
-      replace_patterns(x,
-          patterns = magerman.patterns.common.words.at.the.beginning,
-          patterns.type = "begins",
-          ...
-      )
+      replace_patterns(x
+          , patterns = magerman_patterns_common_words_at_the_beginning
+          , patterns_type = "begins")
   }
 
 
 
   ##' Removes common words
   ##' @param x table
-  ##' @inheritDotParams replace_patterns
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##'
   ##' @md
   ##' @export
   magerman_remove_common_words_anywhere <- function(x, ...) {
-      replace_patterns(x,
-          patterns = magerman.patterns.common.words.anywhere,
-          patterns.type = "fixed",
-          ...
-      )
+      replace_patterns(x
+          , patterns = magerman_patterns_common_words_anywhere
+          , patterns.type = "fixed")
   }
 
 
   ##' Removes common words
   ##' @param x table
-  ##' @inheritDotParams replace_patterns
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##'
   ##' @md
-  ##' @import magrittr
   ##' @export
   magerman_remove_common_words <- function(x, ...) {
-      x %>%
-          magerman_remove_common_words_at_the_end(...) %>%
-          magerman_remove_common_words_at_the_beginning(...) %>%
-          magerman_remove_common_words_anywhere(...)
+      x |>
+          magerman_remove_common_words_at_the_end() |>
+          magerman_remove_common_words_at_the_beginning() |>
+          magerman_remove_common_words_anywhere()
   }
+#+END_SRC
 
 
-  ## Test
-  ## c("lksdjf MFG. GMBH CO,; INC"
-  ## , "MSlab Co."
-  ## , "IBM Corp."
-  ## , " MSlab Co. GMBH & CO.KG lalal  "
-  ## , "KABUSHIKI KAISHA MSlab Co.") %>%
-  ##   toupper %>%
-  ##   magerman.remove.legal.form.clean %>%
-  ##   magerman.remove.common.words(return.x.cols.all = TRUE)
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_common_words.r
+  expect_equal(c("lksdjf MFG. GMBH CO,; INC"
+               , "MSlab Co."
+               , "IBM Corp."
+               , " MSlab Co. GMBH & CO.KG lalal  "
+               , "KABUSHIKI KAISHA MSlab Co.") |>
+               toupper() |>
+               magerman_remove_legal_form_and_clean() |>
+               magerman_remove_common_words()
+             , c("LKSDJF MFG. GMBH;", "MSLAB ", "IBM ", " MSLAB &LALAL  ", "KABUSHIKI KAISHA MSLAB "))
+
 #+END_SRC
 
 ** Spelling Variation
@@ -7534,7 +7531,7 @@ Table 21: Common company words to be removed anywhere in a name
 :END:
 
 Table 22: Spelling variations and their harmonized equivalent
-#+NAME: magerman.patterns.spelling.variation
+#+NAME: magerman_patterns_spelling_variation
 | KEYWORD          | REMARKS         |
 |------------------+-----------------|
 | 'SYSTEMEN'       | 'SYSTEM'        |
@@ -7564,28 +7561,31 @@ Table 22: Spelling variations and their harmonized equivalent
 | 'MACHINES'       | 'MACHINE'       |
 | 'SCIENCES'       | 'SCIENCE'       |
 
-#+call: make-rds-patterns-table(data = magerman.patterns.spelling.variation, data.name = "magerman.patterns.spelling.variation")
+#+call: make-rds-patterns-table(data = magerman_patterns_spelling_variation, data.name = "magerman_patterns_spelling_variation")
 
 #+BEGIN_SRC R :tangle ./R/magerman.r
   ##' Replaces spelling variation
   ##' @param x table
-  ##' @inheritDotParams replace_patterns
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##'
   ##' @md
   ##' @export
   magerman_replace_spelling_variation <- function(x, ...) {
-      replace_patterns(x,
-          patterns = magerman.patterns.spelling.variation,
-          ...
-      )
+      replace_patterns(x, patterns = magerman_patterns_spelling_variation)
   }
-
-  ## Test
-  ## c("CHEMICALS SYSTEMEN MSlab Ltd."
-  ## , "ELECTRONICS SYSTEMES MSlab Co.") %>%
-  ##   magerman.replace.spelling.variation(return.x.cols.all = TRUE)
 #+END_SRC
+
+
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_magerman_replace_spelling_variation.r
+  expect_equal(c("CHEMICALS SYSTEMEN MSlab Ltd."
+               , "ELECTRONICS SYSTEMES MSlab Co.") |>
+               magerman_replace_spelling_variation()
+             , c("CHEMICAL SYSTEM MSlab Ltd.", "ELECTRONIC SYSTEM MSlab Co."))
+
+#+END_SRC
+
 
 
 ** Condensing
@@ -7595,27 +7595,29 @@ Table 22: Spelling variations and their harmonized equivalent
 #+BEGIN_SRC R :tangle ./R/magerman.r
   ##' Condenses string
   ##' @param x table
-  ##' @inheritDotParams replace_patterns
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##'
   ##' @md
   ##' @export
   magerman_condense <- function(x, ...) {
-      replace_patterns(x,
-          patterns = "[^a-zA-Z0-9]+",
-          patterns.type = "regex",
-          ...
-      )
+      replace_patterns(x
+          , patterns = "[^a-zA-Z0-9]+"
+          , patterns_type = "regex")
   }
-
-  ## Test
-  ## c("lksdjf MFG. GMBH CO,; INC"
-  ## , "MSlab Co."
-  ## , "IBM Corp."
-  ## , " MSlab Co. GMBH & CO.KG lalal  "
-  ## , "KABUSHIKI KAISHA MSlab Co.") %>%
-  ##   magerman.condence(return.x.cols.all = TRUE)
 #+END_SRC
+
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_magerman_condense.r
+  expect_equal(c("lksdjf MFG. GMBH CO,; INC"
+               , "MSlab Co."
+               , "IBM Corp."
+               , " MSlab Co. GMBH & CO.KG lalal  "
+               , "KABUSHIKI KAISHA MSlab Co.") |>
+               magerman_condense()
+             , c("lksdjfMFGGMBHCOINC", "MSlabCo", "IBMCorp", "MSlabCoGMBHCOKGlalal", "KABUSHIKIKAISHAMSlabCo"))
+#+END_SRC
+
 
 
 ** Umlaut Harmonization
@@ -7623,7 +7625,21 @@ Table 22: Spelling variations and their harmonized equivalent
 :ID:       org:6lo7ug60gei0
 :END:
 
-#+NAME: magerman.patterns.umlaut
+Implementation
+
+Firstly, all occurrences of “AE”, “OE” and “UE” are replaced with “A”, “O” and “U” respectively in all names (also in names originally containing no umlauts) by executing a series of update queries on the data.
+
+Next, all occurrences of “A”, “O” and “U” are ag ain replaced with “AE”, “OE”, “UE” respectively in all names (also in names originally containing no umlauts) by executing a series of update queries on the data.
+
+Next, all names originally containing an umlaut are marked by executing an update query on the data.
+
+Next, all names having a preliminary umlaut harmonized name (first removing “E” and next adding “E” from and to “A”, “O” and “U”) that is equal to a preliminary umlaut harmonized name marked in the previous step as a name originally containing an umlaut are also marked by executing an update query on the data.
+
+Finally, all preliminary umlaut harmonized names not marked in the previous two steps are reverted to the previous cleaned name after condensing by executing an update query on the data.
+
+p. 44
+
+#+NAME: magerman_patterns_umlaut
 | char | ascii | replacement | umlaut |
 |------+-------+-------------+--------|
 | Ä    | A     | AE          | TRUE   |
@@ -7633,7 +7649,7 @@ Table 22: Spelling variations and their harmonized equivalent
 # | ö  | o     | oe          | TRUE   |
 # | ü  | u     | ue          | TRUE   |
 
-#+call: make-rds-patterns-table(data = magerman.patterns.umlaut, data.name = "magerman.patterns.umlaut")
+#+call: make-rds-patterns-table(data = magerman_patterns_umlaut, data.name = "magerman_patterns_umlaut")
 
 
 :PROPERTIES:
@@ -7642,112 +7658,193 @@ Table 22: Spelling variations and their harmonized equivalent
 #+BEGIN_SRC R :tangle ./R/magerman.r
   ##' Detects umlauts
   ##' @param x table
-  ##' @inheritDotParams detect_patterns
+  ##' @param return_only_codes same as `detect_patterns`
+  ##' @param ... 
+  ##' @inheritDotParams harmonize_options
   ##' @return Coded table
   ##'
   ##' @md
   ##' @export
-  magerman_detect_umlaut <- function(x, ...) {
-      detect_patterns(x, ,
-          patterns = magerman.patterns.umlaut,
-          patterns.codes.col = 4,
-          patterns.type = "fixed",
-          return.only.first.detected.code = TRUE,
-          ...
-      )
+  magerman_detect_umlaut <- function(x, return_only_codes = FALSE, ...) {
+      detect_patterns(x
+          , patterns = magerman_patterns_umlaut
+          , patterns_codes_col = 4
+          , patterns_type = "fixed"
+          , return_only_first_detected_code = TRUE
+          , return_only_codes = return_only_codes)
   }
-
-
-
-  ## Test
-  ## c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-  ## , "MSLab Co."
-  ## , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>%
-  ##   magerman.detect.umlaut(return.just.codes = FALSE)
-
 
   ##' Replaces Umlauts
   ##' @param x Data
-  ##' @param x.umlaut.col Column with logical values indicating weather a corresponding string has an umlaut. Default is NULL so it detects is automatically first
-  ##' @param drop.umlaut.col Whether to drop `umlaut.col`. Default is FALSE
-  ##' @param replace.accented.characters Whether to replace accented characters first. Default is FALSE
-  ##' @inheritDotParams harmonize.x
+  ##' @param has_umlaut_col Column with logical values indicating weather a corresponding string has an umlaut. Default is NULL so it detects is automatically first
+  ##' @param drop_has_umlaut_col Whether to drop `has_umlaut_col`. Default is FALSE
+  ##' @param replace_accented_characters Whether to replace accented characters first. Default is FALSE
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##'
   ##' @md
-  ##' @import magrittr
   ##' @export
   magerman_replace_umlaut <- function(x,
-                                      x.umlaut.col = NULL,
-                                      drop.umlaut.col = TRUE,
-                                      replace.accented.characters = FALSE,
+                                      has_umlaut_col = NULL,
+                                      drop_has_umlaut_col = TRUE,
+                                      replace_accented_characters = FALSE,
                                       ...) {
       ## get x vector...
-      x.vector <- harmonize.x(x, ...)
+      x_vector <- get_target(x)
       ## identify names with umlauts
-      if (!is.null(x.umlaut.col) & !is.atomic(x)) {
-          x.umlaut <- x[[x.umlaut.col]] %>% as.logical()
-          ## drop x.umlaut.col
-          if (isTRUE(drop.umlaut.col)) x[[x.umlaut.col]] <- NULL
+      if (!is.null(has_umlaut_col) & !is.atomic(x)) {
+          has_umlaut <-
+              get_target(x, col = has_umlaut_col, output = "replace_col")
+          checkmate::assert_logical(has_umlaut)
+          ## drop has_umlaut_col
+          if (isTRUE(drop_has_umlaut_col)) x[[has_umlaut_col]] <- NULL
       } else {
-          replace.accented.characters <- TRUE
-          x.umlaut <- x.vector %>%
-              magerman_detect_umlaut(return.just.codes = TRUE) %>%
+          replace_accented_characters <- TRUE
+          has_umlaut <- 
+              do.call(magerman_detect_umlaut
+                    , c(list(x_vector)
+                      , list(return_only_codes = TRUE)
+                      , formals("harmonize_options"))) |>
               as.logical()
       }
       ## replace accented characters
-      if (replace.accented.characters) {
-          x.vector %<>%
-              magerman_replace_accented_characters
+      if (replace_accented_characters) {
+          ## do magerman_replace_accented_characters with defauls
+          x_vector <-
+              do.call(magerman_replace_accented_characters
+                    , c(list(x_vector), formals("harmonize_options")))
       }
       ## check if there are at least some umlauts
-      if (any(as.logical(x.umlaut), na.rm = TRUE)) {
+      if (any(has_umlaut)) {
           ## transform umlaut
-          x.harmonized <- x.vector %>%
-              ## first "AE", "OE", "UE" -> "A", "O", "U"
-              replace_patterns(
-                  patterns = magerman.patterns.umlaut,
-                  patterns.col = 3,
-                  patterns.replacements.col = 2
-              ) %>%
-              ## then "A", "O", "U" -> "AE", "OE", "UE"
-              replace_patterns(
-                  patterns = magerman.patterns.umlaut,
-                  patterns.col = 2,
-                  patterns.replacements.col = 3
-              )
+          ## first "AE", "OE", "UE" -> "A", "O", "U"
+          x_harmonized <- 
+              do.call(replace_patterns
+                    , c(list(x_vector)
+                      , formals("harmonize_options")
+                      , list(patterns = magerman_patterns_umlaut
+                           , patterns_col = 3
+                           , patterns_replacements_col = 2)))
+          ## then "A", "O", "U" -> "AE", "OE", "UE"
+          x_harmonized <- 
+              do.call(replace_patterns
+                    , c(list(x_harmonized)
+                      , formals("harmonize_options")
+                      , list(patterns = magerman_patterns_umlaut
+                            , patterns_col = 2
+                           , patterns_replacements_col = 3)))
           ## check which one match original umlaut
-          x.harmonized.keep <-
-              x.harmonized %in%
-              x.harmonized[sapply(x.umlaut, isTRUE)]
+          x_harmonized_keep <-
+              x_harmonized %in%
+              x_harmonized[sapply(has_umlaut, isTRUE)]
           ## if does not match umlaut replace with original
-          x.harmonized %<>%
-              inset(
-                  !x.harmonized.keep,
-                  x.vector[!x.harmonized.keep]
-              )
+          x_harmonized[!x_harmonized_keep] <-
+              x_vector[!x_harmonized_keep]
           ## return table
-          harmonize.x(x, x.harmonized, ...) %>% return()
+          return(inset_target(x_harmonized, x))
       } else {
-          harmonize.x(x, x.vector, ...) %>% return()
+          return(inset_target(x_vector, x))
       }
   }
 
-  ## Tests
-  ## data.frame(
-  ##   test = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-  ##        , "MSLab CÖ."
-  ##        , "MSLab Co."
-  ##        , "MSLaeb Comp."
-  ##        , "MSLab Comp."
-  ##        , "ÃÄÅÆÇÈÉÌÍÏÐÑÒÖØÚÝŸ") %>% toupper
-  ## , log = "lot of coffee"
-  ## , umlaut = c(TRUE, TRUE, TRUE, FALSE, FALSE, TRUE)) %>%
-  ##   magerman.replace.umlaut(return.x.cols.all = FALSE
-  ##                         , x.umlaut.col = "umlaut"
-  ##                         , drop.umlaut.col = TRUE)
+
 #+END_SRC
 
+
+
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_magerman_replace_umlaut.r
+  expect_equal(c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+               , "MSLab Co."
+               , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
+               magerman_detect_umlaut()
+             , structure(list(V1 = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab Co.", 
+                                     "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+                                     ), V1_coded = c("TRUE", NA, "TRUE")), row.names = c(NA, -3L), class = c("data.table", 
+                                                                                                             "data.frame")))
+
+
+
+
+
+  expect_equal(data.frame(
+      test = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+             , "MSLab CÖ."
+             , "MSLab Co."
+             , "MSLaeb Comp."
+             , "MSLab Comp."
+             , "ÃÄÅÆÇÈÉÌÍÏÐÑÒÖØÚÝŸ") |> toupper()
+    , log = "lot of coffee"
+    , umlaut = c(TRUE, TRUE, FALSE, FALSE, FALSE, TRUE)) |>
+    magerman_replace_umlaut(
+        has_umlaut_col = "umlaut"
+      , drop_has_umlaut_col = FALSE
+      , replace_accented_characters = TRUE)
+  , structure(list(test = c("MAEKAEROENI ETOE FKUESNOE LTD", "MSLAEB COE.", 
+                            "MSLAEB COE.", "MSLAEB COMP.", "MSLAB COMP.", "AEAEAEAECEEIIIÐNOEOEØUEYY"
+                            ), log = c("lot of coffee", "lot of coffee", "lot of coffee", 
+                                       "lot of coffee", "lot of coffee", "lot of coffee"), umlaut = c(TRUE, 
+                                                                                                      TRUE, FALSE, FALSE, FALSE, TRUE)), row.names = c(NA, -6L), class = c("data.table", 
+                                                                                                                                                                           "data.frame")))
+
+
+
+
+
+
+
+  expect_equal(data.frame(
+      test = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+             , "MSLab CÖ."
+             , "MSLab Co."
+             , "MSLaeb Comp."
+             , "MSLab Comp."
+             , "ÃÄÅÆÇÈÉÌÍÏÐÑÒÖØÚÝŸ") |> toupper()
+    , log = "lot of coffee"
+    , umlaut = c(TRUE, TRUE, FALSE, TRUE, FALSE, TRUE)) |>
+    magerman_replace_umlaut(
+        has_umlaut_col = "umlaut"
+      , drop_has_umlaut_col = FALSE
+      , replace_accented_characters = TRUE)
+  , structure(list(test = c("MAEKAEROENI ETOE FKUESNOE LTD", "MSLAEB COE.", 
+                            "MSLAEB COE.", "MSLAEB COEMP.", "MSLAEB COEMP.", "AEAEAEAECEEIIIÐNOEOEØUEYY"
+                            ), log = c("lot of coffee", "lot of coffee", "lot of coffee", 
+                                       "lot of coffee", "lot of coffee", "lot of coffee"), umlaut = c(TRUE, 
+                                                                                                      TRUE, FALSE, TRUE, FALSE, TRUE)), row.names = c(NA, -6L), class = c("data.table", 
+                                                                                                                                                                          "data.frame")))
+
+
+
+
+
+
+
+
+  ## test the col, rows args dependencies!
+  expect_equal(data.frame(
+      log = "lot of coffee"
+    , test = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+             , "MSLab CÖ."
+             , "MSLab Co."
+             , "MSLaeb Comp."
+             , "MSLab Comp."
+             , "ÃÄÅÆÇÈÉÌÍÏÐÑÒÖØÚÝŸ") |> toupper()
+    , umlaut = c(TRUE, TRUE, FALSE, TRUE, FALSE, TRUE)) |>
+    magerman_replace_umlaut(
+        has_umlaut_col = "umlaut"
+      , drop_has_umlaut_col = FALSE
+      , replace_accented_characters = TRUE
+      , rows = c( FALSE, TRUE, FALSE, FALSE, FALSE, TRUE)
+      , col = 2)
+  , structure(list(log = c("lot of coffee", "lot of coffee", "lot of coffee", 
+                           "lot of coffee", "lot of coffee", "lot of coffee"), test = c("MÄKARÖNI ETÖ FKÜSNÖ LTD", 
+                                                                                        "MSLAEB COE.", "MSLAB CO.", "MSLAEB COMP.", "MSLAB COMP.", "AEAEAEAECEEIIIÐNOEOEØUEYY"
+                                                                                        ), umlaut = c(TRUE, TRUE, FALSE, TRUE, FALSE, TRUE)), row.names = c(NA, 
+                                                                                                                                                            -6L), class = c("data.table", "data.frame")))
+
+#+END_SRC
+
+  
 
 ** Combined Magerman Procedures
 :PROPERTIES:
