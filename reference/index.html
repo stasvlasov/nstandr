@@ -208,10 +208,6 @@ specified.</p></td>
         </td>
         <td><p>Detects string encoding</p></td>
       </tr><tr><td>
-          <p><code><a href="harmonize.make.procedures.list.html">harmonize.make.procedures.list()</a></code> </p>
-        </td>
-        <td><p>Makes list of procedures calls from table.</p></td>
-      </tr><tr><td>
           <p><code><a href="harmonize.match.arg.html">harmonize.match.arg()</a></code> </p>
         </td>
         <td><p>Matches the argument vector to (default) choices and ensures the correct length</p></td>
@@ -224,17 +220,9 @@ specified.</p></td>
         </td>
         <td><p>Removes double quotes (deprecated)</p></td>
       </tr><tr><td>
-          <p><code><a href="harmonize.squish.spaces.html">harmonize.squish.spaces()</a></code> </p>
-        </td>
-        <td><p>Removes redundant whitespases</p></td>
-      </tr><tr><td>
           <p><code><a href="harmonize.toascii.html">harmonize.toascii()</a></code> </p>
         </td>
         <td><p>Translates non-ascii symbols to its ascii equivalent</p></td>
-      </tr><tr><td>
-          <p><code><a href="harmonize.toupper.html">harmonize.toupper()</a></code> </p>
-        </td>
-        <td><p>Uppercases vector of interest in the object (table)</p></td>
       </tr><tr><td>
           <p><code><a href="harmonize.x.html">harmonize.x()</a></code> </p>
         </td>
@@ -243,10 +231,6 @@ specified.</p></td>
           <p><code><a href="harmonize.x.dots.html">harmonize.x.dots()</a></code> </p>
         </td>
         <td><p>Same as <code>harmonize.x</code> but checks and updates dots values if needed. Runs only in environment where ... (dots) ment for <code>harmonize.x</code> exists.</p></td>
-      </tr><tr><td>
-          <p><code><a href="harmonize.x.split.html">harmonize.x.split()</a></code> </p>
-        </td>
-        <td><p>Splits the object (table) in chunks by rows</p></td>
       </tr><tr><td>
           <p><code><a href="harmonize_add_suffix.html">harmonize_add_suffix()</a></code> </p>
         </td>
@@ -280,6 +264,10 @@ specified.</p></td>
         </td>
         <td><p>Harmonizes strings using exact procedures described in Magerman et al. 2009.</p></td>
       </tr><tr><td>
+          <p><code><a href="harmonize_make_procedures_list.html">harmonize_make_procedures_list()</a></code> </p>
+        </td>
+        <td><p>Makes list of procedures calls from table.</p></td>
+      </tr><tr><td>
           <p><code><a href="harmonize_omit_empty.html">harmonize_omit_empty()</a></code> </p>
         </td>
         <td><p>Removes elements that are either "", NA, NULL or have zero length</p></td>
@@ -288,9 +276,21 @@ specified.</p></td>
         </td>
         <td><p>Does nothing but stores (as its own default arguments) options that control vector handeling through harmonization process. These options are available in most harmonizer functions that accept <code>...</code> parameter.</p></td>
       </tr><tr><td>
+          <p><code><a href="harmonize_squish_spaces.html">harmonize_squish_spaces()</a></code> </p>
+        </td>
+        <td><p>Removes redundant whitespases</p></td>
+      </tr><tr><td>
           <p><code><a href="harmonize_target_get.html">harmonize_target_get()</a></code> </p>
         </td>
         <td><p>Gets a target vector to harmonize.</p></td>
+      </tr><tr><td>
+          <p><code><a href="harmonize_toupper.html">harmonize_toupper()</a></code> </p>
+        </td>
+        <td><p>Uppercases vector of interest in the object (table)</p></td>
+      </tr><tr><td>
+          <p><code><a href="harmonize_x_split.html">harmonize_x_split()</a></code> </p>
+        </td>
+        <td><p>Splits the object (table) in chunks by rows</p></td>
       </tr><tr><td>
           <p><code><a href="inset_target.html">inset_target()</a></code> </p>
         </td>
@@ -302,7 +302,7 @@ specified.</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_detect_characters.html">magerman_detect_characters()</a></code> </p>
         </td>
-        <td><p>Detects candidates for characters that need to be cleaned</p></td>
+        <td><p>Detect candidates for characters that need to be cleaned</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_detect_comma_period_irregularities.html">magerman_detect_comma_period_irregularities()</a></code> </p>
         </td>

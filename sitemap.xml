@@ -133,9 +133,6 @@
     <loc>/reference/harmonize.html</loc>
   </url>
   <url>
-    <loc>/reference/harmonize.make.procedures.list.html</loc>
-  </url>
-  <url>
     <loc>/reference/harmonize.match.arg.html</loc>
   </url>
   <url>
@@ -145,22 +142,13 @@
     <loc>/reference/harmonize.remove.quotes.html</loc>
   </url>
   <url>
-    <loc>/reference/harmonize.squish.spaces.html</loc>
-  </url>
-  <url>
     <loc>/reference/harmonize.toascii.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize.toupper.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize.x.dots.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize.x.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize.x.split.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize_add_suffix.html</loc>
@@ -187,13 +175,25 @@
     <loc>/reference/harmonize_magerman.html</loc>
   </url>
   <url>
+    <loc>/reference/harmonize_make_procedures_list.html</loc>
+  </url>
+  <url>
     <loc>/reference/harmonize_omit_empty.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize_options.html</loc>
   </url>
   <url>
+    <loc>/reference/harmonize_squish_spaces.html</loc>
+  </url>
+  <url>
     <loc>/reference/harmonize_target_get.html</loc>
+  </url>
+  <url>
+    <loc>/reference/harmonize_toupper.html</loc>
+  </url>
+  <url>
+    <loc>/reference/harmonize_x_split.html</loc>
   </url>
   <url>
     <loc>/reference/harmonizer-package.html</loc>

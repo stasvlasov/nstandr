@@ -46,13 +46,14 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">harmonize</span><span class="op">(</span>
   <span class="va">x</span>,
-  procedures <span class="op">=</span> <span class="va">harmonizer.default.procedures.table</span>,
-  progress <span class="op">=</span> <span class="cn">TRUE</span>,
-  progress.min <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>,
-  progress.by <span class="op">=</span> <span class="cn">NA</span>,
-  progress.percent <span class="op">=</span> <span class="fl">1</span>,
-  progress.message.use.names <span class="op">=</span> <span class="cn">TRUE</span>,
+  procedures <span class="op">=</span> <span class="va">harmonizer_default_procedures_table</span>,
+  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,
+  nrows_min_to_show_progress <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>,
+  progress_step_nrows <span class="op">=</span> <span class="cn">NULL</span>,
+  progress_step_in_percent <span class="op">=</span> <span class="fl">1</span>,
+  progress_message_use_names <span class="op">=</span> <span class="cn">TRUE</span>,
   quite <span class="op">=</span> <span class="cn">FALSE</span>,
+  save_intermediate_x_to_var <span class="op">=</span> <span class="cn">NULL</span>,
   <span class="va">...</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -62,55 +63,61 @@
     <dl><dt>x</dt>
 <dd><p>object (table)</p></dd>
 <dt>procedures</dt>
-<dd><p>Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with <code>harmonize.make.procedures.list</code> (see its help for the correct format of data.frame with procedures). Default is <code>harmonizer.default.procedures.table</code></p></dd>
-<dt>progress</dt>
-<dd><p>Show the progress? Default is TRUE</p></dd>
-<dt>progress.min</dt>
+<dd><p>Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with <code>harmonize_make_procedures_list</code> (see its help for the correct format of data.frame with procedures). Default is <code>harmonizer_default_procedures_table</code></p></dd>
+<dt>show_progress</dt>
+<dd></dd>
+<dt>nrows_min_to_show_progress</dt>
 <dd><p>The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5</p></dd>
-<dt>progress.by</dt>
-<dd><p>If set it will divide the x into chunk of this amount of rows. Default is NA.</p></dd>
-<dt>progress.percent</dt>
+<dt>progress_step_nrows</dt>
+<dd><p>If set it will divide the x into chunk of this amount of rows. Default is NULL.</p></dd>
+<dt>progress_step_in_percent</dt>
 <dd><p>Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.</p></dd>
-<dt>progress.message.use.names</dt>
+<dt>progress_message_use_names</dt>
 <dd><p>Should we use names from <code>procedures</code> list to report progress. Default is TRUE.</p></dd>
 <dt>quite</dt>
 <dd><p>Suppress all messages. Default is FALSE.</p></dd>
+<dt>save_intermediate_x_to_var</dt>
+<dd><p>For debuging of standartization procedures. Saves intermediate results to this variable. If procedures finish without errors then the variable will be removed.</p></dd>
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="harmonize.x.html">harmonize.x</a></code></p><dl><dt><code>inset.vector</code></dt>
-<dd><p>a vector to inset. Optional. Default is NULL</p></dd>
+<dd><p>Arguments passed on to <code><a href="harmonize_options.html">harmonize_options</a></code></p><dl><dt><code>col</code></dt>
+<dd><p>Column of interest (the one we need to harmonize) in the <code>x</code> object (if it is data.frame like).</p></dd>
 
-    <dt><code>x.col</code></dt>
-<dd><p>vector of interest in <code>x</code> object</p></dd>
+    <dt><code>rows</code></dt>
+<dd><p>Logical vector to filter records of interest. Default is NULL which means do not filter records.</p></dd>
 
-    <dt><code>x.col.update</code></dt>
-<dd><p>Update values in <code>x.col</code> column. Default is FALSE. If set <code>inset.append</code>, <code>inset.name</code> and <code>inset.suffix</code> are ignored. Also if set the default for <code>return.x.cols.all</code> will be set to TRUE.</p></dd>
+    <dt><code>omitted_rows_values</code></dt>
+<dd><p>If <code>rows</code> parameter is set then merge <code>omitted_rows_values</code> with the results (filtered by <code>rows</code>). Either single string or a character vector of length <code>nrow(x)</code>. If NULL (the default) then original values of <code>col</code> are merged with results.</p></dd>
 
-    <dt><code>x.rows</code></dt>
-<dd><p>Logical vector to filter records of interest. Default is NULL which means do not filter records</p></dd>
+    <dt><code>output</code></dt>
+<dd><p>Where to inset retults (harmonized vector) in the <code>x</code> object. Default options is 'replace_col' which overwrides the <code>col</code> in <code>x</code> with results. Other options:</p><ul><li><p>'omit' :: do not write results back to table (usually used when <code>append_copy</code> is set for temporary values)</p></li>
+<li><p>'prepend_to_col' :: prepend to <code>col</code></p></li>
+<li><p>'append_to_col' :: append to <code>col</code></p></li>
+<li><p>'prepend_to_x' :: prepend to <code>x</code> data.frame like object</p></li>
+<li><p>'append_to_x' :: append to <code>x</code> data.frame like object</p></li>
+</ul></dd>
 
-    <dt><code>x.atomic.name</code></dt>
-<dd><p>If <code>x</code> is vector use this name for original column if it is in results. Default is "x". If <code>x</code> is table the name of <code>x.col</code> will be used.</p></dd>
+    <dt><code>name</code></dt>
+<dd><p>Use this name for the column with results (harmonized values). Default is NA, which means that either <code>name_for_x_atomic</code> if <code>x</code> is vector or original col name will be used with <code>name_suffix</code> at the end.</p></dd>
 
-    <dt><code>inset.omitted.val</code></dt>
-<dd><p>If <code>x.rows</code> is set merge these values to the results. It should be a vector of length 1 or <code>nrow(x)</code>. If the value is NULL (default) then use values of <code>x.col</code>.</p></dd>
+    <dt><code>name_for_x_atomic</code></dt>
+<dd><p>If <code>x</code> is vector use this name for original column if it is in results. Default is "x". If <code>x</code> is table the name of <code>col</code> will be used.</p></dd>
 
-    <dt><code>inset.append</code></dt>
-<dd><p>If set then put <code>inset.vector</code> as the last instead of first vector/column. Default is FALSE.</p></dd>
+    <dt><code>name_suffix</code></dt>
+<dd><p>If <code>name</code> is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in <code>select_x_cols</code> it will add counter at the end to avoid variables with the same names.</p></dd>
 
-    <dt><code>inset.suffix</code></dt>
-<dd><p>If <code>inset.name</code> is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in <code>return.x.cols</code> it will add counter at the end to avoid variables with the same names.</p></dd>
+    <dt><code>append_copy</code></dt>
+<dd><p>Whether to append a copy of result vector to <code>x</code> object</p></dd>
 
-    <dt><code>inset.name</code></dt>
-<dd><p>Use this name for the first column in results (harmonized names). Default is NULL, which means that either x.atomic.name if x is vector or original x.col name will be used with <code>inset.suffix</code> at the end.</p></dd>
+    <dt><code>append_copy_name_format</code></dt>
+<dd><p>How the append copy wiil be named</p></dd>
 
-    <dt><code>return.x.cols</code></dt>
-<dd><p>If x is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (x.col).</p></dd>
-
-    <dt><code>return.x.cols.all</code></dt>
-<dd><p>Whether to bind all columns in x. Defaults depends on values of <code>x.col.update</code> and <code>inset.append</code>. If either is set then defaut values is TRUE otherwise FALSE. If set to TRUE by user the return.x.cols is ignored.</p></dd>
+    <dt><code>select_cols</code></dt>
+<dd><p>If x` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).</p></dd>
 
   
 </dl></dd>
+<dt>progress</dt>
+<dd><p>Show the progress? Default is TRUE</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
