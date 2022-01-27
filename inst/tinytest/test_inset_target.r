@@ -100,6 +100,14 @@ expect_equal(
                , data.table(c1 = c("1",2,3,4,5), x = c("x", "y", "z", "i", "j"))
                , rows = c(1,3,5))
   , data.table(c1 = c("a", "2", "b", "4", "c"), x = c("x", "y", "z", "i", "j")))
+
+
+## test returning only target column
+expect_equal(inset_target(c("a", "b", "c")
+                        , data.table(c1 = c("1",2,3,4,5), x = c("x", "y", "z", "i", "j"))
+                        , rows = c(1,3,5)
+                        , return_only_target_col = TRUE)
+           , c("a", "2", "b", "4", "c"))
 ## --------<<  get_target & inset_target:4 ends here
 
 

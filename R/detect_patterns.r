@@ -155,7 +155,6 @@ detect_patterns <- function(x
         }
     }
     x_inset_vector <- unlist_if_possible(x_inset_vector)
-    if(return_only_codes) return(x_inset_vector)
     ## append codes (if prepend allowed it will break target col inference)
     inset_target(x_inset_vector, x
                , rows = rows
@@ -163,7 +162,8 @@ detect_patterns <- function(x
                , name = codes_col_name
                , name_suffix = codes_col_name_suffix
                , omitted_rows_values = codes_omitted_rows_value
-               , omitted_rows_values_for_new_col = NA_character_)
+               , omitted_rows_values_for_new_col = NA_character_
+               , return_only_target_col = return_only_codes)
 }
 ## --------<<  detect_patterns:1 ends here
 

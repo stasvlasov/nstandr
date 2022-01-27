@@ -159,14 +159,18 @@ format_append_copy <- function(format, name = "") {
 ##' @param allow_na_in_vector Whether to allow NA in inset vector
 ##' @param which_call_to_report System call number (e.g., -2L) to
 ##'     include in report if arguments checks fails
-##' 
+##' @param return_only_target_col If toggled to TRUE then only return
+##'     the vector to be inset (output argument is ignored)
 ##' @return Data.table or character vector
 ##' @inheritDotParams harmonize_options
 inset_target <- function(vector, x
                        , omitted_rows_values_for_new_col = NULL
                        , allow_na_in_vector = TRUE
                        , which_call_to_report = -5L
+                       , return_only_target_col = FALSE
                        , ...) {
+    checkmate::assert_flag(allow_na_in_vector)
+    checkmate::assert_flag(return_only_target_col)
     vector <- defactor_vector(vector)
     with(dots <- get_harmonize_options(), {
         ## check harmonize_options
@@ -225,7 +229,9 @@ inset_target <- function(vector, x
         ## -----
         ## inset full vector
         ## -----
-        if(output != "omit") {
+        if(return_only_target_col) {
+            x <- vector
+        } else if(output != "omit") {
             if(is.atomic(x) && output == "replace_col") {
                 ## just replace x if it is atomic
                 x <- vector
@@ -236,7 +242,8 @@ inset_target <- function(vector, x
                 col_or_name_if_new <-
                     infer_moving_target_from_names(dots, x, return_name_for_new_col = TRUE)
                 ## fuckin data.table syntax is so cryptic
-                x[, (col_or_name_if_new) := vector]
+                ## [] at the end ensures that returned DT is printed
+                x[, (col_or_name_if_new) := vector][]
                 ## x[[col_or_name_if_new]] <- vector
                 ## now if we added new col
                 if(x_width(x) == width_pre_inset + 1) {
@@ -252,13 +259,14 @@ inset_target <- function(vector, x
         ## -----
         ## apped copy
         ## -----
-        if(append_copy) {
+        if(append_copy & !return_only_target_col) {
             x <- defactor(x, conv2dt = "all")
             col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output)
             append_copy_name <- format_append_copy(append_copy_name_format, name = names(x)[col_post_inset])
             checkmate::assert_names(append_copy_name, add = assertion_fails)
             report_arg_checks(assertion_fails, which_call_to_report)
-            x[, (append_copy_name) := vector]
+            ## [] at the end ensures that returned DT is printed
+            x[, (append_copy_name) := vector][]
         }
         report_arg_checks(assertion_fails, which_call_to_report)
         return(x)

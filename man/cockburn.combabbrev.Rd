@@ -4,12 +4,12 @@
 \alias{cockburn.combabbrev}
 \title{Collapses single character sequences}
 \usage{
-cockburn.combabbrev(x, wrap.in.spaces = TRUE, ...)
+cockburn.combabbrev(x, wrap_in_spaces = TRUE, ...)
 }
 \arguments{
 \item{x}{Object (table or vector)}
 
-\item{wrap.in.spaces}{Whether to wrap strings in spaces before processing because the algorithm assumes assumes that each string begins and ends with space. Default is TRUE.}
+\item{wrap_in_spaces}{Whether to wrap strings in spaces before processing because the algorithm assumes assumes that each string begins and ends with space. Default is TRUE.}
 
 \item{...}{
   Arguments passed on to \code{\link[=harmonize.x]{harmonize.x}}

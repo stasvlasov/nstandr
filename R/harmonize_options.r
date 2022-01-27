@@ -26,7 +26,7 @@ harmonize_options <- function(col = 1
                             , name_for_x_atomic = "x"
                             , name_suffix = "_harmonized"
                             , append_copy = FALSE
-                            , append_copy_name_format = "%name_harmonizing_%number_%procedure"
+                            , append_copy_name_format = "{col_name}_harmonizing{_procedure_number}{_procedure_name}"
                             , select_cols = NULL) {
     ## do nothing
     return()

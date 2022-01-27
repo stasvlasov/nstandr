@@ -12,7 +12,7 @@ get_harmonize_options <- function() {
         get_dots(harmonize_options
                , search_calls_with_formals = c("x", "...")
                , search_depth = 500L
-               , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+               ## , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                , skip_checks_for_parent_call = FALSE)
     }, envir = parent.frame())
 }
@@ -24,7 +24,7 @@ get_col_and_rows <- function() {
                , select_args = c("col", "rows")
                , search_calls_with_formals = c("x", "...")
                , search_depth = 500L
-               , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+               ## , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                , skip_checks_for_parent_call = FALSE)
     }, envir = parent.frame())
 }

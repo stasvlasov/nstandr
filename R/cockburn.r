@@ -2,7 +2,7 @@
 ##' Collapses single character sequences
 ##'
 ##' @param x Object (table or vector)
-##' @param wrap.in.spaces Whether to wrap strings in spaces before processing because the algorithm assumes assumes that each string begins and ends with space. Default is TRUE.
+##' @param wrap_in_spaces Whether to wrap strings in spaces before processing because the algorithm assumes assumes that each string begins and ends with space. Default is TRUE.
 ##' @inheritDotParams harmonize.x
 ##' @return Harmonized table
 ##' 
@@ -10,12 +10,12 @@
 ##' @import magrittr
 ##' @export 
 cockburn.combabbrev <- function(x
-                              , wrap.in.spaces = TRUE
+                              , wrap_in_spaces = TRUE
                               , ...) {
   x.vector <-
     harmonize.x(x, ...) %>%
     ## wrap in spaces
-    {if(wrap.in.spaces) paste0(" ", ., " ") else .}
+    {if(wrap_in_spaces) paste0(" ", ., " ") else .}
   ## collapse
   sapply(x.vector, function(org.name) {
     reg  <- gregexpr("(?=\\s\\w(\\s+)\\w\\s)", org.name, perl = TRUE)
@@ -714,13 +714,13 @@ cockburn.detect.uspto <- function(x
 ##' @import magrittr
 ##' @export 
 harmonize.cockburn <- function(x
-                             , cockburn.procedures = cockburn.procedures.table
+                             , cockburn.procedures = cockburn.procedures_table
                              , detect.legal.form = FALSE
                              , return.x.before.common.words.removal = FALSE
                              , return.x.cols.all = FALSE
                              , ... ) {
     if(is.data.frame(cockburn.procedures)) {
-        cockburn.procedures %<>% harmonize.make.procedures.list
+        cockburn.procedures %<>% harmonize_make_procedures_list
     }
   ## do some tweaks on cockburn.procedures
   if(!detect.legal.form) {

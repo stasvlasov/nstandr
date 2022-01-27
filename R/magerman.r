@@ -1,5 +1,5 @@
 ## -------->>  [[file:../harmonizer.src.org::*Characters][Characters:1]]
-##' Detects candidates for characters that need to be cleaned
+##' @eval attr(magerman_detect_characters, "description")
 ##' @param x table
 ##' @param codes_col_name Same as in `detect_patterns`
 ##' @inheritDotParams harmonize_options
@@ -21,6 +21,9 @@ magerman_detect_characters <- function(x
                       , patterns_type = "regex"
                       , codes_col_name = codes_col_name)
     }
+
+attr(magerman_detect_characters, "description") <-
+    "Detect candidates for characters that need to be cleaned"
 ## --------<<  Characters:1 ends here
 
 
@@ -60,13 +63,13 @@ magerman_replace_sgml_characters <- function(x, ...) {
 ## -------->>  [[file:../harmonizer.src.org::*magerman.replace.proprietary.characters][magerman.replace.proprietary.characters:1]]
 ##' Replaces proprietary characters
 ##' @param x table
-##' @inheritDotParams replace_patterns
+##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
 ##'
 ##' @md
 ##' @export
 magerman_replace_proprietary_characters <- function(x, ...) {
-    replace_patterns(x, magerman_patterns_proprietary_characters, ...)
+    replace_patterns(x, magerman_patterns_proprietary_characters)
 }
 ## --------<<  magerman.replace.proprietary.characters:1 ends here
 
@@ -270,13 +273,16 @@ magerman_detect_legal_form_end <- function(x
                                          , return_only_codes = FALSE
                                          , patterns_codes = NULL
                                          , no_match_code = NULL
+                                         , codes_update_empty = TRUE
                                          , ...) {
     detect_patterns(x
          , magerman_patterns_legal_form_end
          , patterns_codes_col = 3
          , patterns_codes = patterns_codes
          , patterns_type = "ends"
+         , codes_col_name_suffix = "_legal_form"
          , return_only_first_detected_code = TRUE
+         , codes_update_empty = codes_update_empty
          , return_only_codes = return_only_codes
          , no_match_code = no_match_code)
 }
@@ -310,7 +316,8 @@ magerman_detect_legal_form_beginning <- function(x, ...) {
         , patterns = data.table(pattern = "KABUSHIKI KAISHA"
                               , legal.form = "KAISHA")
         , patterns_type = "begins"
-        , return_only_first_detected_code = TRUE)
+        , return_only_first_detected_code = TRUE
+        , codes_col_name_suffix = "_legal_form")
 }
 
 ##' Replaces legal form
@@ -340,7 +347,8 @@ magerman_detect_legal_form_middle <- function(x, ...) {
         , patterns = magerman_patterns_legal_form_middle
         , patterns_codes_col = 3
         , patterns_type = "fixed"
-        , return_only_first_detected_code = TRUE)
+        , return_only_first_detected_code = TRUE
+        , codes_col_name_suffix = "_legal_form")
 }
 
 ##' Replaces legal form
@@ -383,10 +391,11 @@ magerman_remove_legal_form <- function(x, ...) {
     legal_form_end_rows <-
         magerman_detect_legal_form_end(x
                                      , return_only_codes = TRUE
+                                     , codes_update_empty = FALSE
                                      , patterns_codes = TRUE
                                      , no_match_code = FALSE)
     x |>
-        magerman_replace_legal_form_beginning() |>
+        magerman_replace_legal_form_beginning(rows = !legal_form_end_rows) |>
         magerman_replace_legal_form_middle(rows = !legal_form_end_rows) |>
         magerman_replace_legal_form_end()        
 }
@@ -402,7 +411,7 @@ magerman_remove_legal_form_and_clean <- function(x, ...) {
         magerman_remove_legal_form() |>
         replace_patterns(
             patterns = c("[-;:,&]*\\s*$", "^\\s*"),
-            patterns.type = "regex"
+            patterns_type = "regex"
         )
 }
 ## --------<<  Detect and replace legal forms:3 ends here
@@ -511,13 +520,19 @@ magerman_condense <- function(x, ...) {
 ##'
 ##' @md
 ##' @export
-magerman_detect_umlaut <- function(x, return_only_codes = FALSE, ...) {
+magerman_detect_umlaut <- function(x
+                                 , return_only_codes = FALSE
+                                 , codes_col_name = NULL
+                                 , ...) {
     detect_patterns(x
-        , patterns = magerman_patterns_umlaut
-        , patterns_codes_col = 4
-        , patterns_type = "fixed"
-        , return_only_first_detected_code = TRUE
-        , return_only_codes = return_only_codes)
+                  , patterns = magerman_patterns_umlaut
+                  , patterns_type = "fixed"
+                  , patterns_codes = TRUE
+                  , no_match_code = FALSE
+                  , codes_col_name_suffix = "_has_umlaut"
+                  , codes_col_name = codes_col_name
+                  , return_only_first_detected_code = TRUE
+                  , return_only_codes = return_only_codes)
 }
 
 ##' Replaces Umlauts
@@ -596,52 +611,44 @@ magerman_replace_umlaut <- function(x,
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Combined Magerman Procedures][Combined Magerman Procedures:2]]
+## -------->>  [[file:../harmonizer.src.org::*Combined Magerman Procedures][Combined Magerman Procedures:1]]
 ##' Harmonizes strings using exact procedures described in Magerman et al. 2009.
 ##' @param x table or vector
-##' @param magerman.procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `harmonize.make.procedures.list` (see its help for the correct format of data.frame with procedures). Default is `magerman.procedures.table`.
-##' @param detect.legal.form Whether to detect legal forms. Default is FALSE
-##' @param return.x.before.common.words.removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
-##' @param return.x.cols.all Whether to return initial column in x. Default is FALSE
+##' @param detect_legal_form Whether to detect legal forms. Default is FALSE
+##' @param append_copy_before_common_words_removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
 ##' @inheritDotParams harmonize
 ##' @return Harmonized table
 ##'
 ##' @references Magerman et al., 2006 - Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization
 ##'
 ##' @md
-##' @import magrittr
 ##' @export
-harmonize_magerman <- function(x,
-                               magerman.procedures = magerman.procedures.table,
-                               detect.legal.form = FALSE,
-                               return.x.before.common.words.removal = FALSE,
-                               return.x.cols.all = FALSE,
-                               ...) {
-    if (is.data.frame(magerman.procedures)) {
-        magerman.procedures %<>% harmonize.make.procedures.list
+harmonize_magerman <- function(x
+                             , detect_legal_form = FALSE
+                             , append_copy_before_common_words_removal = FALSE
+                             , ...) {
+    magerman_procedures <-
+        harmonize_make_procedures_list(magerman_procedures_table)
+    ## do some tweaks on magerman_procedures
+    if (!detect_legal_form) {
+        is_magerman_detect_legal_form <- 
+            sapply(magerman_procedures
+                 , \(p) p[[1]] == "magerman_detect_legal_form")
+        magerman_procedures <-
+            magerman_procedures[!is_magerman_detect_legal_form]
     }
-    ## do some tweaks on magerman.procedures
-    if (!detect.legal.form) {
-        magerman.procedures %<>%
-            extract(sapply(., extract2, 1) %>%
-                sapply(equals, "magerman.detect.legal.form") %>%
-                not())
+    if (append_copy_before_common_words_removal) {
+        which_is_magerman_remove_legal_form_and_clean <-
+            sapply(magerman_procedures
+                 , \(p) p[[1]] == "magerman_remove_legal_form_and_clean") |>
+            which()
+        magerman_procedures[[which_is_magerman_remove_legal_form_and_clean]] <-
+            c(magerman_procedures[[which_is_magerman_remove_legal_form_and_clean]]
+            , list(append_copy = TRUE
+                 , append_copy_name_format = "{col_name}_before_common_words_removal"))
     }
-    if (return.x.before.common.words.removal) {
-        magerman.procedures %<>%
-            inset2(
-                sapply(., extract2, 1) %>%
-                    sapply(equals, "magerman.remove.legal.form.and.clean") %>%
-                    which(),
-                list("magerman.remove.legal.form.and.clean", return.x.cols.all = TRUE)
-            )
-    }
-    if (return.x.cols.all) {
-        magerman.procedures %<>%
-            inset2(1, c(as.list(extract2(., 1)), return.x.cols.all = TRUE))
-    }
-    harmonize(x, magerman.procedures, ...)
+    harmonize(x, magerman_procedures, ...)
 }
-## --------<<  Combined Magerman Procedures:2 ends here
+## --------<<  Combined Magerman Procedures:1 ends here
 
 

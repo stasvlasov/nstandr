@@ -11,126 +11,44 @@
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*harmonize.make.procedures.list][harmonize.make.procedures.list:1]]
-##' Makes list of procedures calls from table.
-##'
-##' Table should have at least two columns - messages and fuctions calls. Each function call should be a string of the following format "'function.name', arg1 = val1, arg2 = val2" (same as arguments for `do.call` function).
-##' 
-##' @param procedures.table Table to use
-##' @param message.field name of the column with messages that will be displayed when each call is executed
-##' @param function.call.field name of the column where function (harmonization procedures) calls are listed.
-##' @param no.field name of the column where the number of procedure is specified. Also this field indicates if the row in the table is just a comment in which case it will be removed if `remove.comments` is set (which is set by default)
-##' @param remove.comments Whether to remove comments.
-##' 
-##' @return List of named function calls. Names are messages.
-##' 
-##' @md 
-##' @import magrittr data.table
-harmonize.make.procedures.list <- function(procedures.table
-                                         , message.field = "message"
-                                         , function.call.field = "function.call"
-                                         , no.field = "no"
-                                         , remove.comments = TRUE
-                                         , sort.by.no.field = TRUE
-                                         , comments = c("#", "-", "")) {
-    procedures.table %<>% defactor
-    if(remove.comments) {
-        procedures.table %<>%
-            extract(!(procedures.table[[no.field]] %in% comments), )
-    }
-    if(sort.by.no.field) {
-        procedures.table %<>%
-            extract(order(procedures.table[[no.field]]), )
-    }
-    procedures.table %>% 
-        extract2(function.call.field) %>%
-        paste0("list(", ., ")") %>%
-        lapply(function(str) eval(parse(text = str))) %>%
-        lapply(function(lst) if(length(lst) == 1) unlist(lst) else lst) %>% 
-        set_names(procedures.table[[message.field]])
-}
-## --------<<  harmonize.make.procedures.list:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.x.split][harmonize.x.split:1]]
+## -------->>  [[file:../harmonizer.src.org::*harmonize_x_split][harmonize_x_split:1]]
 ##' Splits the object (table) in chunks by rows
 ##'
 ##' Convenient to apply some function to the table in chunks, e.g., if you want to add display of progress.
 ##'
 ##' @param x object or table
 ##' @param by number of rows to split by
-##' @param len length of the table (nrow)
+##' @param len length of the table (nrow). If it is NULL then use x_length(x)
 ##' 
 ##' @return List of (sub)tables
-##'
-##' @export
- harmonize.x.split <- function(x, by, len) {
-   split(x, rep(seq(1, len %/% by +1)
-              , each = by
-              , length.out = len))
- }
-## --------<<  harmonize.x.split:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*harmonize.squish.spaces][harmonize.squish.spaces:1]]
-#' Removes redundant whitespases
-#' @param x table or vector
-#'
-#' @param wrap.in.spaces If set then adds leaing and ending spaces. Default is FALSE.
-#'
-#' @inheritDotParams harmonize.x
-#'
-#' @return updated table or vector
-#' @import magrittr stringr
-#' @export
-harmonize.squish.spaces <- function(x, wrap.in.spaces = FALSE, ...) {
-  harmonize.x(x, ...) %>% # get x.vector
-    str_squish %>%
-    {if(wrap.in.spaces) paste0(" ", ., " ") else .} %>% 
-    harmonize.x(x, ., ...) # put x.vector to x
+harmonize_x_split <- function(x, by, len = NULL) {
+    if(is.null(len)) len <- x_length(x)
+    split(x, rep(seq(1, len %/% by +1)
+               , each = by
+               , length.out = len))
 }
-
-## #' Removes redundant whitespases
-## #' @param x table or vector
-## #'
-## #' @param trim Whether to trim the beging (i.e., "left"), ending (i.e., "right") or "both" whitespaces.
-## #' @inheritDotParams harmonize.x
-## #'
-## #' @return updated table or vector
-## #' @import magrittr stringr
-## #' @export
-## harmonize.clean.spaces <- function(x
-##                                  , trim = "both"
-##                                  , ...) {
-##   harmonize.x(x, ...) %>% # get x.vector
-##     str_replace_all("\\s+", " ") %>%
-##     {if(is.null(trim)) .
-##      else stri_trim(., side = trim)} %>%
-##     harmonize.x(x, ., ...) # put x.vector to x
-## }
-## --------<<  harmonize.squish.spaces:1 ends here
+## --------<<  harmonize_x_split:1 ends here
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*harmonize.toupper][harmonize.toupper:1]]
-##' Uppercases vector of interest in the object (table)
+## -------->>  [[file:../harmonizer.src.org::*harmonize_toupper][harmonize_toupper:1]]
+##' @eval attr(harmonize_toupper, "description")
 ##' 
-##' @param data data
+##' @param x data
 ##' 
-##' @inheritDotParams harmonize.x
+##' @inheritDotParams harmonize_options
 ##'
-##' @import magrittr
-##' 
 ##' @return updated data (as data.table)
 ##' @export
-harmonize.toupper <- function(data, ...) {
-  get_target(data, ...) %>% 
-    toupper %>% 
-    harmonize.x(data, ., ...)
+harmonize_toupper <- function(x, ...) {
+    get_target(x) |>
+        toupper() |>
+        inset_target(x)
 }
-## --------<<  harmonize.toupper:1 ends here
+
+attr(harmonize_toupper, "description") <- 
+"Uppercases vector of interest in the object (table)"
+## --------<<  harmonize_toupper:1 ends here
 
 
 
@@ -1106,127 +1024,149 @@ harmonize.detect..do.vector <- function(env = parent.frame()) {
 ##' Harmonizes organizational names. Takes either vector or column in the table.
 ##' 
 ##' @param x object (table)
-##' @param procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `harmonize.make.procedures.list` (see its help for the correct format of data.frame with procedures). Default is `harmonizer.default.procedures.table`
-##' @param progress Show the progress? Default is TRUE
-##' @param progress.min The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5
-##' @param progress.by If set it will divide the x into chunk of this amount of rows. Default is NA.
-##' @param progress.percent Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.
-##' @param progress.message.use.names Should we use names from `procedures` list to report progress. Default is TRUE.
+##' @param procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `harmonize_make_procedures_list` (see its help for the correct format of data.frame with procedures). Default is `harmonizer_default_procedures_table`
+##' @param show_progress 
+##' @param nrows_min_to_show_progress The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5
+##' @param progress_step_nrows If set it will divide the x into chunk of this amount of rows. Default is NULL.
+##' @param progress_step_in_percent Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.
+##' @param progress_message_use_names Should we use names from `procedures` list to report progress. Default is TRUE.
 ##' @param quite Suppress all messages. Default is FALSE.
-##' @inheritDotParams harmonize.x
+##' @param save_intermediate_x_to_var For debuging of standartization procedures. Saves intermediate results to this variable. If procedures finish without errors then the variable will be removed.
+##' @param progress Show the progress? Default is TRUE
+##' @inheritDotParams harmonize_options
 ##' 
 ##' @return
 ##'
 ##' @import stringi stringr magrittr
 ##' @export
 harmonize <- function(x
-                    , procedures = harmonizer.default.procedures.table
-                    , progress = TRUE
-                    , progress.min = 10^5
-                    , progress.by = NA
-                    , progress.percent = 1
-                    , progress.message.use.names = TRUE
+                    , procedures = harmonizer_default_procedures_table
+                    , show_progress = TRUE
+                    , nrows_min_to_show_progress = 10^5
+                    , progress_step_nrows = NULL
+                    , progress_step_in_percent = 1
+                    , progress_message_use_names = TRUE
                     , quite = FALSE
+                    , save_intermediate_x_to_var = NULL
                     , ...) {
-  if(is.data.frame(procedures)) {
-        procedures %<>% harmonize.make.procedures.list
-  }
-  ## make format of the massages for procedures
-  message.delimiter <- paste(c("\n", rep("-", 65), "\n"), collapse = "")
-  message.init <- paste0("\nApplying harmonization procedures:", message.delimiter)
-  message.done  <- "\b\b\b\bDONE"
-  progress.format <- "\b\b\b\b%3.0f%%"
-  message.format <- "* %-60.60s...."
-  message.fin <- paste0(message.delimiter, "Harmonization is done!\n")
-  ## check progress.percent
-  if(progress.percent < 0.1 | progress.percent > 50)
-    stop("Please, set progress.percent between 0.1 and 50")
-  ## ensure that x is either vector or data.table
-  x %<>% {
-    if(is.atomic(.)) .
-    else if(is.data.table(.)) .
-    else if(is_matrix(.)) as.data.table(.)
-    else if(is_tible(.)) as.data.table(.)
-    else if(is.data.frame(.)) as.data.table(.)
-    else if(is.list(.)) stop("x is list. Please, provide either vector or table")
-  }
-  ## Set progress.by
-  progress.by <- if(!progress | quite) NA
-                 else {
-                   ## calculate the length of the x
-                   x.length <- x %>% {if(is.atomic(.)) length(.) else nrow(.)}
-                   if(x.length < progress.min) NA
-                   else if(!is.na(progress.by)) {
-                     ## if progress.by is set check if it is
-                     ## at least twice less than x.length
-                     ## and more that 1/1000 of x.length
-                     if(progress.by > x.length/1000 &
-                        progress.by*2 < x.length) progress.by
-                     else NA
-                   } else round(x.length/(100/progress.percent))
-                 }
-  ## Apply Procedures
-  if(!quite) message(message.init)
-  for(p in 1:length(procedures)) {
-    ## get procedure function
-    procedure.fun <- procedures[[p]] %>% extract2(1)
-    ## get procedure arguments
-    procedure.args <- procedures[[p]] %>%
-      ## remove progress arg if it is there
-      extract(-c(1, which(names(.) == "progress")))
-    ## get procedure names
-    procedure.name <- names(procedures)[p] %>%
-        {if(harmonize_is_data_empty(.) | !progress.message.use.names)
-             procedure.fun
-         else .}
-    ## Anounce Procedure Name
-    if(!quite) packageStartupMessage(sprintf(message.format, procedure.name)
-                                   , appendLF = FALSE)
-    ## Check if we need report progress:
-    ## progress is set & progress = FALSE is absent in the arguments
-    if(!is.na(progress.by) &
-       !isFALSE(procedures[[p]]["progress"][[TRUE]])) {
-      ## check if we need to split..
-      if(!isTRUE(class(x) == "list")) {
-        x %<>% harmonize.x.split(progress.by, x.length)
-      }
-      ## set progress counter
-      i <- 0; env <- environment()
-      ## Apply procedure to list!
-      x %<>% lapply(function(x.by) {
-        ## apply procedure fun with args
-        x.by %<>%
-          list %>%
-          c(procedure.args) %>%
-          do.call(procedure.fun, .)
-        ## Increment progress counter
-        assign("i", i + 100 * progress.by / x.length, envir = env)
-        ## Anounce progress
-        packageStartupMessage(sprintf(progress.format, i)
-                            , appendLF = FALSE)
-        return(x.by)
-      })
-    } else {
-      ## check if we need to rbindlist..
-      if(isTRUE(class(x) == "list")) {
-        if(is.atomic(x[[1]])) x %<>% unlist(use.names = FALSE)
-        else x %<>% rbindlist
-      }
-      ## Apply procedure fun with args!
-      x %<>% 
-        list %>%
-        c(procedure.args) %>%
-        do.call(procedure.fun, .)
+    checkmate::assert_string(save_intermediate_x_to_var, null.ok = TRUE)
+    checkmate::assert_flag(show_progress)
+    checkmate::assert_flag(quite)
+    checkmate::assert_flag(progress_message_use_names)
+    checkmate::assert_multi_class(procedures, classes = c("list", "data.frame"))
+    if(is.data.frame(procedures)) {
+        procedures <- harmonize_make_procedures_list(procedures)
     }
-    ## Anounce DONE
-    if(!quite) packageStartupMessage(message.done)
-  }
-  if(!quite) message(message.fin)
-  ## Return X
-  if(isTRUE(class(x) == "list")) {
-    if(is.atomic(x[[1]])) x %>% unlist(use.names = FALSE)
-    else x %>% rbindlist
-  } else x
+    ## make format of the massages for procedures
+    message_delimiter <- paste(c("\n", rep("-", 65), "\n"), collapse = "")
+    message_init <- paste0("\nApplying harmonization procedures:", message_delimiter)
+    message_done  <- "\b\b\b\bDONE"
+    progress_format <- "\b\b\b\b%3.0f%%"
+    message_format <- "* %-60.60s...."
+    message_fin <- paste0(message_delimiter, "Harmonization is done!\n")
+    ## ensure that x is either vector or data.table
+    if(missing(x)) return(NULL)
+    checkmate::assert_multi_class(x
+                                , classes = c("character"
+                                            , "numeric"
+                                            , "integer"
+                                            , "logical"
+                                            , "data.frame"
+                                            , "data.table"))
+    ## check progress_step_in_percent
+    checkmate::assert_number(progress_step_in_percent, lower = 0.1, upper = 50)
+    checkmate::assert_number(progress_step_nrows
+                           , lower = x_length(x)/1000
+                           , upper = x_length(x)/2
+                           , null.ok = TRUE)
+    x_len <- x_length(x)
+    ## Set progress_step_nrows
+    progress_step_nrows <-
+        if (show_progress && !quite) {
+            if(x_len < nrows_min_to_show_progress) {
+                NULL
+            } else if(!is.null(progress_step_nrows)) {
+                progress_step_nrows
+            } else {
+                round(x_len / (100 / progress_step_in_percent))
+            }
+        }
+    ## Apply Procedures
+    if(!quite) message(message_init)
+    for(p in 1:length(procedures)) {
+        ## get procedure function
+        procedure_fun <- procedures[[p]][[1]]
+        ## get procedure arguments (remove show_progressarg if it is there)
+        procedure_args <- procedures[[p]][
+            -c(1, which(names(procedures[[p]]) == "show_progress"))
+        ]
+        ## get procedure names
+        procedure_name <- 
+            if(harmonize_is_data_empty(names(procedures)[p]) | !progress_message_use_names) {
+                procedure_fun
+            } else {
+                names(procedures)[p]
+            }
+        ## Anounce Procedure Name
+        if(!quite) packageStartupMessage(
+                       sprintf(message_format, procedure_name)
+                     , appendLF = FALSE)
+        ## Check if we need report progress:
+        ## progress is set & progress = FALSE is absent in the arguments
+        if(!is.null(progress_step_nrows) &
+           !isFALSE(procedures[[p]]["show_progress"][[TRUE]])) {
+            ## check if we need to split..
+            if(!isTRUE(class(x) == "list")) {
+                x <- harmonize_x_split(x, progress_step_nrows)
+            }
+            ## set progress counter
+            i <- 0; env <- environment()
+            ## Apply procedure to list!
+            x <- lapply(x, \(x_by) {
+                if(!is.null(save_intermediate_x_to_var))
+                    assign(save_intermediate_x_to_var, x, pos = 1)
+                ## apply procedure fun with args
+                x_by <- do.call(procedure_fun
+                              , c(list(x_by), procedure_args))
+                ## Increment progress counter
+                assign("i", i + 100 * progress_step_nrows / x_len, envir = env)
+                ## Anounce progress
+                packageStartupMessage(
+                    sprintf(progress_format, i)
+                  , appendLF = FALSE)
+                return(x_by)
+            })
+        } else {
+            ## check if we need to rbindlist..
+            if(isTRUE(class(x) == "list")) {
+                if(is.atomic(x[[1]])) {
+                    x <- unlist(x, use.names = FALSE)
+                } else {
+                    x <- rbindlist(x)
+                }
+            }
+            if(!is.null(save_intermediate_x_to_var))
+                assign(save_intermediate_x_to_var, x, pos = 1)
+            ## Apply procedure fun with args!
+            x <- do.call(procedure_fun, c(list(x), procedure_args))
+        }
+        ## Anounce DONE
+        if(!quite) packageStartupMessage(message_done)
+    }
+    if(!quite) message(message_fin)
+    ## return x
+    if(isTRUE(class(x) == "list")) {
+        if(is.atomic(x[[1]])) {
+            x <- unlist(x, use.names = FALSE)
+        } else {
+            x <- rbindlist(x)
+        }
+    }
+    ## remove intermediate saves if procedures finished without error
+    remove
+    if(!is.null(save_intermediate_x_to_var))
+        rm(list = save_intermediate_x_to_var, pos = 1)
+    return(x)
 }
 ## --------<<  harmonize:1 ends here
 

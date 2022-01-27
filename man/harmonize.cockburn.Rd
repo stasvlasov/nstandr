@@ -6,7 +6,7 @@
 \usage{
 harmonize.cockburn(
   x,
-  cockburn.procedures = cockburn.procedures.table,
+  cockburn.procedures = cockburn.procedures_table,
   detect.legal.form = FALSE,
   return.x.before.common.words.removal = FALSE,
   return.x.cols.all = FALSE,
@@ -27,13 +27,14 @@ harmonize.cockburn(
 \item{...}{
   Arguments passed on to \code{\link[=harmonize]{harmonize}}
   \describe{
-    \item{\code{procedures}}{Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with \code{harmonize.make.procedures.list} (see its help for the correct format of data.frame with procedures). Default is \code{harmonizer.default.procedures.table}}
-    \item{\code{progress}}{Show the progress? Default is TRUE}
-    \item{\code{progress.min}}{The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5}
-    \item{\code{progress.by}}{If set it will divide the x into chunk of this amount of rows. Default is NA.}
-    \item{\code{progress.percent}}{Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.}
-    \item{\code{progress.message.use.names}}{Should we use names from \code{procedures} list to report progress. Default is TRUE.}
+    \item{\code{procedures}}{Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with \code{harmonize_make_procedures_list} (see its help for the correct format of data.frame with procedures). Default is \code{harmonizer_default_procedures_table}}
+    \item{\code{show_progress}}{}
+    \item{\code{nrows_min_to_show_progress}}{The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5}
+    \item{\code{progress_step_nrows}}{If set it will divide the x into chunk of this amount of rows. Default is NULL.}
+    \item{\code{progress_step_in_percent}}{Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.}
+    \item{\code{progress_message_use_names}}{Should we use names from \code{procedures} list to report progress. Default is TRUE.}
     \item{\code{quite}}{Suppress all messages. Default is FALSE.}
+    \item{\code{save_intermediate_x_to_var}}{For debuging of standartization procedures. Saves intermediate results to this variable. If procedures finish without errors then the variable will be removed.}
   }}
 }
 \value{

@@ -74,10 +74,10 @@ Harmonization procedures are flexible and can be specified with setting ~procedu
         harmonize(procedures = list(
                       list("harmonize.toascii", detect.encoding = FALSE)
                     , "harmonize.remove.brackets"
-                    , "harmonize.toupper"
-                    , list("harmonize.squish.spaces", wrap.in.spaces = TRUE)
+                    , "harmonize_toupper"
+                    , list("harmonize_squish_spaces", wrap_in_spaces = TRUE)
                     , "cockburn.replace.punctuation"
-                    , "harmonize.squish.spaces"))
+                    , "harmonize_squish_spaces"))
 
 #+END_SRC
 
@@ -543,7 +543,7 @@ Adjust "ensure_version" verstions manually:
 #+name: generate-package-docs
 #+header: :var suggests = suggests
 #+header: :var dependencies = dependencies
-#+BEGIN_SRC R :tangle no
+#+BEGIN_SRC R :tangle no :session
   ## Generate package description
   ## --------------------------------------------------------------------------------
   list(Title  = "Harmonization of Organizational Names"
@@ -633,47 +633,53 @@ Adjust "ensure_version" verstions manually:
 
 
 ** harmonize.utils
-*** harmonize.make.procedures.list
+*** harmonize_make_procedures_list
 :PROPERTIES:
 :ID:       org:i762gum0fqi0
 :END:
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/harmonize_make_procedures_list.r
   ##' Makes list of procedures calls from table.
   ##'
   ##' Table should have at least two columns - messages and fuctions calls. Each function call should be a string of the following format "'function.name', arg1 = val1, arg2 = val2" (same as arguments for `do.call` function).
   ##' 
-  ##' @param procedures.table Table to use
-  ##' @param message.field name of the column with messages that will be displayed when each call is executed
-  ##' @param function.call.field name of the column where function (harmonization procedures) calls are listed.
-  ##' @param no.field name of the column where the number of procedure is specified. Also this field indicates if the row in the table is just a comment in which case it will be removed if `remove.comments` is set (which is set by default)
-  ##' @param remove.comments Whether to remove comments.
+  ##' @param procedures_table Table to use
+  ##' @param message_field name of the column with messages that will be displayed when each call is executed
+  ##' @param function_call_field name of the column where function (harmonization procedures) calls are listed.
+  ##' @param no.field name of the column where the number of procedure is specified. Also this field indicates if the row in the table is just a comment in which case it will be removed if `remove_comments` is set (which is set by default)
+  ##' @param remove_comments Whether to remove comments.
   ##' 
   ##' @return List of named function calls. Names are messages.
   ##' 
-  ##' @md 
-  ##' @import magrittr data.table
-  harmonize.make.procedures.list <- function(procedures.table
-                                           , message.field = "message"
-                                           , function.call.field = "function.call"
+  harmonize_make_procedures_list <- function(procedures_table
+                                           , message_field = "message"
+                                           , function_call_field = "function.call"
                                            , no.field = "no"
-                                           , remove.comments = TRUE
-                                           , sort.by.no.field = TRUE
+                                           , remove_comments = TRUE
+                                           , sort_by_no_field = TRUE
                                            , comments = c("#", "-", "")) {
-      procedures.table %<>% defactor
-      if(remove.comments) {
-          procedures.table %<>%
-              extract(!(procedures.table[[no.field]] %in% comments), )
+      procedures_table <- defactor(procedures_table)
+      if(remove_comments) {
+          procedures_table <- 
+              procedures_table[
+                  !(procedures_table[[no.field]] %in% comments)
+                , ]
       }
-      if(sort.by.no.field) {
-          procedures.table %<>%
-              extract(order(procedures.table[[no.field]]), )
+      if(sort_by_no_field) {
+          procedures_table <-
+              procedures_table[
+                  procedures_table[[no.field]] |>
+                  as.numeric() |>
+                  order()
+                , ]
       }
-      procedures.table %>% 
-          extract2(function.call.field) %>%
-          paste0("list(", ., ")") %>%
-          lapply(function(str) eval(parse(text = str))) %>%
-          lapply(function(lst) if(length(lst) == 1) unlist(lst) else lst) %>% 
-          set_names(procedures.table[[message.field]])
+      procedures <- 
+          procedures_table[[function_call_field]] |> (
+              \(y) paste0("list(", y, ")")
+          )() |>
+          lapply(\(str) eval(parse(text = str))) |>
+          lapply(\(lst) if(length(lst) == 1) unlist(lst) else lst)
+      names(procedures) <- procedures_table[[message_field]]
+      return(procedures)
   }
 #+END_SRC
 
@@ -682,16 +688,14 @@ Test:
 #+BEGIN_SRC R :tangle no
   data.frame(no = c(3,2,"-", "")
            , message = c("hello", "world", "man", "dfsdf")
-           , function.call = c("'c', 1, b=3", "'sum', 8,8,9", "'version'", "")) %>% 
-      harmonize.make.procedures.list
+           , function.call = c("'c', 1, b=3", "'sum', 8,8,9", "'version'", "")) |>
+      harmonize_make_procedures_list()
 
-  magerman.procedures.table <- readRDS("data/magerman.procedures.table.rds")
-
-  harmonize.make.procedures.list(magerman.procedures.table)
+  harmonize_make_procedures_list(magerman_procedures_table)
 #+END_SRC
 
 
-*** harmonize.x.split
+*** harmonize_x_split
 :PROPERTIES:
 :ID:       org:ije1f8s0lei0
 :END:
@@ -703,136 +707,242 @@ Test:
   ##'
   ##' @param x object or table
   ##' @param by number of rows to split by
-  ##' @param len length of the table (nrow)
+  ##' @param len length of the table (nrow). If it is NULL then use x_length(x)
   ##' 
   ##' @return List of (sub)tables
-  ##'
-  ##' @export
-   harmonize.x.split <- function(x, by, len) {
-     split(x, rep(seq(1, len %/% by +1)
-                , each = by
-                , length.out = len))
-   }
+  harmonize_x_split <- function(x, by, len = NULL) {
+      if(is.null(len)) len <- x_length(x)
+      split(x, rep(seq(1, len %/% by +1)
+                 , each = by
+                 , length.out = len))
+  }
 #+END_SRC
 
 
-  #+name: 
-#+BEGIN_SRC R
-    ## data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-       ##                   , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-       ##                   , "MSLab Co."
-       ##                   , "MSLaeb Comp."
-       ##                   , "MSLab Comp."
-       ##                   , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>%
-       ##              rep(50)
-       ##          , foo = "lalala" ) %>% 
-       ##   harmonize.x.split(10, nrow(.)) %>%
-       ##   sapply(class)
-    
-       ## c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-       ## , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-       ## , "MSLab Co."
-       ## , "MSLaeb Comp."
-       ## , "MSLab Comp."
-       ## , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>%
-       ##   rep(50) %>% 
-       ##   harmonize.x.split(10, length(.))
+#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_x_split.r
+
+    expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                   , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+                                   , "MSLab Co."
+                                   , "MSLaeb Comp."
+                                   , "MSLab Comp."
+                                   , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
+                                rep(50)
+                          , foo = "lalala" ) |>
+                 harmonize_x_split(10) |>
+                 sapply(class)
+               , structure(c("data.table", "data.frame", "data.table", "data.frame", 
+                             "data.table", "data.frame", "data.table", "data.frame", "data.table", 
+                             "data.frame", "data.table", "data.frame", "data.table", "data.frame", 
+                             "data.table", "data.frame", "data.table", "data.frame", "data.table", 
+                             "data.frame", "data.table", "data.frame", "data.table", "data.frame", 
+                             "data.table", "data.frame", "data.table", "data.frame", "data.table", 
+                             "data.frame", "data.table", "data.frame", "data.table", "data.frame", 
+                             "data.table", "data.frame", "data.table", "data.frame", "data.table", 
+                             "data.frame", "data.table", "data.frame", "data.table", "data.frame", 
+                             "data.table", "data.frame", "data.table", "data.frame", "data.table", 
+                             "data.frame", "data.table", "data.frame", "data.table", "data.frame", 
+                             "data.table", "data.frame", "data.table", "data.frame", "data.table", 
+                             "data.frame"), .Dim = c(2L, 30L), .Dimnames = list(NULL, c("1", 
+                                                                                        "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", 
+                                                                                        "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", 
+                                                                                        "25", "26", "27", "28", "29", "30"))))
+
+
+
+    expect_equal(c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                 , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+                 , "MSLab Co."
+                 , "MSLaeb Comp."
+                 , "MSLab Comp."
+                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
+                 rep(50) |>
+                 harmonize_x_split(10)
+    , list(`1` = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp."), `2` = c("MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+    ), `3` = c("MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+    ), `4` = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp."), `5` = c("MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+    ), `6` = c("MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+    ), `7` = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp."), `8` = c("MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+    ), `9` = c("MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+    ), `10` = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp."), `11` = c("MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+    ), `12` = c("MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+    ), `13` = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp."), `14` = c("MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+    ), `15` = c("MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+    ), `16` = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp."), `17` = c("MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+    ), `18` = c("MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+    ), `19` = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp."), `20` = c("MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+    ), `21` = c("MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+    ), `22` = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp."), `23` = c("MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+    ), `24` = c("MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+    ), `25` = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp."), `26` = c("MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+    ), `27` = c("MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+    ), `28` = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp."), `29` = c("MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+    ), `30` = c("MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
+    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+    )))
 #+END_SRC
 
-*** harmonize.squish.spaces
+*** harmonize_squish_spaces
 :PROPERTIES:
 :ID:       org:dlp0f8s0lei0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
-  #' Removes redundant whitespases
-  #' @param x table or vector
-  #'
-  #' @param wrap.in.spaces If set then adds leaing and ending spaces. Default is FALSE.
-  #'
-  #' @inheritDotParams harmonize.x
-  #'
-  #' @return updated table or vector
-  #' @import magrittr stringr
-  #' @export
-  harmonize.squish.spaces <- function(x, wrap.in.spaces = FALSE, ...) {
-    harmonize.x(x, ...) %>% # get x.vector
-      str_squish %>%
-      {if(wrap.in.spaces) paste0(" ", ., " ") else .} %>% 
-      harmonize.x(x, ., ...) # put x.vector to x
-  }
+  #+BEGIN_SRC R :tangle R/harmonize_squish_spaces.r
+    #' Removes redundant whitespases
+    #' @param x table or vector
+    #'
+    #' @param wrap_in_spaces If set then adds leaing and ending spaces. Default is FALSE.
+    #'
+    #' @inheritDotParams harmonize_options
+    #'
+    #' @return updated table or vector
+    #' @export
+    harmonize_squish_spaces <- function(x, wrap_in_spaces = FALSE, ...) {
+        get_target(x) |>
+            stringi::stri_replace_all_regex("\\s+", " ") |>
+            stringi::stri_trim_both() |> (
+                \(y) if(wrap_in_spaces) paste0(" ", y, " ") else y
+            )() |>
+            inset_target(x)
+    }
+    #+END_SRC
 
-  ## #' Removes redundant whitespases
-  ## #' @param x table or vector
-  ## #'
-  ## #' @param trim Whether to trim the beging (i.e., "left"), ending (i.e., "right") or "both" whitespaces.
-  ## #' @inheritDotParams harmonize.x
-  ## #'
-  ## #' @return updated table or vector
-  ## #' @import magrittr stringr
-  ## #' @export
-  ## harmonize.clean.spaces <- function(x
-  ##                                  , trim = "both"
-  ##                                  , ...) {
-  ##   harmonize.x(x, ...) %>% # get x.vector
-  ##     str_replace_all("\\s+", " ") %>%
-  ##     {if(is.null(trim)) .
-  ##      else stri_trim(., side = trim)} %>%
-  ##     harmonize.x(x, ., ...) # put x.vector to x
-  ## }
+
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_squish_spaces.r
+
+
+  expect_equal(harmonize_squish_spaces("  String with trailing,  middle, and leading white space\t"
+                                     , wrap_in_spaces = TRUE)
+             , " String with trailing, middle, and leading white space ")
+
+
+
+
+  expect_equal(harmonize_squish_spaces("\n\nString with excess,  trailing and leading white   space\n\n"
+                                     , wrap_in_spaces = FALSE)
+             , "String with excess, trailing and leading white space")
+
 #+END_SRC
-
-
-  #+name: 
-#+BEGIN_SRC R
-    ## test
-      ## harmonize.squish.spaces("  String with trailing,  middle, and leading white space\t"
-      ##                        , wrap.in.spaces = TRUE)
-      ## harmonize.squish.spaces("\n\nString with excess,  trailing and leading white   space\n\n"
-      ##                         , wrap.in.spaces = FALSE)
-    
-    
-      ## test
-      ## harmonize.clean.spaces("  String with trailing,  middle, and leading white space\t"
-      ##                        , trim = FALSE)
-      ## harmonize.clean.spaces("\n\nString with excess,  trailing and leading white   space\n\n")
-      
-#+END_SRC
-*** harmonize.toupper
+*** harmonize_toupper
 :PROPERTIES:
 :ID:       org:xys0f8s0lei0
 :END:
 
 #+BEGIN_SRC R :tangle R/harmonizer.r
-  ##' Uppercases vector of interest in the object (table)
+  ##' @eval attr(harmonize_toupper, "description")
   ##' 
-  ##' @param data data
+  ##' @param x data
   ##' 
-  ##' @inheritDotParams harmonize.x
+  ##' @inheritDotParams harmonize_options
   ##'
-  ##' @import magrittr
-  ##' 
   ##' @return updated data (as data.table)
   ##' @export
-  harmonize.toupper <- function(data, ...) {
-    get_target(data, ...) %>% 
-      toupper %>% 
-      harmonize.x(data, ., ...)
+  harmonize_toupper <- function(x, ...) {
+      get_target(x) |>
+          toupper() |>
+          inset_target(x)
   }
+
+  attr(harmonize_toupper, "description") <- 
+  "Uppercases vector of interest in the object (table)"
 #+END_SRC
 
+#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_toupper.r
 
-#+name: 
-#+BEGIN_SRC R
-  ## Tests
-  data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-                    , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-                    , "MSLab Co."
-                    , "MSLaeb Comp."
-                    , "MSLab Comp."
-                    , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>%
-               rep(10)
-           , foo = "lalala" ) %>% harmonize.toupper(col = 2, name = "bar")
+  expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                 , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+                                 , "MSLab Co."
+                                 , "MSLaeb Comp."
+                                 , "MSLab Comp."
+                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ")
+                        , foo = "lalala" ) |>
+               harmonize_toupper(col = 2, name = "bar")
+             , structure(list(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+                                       "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+                                       ), foo = c("LALALA", "LALALA", "LALALA", "LALALA", "LALALA", 
+                                                  "LALALA")), row.names = c(NA, -6L), class = c("data.table", "data.frame"
+                                                                                                )))
+
 #+END_SRC
 
 *** harmonize.remove.brackets
@@ -2259,7 +2369,7 @@ Tests:
                               , name_for_x_atomic = "x"
                               , name_suffix = "_harmonized"
                               , append_copy = FALSE
-                              , append_copy_name_format = "%name_harmonizing_%number_%procedure"
+                              , append_copy_name_format = "{col_name}_harmonizing{_procedure_number}{_procedure_name}"
                               , select_cols = NULL) {
       ## do nothing
       return()
@@ -2641,7 +2751,7 @@ Tests:
           get_dots(harmonize_options
                  , search_calls_with_formals = c("x", "...")
                  , search_depth = 500L
-                 , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                 ## , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                  , skip_checks_for_parent_call = FALSE)
       }, envir = parent.frame())
   }
@@ -2653,7 +2763,7 @@ Tests:
                  , select_args = c("col", "rows")
                  , search_calls_with_formals = c("x", "...")
                  , search_depth = 500L
-                 , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                 ## , search_up_to_call = c("harmonize", "harmonizer::harmonize")
                  , skip_checks_for_parent_call = FALSE)
       }, envir = parent.frame())
   }
@@ -3091,14 +3201,18 @@ Tests:
   ##' @param allow_na_in_vector Whether to allow NA in inset vector
   ##' @param which_call_to_report System call number (e.g., -2L) to
   ##'     include in report if arguments checks fails
-  ##' 
+  ##' @param return_only_target_col If toggled to TRUE then only return
+  ##'     the vector to be inset (output argument is ignored)
   ##' @return Data.table or character vector
   ##' @inheritDotParams harmonize_options
   inset_target <- function(vector, x
                          , omitted_rows_values_for_new_col = NULL
                          , allow_na_in_vector = TRUE
                          , which_call_to_report = -5L
+                         , return_only_target_col = FALSE
                          , ...) {
+      checkmate::assert_flag(allow_na_in_vector)
+      checkmate::assert_flag(return_only_target_col)
       vector <- defactor_vector(vector)
       with(dots <- get_harmonize_options(), {
           ## check harmonize_options
@@ -3157,7 +3271,9 @@ Tests:
           ## -----
           ## inset full vector
           ## -----
-          if(output != "omit") {
+          if(return_only_target_col) {
+              x <- vector
+          } else if(output != "omit") {
               if(is.atomic(x) && output == "replace_col") {
                   ## just replace x if it is atomic
                   x <- vector
@@ -3168,7 +3284,8 @@ Tests:
                   col_or_name_if_new <-
                       infer_moving_target_from_names(dots, x, return_name_for_new_col = TRUE)
                   ## fuckin data.table syntax is so cryptic
-                  x[, (col_or_name_if_new) := vector]
+                  ## [] at the end ensures that returned DT is printed
+                  x[, (col_or_name_if_new) := vector][]
                   ## x[[col_or_name_if_new]] <- vector
                   ## now if we added new col
                   if(x_width(x) == width_pre_inset + 1) {
@@ -3184,13 +3301,14 @@ Tests:
           ## -----
           ## apped copy
           ## -----
-          if(append_copy) {
+          if(append_copy & !return_only_target_col) {
               x <- defactor(x, conv2dt = "all")
               col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output)
               append_copy_name <- format_append_copy(append_copy_name_format, name = names(x)[col_post_inset])
               checkmate::assert_names(append_copy_name, add = assertion_fails)
               report_arg_checks(assertion_fails, which_call_to_report)
-              x[, (append_copy_name) := vector]
+              ## [] at the end ensures that returned DT is printed
+              x[, (append_copy_name) := vector][]
           }
           report_arg_checks(assertion_fails, which_call_to_report)
           return(x)
@@ -3204,7 +3322,8 @@ Tests:
   expect_equal({
       harmonizer_harmonize_procedure_number <- 6
       harmonizer_harmonize_procedure_name <- "nber_replacement"
-      "{col_name_}harmonizing{_procedure_number}{_procedure_name}" |>
+      "{col_name_}harmonizing{_procedure_number}" |>
+          paste0("{_procedure_name}") |>
           format_append_copy("col")
   }
   , "col_harmonizing_6_nber_replacement")
@@ -3382,6 +3501,15 @@ Tests:
                  , data.table(c1 = c("1",2,3,4,5), x = c("x", "y", "z", "i", "j"))
                  , rows = c(1,3,5))
     , data.table(c1 = c("a", "2", "b", "4", "c"), x = c("x", "y", "z", "i", "j")))
+
+
+  ## test returning only target column
+  expect_equal(inset_target(c("a", "b", "c")
+                          , data.table(c1 = c("1",2,3,4,5), x = c("x", "y", "z", "i", "j"))
+                          , rows = c(1,3,5)
+                          , return_only_target_col = TRUE)
+             , c("a", "2", "b", "4", "c"))
+
 #+END_SRC
 
 *** inset_vector (old)                                          :depricate:
@@ -4583,7 +4711,6 @@ even older
           }
       }
       x_inset_vector <- unlist_if_possible(x_inset_vector)
-      if(return_only_codes) return(x_inset_vector)
       ## append codes (if prepend allowed it will break target col inference)
       inset_target(x_inset_vector, x
                  , rows = rows
@@ -4591,7 +4718,8 @@ even older
                  , name = codes_col_name
                  , name_suffix = codes_col_name_suffix
                  , omitted_rows_values = codes_omitted_rows_value
-                 , omitted_rows_values_for_new_col = NA_character_)
+                 , omitted_rows_values_for_new_col = NA_character_
+                 , return_only_target_col = return_only_codes)
   }
 
   #+END_SRC
@@ -5189,169 +5317,216 @@ even older
 
 The default harmonization procedures are the following (for now):
 
-#+NAME: harmonizer.default.procedures.table
+#+NAME: harmonizer_default_procedures_table
 | no | message                            | function.call                                    |
 |----+------------------------------------+--------------------------------------------------|
 |    | *Prepossessing*                    |                                                  |
-|  1 | Cleaning spaces                    | 'harmonize.squish.spaces', wrap.in.spaces = TRUE |
+|  1 | Cleaning spaces                    | 'harmonize_squish_spaces', wrap_in_spaces = TRUE |
 |    |                                    |                                                  |
 |    | *Characters*                       |                                                  |
 |  2 | Removing HTML codes                | 'harmonize.dehtmlize'                            |
 |  3 | Translating non-ASCII to ASCII     | 'harmonize.toascii'                              |
-|  4 | Upper casing                       | 'harmonize.toupper'                              |
+|  4 | Upper casing                       | 'harmonize_toupper'                              |
 |    |                                    |                                                  |
 |    | *Cleaning*                         |                                                  |
 |  5 | Standardizing organizational names | 'cockburn.replace.punctuation'                   |
 |  6 | Removing brackets                  | 'harmonize.remove.brackets'                      |
-|  7 | Cleaning spaces                    | 'harmonize.squish.spaces'                        |
+|  7 | Cleaning spaces                    | 'harmonize_squish_spaces'                        |
 
-#+call: make-rds-patterns-table(data = harmonizer.default.procedures.table, data.name = "harmonizer.default.procedures.table", remove.single.quotes = "FALSE", data.dir = "data", add.to.rda = "R/sysdata.rda")
+#+call: make-rds-patterns-table(data = harmonizer_default_procedures_table, data.name = "harmonizer_default_procedures_table", remove.single.quotes = "FALSE", data.dir = "data", add.to.rda = "R/sysdata.rda")
 
 
 #+BEGIN_SRC R :tangle R/harmonizer.r
   ##' Harmonizes organizational names. Takes either vector or column in the table.
   ##' 
   ##' @param x object (table)
-  ##' @param procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `harmonize.make.procedures.list` (see its help for the correct format of data.frame with procedures). Default is `harmonizer.default.procedures.table`
-  ##' @param progress Show the progress? Default is TRUE
-  ##' @param progress.min The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5
-  ##' @param progress.by If set it will divide the x into chunk of this amount of rows. Default is NA.
-  ##' @param progress.percent Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.
-  ##' @param progress.message.use.names Should we use names from `procedures` list to report progress. Default is TRUE.
+  ##' @param procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `harmonize_make_procedures_list` (see its help for the correct format of data.frame with procedures). Default is `harmonizer_default_procedures_table`
+  ##' @param show_progress 
+  ##' @param nrows_min_to_show_progress The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5
+  ##' @param progress_step_nrows If set it will divide the x into chunk of this amount of rows. Default is NULL.
+  ##' @param progress_step_in_percent Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.
+  ##' @param progress_message_use_names Should we use names from `procedures` list to report progress. Default is TRUE.
   ##' @param quite Suppress all messages. Default is FALSE.
-  ##' @inheritDotParams harmonize.x
+  ##' @param save_intermediate_x_to_var For debuging of standartization procedures. Saves intermediate results to this variable. If procedures finish without errors then the variable will be removed.
+  ##' @param progress Show the progress? Default is TRUE
+  ##' @inheritDotParams harmonize_options
   ##' 
   ##' @return
   ##'
   ##' @import stringi stringr magrittr
   ##' @export
   harmonize <- function(x
-                      , procedures = harmonizer.default.procedures.table
-                      , progress = TRUE
-                      , progress.min = 10^5
-                      , progress.by = NA
-                      , progress.percent = 1
-                      , progress.message.use.names = TRUE
+                      , procedures = harmonizer_default_procedures_table
+                      , show_progress = TRUE
+                      , nrows_min_to_show_progress = 10^5
+                      , progress_step_nrows = NULL
+                      , progress_step_in_percent = 1
+                      , progress_message_use_names = TRUE
                       , quite = FALSE
+                      , save_intermediate_x_to_var = NULL
                       , ...) {
-    if(is.data.frame(procedures)) {
-          procedures %<>% harmonize.make.procedures.list
-    }
-    ## make format of the massages for procedures
-    message.delimiter <- paste(c("\n", rep("-", 65), "\n"), collapse = "")
-    message.init <- paste0("\nApplying harmonization procedures:", message.delimiter)
-    message.done  <- "\b\b\b\bDONE"
-    progress.format <- "\b\b\b\b%3.0f%%"
-    message.format <- "* %-60.60s...."
-    message.fin <- paste0(message.delimiter, "Harmonization is done!\n")
-    ## check progress.percent
-    if(progress.percent < 0.1 | progress.percent > 50)
-      stop("Please, set progress.percent between 0.1 and 50")
-    ## ensure that x is either vector or data.table
-    x %<>% {
-      if(is.atomic(.)) .
-      else if(is.data.table(.)) .
-      else if(is_matrix(.)) as.data.table(.)
-      else if(is_tible(.)) as.data.table(.)
-      else if(is.data.frame(.)) as.data.table(.)
-      else if(is.list(.)) stop("x is list. Please, provide either vector or table")
-    }
-    ## Set progress.by
-    progress.by <- if(!progress | quite) NA
-                   else {
-                     ## calculate the length of the x
-                     x.length <- x %>% {if(is.atomic(.)) length(.) else nrow(.)}
-                     if(x.length < progress.min) NA
-                     else if(!is.na(progress.by)) {
-                       ## if progress.by is set check if it is
-                       ## at least twice less than x.length
-                       ## and more that 1/1000 of x.length
-                       if(progress.by > x.length/1000 &
-                          progress.by*2 < x.length) progress.by
-                       else NA
-                     } else round(x.length/(100/progress.percent))
-                   }
-    ## Apply Procedures
-    if(!quite) message(message.init)
-    for(p in 1:length(procedures)) {
-      ## get procedure function
-      procedure.fun <- procedures[[p]] %>% extract2(1)
-      ## get procedure arguments
-      procedure.args <- procedures[[p]] %>%
-        ## remove progress arg if it is there
-        extract(-c(1, which(names(.) == "progress")))
-      ## get procedure names
-      procedure.name <- names(procedures)[p] %>%
-          {if(harmonize_is_data_empty(.) | !progress.message.use.names)
-               procedure.fun
-           else .}
-      ## Anounce Procedure Name
-      if(!quite) packageStartupMessage(sprintf(message.format, procedure.name)
-                                     , appendLF = FALSE)
-      ## Check if we need report progress:
-      ## progress is set & progress = FALSE is absent in the arguments
-      if(!is.na(progress.by) &
-         !isFALSE(procedures[[p]]["progress"][[TRUE]])) {
-        ## check if we need to split..
-        if(!isTRUE(class(x) == "list")) {
-          x %<>% harmonize.x.split(progress.by, x.length)
-        }
-        ## set progress counter
-        i <- 0; env <- environment()
-        ## Apply procedure to list!
-        x %<>% lapply(function(x.by) {
-          ## apply procedure fun with args
-          x.by %<>%
-            list %>%
-            c(procedure.args) %>%
-            do.call(procedure.fun, .)
-          ## Increment progress counter
-          assign("i", i + 100 * progress.by / x.length, envir = env)
-          ## Anounce progress
-          packageStartupMessage(sprintf(progress.format, i)
-                              , appendLF = FALSE)
-          return(x.by)
-        })
-      } else {
-        ## check if we need to rbindlist..
-        if(isTRUE(class(x) == "list")) {
-          if(is.atomic(x[[1]])) x %<>% unlist(use.names = FALSE)
-          else x %<>% rbindlist
-        }
-        ## Apply procedure fun with args!
-        x %<>% 
-          list %>%
-          c(procedure.args) %>%
-          do.call(procedure.fun, .)
+      checkmate::assert_string(save_intermediate_x_to_var, null.ok = TRUE)
+      checkmate::assert_flag(show_progress)
+      checkmate::assert_flag(quite)
+      checkmate::assert_flag(progress_message_use_names)
+      checkmate::assert_multi_class(procedures, classes = c("list", "data.frame"))
+      if(is.data.frame(procedures)) {
+          procedures <- harmonize_make_procedures_list(procedures)
       }
-      ## Anounce DONE
-      if(!quite) packageStartupMessage(message.done)
-    }
-    if(!quite) message(message.fin)
-    ## Return X
-    if(isTRUE(class(x) == "list")) {
-      if(is.atomic(x[[1]])) x %>% unlist(use.names = FALSE)
-      else x %>% rbindlist
-    } else x
+      ## make format of the massages for procedures
+      message_delimiter <- paste(c("\n", rep("-", 65), "\n"), collapse = "")
+      message_init <- paste0("\nApplying harmonization procedures:", message_delimiter)
+      message_done  <- "\b\b\b\bDONE"
+      progress_format <- "\b\b\b\b%3.0f%%"
+      message_format <- "* %-60.60s...."
+      message_fin <- paste0(message_delimiter, "Harmonization is done!\n")
+      ## ensure that x is either vector or data.table
+      if(missing(x)) return(NULL)
+      checkmate::assert_multi_class(x
+                                  , classes = c("character"
+                                              , "numeric"
+                                              , "integer"
+                                              , "logical"
+                                              , "data.frame"
+                                              , "data.table"))
+      ## check progress_step_in_percent
+      checkmate::assert_number(progress_step_in_percent, lower = 0.1, upper = 50)
+      checkmate::assert_number(progress_step_nrows
+                             , lower = x_length(x)/1000
+                             , upper = x_length(x)/2
+                             , null.ok = TRUE)
+      x_len <- x_length(x)
+      ## Set progress_step_nrows
+      progress_step_nrows <-
+          if (show_progress && !quite) {
+              if(x_len < nrows_min_to_show_progress) {
+                  NULL
+              } else if(!is.null(progress_step_nrows)) {
+                  progress_step_nrows
+              } else {
+                  round(x_len / (100 / progress_step_in_percent))
+              }
+          }
+      ## Apply Procedures
+      if(!quite) message(message_init)
+      for(p in 1:length(procedures)) {
+          ## get procedure function
+          procedure_fun <- procedures[[p]][[1]]
+          ## get procedure arguments (remove show_progressarg if it is there)
+          procedure_args <- procedures[[p]][
+              -c(1, which(names(procedures[[p]]) == "show_progress"))
+          ]
+          ## get procedure names
+          procedure_name <- 
+              if(harmonize_is_data_empty(names(procedures)[p]) | !progress_message_use_names) {
+                  procedure_fun
+              } else {
+                  names(procedures)[p]
+              }
+          ## Anounce Procedure Name
+          if(!quite) packageStartupMessage(
+                         sprintf(message_format, procedure_name)
+                       , appendLF = FALSE)
+          ## Check if we need report progress:
+          ## progress is set & progress = FALSE is absent in the arguments
+          if(!is.null(progress_step_nrows) &
+             !isFALSE(procedures[[p]]["show_progress"][[TRUE]])) {
+              ## check if we need to split..
+              if(!isTRUE(class(x) == "list")) {
+                  x <- harmonize_x_split(x, progress_step_nrows)
+              }
+              ## set progress counter
+              i <- 0; env <- environment()
+              ## Apply procedure to list!
+              x <- lapply(x, \(x_by) {
+                  if(!is.null(save_intermediate_x_to_var))
+                      assign(save_intermediate_x_to_var, x, pos = 1)
+                  ## apply procedure fun with args
+                  x_by <- do.call(procedure_fun
+                                , c(list(x_by), procedure_args))
+                  ## Increment progress counter
+                  assign("i", i + 100 * progress_step_nrows / x_len, envir = env)
+                  ## Anounce progress
+                  packageStartupMessage(
+                      sprintf(progress_format, i)
+                    , appendLF = FALSE)
+                  return(x_by)
+              })
+          } else {
+              ## check if we need to rbindlist..
+              if(isTRUE(class(x) == "list")) {
+                  if(is.atomic(x[[1]])) {
+                      x <- unlist(x, use.names = FALSE)
+                  } else {
+                      x <- rbindlist(x)
+                  }
+              }
+              if(!is.null(save_intermediate_x_to_var))
+                  assign(save_intermediate_x_to_var, x, pos = 1)
+              ## Apply procedure fun with args!
+              x <- do.call(procedure_fun, c(list(x), procedure_args))
+          }
+          ## Anounce DONE
+          if(!quite) packageStartupMessage(message_done)
+      }
+      if(!quite) message(message_fin)
+      ## return x
+      if(isTRUE(class(x) == "list")) {
+          if(is.atomic(x[[1]])) {
+              x <- unlist(x, use.names = FALSE)
+          } else {
+              x <- rbindlist(x)
+          }
+      }
+      ## remove intermediate saves if procedures finished without error
+      remove
+      if(!is.null(save_intermediate_x_to_var))
+          rm(list = save_intermediate_x_to_var, pos = 1)
+      return(x)
   }
 #+END_SRC
 
-#+name: 
-#+BEGIN_SRC R
-  ## tests
-  ## dummy <- function(x, n) {
-  ##   for(i in 1:n) x <- sqrt(x)^2
-  ##   return(x)
-  ## }
+#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize.r
   
-  ## list("Squaring stuff" = "sqrt"
-  ##     ,list("abs", progress = FALSE)
-  ##     ,list("log", base = 10)
-  ##    , "My function" = list("dummy", 10^6, progress = TRUE)) %>%
-  ##   harmonize(1:10^2
-  ##           , . 
-  ##           , progress.min = 10
-  ##           , progress.by = 30)
+  dummy <- function(x, n) {
+    for(i in 1:n) x <- sqrt(x)^2
+    return(x)
+  }
+
+
+  expect_equal(harmonize(as.numeric(1:10^2)
+                       , procedures =
+                             list("Squaring stuff" = "sqrt"
+                                 ,list("abs", show_progress = FALSE)
+                                 ,list("log", base = 10)
+                                , "My function" = list("dummy", 10^6, show_progress = TRUE))
+                       , nrows_min_to_show_progress = 1
+                       , progress_step_nrows = NULL)
+             , c(0, 0.150514997831991, 0.238560627359831, 0.301029995663981, 
+                 0.349485002168009, 0.389075625191822, 0.422549020007129, 0.451544993495972, 
+                 0.477121254719662, 0.5, 0.520696342579113, 0.539590623023813, 
+                 0.556971676153418, 0.573064017839119, 0.588045629527841, 0.602059991327962, 
+                 0.615224460689137, 0.627636252551653, 0.639376800476415, 0.650514997831991, 
+                 0.66110964736696, 0.671211340411103, 0.680863918008797, 0.690105620855803, 
+                 0.698970004336019, 0.707486673985409, 0.715681882079494, 0.72357901567111, 
+                 0.731198998949478, 0.738560627359831, 0.745680846917136, 0.752574989159953, 
+                 0.759256969938944, 0.765739458521128, 0.772034022175138, 0.778151250383644, 
+                 0.784100862033497, 0.789891798308405, 0.79553230351325, 0.801029995663981, 
+                 0.806391928359868, 0.81162464519895, 0.816734227789793, 0.821726338243094, 
+                 0.826606256887672, 0.831378915840787, 0.836048928967859, 0.840620618687793, 
+                 0.845098040014257, 0.849485002168009, 0.853785088048968, 0.8580016718174, 
+                 0.862137934800395, 0.866196879911484, 0.870181344747122, 0.8740940135031, 
+                 0.877937427836246, 0.881713996781469, 0.885426005821072, 0.889075625191822, 
+                 0.892664917505384, 0.896195844749127, 0.899670274726791, 0.903089986991944, 
+                 0.906456678321428, 0.909771967770934, 0.913037401350413, 0.916254456353118, 
+                 0.919424545368627, 0.922549020007128, 0.925629174359538, 0.928666248215634, 
+                 0.931661430060228, 0.934615859865488, 0.93753063169585, 0.940406796140396, 
+                 0.943245362586241, 0.94604730134524, 0.948813545645221, 0.951544993495972, 
+                 0.954242509439325, 0.956906926191858, 0.959539046188037, 0.962139643030941, 
+                 0.964709462857146, 0.967249225621784, 0.969759626309309, 0.972241336075084, 
+                 0.974695003322457, 0.977121254719662, 0.979520696160547, 0.981893913672778, 
+                 0.984241474276968, 0.986563926799849, 0.988861802644424, 0.991135616519784, 
+                 0.993385867133122, 0.995613037846247, 0.997817597298775, 1))
 #+END_SRC
 
 * Magerman, et al. (2006) - Harmonization Procedure
@@ -5384,7 +5559,7 @@ Patterns used to identify characters to clean
 The function below can be used to detect candidates for characters that need to be cleaned based on the table above.
 
 #+BEGIN_SRC R :tangle ./R/magerman.r
-  ##' Detects candidates for characters that need to be cleaned
+  ##' @eval attr(magerman_detect_characters, "description")
   ##' @param x table
   ##' @param codes_col_name Same as in `detect_patterns`
   ##' @inheritDotParams harmonize_options
@@ -5406,8 +5581,10 @@ The function below can be used to detect candidates for characters that need to 
                         , patterns_type = "regex"
                         , codes_col_name = codes_col_name)
       }
-#+END_SRC
 
+  attr(magerman_detect_characters, "description") <-
+      "Detect candidates for characters that need to be cleaned"
+#+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_detect_characters.r
   
@@ -5538,13 +5715,13 @@ Table 8: Proprietary character codes and their ASCII/ANSI equivalent
 #+BEGIN_SRC R :tangle ./R/magerman.r
   ##' Replaces proprietary characters
   ##' @param x table
-  ##' @inheritDotParams replace_patterns
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##'
   ##' @md
   ##' @export
   magerman_replace_proprietary_characters <- function(x, ...) {
-      replace_patterns(x, magerman_patterns_proprietary_characters, ...)
+      replace_patterns(x, magerman_patterns_proprietary_characters)
   }
 
 #+END_SRC
@@ -5945,7 +6122,7 @@ Table 12: Patterns with period not preceded by a letter or digit
   expect_equal(c("MSlab ,INC. ,LTD"
                , "MSlab ,LTD Universe") |>
                magerman_replace_comma_period_irregularities()
-               c("MSlab, INC. , LTD", "MSlab ,LTD Universe"))
+               , c("MSlab, INC. , LTD", "MSlab ,LTD Universe"))
 #+END_SRC
 
 ** Legal Form
@@ -7109,13 +7286,16 @@ Appendix 2: All search and replace statements for all legal forms to be removed 
                                            , return_only_codes = FALSE
                                            , patterns_codes = NULL
                                            , no_match_code = NULL
+                                           , codes_update_empty = TRUE
                                            , ...) {
       detect_patterns(x
            , magerman_patterns_legal_form_end
            , patterns_codes_col = 3
            , patterns_codes = patterns_codes
            , patterns_type = "ends"
+           , codes_col_name_suffix = "_legal_form"
            , return_only_first_detected_code = TRUE
+           , codes_update_empty = codes_update_empty
            , return_only_codes = return_only_codes
            , no_match_code = no_match_code)
   }
@@ -7149,7 +7329,8 @@ Appendix 2: All search and replace statements for all legal forms to be removed 
           , patterns = data.table(pattern = "KABUSHIKI KAISHA"
                                 , legal.form = "KAISHA")
           , patterns_type = "begins"
-          , return_only_first_detected_code = TRUE)
+          , return_only_first_detected_code = TRUE
+          , codes_col_name_suffix = "_legal_form")
   }
 
   ##' Replaces legal form
@@ -7179,7 +7360,8 @@ Appendix 2: All search and replace statements for all legal forms to be removed 
           , patterns = magerman_patterns_legal_form_middle
           , patterns_codes_col = 3
           , patterns_type = "fixed"
-          , return_only_first_detected_code = TRUE)
+          , return_only_first_detected_code = TRUE
+          , codes_col_name_suffix = "_legal_form")
   }
 
   ##' Replaces legal form
@@ -7287,10 +7469,11 @@ plus trim..."
       legal_form_end_rows <-
           magerman_detect_legal_form_end(x
                                        , return_only_codes = TRUE
+                                       , codes_update_empty = FALSE
                                        , patterns_codes = TRUE
                                        , no_match_code = FALSE)
       x |>
-          magerman_replace_legal_form_beginning() |>
+          magerman_replace_legal_form_beginning(rows = !legal_form_end_rows) |>
           magerman_replace_legal_form_middle(rows = !legal_form_end_rows) |>
           magerman_replace_legal_form_end()        
   }
@@ -7306,12 +7489,15 @@ plus trim..."
           magerman_remove_legal_form() |>
           replace_patterns(
               patterns = c("[-;:,&]*\\s*$", "^\\s*"),
-              patterns.type = "regex"
+              patterns_type = "regex"
           )
   }
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_legal_form.r
+
+
+
   expect_equal(
       c("lksdjf MFG. GMBH CO, INC"
       , "MSlab Co."
@@ -7640,14 +7826,14 @@ Finally, all preliminary umlaut harmonized names not marked in the previous two 
 p. 44
 
 #+NAME: magerman_patterns_umlaut
-| char | ascii | replacement | umlaut |
-|------+-------+-------------+--------|
-| Ä    | A     | AE          | TRUE   |
-| Ö    | O     | OE          | TRUE   |
-| Ü    | U     | UE          | TRUE   |
-# | ä  | a     | ae          | TRUE   |
-# | ö  | o     | oe          | TRUE   |
-# | ü  | u     | ue          | TRUE   |
+| char | ascii | replacement |
+|------+-------+-------------|
+| Ä    | A     | AE          |
+| Ö    | O     | OE          |
+| Ü    | U     | UE          |
+# | ä  | a     | ae          |
+# | ö  | o     | oe          |
+# | ü  | u     | ue          |
 
 #+call: make-rds-patterns-table(data = magerman_patterns_umlaut, data.name = "magerman_patterns_umlaut")
 
@@ -7665,13 +7851,19 @@ p. 44
   ##'
   ##' @md
   ##' @export
-  magerman_detect_umlaut <- function(x, return_only_codes = FALSE, ...) {
+  magerman_detect_umlaut <- function(x
+                                   , return_only_codes = FALSE
+                                   , codes_col_name = NULL
+                                   , ...) {
       detect_patterns(x
-          , patterns = magerman_patterns_umlaut
-          , patterns_codes_col = 4
-          , patterns_type = "fixed"
-          , return_only_first_detected_code = TRUE
-          , return_only_codes = return_only_codes)
+                    , patterns = magerman_patterns_umlaut
+                    , patterns_type = "fixed"
+                    , patterns_codes = TRUE
+                    , no_match_code = FALSE
+                    , codes_col_name_suffix = "_has_umlaut"
+                    , codes_col_name = codes_col_name
+                    , return_only_first_detected_code = TRUE
+                    , return_only_codes = return_only_codes)
   }
 
   ##' Replaces Umlauts
@@ -7851,154 +8043,197 @@ p. 44
 :ID:       org:x0v7ug60gei0
 :END:
 
-#+NAME: magerman.procedures.table
-| no | message                                  | function.call                                                                 |
-|----+------------------------------------------+-------------------------------------------------------------------------------|
-|    |                                          |                                                                               |
-|    | *Prepossessing*                          |                                                                               |
-|  1 | Upper casing                             | 'harmonize.toupper'                                                           |
-|  2 | Cleaning spaces                          | 'harmonize.squish.spaces'                                                     |
-|    |                                          |                                                                               |
-|    | *Characters*                             |                                                                               |
-|  3 | Removing HTML codes                      | 'magerman.remove.html.codes'                                                  |
-|  4 | Cleaning spaces (2)                      | 'harmonize.squish.spaces'                                                     |
-|  5 | Replacing SGML coded characters          | 'magerman.replace.sgml.characters'                                            |
-|  6 | Replacing proprietary characters         | 'magerman.replace.proprietary.characters'                                     |
-|  7 | Detecting Umlauts                        | 'magerman.detect.umlaut', codes.name = 'magerman.umlaut'                      |
-|    |                                          | /The above sets code names with umlaut for umlaut harmonization later/        |
-|  8 | Replacing accented characters            | 'magerman.replace.accented.characters'                                        |
-|    |                                          |                                                                               |
-|    | *Punctuation*                            |                                                                               |
-|  9 | Removing special characters              | 'magerman.remove.special.characters'                                          |
-| 10 | Fixing quotation irregularities          | 'magerman.remove.double.quotation.marks.irregularities'                       |
-| 11 | Removing double quotations               | 'magerman.remove.double.quotation.marks.beginning.end'                        |
-| 12 | Removing non alphanumeric characters (1) | 'magerman.remove.non.alphanumeric.at.the.beginning'                           |
-| 13 | Removing non alphanumeric characters (2) | 'magerman.remove.non.alphanumeric.at.the.end'                                 |
-| 14 | Fixing comma and period irregularities   | 'magerman.replace.comma.period.irregularities'                                |
-|    |                                          |                                                                               |
-|    | *Legal forms*                            |                                                                               |
-| 15 | Detecting legal form                     | 'magerman.detect.legal.form', codes.name = 'legal.form'                       |
-| 16 | Removing legal form                      | 'magerman.remove.legal.form.and.clean'                                        |
-|    |                                          |                                                                               |
-|    | *Common words*                           |                                                                               |
-| 17 | Removing common words                    | 'magerman.remove.common.words'                                                |
-| 18 | Fixing spelling variations               | 'magerman.replace.spelling.variation'                                         |
-| 19 | Condensing                               | 'magerman.condense'                                                           |
-|    |                                          |                                                                               |
-|    | *Umlaut harmonization*                   |                                                                               |
-| 20 | Fixing umlaut variations                 | 'magerman.replace.umlaut', x.umlaut.col = 'magerman.umlaut', progress = FALSE |
-|    |                                          | /the above procedure wont work properly for batches/                          |
-|    |                                          | /because it need to look up matches in the whole corpus/                      |
-|    |                                          | /that is why we set 'progress = FALSE'/                                       |
+#+NAME: magerman_procedures_table
+| no | message                                  | function.call                                                                   |
+|----+------------------------------------------+---------------------------------------------------------------------------------|
+|    |                                          |                                                                                 |
+|    | *Prepossessing*                          |                                                                                 |
+|  1 | Upper casing                             | 'harmonize_toupper'                                                             |
+|  2 | Cleaning spaces                          | 'harmonize_squish_spaces'                                                       |
+|    |                                          |                                                                                 |
+|    | *Characters*                             |                                                                                 |
+|  3 | Removing HTML codes                      | 'magerman_remove_html_codes'                                                    |
+|  4 | Cleaning spaces (2)                      | 'harmonize_squish_spaces'                                                       |
+|  5 | Replacing SGML coded characters          | 'magerman_replace_sgml_characters'                                              |
+|  6 | Replacing proprietary characters         | 'magerman_replace_proprietary_characters'                                       |
+|  7 | Detecting Umlauts                        | 'magerman_detect_umlaut', codes_col_name = 'magerman_umlaut'                    |
+|    |                                          | /The above sets code names with umlaut for umlaut harmonization later/          |
+|  8 | Replacing accented characters            | 'magerman_replace_accented_characters'                                          |
+|    |                                          |                                                                                 |
+|    | *Punctuation*                            |                                                                                 |
+|  9 | Removing special characters              | 'magerman_remove_special_characters'                                            |
+| 10 | Fixing quotation irregularities          | 'magerman_remove_double_quotation_marks_irregularities'                         |
+| 11 | Removing double quotations               | 'magerman_remove_double_quotation_marks_beginning_end'                          |
+| 12 | Removing non alphanumeric characters (1) | 'magerman_remove_non_alphanumeric_at_the_beginning'                             |
+| 13 | Removing non alphanumeric characters (2) | 'magerman_remove_non_alphanumeric_at_the_end'                                   |
+| 14 | Fixing comma and period irregularities   | 'magerman_replace_comma_period_irregularities'                                  |
+|    |                                          |                                                                                 |
+|    | *Legal forms*                            |                                                                                 |
+| 15 | Detecting legal form                     | 'magerman_detect_legal_form', codes_col_name = 'legal_form'                     |
+| 16 | Removing legal form                      | 'magerman_remove_legal_form_and_clean'                                          |
+|    |                                          |                                                                                 |
+|    | *Common words*                           |                                                                                 |
+| 17 | Removing common words                    | 'magerman_remove_common_words'                                                  |
+| 18 | Fixing spelling variations               | 'magerman_replace_spelling_variation'                                           |
+| 19 | Condensing                               | 'magerman_condense'                                                             |
+|    |                                          |                                                                                 |
+|    | *Umlaut harmonization*                   |                                                                                 |
+| 20 | Fixing umlaut variations                 | 'magerman_replace_umlaut', has_umlaut_col = 'magerman_umlaut', progress = FALSE |
+|    |                                          | /the above procedure wont work properly for batches/                            |
+|    |                                          | /because it need to look up matches in the whole corpus/                        |
+|    |                                          | /that is why we set 'progress = FALSE'/                                         |
 
-#+call: make-rds-patterns-table(data = magerman.procedures.table, data.name = "magerman.procedures.table", remove.single.quotes = "FALSE")
-
-Old list specification
-#+BEGIN_SRC R :tangle no
-   magerman.procedures.list <- list(
-    ## prepossessing
-    "Upper casing" = "harmonize.toupper"
-  , "Cleaning spaces" = "harmonize.squish.spaces"
-    ## characters
-  , "Removing HTML codes" = "magerman.remove.html.codes"
-  , "Cleaning spaces (2)" = "harmonize.squish.spaces"
-  , "Replacing SGML coded characters" = "magerman.replace.sgml.characters"
-  , "Replacing proprietary characters" = "magerman.replace.proprietary.characters"
-  # code names with umlaut for umlaut harmonization
-  , "Detecting Umlauts" = list("magerman.detect.umlaut"
-                             , codes.name = "magerman.umlaut")
-  , "Replacing accented characters" = "magerman.replace.accented.characters"
-    ## punctuation
-  , "Removing special characters" = "magerman.remove.special.characters"
-  , "Fixing quotation irregularities" =  "magerman.remove.double.quotation.marks.irregularities"
-  , "Removing double quotations" = "magerman.remove.double.quotation.marks.beginning.end"
-  , "Removing non alphanumeric characters (1)" = "magerman.remove.non.alphanumeric.at.the.beginning"
-  , "Removing non alphanumeric characters (2)" = "magerman.remove.non.alphanumeric.at.the.end"
-  , "Fixing comma and period irregularities" = "magerman.replace.comma.period.irregularities"
-    ## legal form
-  , "Detecting legal form" = list("magerman.detect.legal.form"
-                                , codes.name = "legal.form")
-  , "Removing legal form" = "magerman.remove.legal.form.and.clean"
-    ## common words
-  , "Removing common words" = "magerman.remove.common.words"
-    ## spelling variation
-  , "Fixing spelling variations" = "magerman.replace.spelling.variation"
-    ## condensing
-  , "Condensing" = "magerman.condense"
-    ## umlaut harmonization
-  , "Fixing umlaut variations" = list("magerman.replace.umlaut"
-       , x.umlaut.col = "magerman.umlaut"
-         ## this function wont work properly for batches
-         ## it need to look up matches in the whole corpus
-       , progress = FALSE))
-#+END_SRC
+#+call: make-rds-patterns-table(data = magerman_procedures_table, data.name = "magerman_procedures_table", remove.single.quotes = "FALSE")
 
 #+BEGIN_SRC R :tangle ./R/magerman.r
   ##' Harmonizes strings using exact procedures described in Magerman et al. 2009.
   ##' @param x table or vector
-  ##' @param magerman.procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `harmonize.make.procedures.list` (see its help for the correct format of data.frame with procedures). Default is `magerman.procedures.table`.
-  ##' @param detect.legal.form Whether to detect legal forms. Default is FALSE
-  ##' @param return.x.before.common.words.removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
-  ##' @param return.x.cols.all Whether to return initial column in x. Default is FALSE
+  ##' @param detect_legal_form Whether to detect legal forms. Default is FALSE
+  ##' @param append_copy_before_common_words_removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
   ##' @inheritDotParams harmonize
   ##' @return Harmonized table
   ##'
   ##' @references Magerman et al., 2006 - Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization
   ##'
   ##' @md
-  ##' @import magrittr
   ##' @export
-  harmonize_magerman <- function(x,
-                                 magerman.procedures = magerman.procedures.table,
-                                 detect.legal.form = FALSE,
-                                 return.x.before.common.words.removal = FALSE,
-                                 return.x.cols.all = FALSE,
-                                 ...) {
-      if (is.data.frame(magerman.procedures)) {
-          magerman.procedures %<>% harmonize.make.procedures.list
+  harmonize_magerman <- function(x
+                               , detect_legal_form = FALSE
+                               , append_copy_before_common_words_removal = FALSE
+                               , ...) {
+      magerman_procedures <-
+          harmonize_make_procedures_list(magerman_procedures_table)
+      ## do some tweaks on magerman_procedures
+      if (!detect_legal_form) {
+          is_magerman_detect_legal_form <- 
+              sapply(magerman_procedures
+                   , \(p) p[[1]] == "magerman_detect_legal_form")
+          magerman_procedures <-
+              magerman_procedures[!is_magerman_detect_legal_form]
       }
-      ## do some tweaks on magerman.procedures
-      if (!detect.legal.form) {
-          magerman.procedures %<>%
-              extract(sapply(., extract2, 1) %>%
-                  sapply(equals, "magerman.detect.legal.form") %>%
-                  not())
+      if (append_copy_before_common_words_removal) {
+          which_is_magerman_remove_legal_form_and_clean <-
+              sapply(magerman_procedures
+                   , \(p) p[[1]] == "magerman_remove_legal_form_and_clean") |>
+              which()
+          magerman_procedures[[which_is_magerman_remove_legal_form_and_clean]] <-
+              c(magerman_procedures[[which_is_magerman_remove_legal_form_and_clean]]
+              , list(append_copy = TRUE
+                   , append_copy_name_format = "{col_name}_before_common_words_removal"))
       }
-      if (return.x.before.common.words.removal) {
-          magerman.procedures %<>%
-              inset2(
-                  sapply(., extract2, 1) %>%
-                      sapply(equals, "magerman.remove.legal.form.and.clean") %>%
-                      which(),
-                  list("magerman.remove.legal.form.and.clean", return.x.cols.all = TRUE)
-              )
-      }
-      if (return.x.cols.all) {
-          magerman.procedures %<>%
-              inset2(1, c(as.list(extract2(., 1)), return.x.cols.all = TRUE))
-      }
-      harmonize(x, magerman.procedures, ...)
+      harmonize(x, magerman_procedures, ...)
   }
+
+
 #+END_SRC
 
-Test:
-#+BEGIN_SRC R :tangle no
-  ## Test with return magerman.procedures in harmonize_magerman
+#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_magerman.r
+
+  ## Test with return magerman_procedures in harmonize_magerman
   harmonize_magerman()
-  harmonize_magerman(detect.legal.form = TRUE)
-  harmonize_magerman(return.x.before.common.words.removal = TRUE)
-  harmonize_magerman(return.x.cols.all = TRUE)
-  
-   ## Test
-  data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-                    , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-                    , "MSLab Co."
-                    , "MSLaeb Comp."
-                    , "MSLab Comp. Ltd."
-                    , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>% rep(200)
-           , foo = "I love coffee" ) %>% 
-      harmonize_magerman(progress.min = 50
-                      , detect.legal.form = TRUE)
+
+
+  ## Test
+  expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                 , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+                                 , "MSLab Co."
+                                 , "MSLaeb Comp."
+                                 , "MSLab Comp. Ltd."
+                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
+                              rep(200) |>
+                              toupper()
+                        , foo = "I love coffee" ) |>
+               harmonize_magerman(nrows_min_to_show_progress = 50
+                                , show_progress = TRUE
+                                , detect_legal_form = FALSE)
+             , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
+                                 , "MSLAEBAEHREFLSDLDFAE"
+                                 , "MSLAB"
+                                 , "MSLAEBCOMP"
+                                 , "MSLABCOMP"
+                                 , "AEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY") |>
+                              rep(200)
+                        , foo = "I love coffee"))
+
+  ## works now but weird naming of append_copy
+  expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                 , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+                                 , "MSLab Co."
+                                 , "MSLaeb Comp."
+                                 , "MSLab Comp. Ltd."
+                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
+                              rep(100) |>
+                              toupper()
+                        , foo = "I love coffee" ) |>
+               harmonize_magerman(nrows_min_to_show_progress = 50
+                                , show_progress = TRUE
+                                , append_copy_before_common_words_removal = TRUE
+                                , detect_legal_form = FALSE)
+             , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
+                                 , "MSLAEBAEHREFLSDLDFAE"
+                                 , "MSLAB"
+                                 , "MSLAEBCOMP"
+                                 , "MSLABCOMP"
+                                 , "AEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY") |>
+                              rep(100)
+                        , foo = "I love coffee"
+                        , name_before_common_words_removal = c("MAKARONI ETO FKUSNO"
+                                                             , "MSLAB CO. A HREFLSDLDF A"
+                                                             , "MSLAB COMPANY"
+                                                             , "MSLAEB COMP."
+                                                             , "MSLAB COMP."
+                                                             , "AAAAAAAECEEEEIIIINOOOOOUUUUYY") |>
+                              rep(100)))
+
+  ## test differe columns
+  expect_equal(data.table(foo = "I love coffee"
+                        , name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                 , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+                                 , "MSLab Co."
+                                 , "MSLaeb Comp."
+                                 , "MSLab Comp. Ltd."
+                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
+                              rep(50) |>
+                              toupper()) |>
+               harmonize_magerman(col = 2
+                                , nrows_min_to_show_progress = 50
+                                , show_progress = TRUE
+                                , detect_legal_form = FALSE)
+             , data.table(foo = "I love coffee"
+                        , name = c("MAEKAEROENIETOEFKUESNOE"
+                                 , "MSLAEBAEHREFLSDLDFAE"
+                                 , "MSLAB"
+                                 , "MSLAEBCOMP"
+                                 , "MSLABCOMP"
+                                 , "AEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY") |>
+                              rep(50)))
+
+
+  ## issue with name match in detect_patterns with return_only_codes
+  expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                 , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+                                 , "MSLab Co."
+                                 , "MSLaeb Comp."
+                                 , "MSLab Comp. Ltd."
+                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
+                              rep(200) |>
+                              toupper()
+                        , foo = "I love coffee" ) |>
+               harmonize_magerman(nrows_min_to_show_progress = 50
+                                , show_progress = TRUE
+                                , detect_legal_form = TRUE)
+             , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
+                                 , "MSLAEBAEHREFLSDLDFAE"
+                                 , "MSLAB"
+                                 , "MSLAEBCOMP"
+                                 , "MSLABCOMP"
+                                 , "AEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY") |>
+                              rep(200)
+                        , foo = "I love coffee"
+                        , name_legal_form = c("LIMITED", NA, NA, NA, "LIMITED", NA)|>
+                              rep(200)))
+
+
 #+END_SRC
 
 ** Tests
@@ -8058,11 +8293,11 @@ Test:
   , "SGS-THOMSON MICROELECTRONICS, SA"
   , "SGS-THOMSON MICROELECTRONICS, SA."
   , "SGS-THOMSON MICROELECTRONICS, SRL"
-  , "SGS-THOMSON MICROELECTRONICS,S.R.L.") %>%
-    harmonize.magerman
-  
-  
-  
+  , "SGS-THOMSON MICROELECTRONICS,S.R.L.") |>
+    harmonize_magerman()
+
+
+
   c("E.I. DU PONT DE NEMOURS & COMPANY"
   , "E I DU PONT DE NEMOURS AND COMPANY"
   , "E I DUPONT DE NEMOURS AND COMPANY"
@@ -8114,9 +8349,9 @@ Test:
   , "E.I. DUPONT DENEMOURS AND COMPANY"
   , "E.I.DU PONT DE NEMOURS AND COMPANY"
   , "EI DU PONT DE NEMOURS AND COMPANY"
-  , "EI DUPONT DE NEMOURS AND COMPANY") %>%
-    harmonize.magerman
-  
+  , "EI DUPONT DE NEMOURS AND COMPANY") |>
+    harmonize_magerman()
+
   c("Chip &AMP; Dayle (lala) [0x2345] {abs} ops html <br>"
   , "&AMP;&OACUTE;&SECT; 02937lkjfas;ldjf  &UACUTE;&#8902;&BULL; sdlfkjhhhh ;laskdjf&EXCL;"
   , "&AMP;&OACUTE;&SECT; {UMLAUT OVER (E)} sdlfkjhhhh ;laskdjf&EXCL;"
@@ -8129,8 +8364,8 @@ Test:
   , "A sentence with .irregular punctuation ,like commas , and periods ."
   , "MSlab ,INC. ,LTD"
   , "CHEMICALS SYSTEMEN MSlab Ltd."
-  , "MSLab CÖ.") %>%
-    harmonize.magerman
+  , "MSLab CÖ.") |>
+    harmonize_magerman()
 #+END_SRC
 
 
@@ -8146,7 +8381,7 @@ Test:
   ##' Collapses single character sequences
   ##'
   ##' @param x Object (table or vector)
-  ##' @param wrap.in.spaces Whether to wrap strings in spaces before processing because the algorithm assumes assumes that each string begins and ends with space. Default is TRUE.
+  ##' @param wrap_in_spaces Whether to wrap strings in spaces before processing because the algorithm assumes assumes that each string begins and ends with space. Default is TRUE.
   ##' @inheritDotParams harmonize.x
   ##' @return Harmonized table
   ##' 
@@ -8154,12 +8389,12 @@ Test:
   ##' @import magrittr
   ##' @export 
   cockburn.combabbrev <- function(x
-                                , wrap.in.spaces = TRUE
+                                , wrap_in_spaces = TRUE
                                 , ...) {
     x.vector <-
       harmonize.x(x, ...) %>%
       ## wrap in spaces
-      {if(wrap.in.spaces) paste0(" ", ., " ") else .}
+      {if(wrap_in_spaces) paste0(" ", ., " ") else .}
     ## collapse
     sapply(x.vector, function(org.name) {
       reg  <- gregexpr("(?=\\s\\w(\\s+)\\w\\s)", org.name, perl = TRUE)
@@ -11687,12 +11922,12 @@ creates a name with all legal entity identifiers removed
 :ID:       org:ns374a51nki0
 :END:
 
-#+NAME: cockburn.procedures.table
+#+NAME: cockburn.procedures_table
 | no | message                                                     | function.call                                    |
 |----+-------------------------------------------------------------+--------------------------------------------------|
 |    | *Prepossessing*                                             |                                                  |
-|  1 | Cleaning spaces                                             | 'harmonize.squish.spaces', wrap.in.spaces = TRUE |
-|  2 | Upper casing                                                | 'harmonize.toupper'                              |
+|  1 | Cleaning spaces                                             | 'harmonize_squish_spaces', wrap_in_spaces = TRUE |
+|  2 | Upper casing                                                | 'harmonize_toupper'                              |
 |    |                                                             |                                                  |
 |    | *Standartization*                                           |                                                  |
 |  3 | Special removals and recoding for USPTO names               | 'cockburn.detect.uspto'                          |
@@ -11702,9 +11937,9 @@ creates a name with all legal entity identifiers removed
 |  7 | Cleaning organization type                                  | 'cockburn.replace.type'                          |
 |  8 | Combining single char sequences                             | 'cockburn.combabbrev'                            |
 |  9 | Removal of legal entity identifiers                         | 'cockburn.remove.standard.names'                 |
-| 10 | Cleaning spaces                                             | 'harmonize.squish.spaces'                        |
+| 10 | Cleaning spaces                                             | 'harmonize_squish_spaces'                        |
 
-#+call: make-rds-patterns-table(data = cockburn.procedures.table, data.name = "cockburn.procedures.table", remove.single.quotes = "FALSE")
+#+call: make-rds-patterns-table(data = cockburn.procedures_table, data.name = "cockburn.procedures_table", remove.single.quotes = "FALSE")
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
   ##' Harmonizes strings using exact procedures described in Cockburn, et al. (2009)
@@ -11722,13 +11957,13 @@ creates a name with all legal entity identifiers removed
   ##' @import magrittr
   ##' @export 
   harmonize.cockburn <- function(x
-                               , cockburn.procedures = cockburn.procedures.table
+                               , cockburn.procedures = cockburn.procedures_table
                                , detect.legal.form = FALSE
                                , return.x.before.common.words.removal = FALSE
                                , return.x.cols.all = FALSE
                                , ... ) {
       if(is.data.frame(cockburn.procedures)) {
-          cockburn.procedures %<>% harmonize.make.procedures.list
+          cockburn.procedures %<>% harmonize_make_procedures_list
       }
     ## do some tweaks on cockburn.procedures
     if(!detect.legal.form) {

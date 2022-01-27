@@ -2,7 +2,7 @@
 % Please edit documentation in R/magerman.r
 \name{magerman_detect_characters}
 \alias{magerman_detect_characters}
-\title{Detects candidates for characters that need to be cleaned}
+\title{Detect candidates for characters that need to be cleaned}
 \usage{
 magerman_detect_characters(
   x,
@@ -41,5 +41,5 @@ magerman_detect_characters(
 coded table
 }
 \description{
-Detects candidates for characters that need to be cleaned
+Detect candidates for characters that need to be cleaned
 }

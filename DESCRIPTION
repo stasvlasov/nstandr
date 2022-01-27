@@ -1,7 +1,7 @@
 Package: harmonizer
 Title: Harmonization of Organizational Names
 Version: 0.4
-Date: 2022-01-17
+Date: 2022-01-25
 Authors@R: 
     person("Stanislav", "Vlasov", , "s.vlasov@uvt.nl", role = c("aut", "cre"))
 Description: Harmonizes organizational names using steps described in

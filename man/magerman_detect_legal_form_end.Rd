@@ -9,6 +9,7 @@ magerman_detect_legal_form_end(
   return_only_codes = FALSE,
   patterns_codes = NULL,
   no_match_code = NULL,
+  codes_update_empty = TRUE,
   ...
 )
 }

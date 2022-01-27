@@ -4,7 +4,12 @@
 \alias{magerman_detect_umlaut}
 \title{Detects umlauts}
 \usage{
-magerman_detect_umlaut(x, return_only_codes = FALSE, ...)
+magerman_detect_umlaut(
+  x,
+  return_only_codes = FALSE,
+  codes_col_name = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{table}
