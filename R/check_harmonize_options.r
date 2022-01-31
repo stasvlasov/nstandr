@@ -117,22 +117,22 @@ check_harmonize_options <- function(dots
         }
         ## check 'rows'
         check_rows(rows, x, which_call_to_report)
-        ## check 'omitted_rows_values'
-        if(length(omitted_rows_values) == 1) {
+        ## check 'omitted_rows_value'
+        if(length(omitted_rows_value) == 1) {
             checkmate::assert_string(
-                           omitted_rows_values
+                           omitted_rows_value
                          , na.ok = TRUE
                          , add = assertion_fails)
         } else {
             checkmate::assert_character(
-                           omitted_rows_values
+                           omitted_rows_value
                          , null.ok = TRUE
                          , len = x_length(x)
                          , add = assertion_fails)
         }
         ## check 'placement'
         checkmate::assert_choice(
-                       output
+                       output_placement
                      , choices = c(
                            "replace_col"
                          , "prepend_to_col"
@@ -154,35 +154,35 @@ check_harmonize_options <- function(dots
                          , disjunct.from = names(x)
                          , add = assertion_fails)
         }
-        ## check 'name_for_x_atomic'
+        ## check 'atomic_x_col_name'
         checkmate::assert_string(
-                       name_for_x_atomic
+                       atomic_x_col_name
                      , add = assertion_fails)
         checkmate::assert_names(
-                       name_for_x_atomic
+                       atomic_x_col_name
                      , type = "ids"
                      , what = "colnames"
                      , add = assertion_fails)
-        ## check 'name_suffix'
+        ## check 'output_name'
         checkmate::assert_string(
-                       name_suffix
+                       output_name
                      , add = assertion_fails)
-        ## check if col_name + 'name_suffix' is distinct from names(x)
+        ## check if col_name + 'output_name' is distinct from names(x)
         if(check_name_duplicates && !is.atomic(x) && is.null(name)) {
             checkmate::assert_names(
-                           paste0(names(x)[[col]], name_suffix)
+                           paste0(names(x)[[col]], output_name)
                          , type = "ids"
                          , what = "colnames"
                          , disjunct.from = names(x)
                          , add = assertion_fails)
         }
-        ## check 'append_copy'
+        ## check 'append_output_copy'
         checkmate::assert_flag(
-                       append_copy
+                       append_output_copy
                      , add = assertion_fails)
-        ## check 'append_copy_name_format'
+        ## check 'output_copy_col_name'
         checkmate::assert_string(
-                       append_copy_name_format
+                       output_copy_col_name
                      , min.chars = 1
                      , add = assertion_fails)
     })

@@ -7,7 +7,7 @@
 harmonize_magerman(
   x,
   detect_legal_form = FALSE,
-  append_copy_before_common_words_removal = FALSE,
+  append_output_copy_before_common_words_removal = FALSE,
   ...
 )
 }
@@ -16,7 +16,7 @@ harmonize_magerman(
 
 \item{detect_legal_form}{Whether to detect legal forms. Default is FALSE}
 
-\item{append_copy_before_common_words_removal}{Whether to save harmonized column before \code{common.words.removal} procedure. Default is FALSE}
+\item{append_output_copy_before_common_words_removal}{Whether to save harmonized column before \code{common.words.removal} procedure. Default is FALSE}
 
 \item{...}{
   Arguments passed on to \code{\link[=harmonize]{harmonize}}

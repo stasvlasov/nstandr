@@ -339,15 +339,23 @@ x_width <- function(x) {
 
 ## -------->>  [[file:../harmonizer.src.org::*harmonize.empty][harmonize.empty:1]]
 ##' Checks if all elements in vercor(s) are either "", NA, NULL or have zero length
-##' @param data input data to check each vector
+##' @param x input data to check each vector
+##' @param return_as_true_if_x_zero_length how to interpret zero lenth input. If TRUE then it returns TRUE. Otherwise NULL.
 ##' @return logical vector of the same length
-##' @export
-harmonize_is_data_empty <- function(data) {
-    data_list_checks <-
-        lapply(data, function(x) {
+harmonize_is_data_empty <- function(x
+                                  , return_as_true_if_x_zero_length = FALSE) {
+    if(length(x) == 0) {
+        if(return_as_true_if_x_zero_length) {
+            return(TRUE)
+        } else {
+            return(NULL)
+        }
+    }
+    x_list_checks <-
+        lapply(x, function(x) {
             if (length(x) == 0) TRUE else all(x == "" | is.na(x))
         })
-    unlist(data_list_checks, recursive = FALSE)
+    unlist(x_list_checks, recursive = FALSE)
 }
 
 
@@ -408,6 +416,61 @@ harmonize_add_suffix <- function(name, suffix, x.names
   else
     name.with.suffix %>%
       paste0(".", suffix.nbr)
+}
+
+
+harmonize_add_suffix <- function(name, suffix, x.names
+                               , search.suffix.in.name = TRUE
+                               , suffix.nbr.init = 1
+                               , suffix.nbr = NULL) {
+  ## remove suffix from name if it is already there..
+  name.base <- if(search.suffix.in.name)
+                 str_remove(name, paste0("\\.", suffix, "(\\.\\d+$|$)"))
+               else name
+  name.with.suffix <- paste0(name.base, ".", suffix)
+  name.with.suffix.regex.nbr <-
+    paste0("(?<=", escape_regex(name.with.suffix), "\\.)", "\\d+$")
+  suffix.nbr.init <- if(name.with.suffix %in% x.names)
+                       suffix.nbr.init - 1
+                     else NULL
+  suffix.nbr <-
+    c(x.names, ifelse(search.suffix.in.name, name, NULL)) %>% 
+    str_extract(name.with.suffix.regex.nbr) %>%
+    as.numeric %>%
+    {if(all(is.na(.))) suffix.nbr.init
+     else max(., na.rm = TRUE)} %>%
+    add(1)
+  ## return name
+  if(length(suffix.nbr) == 0)
+    name.with.suffix
+  else
+    name.with.suffix %>%
+      paste0(".", suffix.nbr)
+}
+
+
+make_indexed_col_name <- function(col_name
+                                , x_names = NULL
+                                , index_init_val = 1L
+                                , index_separator = "_") {
+    checkmate::assert_integer(index_init_val, len = 1)
+    checkmate::assert_string(index_separator)
+    if(is.null(x_names)) return(col_name)
+    indexed_col_name_regex <- paste0("^", escape_regex(col_name), escape_regex(index_separator), "(\\d+)$")
+    indexed_col_name_in_x_names <-
+        stringi::stri_detect_regex(x_names, indexed_col_name_regex)
+    if(any(indexed_col_name_in_x_names)) {
+        index <- 
+            stringi::stri_match_first_regex(x_names, indexed_col_name_regex)[,2] |>
+            as.numeric() |>
+            max(na.rm = TRUE)
+        col_name <-
+            paste0(col_name, index_separator, index + 1)
+    } else if(col_name %in% x_names) {
+        col_name <- 
+            paste0(col_name, index_separator, index_init_val)
+    } 
+    return(col_name)
 }
 ## --------<<  harmonize.add.suffix:1 ends here
 

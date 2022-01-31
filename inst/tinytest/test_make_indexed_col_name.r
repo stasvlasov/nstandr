@@ -1,0 +1,17 @@
+## -------->>  [[file:../../harmonizer.src.org::*harmonize.add.suffix][harmonize.add.suffix:2]]
+make_indexed_col_name <- harmonizer:::make_indexed_col_name
+
+expect_equal(make_indexed_col_name("a"), "a")
+
+expect_equal(make_indexed_col_name("a", "b"), "a")
+
+expect_equal(make_indexed_col_name("a", "a"), "a_1")
+
+expect_equal(make_indexed_col_name("a", "a", index_init_val = 0L), "a_0")
+
+expect_equal(make_indexed_col_name("a", "a_11"), "a_12")
+
+expect_equal(make_indexed_col_name("a", c(NA, "a", "a_41","a_11")), "a_42")
+## --------<<  harmonize.add.suffix:2 ends here
+
+

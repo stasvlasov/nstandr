@@ -7,15 +7,13 @@
 harmonize_options(
   col = 1,
   rows = NULL,
-  omitted_rows_values = NULL,
-  output = "replace_col",
+  omitted_rows_value = NULL,
+  output_placement = "replace_col",
   name = NULL,
-  name_for_x_atomic = "x",
-  name_suffix = "_harmonized",
-  append_copy = FALSE,
- 
-    append_copy_name_format = "{col_name}_harmonizing{_procedure_number}{_procedure_name}",
-  select_cols = NULL
+  atomic_x_col_name = "x",
+  output_name = "std{_col_name}",
+  append_output_copy = FALSE,
+  output_copy_col_name = "std{_col_name}_copy{_procedure_index}{_procedure_name}"
 )
 }
 \arguments{
@@ -23,32 +21,39 @@ harmonize_options(
 
 \item{rows}{Logical vector to filter records of interest. Default is NULL which means do not filter records.}
 
-\item{omitted_rows_values}{If \code{rows} parameter is set then merge \code{omitted_rows_values} with the results (filtered by \code{rows}). Either single string or a character vector of length \code{nrow(x)}. If NULL (the default) then original values of \code{col} are merged with results.}
+\item{omitted_rows_value}{If \code{rows} parameter is set then merge \code{omitted_rows_value} with the results (filtered by \code{rows}). Either single string or a character vector of length \code{nrow(x)}. If NULL (the default) then original values of \code{col} are merged with results.}
 
-\item{output}{Where to inset retults (harmonized vector) in the \code{x} object. Default options is 'replace_col' which overwrides the \code{col} in \code{x} with results. Other options:
+\item{output_placement}{Where to inset retults (harmonized vector) in the \code{x} object. Default options is 'replace_col' which overwrides the \code{col} in \code{x} with results. Other options:
 \itemize{
-\item 'omit' :: do not write results back to table (usually used when \code{append_copy} is set for temporary values)
+\item 'omit' :: do not write results back to table (usually used when \code{append_output_copy} is set for temporary values)
 \item 'prepend_to_col' :: prepend to \code{col}
 \item 'append_to_col' :: append to \code{col}
 \item 'prepend_to_x' :: prepend to \code{x} data.frame like object
 \item 'append_to_x' :: append to \code{x} data.frame like object
 }}
 
-\item{name}{Use this name for the column with results (harmonized values). Default is NA, which means that either \code{name_for_x_atomic} if \code{x} is vector or original col name will be used with \code{name_suffix} at the end.}
+\item{atomic_x_col_name}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
 
-\item{name_for_x_atomic}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
+\item{output_name}{Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:}
 
-\item{name_suffix}{If \code{name} is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in \code{select_x_cols} it will add counter at the end to avoid variables with the same names.}
+\item{append_output_copy}{Whether to append a copy of result vector to \code{x} object}
 
-\item{append_copy}{Whether to append a copy of result vector to \code{x} object}
-
-\item{append_copy_name_format}{How the append copy wiil be named}
-
-\item{select_cols}{If x` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).}
+\item{output_copy_col_name}{How the append copy wiil be named}
 }
 \value{
-Always NULL. It does nothing.
+It does nothing. Returns NULL silently.
 }
 \description{
 Does nothing but stores (as its own default arguments) options that control vector handeling through harmonization process. These options are available in most harmonizer functions that accept \code{...} parameter.
+
+\itemize{
+\item {procedure_index} -
+\item {procedure_name} -
+\item {_procedure_index} -
+\item {_procedure_name} -
+\item {_col_name} -
+\item {col_name_} -
+\item {col_name} -
+\item {_index_suffix} - Adds unique suffix (increment index) if the column name already exist. E.g. the following format '{col_name}{_index_suffix}' for names(x) = c('V', 'V_9', 'V_41') and col = 2 (i.e. col_name = 'V_9' in this example) would result in a new column named 'V_42'
+}
 }

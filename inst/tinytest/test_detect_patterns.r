@@ -16,7 +16,7 @@ expect_equal(
         ),
         patterns = c("Co.", "Corp.", "MS"),
         patterns_type = "ends",
-        codes_col_name = "codes.new",
+        output_codes_col_name = "codes.new",
         patterns_codes_col = 1,
         codes_merge = TRUE,
         rows = c(FALSE, TRUE, FALSE)
@@ -43,7 +43,7 @@ expect_equal(
         patterns = c("Co.", "Corp.", "MS"),
         patterns_type = "ends",
         codes_omitted_rows_value = "omitted",
-        codes_col_name = "codes_new",
+        output_codes_col_name = "codes_new",
         patterns_codes_col = 1,
         codes_merge = TRUE,
         rows = c(FALSE, TRUE, FALSE)
@@ -65,7 +65,7 @@ expect_equal(
     c("Co.", "Corp.", "MS"),
     patterns_type = "ends",
     patterns_codes_col = 1,
-    codes_col_name = "codes",
+    output_codes_col_name = "codes",
     codes_merge = TRUE,
     rows = c(FALSE, TRUE, FALSE)
     ),
@@ -288,7 +288,7 @@ expect_equal(
     patterns = c("Co.", "Corp.", "MS"),
     patterns_type = "ends",
     patterns_codes = "corporation",
-    codes_col_name = "codes",
+    output_codes_col_name = "codes",
     codes_merge = TRUE,
     rows = c(FALSE, TRUE, FALSE)
     ),

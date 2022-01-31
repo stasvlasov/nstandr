@@ -55,8 +55,7 @@ detect_patterns <- function(x
                            , patterns_type = "fixed"
                            , patterns_type_col = NULL
                            , patterns_codes = NULL
-                           , codes_col_name = NULL
-                           , codes_col_name_suffix = "_coded"
+                           , output_codes_col_name = "{col_name_}coded"
                            , codes_omitted_rows_value = NULL
                            , no_match_code = NULL
                            , codes_update_empty = TRUE
@@ -79,9 +78,8 @@ detect_patterns <- function(x
         force(x)
         rows <- get_target(x
                          , rows = NULL
-                         , name = codes_col_name
-                         , name_suffix = codes_col_name_suffix
-                         , output = "append_to_x"
+                         , output_col_name = output_codes_col_name
+                         , output_placement = "append_to_x"
                          , return_null_for_new_col = TRUE) |>
             harmonize_is_data_empty() |>
             and_rows(rows, x)
@@ -138,9 +136,8 @@ detect_patterns <- function(x
     if(codes_merge && !codes_update_empty) {
         x_codes_vector <- get_target(x
                                    , rows = rows
-                                   , name = codes_col_name
-                                   , name_suffix = codes_col_name_suffix
-                                   , output = "append_to_x"
+                                   , output_col_name = output_codes_col_name
+                                   , output_placement = "append_to_x"
                                    , return_null_for_new_col = TRUE)
         if(!is.null(x_codes_vector)) {
             if(codes_merge_prepend) {
@@ -158,9 +155,8 @@ detect_patterns <- function(x
     ## append codes (if prepend allowed it will break target col inference)
     inset_target(x_inset_vector, x
                , rows = rows
-               , output = "append_to_x"
-               , name = codes_col_name
-               , name_suffix = codes_col_name_suffix
+               , output_placement = "append_to_x"
+               , output_col_name = output_codes_col_name
                , omitted_rows_values = codes_omitted_rows_value
                , omitted_rows_values_for_new_col = NA_character_
                , return_only_target_col = return_only_codes)

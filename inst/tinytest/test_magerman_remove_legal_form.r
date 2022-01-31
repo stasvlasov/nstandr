@@ -44,7 +44,7 @@ expect_equal(data.table(c("lksdjf MFG. GMBH CO,; INC"
                         , " MSlab Co. GMBH & CO.KG lalal  "
                         , "KABUSHIKI KAISHA MSlab Co.") |> toupper()
                       , somevar = c(1,2,3,4,5)) |>
-             magerman_remove_legal_form_and_clean(output = "append_to_col")
+             magerman_remove_legal_form_and_clean(output_placement = "append_to_col")
 , structure(list(V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", 
 "IBM CORP.", " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO."
 ), V1_harmonized = c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", 
@@ -59,7 +59,7 @@ expect_equal(
              , " MSlab Co. GMBH & CO.KG lalal  "
              , "KABUSHIKI KAISHA MSlab Co. ") |>
              toupper() |>
-             magerman_remove_legal_form_and_clean(output = "prepend_to_x")
+             magerman_remove_legal_form_and_clean(output_placement = "prepend_to_x")
 , structure(list(V1_harmonized = c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", 
 "IBM CORPORATION", " MSLAB CO. & COMPANY LALAL  ", " MSLAB CO. "
 ), V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", "IBM CORP.", 

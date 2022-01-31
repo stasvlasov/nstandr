@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:3]]
+## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:5]]
 require("data.table")
 
 get_target <- harmonizer:::get_target
@@ -18,14 +18,14 @@ expect_equal(
   , c("7", "8", "a"))
 
 
-## test output
+## test output_placement
 
 expect_equal(
     data.frame(x = c(1,2,3,4)
              , x_harmonized = c("7","8","9","a")) |>
     get_target(col = 1
              , rows = c(T,T,F,T)
-             , output = "append_to_col")
+             , output_placement = "append_to_col")
   , c("7", "8", "a"))
 
 expect_equal(
@@ -34,7 +34,7 @@ expect_equal(
     get_target(col = 1
              , rows = c(T,T,F,T)
                , name = "aaa"
-             , output = "append_to_col")
+             , output_placement = "append_to_col")
   , c("7", "8", "a"))
 
 
@@ -43,7 +43,7 @@ data.frame(x_harmonized = c(1,2,3,4)
              , x = c("7","8","9","a")) |>
     get_target(col = 1
              , rows = c(T,T,F,T)
-             , output = "prepend_to_col")
+             , output_placement = "prepend_to_col")
   , c(1,2,4))
 
 
@@ -54,7 +54,7 @@ expect_equal(
              , x_harmonized = c("7","8","9","a")) |>
     get_target(col = 1
              , rows = c(T,T,F,T)
-             , output = "append_to_x")
+             , output_placement = "append_to_x")
   , c("7", "8", "a"))
 
 
@@ -64,8 +64,8 @@ expect_equal(
              , x = c("7","8","9","a")) |>
     get_target(col = 2
              , rows = c(T,T,F,T)
-             , output = "prepend_to_x")
+             , output_placement = "prepend_to_x")
   , c(1,2,4))
-## --------<<  get_target & inset_target:3 ends here
+## --------<<  get_target & inset_target:5 ends here
 
 

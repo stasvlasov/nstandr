@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:4]]
+## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:6]]
 require("data.table")
 
 inset_target <- harmonizer:::inset_target
@@ -18,7 +18,7 @@ expect_equal(
   , c("a", "b", "3", "d", "e"))
 
 
-## test output
+## test output_placement
 expect_equal(
     inset_target(c("a", "b", "c", "d", "e")
                , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j")))
@@ -27,14 +27,14 @@ expect_equal(
 expect_equal(
     inset_target(c("a", "b", "c", "d", "e")
                , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
-               , output = "prepend_to_col")
+               , output_placement = "prepend_to_col")
     , data.table(c1_harmonized = c("a", "b", "c", "d", "e"), c1 = c(1, 2, 3, 4, 5), x = c("x", "y", "z", "i", "j")))
 
 
 expect_equal(
     inset_target(c("a", "b", "c", "d", "e")
                , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
-               , output = "append_to_col")
+               , output_placement = "append_to_col")
   , data.table(c1 = c(1, 2, 3, 4, 5), c1_harmonized = c("a", 
                                                         "b", "c", "d", "e"), x = c("x", "y", "z", "i", "j")))
 
@@ -42,7 +42,7 @@ expect_equal(
 expect_equal(
     inset_target(c("a", "b", "c", "d", "e")
                , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
-               , output = "append_to_x")
+               , output_placement = "append_to_x")
   , data.table(c1 = c(1, 2, 3, 4, 5), x = c("x", "y", "z", "i", 
                                             "j"), c1_harmonized = c("a", "b", "c", "d", "e")))
 
@@ -108,6 +108,6 @@ expect_equal(inset_target(c("a", "b", "c")
                         , rows = c(1,3,5)
                         , return_only_target_col = TRUE)
            , c("a", "2", "b", "4", "c"))
-## --------<<  get_target & inset_target:4 ends here
+## --------<<  get_target & inset_target:6 ends here
 
 

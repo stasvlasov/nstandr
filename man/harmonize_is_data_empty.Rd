@@ -4,10 +4,12 @@
 \alias{harmonize_is_data_empty}
 \title{Checks if all elements in vercor(s) are either "", NA, NULL or have zero length}
 \usage{
-harmonize_is_data_empty(data)
+harmonize_is_data_empty(x, return_as_true_if_x_zero_length = FALSE)
 }
 \arguments{
-\item{data}{input data to check each vector}
+\item{x}{input data to check each vector}
+
+\item{return_as_true_if_x_zero_length}{how to interpret zero lenth input. If TRUE then it returns TRUE. Otherwise NULL.}
 }
 \value{
 logical vector of the same length

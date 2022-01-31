@@ -1,3 +1,4 @@
+
 # - Reference from [[associate-id:org:29i4s7t0y5i0][Harmonizer R package]] on [2021-06-05 Sat 22:51]
 #+PROPERTY: header-args:R  :comments link :session :mkdirp yes :padline yes
 * Frontpage
@@ -362,12 +363,14 @@ Note: If =install.packages= is tangled to =.Rprofile= it might cause a recursive
 
 #+END_SRC
 
+
 ** Tangle source
 #+name: tangle-buffer
 #+BEGIN_SRC emacs-lisp :results none
   (org-babel-tangle)
 #+END_SRC
 
+Plus tangle dots [[id:org:6lik3kf0kcj0][get_dots]]
 
 ** Make package data from org-tables
 
@@ -611,6 +614,9 @@ Adjust "ensure_version" verstions manually:
 
 * Functions
 ** get_dots
+:PROPERTIES:
+:ID:       org:6lik3kf0kcj0
+:END:
 
 #+name: inject-get-dots
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -1453,15 +1459,23 @@ Tests:
 :END:
 #+BEGIN_SRC R :tangle R/harmonizer.r
   ##' Checks if all elements in vercor(s) are either "", NA, NULL or have zero length
-  ##' @param data input data to check each vector
+  ##' @param x input data to check each vector
+  ##' @param return_as_true_if_x_zero_length how to interpret zero lenth input. If TRUE then it returns TRUE. Otherwise NULL.
   ##' @return logical vector of the same length
-  ##' @export
-  harmonize_is_data_empty <- function(data) {
-      data_list_checks <-
-          lapply(data, function(x) {
+  harmonize_is_data_empty <- function(x
+                                    , return_as_true_if_x_zero_length = FALSE) {
+      if(length(x) == 0) {
+          if(return_as_true_if_x_zero_length) {
+              return(TRUE)
+          } else {
+              return(NULL)
+          }
+      }
+      x_list_checks <-
+          lapply(x, function(x) {
               if (length(x) == 0) TRUE else all(x == "" | is.na(x))
           })
-      unlist(data_list_checks, recursive = FALSE)
+      unlist(x_list_checks, recursive = FALSE)
   }
 
 
@@ -1556,16 +1570,88 @@ Tests:
       name.with.suffix %>%
         paste0(".", suffix.nbr)
   }
+
+
+  harmonize_add_suffix <- function(name, suffix, x.names
+                                 , search.suffix.in.name = TRUE
+                                 , suffix.nbr.init = 1
+                                 , suffix.nbr = NULL) {
+    ## remove suffix from name if it is already there..
+    name.base <- if(search.suffix.in.name)
+                   str_remove(name, paste0("\\.", suffix, "(\\.\\d+$|$)"))
+                 else name
+    name.with.suffix <- paste0(name.base, ".", suffix)
+    name.with.suffix.regex.nbr <-
+      paste0("(?<=", escape_regex(name.with.suffix), "\\.)", "\\d+$")
+    suffix.nbr.init <- if(name.with.suffix %in% x.names)
+                         suffix.nbr.init - 1
+                       else NULL
+    suffix.nbr <-
+      c(x.names, ifelse(search.suffix.in.name, name, NULL)) %>% 
+      str_extract(name.with.suffix.regex.nbr) %>%
+      as.numeric %>%
+      {if(all(is.na(.))) suffix.nbr.init
+       else max(., na.rm = TRUE)} %>%
+      add(1)
+    ## return name
+    if(length(suffix.nbr) == 0)
+      name.with.suffix
+    else
+      name.with.suffix %>%
+        paste0(".", suffix.nbr)
+  }
+
+
+  make_indexed_col_name <- function(col_name
+                                  , x_names = NULL
+                                  , index_init_val = 1L
+                                  , index_separator = "_") {
+      checkmate::assert_integer(index_init_val, len = 1)
+      checkmate::assert_string(index_separator)
+      if(is.null(x_names)) return(col_name)
+      indexed_col_name_regex <- paste0("^", escape_regex(col_name), escape_regex(index_separator), "(\\d+)$")
+      indexed_col_name_in_x_names <-
+          stringi::stri_detect_regex(x_names, indexed_col_name_regex)
+      if(any(indexed_col_name_in_x_names)) {
+          index <- 
+              stringi::stri_match_first_regex(x_names, indexed_col_name_regex)[,2] |>
+              as.numeric() |>
+              max(na.rm = TRUE)
+          col_name <-
+              paste0(col_name, index_separator, index + 1)
+      } else if(col_name %in% x_names) {
+          col_name <- 
+              paste0(col_name, index_separator, index_init_val)
+      } 
+      return(col_name)
+  }
+
 #+END_SRC
 
-#+name: 
+#+BEGIN_SRC R :tangle inst/tinytest/test_make_indexed_col_name.r
+  make_indexed_col_name <- harmonizer:::make_indexed_col_name
+
+  expect_equal(make_indexed_col_name("a"), "a")
+
+  expect_equal(make_indexed_col_name("a", "b"), "a")
+
+  expect_equal(make_indexed_col_name("a", "a"), "a_1")
+
+  expect_equal(make_indexed_col_name("a", "a", index_init_val = 0L), "a_0")
+
+  expect_equal(make_indexed_col_name("a", "a_11"), "a_12")
+
+  expect_equal(make_indexed_col_name("a", c(NA, "a", "a_41","a_11")), "a_42")
+#+END_SRC
+
+
 #+BEGIN_SRC R
-  ## testing
-  ## harmonize.add.suffix("x.pro.11", "pro"
-  ##                    ## , c("x", "x.pro.20", "foo" , "x.pro.0", "x.pro.3", "var")
-  ##                    , c("x", "foo" , "x.pro.8", "var")
-  ##                    ## , c("x", "foo" , "x", "var")
-  ##                      )
+
+  harmonize_add_suffix("x.pro.11", "pro"
+                     ## , c("x", "x.pro.20", "foo" , "x.pro.0", "x.pro.3", "var")
+                     ## , c("x", "foo" , "x.pro.8", "var")
+                     , c("x", "foo" , "x", "var")
+                       )
 #+END_SRC
 
 *** harmonize.defactor
@@ -2346,34 +2432,32 @@ Tests:
   ##' 
   ##' @param col Column of interest (the one we need to harmonize) in the `x` object (if it is data.frame like).
   ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records.
-  ##' @param omitted_rows_values If `rows` parameter is set then merge `omitted_rows_values` with the results (filtered by `rows`). Either single string or a character vector of length `nrow(x)`. If NULL (the default) then original values of `col` are merged with results.
-  ##' @param output Where to inset retults (harmonized vector) in the `x` object. Default options is 'replace_col' which overwrides the `col` in `x` with results. Other options:
-  ##' - 'omit' :: do not write results back to table (usually used when `append_copy` is set for temporary values)
+  ##' @param omitted_rows_value If `rows` parameter is set then merge `omitted_rows_value` with the results (filtered by `rows`). Either single string or a character vector of length `nrow(x)`. If NULL (the default) then original values of `col` are merged with results.
+  ##' @param output_placement Where to inset retults (harmonized vector) in the `x` object. Default options is 'replace_col' which overwrides the `col` in `x` with results. Other options:
+  ##' - 'omit' :: do not write results back to table (usually used when `append_output_copy` is set for temporary values)
   ##' - 'prepend_to_col' :: prepend to `col`
   ##' - 'append_to_col' :: append to `col`
   ##' - 'prepend_to_x' :: prepend to `x` data.frame like object
   ##' - 'append_to_x' :: append to `x` data.frame like object
-  ##' @param name Use this name for the column with results (harmonized values). Default is NA, which means that either `name_for_x_atomic` if `x` is vector or original col name will be used with `name_suffix` at the end.
-  ##' @param name_for_x_atomic If `x` is vector use this name for original column if it is in results. Default is "x". If `x` is table the name of `col` will be used.
-  ##' @param name_suffix If `name` is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in `select_x_cols` it will add counter at the end to avoid variables with the same names.
-  ##' @param append_copy Whether to append a copy of result vector to `x` object
-  ##' @param append_copy_name_format How the append copy wiil be named
-  ##' @param select_cols If x` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).
+  ##' @param atomic_x_col_name If `x` is vector use this name for original column if it is in results. Default is "x". If `x` is table the name of `col` will be used.
+  ##' @param output_name Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:
+  ##' @eval format_col_name(return_docs = TRUE)
+  ##' @param append_output_copy Whether to append a copy of result vector to `x` object
+  ##' @param output_copy_col_name How the append copy wiil be named
   ##' 
-  ##' @return Always NULL. It does nothing.
+  ##' @return It does nothing. Returns NULL silently.
   harmonize_options <- function(col = 1
                               , rows = NULL
-                              , omitted_rows_values = NULL
-                              , output = "replace_col"
+                              , omitted_rows_value = NULL
+                              , output_placement = "replace_col"
                               , name = NULL
-                              , name_for_x_atomic = "x"
-                              , name_suffix = "_harmonized"
-                              , append_copy = FALSE
-                              , append_copy_name_format = "{col_name}_harmonizing{_procedure_number}{_procedure_name}"
-                              , select_cols = NULL) {
-      ## do nothing
-      return()
-  }
+                              , atomic_x_col_name = "x"
+                              , output_name = "std{_col_name}"
+                              , append_output_copy = FALSE
+                              , output_copy_col_name = "std{_col_name}_copy{_procedure_index}{_procedure_name}") {
+        ## do nothing
+        invisible()
+    }
 #+END_SRC
 
 *** check_harmonize_options
@@ -2500,22 +2584,22 @@ Tests:
           }
           ## check 'rows'
           check_rows(rows, x, which_call_to_report)
-          ## check 'omitted_rows_values'
-          if(length(omitted_rows_values) == 1) {
+          ## check 'omitted_rows_value'
+          if(length(omitted_rows_value) == 1) {
               checkmate::assert_string(
-                             omitted_rows_values
+                             omitted_rows_value
                            , na.ok = TRUE
                            , add = assertion_fails)
           } else {
               checkmate::assert_character(
-                             omitted_rows_values
+                             omitted_rows_value
                            , null.ok = TRUE
                            , len = x_length(x)
                            , add = assertion_fails)
           }
           ## check 'placement'
           checkmate::assert_choice(
-                         output
+                         output_placement
                        , choices = c(
                              "replace_col"
                            , "prepend_to_col"
@@ -2537,35 +2621,35 @@ Tests:
                            , disjunct.from = names(x)
                            , add = assertion_fails)
           }
-          ## check 'name_for_x_atomic'
+          ## check 'atomic_x_col_name'
           checkmate::assert_string(
-                         name_for_x_atomic
+                         atomic_x_col_name
                        , add = assertion_fails)
           checkmate::assert_names(
-                         name_for_x_atomic
+                         atomic_x_col_name
                        , type = "ids"
                        , what = "colnames"
                        , add = assertion_fails)
-          ## check 'name_suffix'
+          ## check 'output_name'
           checkmate::assert_string(
-                         name_suffix
+                         output_name
                        , add = assertion_fails)
-          ## check if col_name + 'name_suffix' is distinct from names(x)
+          ## check if col_name + 'output_name' is distinct from names(x)
           if(check_name_duplicates && !is.atomic(x) && is.null(name)) {
               checkmate::assert_names(
-                             paste0(names(x)[[col]], name_suffix)
+                             paste0(names(x)[[col]], output_name)
                            , type = "ids"
                            , what = "colnames"
                            , disjunct.from = names(x)
                            , add = assertion_fails)
           }
-          ## check 'append_copy'
+          ## check 'append_output_copy'
           checkmate::assert_flag(
-                         append_copy
+                         append_output_copy
                        , add = assertion_fails)
-          ## check 'append_copy_name_format'
+          ## check 'output_copy_col_name'
           checkmate::assert_string(
-                         append_copy_name_format
+                         output_copy_col_name
                        , min.chars = 1
                        , add = assertion_fails)
       })
@@ -2592,8 +2676,8 @@ Tests:
   }
 
   expect_true(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), name = "c"))
-  ## bad output name
-  expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), output = "omitted"))
+  ## bad output_placement name
+  expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), output_placement = "omitted"))
 
 
   testing_check_arguments <- function(x, ...) {
@@ -3041,150 +3125,220 @@ Tests:
 :ID:       org:77wbsm80daj0
 :END:
 #+BEGIN_SRC R :tangle R/handel_target.r
-  get_col_as_number <- function(col, x) {
-      if(is.character(col)) {
-          which(names(x) %in% col)
-      } else {
-          col
-      }
-  }
+    get_col_as_number <- function(col, x) {
+        if(is.character(col)) {
+            which(names(x) %in% col)
+        } else {
+            col
+        }
+    }
 
-  make_target_name <- function(col, x, name, name_suffix) {
-      if(!is.null(name)) {
-          return(name)
-      } else {
-          return(paste0(names(x)[col], name_suffix))
-      }
-  }
+    infer_post_inset_col_from_pre_inset_col <- function(col, x, output_placement) {
+        if(is.character(col)) {
+            which(names(x) %in% col)
+        } else {
+            switch(
+                output_placement
+              , replace_col = col
+              , append_to_col = col
+              , prepend_to_col = col + 1
+              , append_to_x = col
+              , prepend_to_x = col + 1)
+        }
+    }
 
-  infer_post_inset_col_from_pre_inset_col <- function(col, x, output) {
-      if(is.character(col)) {
-          which(names(x) %in% col)
-      } else {
-          switch(
-              output
-            , replace_col = col
-            , append_to_col = col
-            , prepend_to_col = col + 1
-            , append_to_x = col
-            , prepend_to_x = col + 1)
-      }
-  }
-
-  infer_if_post_inset_col_possible <- function(col, x, output) {
-      col <- get_col_as_number(col, x)
-      switch(
-          output
-        , replace_col = TRUE
-        , append_to_col = ifelse(col == x_width(x), FALSE, TRUE)
-        , append_to_x = ifelse(col == x_width(x), FALSE, TRUE)
-        , prepend_to_x = ifelse(col == 1, FALSE, TRUE)
-        , prepend_to_col = ifelse(col == 1, FALSE, TRUE)
-      )
-  }
+    infer_if_post_inset_col_possible <- function(col, x, output_placement) {
+        col <- get_col_as_number(col, x)
+        switch(
+            output_placement
+          , replace_col = TRUE
+          , append_to_col = ifelse(col == x_width(x), FALSE, TRUE)
+          , append_to_x = ifelse(col == x_width(x), FALSE, TRUE)
+          , prepend_to_x = ifelse(col == 1, FALSE, TRUE)
+          , prepend_to_col = ifelse(col == 1, FALSE, TRUE)
+        )
+    }
 
 
-  infer_moving_target_from_post_inset_col <- function(col, x, output, as_name = FALSE) {
-      col <- get_col_as_number(col, x)
-      return_col <- switch(
-          output
-        , replace_col = col
-        , append_to_col = col + 1
-        , prepend_to_col = col - 1
-        , append_to_x = x_width(x)
-        , prepend_to_x = 1)
-      if(as_name) {
-          names(x)(return_col)
-      } else {
-          return_col
-      }
-  }
+    infer_moving_target_from_post_inset_col <- function(col, x, output_placement, as_name = FALSE) {
+        col <- get_col_as_number(col, x)
+        return_col <- switch(
+            output_placement
+          , replace_col = col
+          , append_to_col = col + 1
+          , prepend_to_col = col - 1
+          , append_to_x = x_width(x)
+          , prepend_to_x = 1)
+        if(as_name) {
+            names(x)(return_col)
+        } else {
+            return_col
+        }
+    }
 
 
-  ## this assumes that nothing else was never added...
-  infer_moving_target_from_pre_inset_col <- function(col, x, output, as_name = FALSE) {
-      col <- get_col_as_number(col, x)
-      return_col <- switch(
-          output
-        , replace_col = col
-        , append_to_col = col + 1
-        , prepend_to_col = col
-        , append_to_x = x_width(x)
-        , prepend_to_x = 1)
-      if(as_name) {
-          names(x)(return_col)
-      } else {
-          return_col
-      }
-  }
+    ## this assumes that nothing else was never added...
+    infer_moving_target_from_pre_inset_col <- function(col, x, output_placement, as_name = FALSE) {
+        col <- get_col_as_number(col, x)
+        return_col <- switch(
+            output_placement
+          , replace_col = col
+          , append_to_col = col + 1
+          , prepend_to_col = col
+          , append_to_x = x_width(x)
+          , prepend_to_x = 1)
+        if(as_name) {
+            names(x)(return_col)
+        } else {
+            return_col
+        }
+    }
 
+  ## vars that come with dots
+  ## col
+  ## output_name
+  ## output_placement
   ## assume that other stuff is always append to x or col so inference will keep working
   infer_moving_target_from_names <- function(dots, x
                                            , return_null_for_new_col = FALSE
                                            , return_name_for_new_col = FALSE) {
       with(dots, {
-          if(output == "replace_col") return(get_col_as_number(col, x))
-          col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output)
-          if(infer_if_post_inset_col_possible(col_post_inset, x, output)) {
+          if(output_placement == "replace_col") return(get_col_as_number(col, x))
+          col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output_placement)
+          if(infer_if_post_inset_col_possible(col_post_inset, x, output_placement)) {
               target_name_generated <-
-                  make_target_name(col_post_inset, x, name, name_suffix)
-              if(target_name_generated %in% names(x)) {
-                  ## case of subsequent calls
-                  return(get_col_as_number(target_name_generated, x))
-              }
+                    format_col_name(output_name, col_post_inset, x)
+                if(target_name_generated %in% names(x)) {
+                    ## case of subsequent calls
+                    return(get_col_as_number(target_name_generated, x))
+                }
           }
           if(return_null_for_new_col) return(NULL)
-          if(return_name_for_new_col) return(make_target_name(col, x, name, name_suffix))
-          get_col_as_number(col, x)
+          col <- get_col_as_number(col, x)
+          if(return_name_for_new_col) return(format_col_name(output_name, col, x))
+          return(col)
       })
   }
 
 
 
 
-  ##' Gets a target vector to harmonize.
-  ##'
-  ##' @param data Input data. Can be vector, data.frame or a data.table
-  ##' @param col Column of interest in the input `data`. The vector we would like to work with. This parameter is ignored if input `data` is a vector (checked by `is.atomic`)
-  ##' @param rows Rows of interest
-  ##' @param ... Ignored arguments that are meant for `inset_vector`
-  ##' @return A vector. Factors in imput `data` are converted to string.
-  ##'
-  ##' @md
-  get_target <- function(x, return_null_for_new_col = FALSE, ...) {
-      with(dots <- get_harmonize_options(), {
-          ## check arguments
-          check_harmonize_options(dots, x)
-          col <- infer_moving_target_from_names(dots, x, return_null_for_new_col)
-          if(is.null(col)) return(NULL)
-          get_vector(x, col, rows, check_x_col_rows = FALSE)
-      })
-  }
+    ##' Gets a target vector to harmonize.
+    ##'
+    ##' @param data Input data. Can be vector, data.frame or a data.table
+    ##' @param col Column of interest in the input `data`. The vector we would like to work with. This parameter is ignored if input `data` is a vector (checked by `is.atomic`)
+    ##' @param rows Rows of interest
+    ##' @param ... Ignored arguments that are meant for `inset_vector`
+    ##' @return A vector. Factors in imput `data` are converted to string.
+    ##'
+    ##' @md
+    get_target <- function(x, return_null_for_new_col = FALSE, ...) {
+        with(dots <- get_harmonize_options(), {
+            ## check arguments
+            check_harmonize_options(dots, x)
+            col <- infer_moving_target_from_names(dots, x, return_null_for_new_col)
+            if(is.null(col)) return(NULL)
+            get_vector(x, col, rows, check_x_col_rows = FALSE)
+        })
+    }
 
 
 
-  format_append_copy <- function(format, name = "") {
-      procedure_number <- 
-          get0("harmonizer_harmonize_procedure_number", ifnotfound = "", envir = parent.frame())
-     procedure_name <-
-          get0("harmonizer_harmonize_procedure_name", ifnotfound = "", envir = parent.frame())
-      lowdash_procedure_number <-
-          ifelse(procedure_number == "", "", paste0("_", procedure_number))
-      lowdash_procedure_name <-
-          ifelse(procedure_name == "", "", paste0("_", procedure_name))
-      lowdash_name <- ifelse(name == "", "", paste0("_", name))
-      name_lowdash <- ifelse(name == "", "", paste0(name, "_"))
-      stringi::stri_replace_all_fixed(format
-                                    , pattern = c("{col_name}", "{_col_name}", "{col_name_}"
-                                                , "{procedure_number}", "{_procedure_number}"
-                                                , "{procedure_name}", "{_procedure_name}")
-                                    , replacement = c(name, lowdash_name, name_lowdash
-                                                     , procedure_number, lowdash_procedure_number
-                                                     , procedure_name, lowdash_procedure_name)
-                                    , vectorise_all = FALSE)
-  }
+  replace_fixed_if_string <- function(var, template = NULL) {
+        var_name <- deparse1(substitute(var))
+        if(checkmate::test_string(var, min.chars = 1)) {
+            if(is.null(template) || template == var) {
+               return(var)
+            } else {
+                checkmate::assert_string(template, fixed = var_name)
+                return(stringi::stri_replace_all_fixed(template, var_name, var))
+            }
+        } else {
+            return("")
+        }
+    }
 
 
+    format_col_name <- function(col_name_format
+                              , target_col = NULL
+                              , x_or_x_names = NULL
+                              , return_docs = FALSE) {
+        checkmate::assert_flag(return_docs)
+        if(is.numeric(target_col)) {
+            checkmate::assert_integerish(target_col
+                                       , len = 1
+                                       , lower = 1)
+            checkmate::assert_multi_class(x_or_x_names, c("data.table", "data.frame"))
+            x_names <- names(x_or_x_names)
+            col_name <- x_names[[target_col]]
+        } else {
+            checkmate::assert_string(target_col
+                                   , min.chars = 1
+                                   , null.ok = TRUE
+                                   , na.ok = TRUE)
+            col_name <- target_col
+            x_names <- x_or_x_names
+        }
+        procedure_index <- get0("harmonizer_harmonize_procedure_index", envir = parent.frame())
+        procedure_name <- get0("harmonizer_harmonize_procedure_name", envir = parent.frame())
+        replacements_list <- list(
+            "procedure_index" = list(
+                doc = ""
+              , val = replace_fixed_if_string(procedure_index))
+          , "procedure_name" = list(
+                doc = ""
+              , val = replace_fixed_if_string(procedure_name))
+          , "_procedure_index" = list(
+                doc = ""
+              , val = replace_fixed_if_string(procedure_index, "_procedure_index"))
+          , "_procedure_name" = list(
+                doc = ""
+              , val = replace_fixed_if_string(procedure_name, "_procedure_name"))
+          , "_col_name" = list(
+                doc = ""
+              , val = replace_fixed_if_string(col_name, "_col_name"))
+          , "col_name_" = list(
+                doc = ""
+              , val = replace_fixed_if_string(col_name, "col_name_"))
+          , "col_name" = list(
+                doc = ""
+              , val = replace_fixed_if_string(col_name))
+          , "_index_suffix" = list(
+                doc = "Adds unique suffix (increment index) if the column name already exist. E.g. the following format '{col_name}{_index_suffix}' for names(x) = c('V', 'V_9', 'V_41') and col = 2 (i.e. col_name = 'V_9' in this example) would result in a new column named 'V_42'"
+              , val = "")
+        )
+        if(return_docs) {
+            return(mapply(\(x, x_name) paste("*", x_name, "-", x$doc)
+                        , replacements_list
+                        , paste0("{", names(replacements_list), "}")))
+        }
+        ## check correctness of substitution names if provided
+        replacements_in_col_name_format <- 
+            stringi::stri_extract_all_regex(col_name_format
+                                          , pattern = "\\{[^{}]*\\}"
+                                          , omit_no_match = TRUE) |>
+            unlist()
+        if (length(replacements_in_col_name_format) > 0) {
+            checkmate::assert_subset(replacements_in_col_name_format
+                                   , choices = paste0("{", names(replacements_list), "}")
+                                   , empty.ok = TRUE
+                                   , fmatch = TRUE
+                                   , .var.name = "*_col_name")
+            col_name_formated <- 
+                stringi::stri_replace_all_fixed(col_name_format
+                                              , pattern = paste0("{", names(replacements_list), "}")
+                                              , replacement = sapply(replacements_list, `[[`, "val")
+                                              , vectorise_all = FALSE)
+            if (stringi::stri_detect_fixed(col_name_format, "{_index_suffix}")) {
+                ## ensure {_index_suffix} is at the end
+                checkmate::assert_string(col_name_format, pattern = "\\{_index_suffix\\}$", .var.name = "*_col_name")
+                col_name_formated <- make_indexed_col_name(col_name_formated, x_names)
+            }
+            return(col_name_formated)
+        } else {
+            return(col_name_format)
+        }
+    }
 
 
 
@@ -3193,20 +3347,20 @@ Tests:
   ##' @param vector Character vector to inset into the `x` object
   ##' @param x Data to harmonize. Character vector or data.frame or
   ##'     data.table
-  ##' @param omitted_rows_values_for_new_col Alternative value
-  ##'     `omitted_rows_values` to use in case we create new column in
+  ##' @param omitted_rows_value_for_new_col Alternative value
+  ##'     `omitted_rows_value` to use in case we create new column in
   ##'     x. For example, it is use in insetting codes to avoid the
-  ##'     default `omitted_rows_values` use initial `col` in which case
+  ##'     default `omitted_rows_value` use initial `col` in which case
   ##'     codes will be mixed with input values
   ##' @param allow_na_in_vector Whether to allow NA in inset vector
   ##' @param which_call_to_report System call number (e.g., -2L) to
   ##'     include in report if arguments checks fails
   ##' @param return_only_target_col If toggled to TRUE then only return
-  ##'     the vector to be inset (output argument is ignored)
+  ##'     the vector to be inset (output_placement argument is ignored)
   ##' @return Data.table or character vector
   ##' @inheritDotParams harmonize_options
   inset_target <- function(vector, x
-                         , omitted_rows_values_for_new_col = NULL
+                         , omitted_rows_value_for_new_col = NULL
                          , allow_na_in_vector = TRUE
                          , which_call_to_report = -5L
                          , return_only_target_col = FALSE
@@ -3219,7 +3373,7 @@ Tests:
           check_harmonize_options(dots, x)
           assertion_fails <- checkmate::makeAssertCollection()
           ## -----
-          ## inset omitted_rows_values if needed
+          ## inset omitted_rows_value if needed
           ## -----
           checkmate::assert_multi_class(vector
                                       , classes = c("list", "character", "logical", "numeric")
@@ -3235,25 +3389,25 @@ Tests:
                 , add = assertion_fails
               )
               report_arg_checks(assertion_fails, which_call_to_report)
-              ## process `omitted_rows_values`
-              omitted_rows_values_col <-
+              ## process `omitted_rows_value`
+              omitted_rows_value_col <-
                   infer_moving_target_from_names(
                       dots
                     , x
                     , return_null_for_new_col =
-                          !is.null(omitted_rows_values_for_new_col))
-              if(is.null(omitted_rows_values_col) &&
-                 is.null(omitted_rows_values)) {
-                  omitted_rows_values <- omitted_rows_values_for_new_col
+                          !is.null(omitted_rows_value_for_new_col))
+              if(is.null(omitted_rows_value_col) &&
+                 is.null(omitted_rows_value)) {
+                  omitted_rows_value <- omitted_rows_value_for_new_col
               }
-              omitted_rows_values <-
+              omitted_rows_value <-
                   get_vector(x
-                           , col = omitted_rows_values_col
-                           , fallback_value = omitted_rows_values
+                           , col = omitted_rows_value_col
+                           , fallback_value = omitted_rows_value
                            , fallback_value_supersedes = TRUE
                            , check_x_col_rows = FALSE)
               ## inject ommited rows
-              vector <- `[<-`(omitted_rows_values, rows, vector)
+              vector <- `[<-`(omitted_rows_value, rows, vector)
           } else {
               ## just check the vector length
               getFromNamespace(paste0("assert_", class(vector)), "checkmate")(
@@ -3273,14 +3427,14 @@ Tests:
           ## -----
           if(return_only_target_col) {
               x <- vector
-          } else if(output != "omit") {
-              if(is.atomic(x) && output == "replace_col") {
+          } else if(output_placement != "omit") {
+              if(is.atomic(x) && output_placement == "replace_col") {
                   ## just replace x if it is atomic
                   x <- vector
               } else {
                   x <- defactor(x, conv2dt = "all")
                   width_pre_inset <- x_width(x)
-                  col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output)
+                  col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output_placement)
                   col_or_name_if_new <-
                       infer_moving_target_from_names(dots, x, return_name_for_new_col = TRUE)
                   ## fuckin data.table syntax is so cryptic
@@ -3290,7 +3444,7 @@ Tests:
                   ## now if we added new col
                   if(x_width(x) == width_pre_inset + 1) {
                       ## if new col was added place last col into target posision
-                      target <- infer_moving_target_from_post_inset_col(col_post_inset, x, output)
+                      target <- infer_moving_target_from_post_inset_col(col_post_inset, x, output_placement)
                       cols_nums <-
                           1:width_pre_inset |>
                           append(width_pre_inset + 1, after = target - 1)
@@ -3301,14 +3455,14 @@ Tests:
           ## -----
           ## apped copy
           ## -----
-          if(append_copy & !return_only_target_col) {
+          if(append_output_copy & !return_only_target_col) {
               x <- defactor(x, conv2dt = "all")
-              col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output)
-              append_copy_name <- format_append_copy(append_copy_name_format, name = names(x)[col_post_inset])
-              checkmate::assert_names(append_copy_name, add = assertion_fails)
+              col_post_inset <- infer_post_inset_col_from_pre_inset_col(col, x, output_placement)
+              append_output_copy_name <- format_col_name(output_copy_col_name, col_post_inset, x)
+              checkmate::assert_names(append_output_copy_name, add = assertion_fails)
               report_arg_checks(assertion_fails, which_call_to_report)
               ## [] at the end ensures that returned DT is printed
-              x[, (append_copy_name) := vector][]
+              x[, (append_output_copy_name) := vector][]
           }
           report_arg_checks(assertion_fails, which_call_to_report)
           return(x)
@@ -3316,18 +3470,72 @@ Tests:
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_format_append_copy.r
-  format_append_copy <- harmonizer:::format_append_copy
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_replace_fixed_if_string.r
+  replace_fixed_if_string <- harmonizer:::replace_fixed_if_string
+
+  a <- NA
+  expect_equal(replace_fixed_if_string(a, "df_a_sd"), "")
+  expect_equal(replace_fixed_if_string(a), "")
+
+  a <- "Hi!"
+  expect_equal(replace_fixed_if_string(a, "df_a_sd"), "df_Hi!_sd")
+  expect_equal(replace_fixed_if_string(a), "Hi!")
+#+END_SRC
+
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_format_col_name.r
+  format_col_name <- harmonizer:::format_col_name
 
   expect_equal({
-      harmonizer_harmonize_procedure_number <- 6
+      harmonizer_harmonize_procedure_index <- 6
       harmonizer_harmonize_procedure_name <- "nber_replacement"
-      "{col_name_}harmonizing{_procedure_number}" |>
+      "{col_name_}harmonizing{_procedure_index}" |>
           paste0("{_procedure_name}") |>
-          format_append_copy("col")
+          format_col_name("col")
   }
   , "col_harmonizing_6_nber_replacement")
 #+END_SRC
+
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_format_col_name.r
+  format_col_name <- harmonizer:::format_col_name
+
+  ## format_col_name(return_docs = TRUE)
+
+  expect_equal(format_col_name("lala")
+             , "lala")
+
+  expect_equal(format_col_name("lala", "a")
+             , "lala")
+
+  expect_equal(format_col_name("lala{_col_name}", "a")
+             , "lala_a")
+
+  expect_equal(format_col_name("lala{_col_name}{_index_suffix}", "a")
+             , "lala_a")
+
+  expect_equal(format_col_name("lala{_col_name}{_index_suffix}", "a", c("lala"))
+             , "lala_a")
+
+  expect_equal(format_col_name("lala{_col_name}{_index_suffix}", "a", c("lala_a"))
+             , "lala_a_1")
+
+  expect_equal(format_col_name("lala{_col_name}{_index_suffix}", "a", c("lala_a", "lala_a_41"))
+             , "lala_a_42")
+
+
+  ## for data table
+  expect_equal(format_col_name("lala{_col_name}{_index_suffix}"
+                             , 2
+                             , data.table(
+                                 "lala_a" = NA
+                               , "a" = "too much coffee for today"
+                               , "lala_a_41" = 1:10))
+             , "lala_a_42")
+
+  #+END_SRC
+
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_get_target.r
   require("data.table")
@@ -3349,14 +3557,14 @@ Tests:
     , c("7", "8", "a"))
 
 
-  ## test output
+  ## test output_placement
 
   expect_equal(
       data.frame(x = c(1,2,3,4)
                , x_harmonized = c("7","8","9","a")) |>
       get_target(col = 1
                , rows = c(T,T,F,T)
-               , output = "append_to_col")
+               , output_placement = "append_to_col")
     , c("7", "8", "a"))
 
   expect_equal(
@@ -3365,7 +3573,7 @@ Tests:
       get_target(col = 1
                , rows = c(T,T,F,T)
                  , name = "aaa"
-               , output = "append_to_col")
+               , output_placement = "append_to_col")
     , c("7", "8", "a"))
 
 
@@ -3374,7 +3582,7 @@ Tests:
                , x = c("7","8","9","a")) |>
       get_target(col = 1
                , rows = c(T,T,F,T)
-               , output = "prepend_to_col")
+               , output_placement = "prepend_to_col")
     , c(1,2,4))
 
 
@@ -3385,7 +3593,7 @@ Tests:
                , x_harmonized = c("7","8","9","a")) |>
       get_target(col = 1
                , rows = c(T,T,F,T)
-               , output = "append_to_x")
+               , output_placement = "append_to_x")
     , c("7", "8", "a"))
 
 
@@ -3395,7 +3603,7 @@ Tests:
                , x = c("7","8","9","a")) |>
       get_target(col = 2
                , rows = c(T,T,F,T)
-               , output = "prepend_to_x")
+               , output_placement = "prepend_to_x")
     , c(1,2,4))
 #+END_SRC
 
@@ -3419,7 +3627,7 @@ Tests:
     , c("a", "b", "3", "d", "e"))
 
 
-  ## test output
+  ## test output_placement
   expect_equal(
       inset_target(c("a", "b", "c", "d", "e")
                  , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j")))
@@ -3428,14 +3636,14 @@ Tests:
   expect_equal(
       inset_target(c("a", "b", "c", "d", "e")
                  , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
-                 , output = "prepend_to_col")
+                 , output_placement = "prepend_to_col")
       , data.table(c1_harmonized = c("a", "b", "c", "d", "e"), c1 = c(1, 2, 3, 4, 5), x = c("x", "y", "z", "i", "j")))
 
 
   expect_equal(
       inset_target(c("a", "b", "c", "d", "e")
                  , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
-                 , output = "append_to_col")
+                 , output_placement = "append_to_col")
     , data.table(c1 = c(1, 2, 3, 4, 5), c1_harmonized = c("a", 
                                                           "b", "c", "d", "e"), x = c("x", "y", "z", "i", "j")))
 
@@ -3443,7 +3651,7 @@ Tests:
   expect_equal(
       inset_target(c("a", "b", "c", "d", "e")
                  , data.table(c1 = c(1,2,3,4,5), x = c("x", "y", "z", "i", "j"))
-                 , output = "append_to_x")
+                 , output_placement = "append_to_x")
     , data.table(c1 = c(1, 2, 3, 4, 5), x = c("x", "y", "z", "i", 
                                               "j"), c1_harmonized = c("a", "b", "c", "d", "e")))
 
@@ -3523,12 +3731,12 @@ old version
   ##' @param data an object
   ##' @param vector a vector to inset. Optional. Default is NULL
   ##' @param col vector of interest in `data` object
-  ##' @param update Update values in `col` column. Default is FALSE. If set `append`, `name` and `name_suffix` are ignored. Also if set the default for `select_all_data_cols` will be set to TRUE.
+  ##' @param update Update values in `col` column. Default is FALSE. If set `append`, `name` and `output_name` are ignored. Also if set the default for `select_all_data_cols` will be set to TRUE.
   ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records
-  ##' @param omitted_rows_values If `rows` is set merge these values to the results. It should be a vector of length 1 or `nrow(data)`. If the value is NULL (default) then use original values of `col`.
+  ##' @param omitted_rows_value If `rows` is set merge these values to the results. It should be a vector of length 1 or `nrow(data)`. If the value is NULL (default) then use original values of `col`.
   ##' @param append If set then put `vector` as the last instead of first vector/column. Default is FALSE.
-  ##' @param name_suffix If `name` is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already edataists in `select_data_cols` it will add counter at the end to avoid variables with the same names.
-  ##' @param name Use this name for the first column in results (harmonized names). Default is NULL, which means that either name_if_data_atomic if data is vector or original col name will be used with `name_suffix` at the end.
+  ##' @param output_name If `name` is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already edataists in `select_data_cols` it will add counter at the end to avoid variables with the same names.
+  ##' @param name Use this name for the first column in results (harmonized names). Default is NULL, which means that either name_if_data_atomic if data is vector or original col name will be used with `output_name` at the end.
   ##' @param name_if_data_atomic If `data` is vector use this name for original column if it is in results. Default is "data". If `data` is table the name of `col` will be used.
   ##' @param select_data_cols If data is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).
   ##' @param select_all_data_cols Whether to bind all columns in `data`. Defaults depends on values of `update` and `append`. If either is set then defaut values is TRUE otherwise FALSE. If set to TRUE by user the select_data_cols is ignored.
@@ -3543,9 +3751,9 @@ old version
                          , update = FALSE
                          , append = FALSE
                          , rows = NULL
-                         , omitted_rows_values = NULL
+                         , omitted_rows_value = NULL
                          , name = NA
-                         , name_suffix = "harmonized"
+                         , output_name = "harmonized"
                          , name_if_data_atomic = "names"
                          , select_data_cols =
                                -ifelse(is.numeric(col), col, match(col, names(data)))
@@ -3554,7 +3762,7 @@ old version
       check_args_col_rows()
       check_args_for_inset_vector()    
       ## inset filtered rows (this makes list if vector is list)
-      vector %<>% inset(omitted_rows_values, rows, .)
+      vector %<>% inset(omitted_rows_value, rows, .)
       ## inset vector to data
       if(is.atomic(data) & isFALSE(select_data_cols == 1)) {
           vector
@@ -3571,7 +3779,7 @@ old version
           name %<>%
               harmonize_eval_if_empty(
                   harmonize_add_suffix(data.names[col]
-                                     , name_suffix
+                                     , output_name
                                      , data.names[select_data_cols])) %>%
               make.names
           ## (pre)append vector to data
@@ -3597,17 +3805,17 @@ old version
                              , x.length = if(isTRUE(rows)) harmonize_data_length(x)
                                           else sum(rows)
                              , type = c("atomic", "list"))
-          ## - check omitted_rows_values
-          if(!harmonize_is_ok_type(omitted_rows_values
+          ## - check omitted_rows_value
+          if(!harmonize_is_ok_type(omitted_rows_value
                                  , x.length = c(1, harmonize_data_length(x))
                                  , type = "atomic")) {
-              omitted_rows_values <- harmonize_data_get_col(x, col)
-          } else if(length(omitted_rows_values) == 1) {
-              omitted_rows_values <-
-                  harmonize_defactor(omitted_rows_values) |>
+              omitted_rows_value <- harmonize_data_get_col(x, col)
+          } else if(length(omitted_rows_value) == 1) {
+              omitted_rows_value <-
+                  harmonize_defactor(omitted_rows_value) |>
                   rep(harmonize_data_length(x))
           } else {
-              omitted_rows_values <- harmonize_defactor(omitted_rows_values)
+              omitted_rows_value <- harmonize_defactor(omitted_rows_value)
           }
           ## - check select_cols
           harmonize_is_ok_type(select_all_data_cols)
@@ -3641,7 +3849,7 @@ old version
               if(name %in% names(x)[select_data_cols]) {
                   stop("The harmonized column name: ", name, " is alredy exists.")
               }
-              harmonize_is_ok_type(name_suffix
+              harmonize_is_ok_type(output_name
                                  , x.length = 1
                                  , type = "character"
                                  , allow.na = FALSE, allow.null = FALSE)
@@ -3668,7 +3876,7 @@ Testing
            , x.pro.5 = 0) %>%
       inset_vector_new(c(5,5,5)
                      , rows = c( TRUE, TRUE, FALSE, TRUE)
-                     , name_suffix = "pro")
+                     , output_name = "pro")
   
   
   
@@ -3704,7 +3912,7 @@ Testing
     inset_vector_new(vector = c(5,5,5)
               , col = "str"
               , rows = .$rows
-              , omitted_rows_values = .$str
+              , omitted_rows_value = .$str
               , select_data_cols = -c(1, 3)
               , update = TRUE)
   
@@ -3726,7 +3934,7 @@ Testing
     inset_vector_new(vector = c(5,5,0)
               , col = "str"
               , rows = .$rows
-              , omitted_rows_values = .$str
+              , omitted_rows_value = .$str
               , select_data_cols = -c(1, 3)
               , update = TRUE)
   
@@ -3738,7 +3946,7 @@ Testing
     inset_vector(vector = c(5,5,0)
               , col = "num"
               , rows = .$rows
-              , omitted_rows_values = .$str
+              , omitted_rows_value = .$str
               , select_data_cols = NULL
               , update = FALSE)
   
@@ -4611,8 +4819,7 @@ even older
                              , patterns_type = "fixed"
                              , patterns_type_col = NULL
                              , patterns_codes = NULL
-                             , codes_col_name = NULL
-                             , codes_col_name_suffix = "_coded"
+                             , output_codes_col_name = "{col_name_}coded"
                              , codes_omitted_rows_value = NULL
                              , no_match_code = NULL
                              , codes_update_empty = TRUE
@@ -4635,9 +4842,8 @@ even older
           force(x)
           rows <- get_target(x
                            , rows = NULL
-                           , name = codes_col_name
-                           , name_suffix = codes_col_name_suffix
-                           , output = "append_to_x"
+                           , output_col_name = output_codes_col_name
+                           , output_placement = "append_to_x"
                            , return_null_for_new_col = TRUE) |>
               harmonize_is_data_empty() |>
               and_rows(rows, x)
@@ -4694,9 +4900,8 @@ even older
       if(codes_merge && !codes_update_empty) {
           x_codes_vector <- get_target(x
                                      , rows = rows
-                                     , name = codes_col_name
-                                     , name_suffix = codes_col_name_suffix
-                                     , output = "append_to_x"
+                                     , output_col_name = output_codes_col_name
+                                     , output_placement = "append_to_x"
                                      , return_null_for_new_col = TRUE)
           if(!is.null(x_codes_vector)) {
               if(codes_merge_prepend) {
@@ -4714,9 +4919,8 @@ even older
       ## append codes (if prepend allowed it will break target col inference)
       inset_target(x_inset_vector, x
                  , rows = rows
-                 , output = "append_to_x"
-                 , name = codes_col_name
-                 , name_suffix = codes_col_name_suffix
+                 , output_placement = "append_to_x"
+                 , output_col_name = output_codes_col_name
                  , omitted_rows_values = codes_omitted_rows_value
                  , omitted_rows_values_for_new_col = NA_character_
                  , return_only_target_col = return_only_codes)
@@ -4742,7 +4946,7 @@ even older
           ),
           patterns = c("Co.", "Corp.", "MS"),
           patterns_type = "ends",
-          codes_col_name = "codes.new",
+          output_codes_col_name = "codes.new",
           patterns_codes_col = 1,
           codes_merge = TRUE,
           rows = c(FALSE, TRUE, FALSE)
@@ -4769,7 +4973,7 @@ even older
           patterns = c("Co.", "Corp.", "MS"),
           patterns_type = "ends",
           codes_omitted_rows_value = "omitted",
-          codes_col_name = "codes_new",
+          output_codes_col_name = "codes_new",
           patterns_codes_col = 1,
           codes_merge = TRUE,
           rows = c(FALSE, TRUE, FALSE)
@@ -4791,7 +4995,7 @@ even older
       c("Co.", "Corp.", "MS"),
       patterns_type = "ends",
       patterns_codes_col = 1,
-      codes_col_name = "codes",
+      output_codes_col_name = "codes",
       codes_merge = TRUE,
       rows = c(FALSE, TRUE, FALSE)
       ),
@@ -5014,7 +5218,7 @@ even older
       patterns = c("Co.", "Corp.", "MS"),
       patterns_type = "ends",
       patterns_codes = "corporation",
-      codes_col_name = "codes",
+      output_codes_col_name = "codes",
       codes_merge = TRUE,
       rows = c(FALSE, TRUE, FALSE)
       ),
@@ -5487,46 +5691,46 @@ The default harmonization procedures are the following (for now):
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_harmonize.r
-  
   dummy <- function(x, n) {
-    for(i in 1:n) x <- sqrt(x)^2
-    return(x)
+      for(i in 1:n) x <- sqrt(x)^2
+      return(x)
   }
 
-
-  expect_equal(harmonize(as.numeric(1:10^2)
-                       , procedures =
-                             list("Squaring stuff" = "sqrt"
-                                 ,list("abs", show_progress = FALSE)
-                                 ,list("log", base = 10)
-                                , "My function" = list("dummy", 10^6, show_progress = TRUE))
-                       , nrows_min_to_show_progress = 1
-                       , progress_step_nrows = NULL)
-             , c(0, 0.150514997831991, 0.238560627359831, 0.301029995663981, 
-                 0.349485002168009, 0.389075625191822, 0.422549020007129, 0.451544993495972, 
-                 0.477121254719662, 0.5, 0.520696342579113, 0.539590623023813, 
-                 0.556971676153418, 0.573064017839119, 0.588045629527841, 0.602059991327962, 
-                 0.615224460689137, 0.627636252551653, 0.639376800476415, 0.650514997831991, 
-                 0.66110964736696, 0.671211340411103, 0.680863918008797, 0.690105620855803, 
-                 0.698970004336019, 0.707486673985409, 0.715681882079494, 0.72357901567111, 
-                 0.731198998949478, 0.738560627359831, 0.745680846917136, 0.752574989159953, 
-                 0.759256969938944, 0.765739458521128, 0.772034022175138, 0.778151250383644, 
-                 0.784100862033497, 0.789891798308405, 0.79553230351325, 0.801029995663981, 
-                 0.806391928359868, 0.81162464519895, 0.816734227789793, 0.821726338243094, 
-                 0.826606256887672, 0.831378915840787, 0.836048928967859, 0.840620618687793, 
-                 0.845098040014257, 0.849485002168009, 0.853785088048968, 0.8580016718174, 
-                 0.862137934800395, 0.866196879911484, 0.870181344747122, 0.8740940135031, 
-                 0.877937427836246, 0.881713996781469, 0.885426005821072, 0.889075625191822, 
-                 0.892664917505384, 0.896195844749127, 0.899670274726791, 0.903089986991944, 
-                 0.906456678321428, 0.909771967770934, 0.913037401350413, 0.916254456353118, 
-                 0.919424545368627, 0.922549020007128, 0.925629174359538, 0.928666248215634, 
-                 0.931661430060228, 0.934615859865488, 0.93753063169585, 0.940406796140396, 
-                 0.943245362586241, 0.94604730134524, 0.948813545645221, 0.951544993495972, 
-                 0.954242509439325, 0.956906926191858, 0.959539046188037, 0.962139643030941, 
-                 0.964709462857146, 0.967249225621784, 0.969759626309309, 0.972241336075084, 
-                 0.974695003322457, 0.977121254719662, 0.979520696160547, 0.981893913672778, 
-                 0.984241474276968, 0.986563926799849, 0.988861802644424, 0.991135616519784, 
-                 0.993385867133122, 0.995613037846247, 0.997817597298775, 1))
+  expect_equal({
+      harmonize(as.numeric(1:10^2)
+              , procedures =
+                    list("Squaring stuff" = "sqrt"
+                        ,list("abs", show_progress = FALSE)
+                        ,list("log", base = 10)
+                       , "My function" = list("dummy", 10^6, show_progress = TRUE))
+              , nrows_min_to_show_progress = 1
+              , progress_step_nrows = NULL)
+  }
+  , c(0, 0.150514997831991, 0.238560627359831, 0.301029995663981, 
+        0.349485002168009, 0.389075625191822, 0.422549020007129, 0.451544993495972, 
+        0.477121254719662, 0.5, 0.520696342579113, 0.539590623023813, 
+        0.556971676153418, 0.573064017839119, 0.588045629527841, 0.602059991327962, 
+        0.615224460689137, 0.627636252551653, 0.639376800476415, 0.650514997831991, 
+        0.66110964736696, 0.671211340411103, 0.680863918008797, 0.690105620855803, 
+        0.698970004336019, 0.707486673985409, 0.715681882079494, 0.72357901567111, 
+        0.731198998949478, 0.738560627359831, 0.745680846917136, 0.752574989159953, 
+        0.759256969938944, 0.765739458521128, 0.772034022175138, 0.778151250383644, 
+        0.784100862033497, 0.789891798308405, 0.79553230351325, 0.801029995663981, 
+        0.806391928359868, 0.81162464519895, 0.816734227789793, 0.821726338243094, 
+        0.826606256887672, 0.831378915840787, 0.836048928967859, 0.840620618687793, 
+        0.845098040014257, 0.849485002168009, 0.853785088048968, 0.8580016718174, 
+        0.862137934800395, 0.866196879911484, 0.870181344747122, 0.8740940135031, 
+        0.877937427836246, 0.881713996781469, 0.885426005821072, 0.889075625191822, 
+        0.892664917505384, 0.896195844749127, 0.899670274726791, 0.903089986991944, 
+        0.906456678321428, 0.909771967770934, 0.913037401350413, 0.916254456353118, 
+        0.919424545368627, 0.922549020007128, 0.925629174359538, 0.928666248215634, 
+        0.931661430060228, 0.934615859865488, 0.93753063169585, 0.940406796140396, 
+        0.943245362586241, 0.94604730134524, 0.948813545645221, 0.951544993495972, 
+        0.954242509439325, 0.956906926191858, 0.959539046188037, 0.962139643030941, 
+        0.964709462857146, 0.967249225621784, 0.969759626309309, 0.972241336075084, 
+        0.974695003322457, 0.977121254719662, 0.979520696160547, 0.981893913672778, 
+        0.984241474276968, 0.986563926799849, 0.988861802644424, 0.991135616519784, 
+        0.993385867133122, 0.995613037846247, 0.997817597298775, 1))
 #+END_SRC
 
 * Magerman, et al. (2006) - Harmonization Procedure
@@ -5561,13 +5765,13 @@ The function below can be used to detect candidates for characters that need to 
 #+BEGIN_SRC R :tangle ./R/magerman.r
   ##' @eval attr(magerman_detect_characters, "description")
   ##' @param x table
-  ##' @param codes_col_name Same as in `detect_patterns`
+  ##' @param output_codes_col_name Same as in `detect_patterns`
   ##' @inheritDotParams harmonize_options
   ##' @return coded table
   ##'
   ##' @export
   magerman_detect_characters <- function(x
-             , codes_col_name = "characters_cleaning_candidates"
+             , output_codes_col_name = "characters_cleaning_candidates"
              , ...) {
           patterns <- c("\\{.+\\}", "propriety coded characters {xxx}"
                       , "\\[0.+\\]", "propriety coded characters [0xxx]"
@@ -5579,7 +5783,7 @@ The function below can be used to detect candidates for characters that need to 
           detect_patterns(x
                         , patterns                      
                         , patterns_type = "regex"
-                        , codes_col_name = codes_col_name)
+                        , output_codes_col_name = output_codes_col_name)
       }
 
   attr(magerman_detect_characters, "description") <-
@@ -5618,7 +5822,6 @@ The function below can be used to detect candidates for characters that need to 
           , replacements = " ")
   }
 #+END_SRC
-
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_html_codes.r
   expect_equal(
@@ -5983,13 +6186,13 @@ The function below is the generalization for replacement of the above punctuatio
 #+BEGIN_SRC R :tangle ./R/magerman.r
   ##' Detects comma period irregularities
   ##' @param x table
-  ##' @param codes_col_name Same as in `detect_patterns`
+  ##' @param output_codes_col_name Same as in `detect_patterns`
   ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##'
   ##' @export
   magerman_detect_comma_period_irregularities <- function(x,
-                                                          codes_col_name = "comma.period.irregularities.candidates",
+                                                          output_codes_col_name = "comma.period.irregularities.candidates",
                                                           ...) {
       patterns <- 
           c(",([^\\s])", "Patterns with comma not followed by space"
@@ -6001,7 +6204,7 @@ The function below is the generalization for replacement of the above punctuatio
       detect_patterns(x
                     , patterns
                     , patterns_type = "regex"
-                    , codes_col_name = codes_col_name)
+                    , output_codes_col_name = output_codes_col_name)
   }
 
   ##' Replaces comma period irregularities
@@ -7271,111 +7474,116 @@ Appendix 2: All search and replace statements for all legal forms to be removed 
 "The search and replace statements were executed in three groups: firstly, a group of 1,060 statements to remove legal forms at the end of a name (see Appendix 2); then a group of 1 statement to remove legal forms at the beginning of a name (remove 1216 occurrences of “KABUSHIKI KAISHA” at the beginning of a name); and finally, a group of 17 statements to remove legal forms anywhere in a name (see Table 18)." (p. 39)
 
 #+BEGIN_SRC R :tangle ./R/magerman.r
-  ##' Detects legal form
-  ##' @param x table
-  ##' @param return_only_codes same as in `detect_patterns`
-  ##' @param patterns_codes same as in `detect_patterns`
-  ##' @param no_match_code same as in `detect_patterns`
-  ##' @param ... 
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
-  ##'
-  ##' @md
-  ##' @export
-  magerman_detect_legal_form_end <- function(x
-                                           , return_only_codes = FALSE
-                                           , patterns_codes = NULL
-                                           , no_match_code = NULL
-                                           , codes_update_empty = TRUE
-                                           , ...) {
-      detect_patterns(x
-           , magerman_patterns_legal_form_end
-           , patterns_codes_col = 3
-           , patterns_codes = patterns_codes
-           , patterns_type = "ends"
-           , codes_col_name_suffix = "_legal_form"
-           , return_only_first_detected_code = TRUE
-           , codes_update_empty = codes_update_empty
-           , return_only_codes = return_only_codes
-           , no_match_code = no_match_code)
-  }
+    ##' Detects legal form
+    ##' @param x table
+    ##' @param return_only_codes same as in `detect_patterns`
+    ##' @param patterns_codes same as in `detect_patterns`
+    ##' @param no_match_code same as in `detect_patterns`
+    ##' @param ... 
+    ##' @inheritDotParams harmonize_options
+    ##' @return Harmonized table
+    ##'
+    ##' @md
+    ##' @export
+    magerman_detect_legal_form_end <- function(x
+                                             , return_only_codes = FALSE
+                                             , patterns_codes = NULL
+                                             , no_match_code = NULL
+                                             , codes_update_empty = TRUE
+                                             , output_codes_col_name = "{col_name_}legal_form"
+                                             , ...) {
+        detect_patterns(x
+             , magerman_patterns_legal_form_end
+             , patterns_codes_col = 3
+             , patterns_codes = patterns_codes
+             , patterns_type = "ends"
+             , output_codes_col_name = output_codes_col_name
+             , return_only_first_detected_code = TRUE
+             , codes_update_empty = codes_update_empty
+             , return_only_codes = return_only_codes
+             , no_match_code = no_match_code)
+    }
 
 
 
 
 
-  ##' Replaces legal form
-  ##' @param x table
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
-  ##'
-  ##' @md
-  ##' @export
-  magerman_replace_legal_form_end <- function(x, ...) {
-      replace_patterns(x
-          , patterns = magerman_patterns_legal_form_end
-          , patterns_type = "ends")
-  }
+    ##' Replaces legal form
+    ##' @param x table
+    ##' @inheritDotParams harmonize_options
+    ##' @return Harmonized table
+    ##'
+    ##' @md
+    ##' @export
+    magerman_replace_legal_form_end <- function(x, ...) {
+        replace_patterns(x
+            , patterns = magerman_patterns_legal_form_end
+            , patterns_type = "ends")
+    }
 
-  ##' Detects legal form
-  ##' @param x table
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonzed table
-  ##'
-  ##' @md
-  ##' @export
-  magerman_detect_legal_form_beginning <- function(x, ...) {
-      detect_patterns(x
-          , patterns = data.table(pattern = "KABUSHIKI KAISHA"
-                                , legal.form = "KAISHA")
-          , patterns_type = "begins"
-          , return_only_first_detected_code = TRUE
-          , codes_col_name_suffix = "_legal_form")
-  }
+    ##' Detects legal form
+    ##' @param x table
+    ##' @inheritDotParams harmonize_options
+    ##' @return Harmonzed table
+    ##'
+    ##' @md
+    ##' @export
+  magerman_detect_legal_form_beginning <- function(x
+                                                 , ...
+                                                 , output_codes_col_name = "{col_name_}legal_form") {
+        detect_patterns(x
+            , patterns = data.table(pattern = "KABUSHIKI KAISHA"
+                                  , legal.form = "KAISHA")
+            , patterns_type = "begins"
+            , return_only_first_detected_code = TRUE
+            , output_codes_col_name = output_codes_col_name)
+    }
 
-  ##' Replaces legal form
-  ##' @param x table
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
-  ##'
-  ##' @md
-  ##' @export
-  magerman_replace_legal_form_beginning <- function(x, ...) {
-      replace_patterns(x
-           , patterns = "KABUSHIKI KAISHA"
-           , patterns_type = "begins")
-  }
+    ##' Replaces legal form
+    ##' @param x table
+    ##' @inheritDotParams harmonize_options
+    ##' @return Harmonized table
+    ##'
+    ##' @md
+    ##' @export
+    magerman_replace_legal_form_beginning <- function(x, ...) {
+        replace_patterns(x
+             , patterns = "KABUSHIKI KAISHA"
+             , patterns_type = "begins")
+    }
 
 
 
-  ##' Detects legal form
-  ##' @param x table
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
-  ##'
-  ##' @md
-  ##' @export
-  magerman_detect_legal_form_middle <- function(x, ...) {
-      detect_patterns(x
-          , patterns = magerman_patterns_legal_form_middle
-          , patterns_codes_col = 3
-          , patterns_type = "fixed"
-          , return_only_first_detected_code = TRUE
-          , codes_col_name_suffix = "_legal_form")
-  }
+    ##' Detects legal form
+    ##' @param x table
+    ##' @inheritDotParams harmonize_options
+    ##' @return Harmonized table
+    ##'
+    ##' @md
+    ##' @export
+    magerman_detect_legal_form_middle <- function(x
+                                                , output_codes_col_name = "{col_name_}legal_form"
+                                                , ...) {
+        detect_patterns(x
+            , patterns = magerman_patterns_legal_form_middle
+            , patterns_codes_col = 3
+            , patterns_type = "fixed"
+            , return_only_first_detected_code = TRUE
+            , output_codes_col_name = output_codes_col_name)
+    }
 
-  ##' Replaces legal form
-  ##' @param x table
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
-  ##'
-  ##' @md
-  ##' @export
-  magerman_replace_legal_form_middle <- function(x, ...) {
-      replace_patterns(x
-          , patterns = magerman_patterns_legal_form_middle
-          , patterns_type = "fixed")
-  }
+    ##' Replaces legal form
+    ##' @param x table
+    ##' @inheritDotParams harmonize_options
+    ##' @return Harmonized table
+    ##'
+    ##' @md
+    ##' @export
+    magerman_replace_legal_form_middle <- function(x, ...) {
+        replace_patterns(x
+            , patterns = magerman_patterns_legal_form_middle
+            , patterns_type = "fixed")
+    }
 
 #+END_SRC
 
@@ -7399,7 +7607,7 @@ Appendix 2: All search and replace statements for all legal forms to be removed 
                , "MSlab Co. GMBH & CO.KG lalal"
                , "KABUSHIKI KAISHA MSlab Co. ") |>
                toupper() |>
-               magerman_replace_legal_form_end(output = "append_to_col")
+               magerman_replace_legal_form_end(output_placement = "append_to_col")
    , structure(list(V1 = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP.", "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "), V1_harmonized = c("LKSDJF MANUFACTURING COMPANY", "MSLAB COMPANY", "IBM CORPORATION", "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. ")), row.names = c(NA, -5L), class = c("data.table", "data.frame")))
 
 
@@ -7543,7 +7751,7 @@ plus trim..."
                           , " MSlab Co. GMBH & CO.KG lalal  "
                           , "KABUSHIKI KAISHA MSlab Co.") |> toupper()
                         , somevar = c(1,2,3,4,5)) |>
-               magerman_remove_legal_form_and_clean(output = "append_to_col")
+               magerman_remove_legal_form_and_clean(output_placement = "append_to_col")
   , structure(list(V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", 
   "IBM CORP.", " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO."
   ), V1_harmonized = c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", 
@@ -7558,7 +7766,7 @@ plus trim..."
                , " MSlab Co. GMBH & CO.KG lalal  "
                , "KABUSHIKI KAISHA MSlab Co. ") |>
                toupper() |>
-               magerman_remove_legal_form_and_clean(output = "prepend_to_x")
+               magerman_remove_legal_form_and_clean(output_placement = "prepend_to_x")
   , structure(list(V1_harmonized = c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", 
   "IBM CORPORATION", " MSLAB CO. & COMPANY LALAL  ", " MSLAB CO. "
   ), V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", "IBM CORP.", 
@@ -7853,15 +8061,14 @@ p. 44
   ##' @export
   magerman_detect_umlaut <- function(x
                                    , return_only_codes = FALSE
-                                   , codes_col_name = NULL
+                                   , output_codes_col_name = "{col_name_}has_umlaut"
                                    , ...) {
       detect_patterns(x
                     , patterns = magerman_patterns_umlaut
                     , patterns_type = "fixed"
                     , patterns_codes = TRUE
                     , no_match_code = FALSE
-                    , codes_col_name_suffix = "_has_umlaut"
-                    , codes_col_name = codes_col_name
+                    , output_codes_col_name = output_codes_col_name
                     , return_only_first_detected_code = TRUE
                     , return_only_codes = return_only_codes)
   }
@@ -7886,7 +8093,7 @@ p. 44
       ## identify names with umlauts
       if (!is.null(has_umlaut_col) & !is.atomic(x)) {
           has_umlaut <-
-              get_target(x, col = has_umlaut_col, output = "replace_col")
+              get_target(x, col = has_umlaut_col, output_placement = "replace_col")
           checkmate::assert_logical(has_umlaut)
           ## drop has_umlaut_col
           if (isTRUE(drop_has_umlaut_col)) x[[has_umlaut_col]] <- NULL
@@ -8056,7 +8263,7 @@ p. 44
 |  4 | Cleaning spaces (2)                      | 'harmonize_squish_spaces'                                                       |
 |  5 | Replacing SGML coded characters          | 'magerman_replace_sgml_characters'                                              |
 |  6 | Replacing proprietary characters         | 'magerman_replace_proprietary_characters'                                       |
-|  7 | Detecting Umlauts                        | 'magerman_detect_umlaut', codes_col_name = 'magerman_umlaut'                    |
+|  7 | Detecting Umlauts                        | 'magerman_detect_umlaut', output_codes_col_name = 'magerman_umlaut'                    |
 |    |                                          | /The above sets code names with umlaut for umlaut harmonization later/          |
 |  8 | Replacing accented characters            | 'magerman_replace_accented_characters'                                          |
 |    |                                          |                                                                                 |
@@ -8069,7 +8276,7 @@ p. 44
 | 14 | Fixing comma and period irregularities   | 'magerman_replace_comma_period_irregularities'                                  |
 |    |                                          |                                                                                 |
 |    | *Legal forms*                            |                                                                                 |
-| 15 | Detecting legal form                     | 'magerman_detect_legal_form', codes_col_name = 'legal_form'                     |
+| 15 | Detecting legal form                     | 'magerman_detect_legal_form', output_codes_col_name = 'legal_form'                     |
 | 16 | Removing legal form                      | 'magerman_remove_legal_form_and_clean'                                          |
 |    |                                          |                                                                                 |
 |    | *Common words*                           |                                                                                 |
@@ -8089,7 +8296,7 @@ p. 44
   ##' Harmonizes strings using exact procedures described in Magerman et al. 2009.
   ##' @param x table or vector
   ##' @param detect_legal_form Whether to detect legal forms. Default is FALSE
-  ##' @param append_copy_before_common_words_removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
+  ##' @param append_output_copy_before_common_words_removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
   ##' @inheritDotParams harmonize
   ##' @return Harmonized table
   ##'
@@ -8099,7 +8306,7 @@ p. 44
   ##' @export
   harmonize_magerman <- function(x
                                , detect_legal_form = FALSE
-                               , append_copy_before_common_words_removal = FALSE
+                               , append_output_copy_before_common_words_removal = FALSE
                                , ...) {
       magerman_procedures <-
           harmonize_make_procedures_list(magerman_procedures_table)
@@ -8111,15 +8318,15 @@ p. 44
           magerman_procedures <-
               magerman_procedures[!is_magerman_detect_legal_form]
       }
-      if (append_copy_before_common_words_removal) {
+      if (append_output_copy_before_common_words_removal) {
           which_is_magerman_remove_legal_form_and_clean <-
               sapply(magerman_procedures
                    , \(p) p[[1]] == "magerman_remove_legal_form_and_clean") |>
               which()
           magerman_procedures[[which_is_magerman_remove_legal_form_and_clean]] <-
               c(magerman_procedures[[which_is_magerman_remove_legal_form_and_clean]]
-              , list(append_copy = TRUE
-                   , append_copy_name_format = "{col_name}_before_common_words_removal"))
+              , list(append_output_copy = TRUE
+                   , output_copy_col_name = "{col_name}_before_common_words_removal"))
       }
       harmonize(x, magerman_procedures, ...)
   }
@@ -8155,7 +8362,7 @@ p. 44
                               rep(200)
                         , foo = "I love coffee"))
 
-  ## works now but weird naming of append_copy
+  ## works now but weird naming of append_output_copy
   expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                  , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
                                  , "MSLab Co."
@@ -8167,7 +8374,7 @@ p. 44
                         , foo = "I love coffee" ) |>
                harmonize_magerman(nrows_min_to_show_progress = 50
                                 , show_progress = TRUE
-                                , append_copy_before_common_words_removal = TRUE
+                                , append_output_copy_before_common_words_removal = TRUE
                                 , detect_legal_form = FALSE)
              , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
                                  , "MSLAEBAEHREFLSDLDFAE"
