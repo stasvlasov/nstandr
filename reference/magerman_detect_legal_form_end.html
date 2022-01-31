@@ -50,6 +50,7 @@
   patterns_codes <span class="op">=</span> <span class="cn">NULL</span>,
   no_match_code <span class="op">=</span> <span class="cn">NULL</span>,
   codes_update_empty <span class="op">=</span> <span class="cn">TRUE</span>,
+  output_codes_col_name <span class="op">=</span> <span class="st">"{col_name_}legal_form"</span>,
   <span class="va">...</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -71,34 +72,28 @@
     <dt><code>rows</code></dt>
 <dd><p>Logical vector to filter records of interest. Default is NULL which means do not filter records.</p></dd>
 
-    <dt><code>omitted_rows_values</code></dt>
-<dd><p>If <code>rows</code> parameter is set then merge <code>omitted_rows_values</code> with the results (filtered by <code>rows</code>). Either single string or a character vector of length <code>nrow(x)</code>. If NULL (the default) then original values of <code>col</code> are merged with results.</p></dd>
+    <dt><code>omitted_rows_value</code></dt>
+<dd><p>If <code>rows</code> parameter is set then merge <code>omitted_rows_value</code> with the results (filtered by <code>rows</code>). Either single string or a character vector of length <code>nrow(x)</code>. If NULL (the default) then original values of <code>col</code> are merged with results.</p></dd>
 
-    <dt><code>output</code></dt>
-<dd><p>Where to inset retults (harmonized vector) in the <code>x</code> object. Default options is 'replace_col' which overwrides the <code>col</code> in <code>x</code> with results. Other options:</p><ul><li><p>'omit' :: do not write results back to table (usually used when <code>append_copy</code> is set for temporary values)</p></li>
+    <dt><code>output_placement</code></dt>
+<dd><p>Where to inset retults (harmonized vector) in the <code>x</code> object. Default options is 'replace_col' which overwrides the <code>col</code> in <code>x</code> with results. Other options:</p><ul><li><p>'omit' :: do not write results back to table (usually used when <code>append_output_copy</code> is set for temporary values)</p></li>
 <li><p>'prepend_to_col' :: prepend to <code>col</code></p></li>
 <li><p>'append_to_col' :: append to <code>col</code></p></li>
 <li><p>'prepend_to_x' :: prepend to <code>x</code> data.frame like object</p></li>
 <li><p>'append_to_x' :: append to <code>x</code> data.frame like object</p></li>
 </ul></dd>
 
-    <dt><code>name</code></dt>
-<dd><p>Use this name for the column with results (harmonized values). Default is NA, which means that either <code>name_for_x_atomic</code> if <code>x</code> is vector or original col name will be used with <code>name_suffix</code> at the end.</p></dd>
-
-    <dt><code>name_for_x_atomic</code></dt>
+    <dt><code>atomic_x_col_name</code></dt>
 <dd><p>If <code>x</code> is vector use this name for original column if it is in results. Default is "x". If <code>x</code> is table the name of <code>col</code> will be used.</p></dd>
 
-    <dt><code>name_suffix</code></dt>
-<dd><p>If <code>name</code> is not set the use this as suffix (default is "harmonized"). If the name with the same suffix already exists in <code>select_x_cols</code> it will add counter at the end to avoid variables with the same names.</p></dd>
+    <dt><code>output_name</code></dt>
+<dd><p>Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:</p></dd>
 
-    <dt><code>append_copy</code></dt>
+    <dt><code>append_output_copy</code></dt>
 <dd><p>Whether to append a copy of result vector to <code>x</code> object</p></dd>
 
-    <dt><code>append_copy_name_format</code></dt>
+    <dt><code>output_copy_col_name</code></dt>
 <dd><p>How the append copy wiil be named</p></dd>
-
-    <dt><code>select_cols</code></dt>
-<dd><p>If x` object is table, set the columns to cbind to the result table. Default is cbind all but the original (unharmonized) column (col).</p></dd>
 
   
 </dl></dd>
