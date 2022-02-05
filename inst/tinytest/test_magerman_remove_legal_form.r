@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Detect and replace legal forms][Detect and replace legal forms:4]]
+## -------->>  [[file:../../harmonizer.src.org::*Detect and replace legal forms][Detect and replace legal forms:3]]
 expect_equal(
     c("lksdjf MFG. GMBH CO, INC"
     , "MSlab Co."
@@ -7,7 +7,7 @@ expect_equal(
     , "KABUSHIKI KAISHA MSlab Co.") |>
     toupper() |>
     magerman_detect_legal_form()
-  , structure(list(V1 = c("LKSDJF MFG. GMBH CO, INC", "MSLAB CO.", "IBM CORP.", "MSLAB CO. GMBH & CO.KG LALAL CO.", "KABUSHIKI KAISHA MSLAB CO."  ), V1_coded = c("INCORPORATED", NA, NA, "GMBH", "KAISHA")), row.names = c(NA, -5L), class = c("data.table", "data.frame")))
+  , structure(list(x = c("LKSDJF MFG. GMBH CO, INC", "MSLAB CO.", "IBM CORP.", "MSLAB CO. GMBH & CO.KG LALAL CO.", "KABUSHIKI KAISHA MSLAB CO."  ), x_legal_form = c("INCORPORATED", NA, NA, "GMBH", "KAISHA")), row.names = c(NA, -5L), class = c("data.table", "data.frame")))
 
 
 
@@ -34,11 +34,12 @@ expect_equal(
     , "KABUSHIKI KAISHA MSlab Co.") |>
     toupper() |>
     magerman_remove_legal_form_and_clean()
-  , c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", "IBM CORPORATION", 
-      " MSLAB CO. & COMPANY LALAL  ", "KABUSHIKI KAISHA MSLAB COMPANY"))
+, c("LKSDJF MFG. GMBH CO", "MSLAB COMPANY", "IBM CORPORATION", 
+"MSLAB CO. & COMPANY LALAL", "KABUSHIKI KAISHA MSLAB COMPANY"))
 
 
-expect_equal(data.table(c("lksdjf MFG. GMBH CO,; INC"
+expect_equal(
+    data.table(c("lksdjf MFG. GMBH CO,; INC"
                         , "MSlab Co."
                         , "IBM Corp."
                         , " MSlab Co. GMBH & CO.KG lalal  "
@@ -47,10 +48,29 @@ expect_equal(data.table(c("lksdjf MFG. GMBH CO,; INC"
              magerman_remove_legal_form_and_clean(output_placement = "append_to_col")
 , structure(list(V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", 
 "IBM CORP.", " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO."
-), V1_harmonized = c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", 
-"IBM CORPORATION", " MSLAB CO. & COMPANY LALAL  ", "KABUSHIKI KAISHA MSLAB COMPANY"
+), std_V1 = c("LKSDJF MFG. GMBH CO", "MSLAB COMPANY", "IBM CORPORATION", 
+"MSLAB CO. & COMPANY LALAL", "KABUSHIKI KAISHA MSLAB COMPANY"
 ), somevar = c(1, 2, 3, 4, 5)), row.names = c(NA, -5L), class = c("data.table", 
-"data.frame")))
+"data.frame"))
+)
+
+expect_equal(
+    data.table(c("lksdjf MFG. GMBH CO,; INC"
+                        , "MSlab Co."
+                        , "IBM Corp."
+                        , " MSlab Co. GMBH & CO.KG lalal  "
+                        , "KABUSHIKI KAISHA MSlab Co.") |> toupper()
+                      , somevar = c(1,2,3,4,5)) |>
+    magerman_remove_legal_form_and_clean(output_placement = "prepend_to_x")
+, structure(list(std_V1 = c("LKSDJF MFG. GMBH CO", "MSLAB COMPANY", 
+"IBM CORPORATION", "MSLAB CO. & COMPANY LALAL", "KABUSHIKI KAISHA MSLAB COMPANY"
+), V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", "IBM CORP.", 
+" MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO."
+), somevar = c(1, 2, 3, 4, 5)), row.names = c(NA, -5L), class = c("data.table", 
+"data.frame"))
+)
+
+
 
 expect_equal(
     c("lksdjf MFG. GMBH CO,; INC"
@@ -59,13 +79,13 @@ expect_equal(
              , " MSlab Co. GMBH & CO.KG lalal  "
              , "KABUSHIKI KAISHA MSlab Co. ") |>
              toupper() |>
-             magerman_remove_legal_form_and_clean(output_placement = "prepend_to_x")
-, structure(list(V1_harmonized = c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", 
-"IBM CORPORATION", " MSLAB CO. & COMPANY LALAL  ", " MSLAB CO. "
-), V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", "IBM CORP.", 
+             magerman_replace_legal_form_end(output_placement = "prepend_to_x")
+, structure(list(std_x = c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", 
+"IBM CORPORATION", " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO. "
+), x = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", "IBM CORP.", 
 " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO. "
 )), row.names = c(NA, -5L), class = c("data.table", "data.frame"
 )))
-## --------<<  Detect and replace legal forms:4 ends here
+## --------<<  Detect and replace legal forms:3 ends here
 
 

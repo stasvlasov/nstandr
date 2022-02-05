@@ -7,6 +7,7 @@
 defactor(
   x,
   conv2dt = c("only.tables", "all.but.atomic", "all.but.lists", "all", "none"),
+  x_atomic_name = NULL,
   ...
 )
 }

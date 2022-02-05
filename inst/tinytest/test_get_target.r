@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:5]]
+## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:7]]
 require("data.table")
 
 get_target <- harmonizer:::get_target
@@ -19,10 +19,9 @@ expect_equal(
 
 
 ## test output_placement
-
 expect_equal(
     data.frame(x = c(1,2,3,4)
-             , x_harmonized = c("7","8","9","a")) |>
+             , std_x = c("7","8","9","a")) |>
     get_target(col = 1
              , rows = c(T,T,F,T)
              , output_placement = "append_to_col")
@@ -33,7 +32,7 @@ expect_equal(
              , aaa = c("7","8","9","a")) |>
     get_target(col = 1
              , rows = c(T,T,F,T)
-               , name = "aaa"
+             , output_col_name = "aaa"
              , output_placement = "append_to_col")
   , c("7", "8", "a"))
 
@@ -44,14 +43,30 @@ data.frame(x_harmonized = c(1,2,3,4)
     get_target(col = 1
              , rows = c(T,T,F,T)
              , output_placement = "prepend_to_col")
-  , c(1,2,4))
+, c(1,2,4))
+
+
+## testing atomic
+expect_equal(
+ c("7","8","9","a") |>
+    get_target(col = 1
+             , rows = c(T,T,F,T)
+             , output_placement = "prepend_to_col")
+, c("7", "8", "a"))
+
+expect_equal(
+ c("7","8","9","a") |>
+    get_target(col = 2
+             , rows = c(T,T,F,T)
+             , output_placement = "prepend_to_x")
+  , c("7", "8", "a"))
 
 
 
 expect_equal(
     data.frame(x = c(1,2,3,4)
              , y = TRUE
-             , x_harmonized = c("7","8","9","a")) |>
+             , std_x = c("7","8","9","a")) |>
     get_target(col = 1
              , rows = c(T,T,F,T)
              , output_placement = "append_to_x")
@@ -59,13 +74,13 @@ expect_equal(
 
 
 expect_equal(
-    data.frame(x_harmonized = c(1,2,3,4)
+    data.frame(std_x = c(1,2,3,4)
              , y = TRUE
              , x = c("7","8","9","a")) |>
     get_target(col = 2
              , rows = c(T,T,F,T)
              , output_placement = "prepend_to_x")
   , c(1,2,4))
-## --------<<  get_target & inset_target:5 ends here
+## --------<<  get_target & inset_target:7 ends here
 
 

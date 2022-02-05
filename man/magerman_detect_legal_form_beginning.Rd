@@ -27,8 +27,8 @@ magerman_detect_legal_form_beginning(
 \item 'prepend_to_x' :: prepend to \code{x} data.frame like object
 \item 'append_to_x' :: append to \code{x} data.frame like object
 }}
-    \item{\code{atomic_x_col_name}}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
-    \item{\code{output_name}}{Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:}
+    \item{\code{x_atomic_name}}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
+    \item{\code{output_col_name}}{Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:}
     \item{\code{append_output_copy}}{Whether to append a copy of result vector to \code{x} object}
     \item{\code{output_copy_col_name}}{How the append copy wiil be named}
   }}

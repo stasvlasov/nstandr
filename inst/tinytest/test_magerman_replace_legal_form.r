@@ -6,9 +6,9 @@ expect_equal(
                                    , "MSlab Co. GMBH & CO.KG lalal"
                                    , "KABUSHIKI KAISHA MSlab Co. ") |>
                                    toupper())
-  , structure(list(V1 = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP."
+  , structure(list(x = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP."
                         , "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. ")
-                 , V1_coded = c("INCORPORATED", NA, NA, NA, NA))
+                 , x_legal_form = c("INCORPORATED", NA, NA, NA, NA))
             , row.names = c(NA, -5L), class = c("data.table", "data.frame"))
 )
 
@@ -19,7 +19,7 @@ expect_equal(c("lksdjf MFG. CO, INC"
              , "KABUSHIKI KAISHA MSlab Co. ") |>
              toupper() |>
              magerman_replace_legal_form_end(output_placement = "append_to_col")
- , structure(list(V1 = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP.", "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "), V1_harmonized = c("LKSDJF MANUFACTURING COMPANY", "MSLAB COMPANY", "IBM CORPORATION", "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. ")), row.names = c(NA, -5L), class = c("data.table", "data.frame")))
+ , structure(list(x = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP.", "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "), std_x = c("LKSDJF MANUFACTURING COMPANY", "MSLAB COMPANY", "IBM CORPORATION", "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. ")), row.names = c(NA, -5L), class = c("data.table", "data.frame")))
 
 
 expect_equal(magerman_detect_legal_form_end(c("lksdjf MFG. CO, INC"
@@ -40,9 +40,9 @@ expect_equal(
                                                , "MSlab Co. GMBH & CO.KG lalal"
                                                , "KABUSHIKI KAISHA MSlab Co. ") |>
                                       toupper())
-           , structure(list(V1 = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP."
+           , structure(list(x = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP."
                                   ,"MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "
-                                   ), V1_coded = c(NA, NA, NA, "GMBH", NA))
+                                   ), x_legal_form = c(NA, NA, NA, "GMBH", NA))
                      , row.names = c(NA, -5L), class = c("data.table", "data.frame")))
 
 expect_equal(magerman_detect_legal_form_beginning(c("lksdjf MFG. CO, INC"
@@ -50,9 +50,9 @@ expect_equal(magerman_detect_legal_form_beginning(c("lksdjf MFG. CO, INC"
                                                   , "IBM Corp."
                                                   , "MSlab Co. GMBH & CO.KG lalal"
                                                   , "KABUSHIKI KAISHA MSlab Co. ") |>
-                                                  toupper()), structure(list(V1 = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP.", 
+                                                  toupper()), structure(list(x = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP.", 
                                    "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "
-                                   ), V1_coded = c(NA, NA, NA, NA, "KAISHA")), row.names = c(NA, 
+                                   ), x_legal_form = c(NA, NA, NA, NA, "KAISHA")), row.names = c(NA, 
                                                                                              -5L), class = c("data.table", "data.frame")))
 ## --------<<  Detect and replace legal forms:2 ends here
 

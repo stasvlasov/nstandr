@@ -154,23 +154,23 @@ check_harmonize_options <- function(dots
                          , disjunct.from = names(x)
                          , add = assertion_fails)
         }
-        ## check 'atomic_x_col_name'
+        ## check  x_atomic_name'
         checkmate::assert_string(
-                       atomic_x_col_name
+                       x_atomic_name
                      , add = assertion_fails)
         checkmate::assert_names(
-                       atomic_x_col_name
+                       x_atomic_name
                      , type = "ids"
                      , what = "colnames"
                      , add = assertion_fails)
-        ## check 'output_name'
+        ## check 'output_col_name'
         checkmate::assert_string(
-                       output_name
+                       output_col_name
                      , add = assertion_fails)
-        ## check if col_name + 'output_name' is distinct from names(x)
+        ## check if col_name + 'output_col_name' is distinct from names(x)
         if(check_name_duplicates && !is.atomic(x) && is.null(name)) {
             checkmate::assert_names(
-                           paste0(names(x)[[col]], output_name)
+                           paste0(names(x)[[col]], output_col_name)
                          , type = "ids"
                          , what = "colnames"
                          , disjunct.from = names(x)

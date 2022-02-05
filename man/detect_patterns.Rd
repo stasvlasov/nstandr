@@ -15,11 +15,10 @@ detect_patterns(
   output_codes_col_name = "{col_name_}coded",
   codes_omitted_rows_value = NULL,
   no_match_code = NULL,
-  codes_update_empty = TRUE,
-  codes_merge = FALSE,
-  codes_merge_prepend = FALSE,
+  merge_existing_codes = "replace_all",
   return_only_codes = FALSE,
   return_only_first_detected_code = FALSE,
+  return_merge_codes_description = FALSE,
   ...
 )
 }
@@ -38,15 +37,13 @@ detect_patterns(
 
 \item{patterns_codes}{If provided use it as codes. Should be the same length as patterns. Default is NULL.}
 
+\item{output_codes_col_name}{}
+
 \item{codes_omitted_rows_value}{If \code{rows} is set. Use this value to fill the omitted rows. When we update existing codes column Default is NULL which means that we use initial codes values for omitted rows. If there is no codes col to update omited rows will be filled with NA.}
 
 \item{no_match_code}{If provided code records that did not get any match with it.}
 
-\item{codes_update_empty}{If toggled on then detect and add new codes only for records (rows) that were not yet coded (i.e., related codes are either "", NA or length == 0).}
-
-\item{codes_merge}{If set then merge (append or prepend) new codes to existing ones. It might turn the codes column to list of vectors.}
-
-\item{codes_merge_prepend}{If set then it will prepend new codes if not then it will append (default). It is ignored if \code{x.codes.merge} is not set.}
+\item{merge_existing_codes}{Whether to merge newly detected codes with existing. Options are:}
 
 \item{return_only_codes}{If toggled on then just return codes vector.}
 
@@ -66,8 +63,8 @@ detect_patterns(
 \item 'prepend_to_x' :: prepend to \code{x} data.frame like object
 \item 'append_to_x' :: append to \code{x} data.frame like object
 }}
-    \item{\code{atomic_x_col_name}}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
-    \item{\code{output_name}}{Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:}
+    \item{\code{x_atomic_name}}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
+    \item{\code{output_col_name}}{Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:}
     \item{\code{append_output_copy}}{Whether to append a copy of result vector to \code{x} object}
     \item{\code{output_copy_col_name}}{How the append copy wiil be named}
   }}
@@ -81,6 +78,13 @@ The updated \code{x} table with codes column or just codes if \code{return_only_
 }
 \description{
 Codes strings (e.g., organizational names) based on certain patterns
+
+\itemize{
+\item replace_all - Replace everything (entire column) with new codes.
+\item replace_empty - Code only records (i.e., rows) for which existing codes are empty (i.e., empty string, NA, empty list)
+\item append_to_existing - Merge with existing codes appending new ones to the end
+\item prepend_to_existing - Merge with existing codes prepending new ones to the front
+}
 
 \itemize{
 \item fixed  -  Match pattern string as it is within the target vector

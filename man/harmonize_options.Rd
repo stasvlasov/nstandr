@@ -10,8 +10,8 @@ harmonize_options(
   omitted_rows_value = NULL,
   output_placement = "replace_col",
   name = NULL,
-  atomic_x_col_name = "x",
-  output_name = "std{_col_name}",
+  x_atomic_name = "x",
+  output_col_name = "std{_col_name}",
   append_output_copy = FALSE,
   output_copy_col_name = "std{_col_name}_copy{_procedure_index}{_procedure_name}"
 )
@@ -32,9 +32,9 @@ harmonize_options(
 \item 'append_to_x' :: append to \code{x} data.frame like object
 }}
 
-\item{atomic_x_col_name}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
+\item{x_atomic_name}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
 
-\item{output_name}{Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:}
+\item{output_col_name}{Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:}
 
 \item{append_output_copy}{Whether to append a copy of result vector to \code{x} object}
 

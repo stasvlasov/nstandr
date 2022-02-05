@@ -447,31 +447,6 @@ harmonize_add_suffix <- function(name, suffix, x.names
     name.with.suffix %>%
       paste0(".", suffix.nbr)
 }
-
-
-make_indexed_col_name <- function(col_name
-                                , x_names = NULL
-                                , index_init_val = 1L
-                                , index_separator = "_") {
-    checkmate::assert_integer(index_init_val, len = 1)
-    checkmate::assert_string(index_separator)
-    if(is.null(x_names)) return(col_name)
-    indexed_col_name_regex <- paste0("^", escape_regex(col_name), escape_regex(index_separator), "(\\d+)$")
-    indexed_col_name_in_x_names <-
-        stringi::stri_detect_regex(x_names, indexed_col_name_regex)
-    if(any(indexed_col_name_in_x_names)) {
-        index <- 
-            stringi::stri_match_first_regex(x_names, indexed_col_name_regex)[,2] |>
-            as.numeric() |>
-            max(na.rm = TRUE)
-        col_name <-
-            paste0(col_name, index_separator, index + 1)
-    } else if(col_name %in% x_names) {
-        col_name <- 
-            paste0(col_name, index_separator, index_init_val)
-    } 
-    return(col_name)
-}
 ## --------<<  harmonize.add.suffix:1 ends here
 
 
@@ -512,22 +487,27 @@ defactor_vector <- function(x, check.numeric = FALSE) {
 ##' 
 ##' @export
 defactor <- function(x
-                             , conv2dt = c("only.tables"
-                                            , "all.but.atomic"
-                                            , "all.but.lists"
-                                            , "all"
-                                            , "none"), ...) {
+                   , conv2dt = c("only.tables"
+                               , "all.but.atomic"
+                               , "all.but.lists"
+                               , "all"
+                               , "none")
+                   , x_atomic_name = NULL
+                   , ...) {
   conv2dt <-  match.arg(conv2dt)
   if(is.atomic(x)) {
-    if(conv2dt %in% c("only.tables", "all.but.atomic", "none"))
-      defactor_vector(x, ...)
-    else
-      data.table(defactor_vector(x, ...))
+      if(conv2dt %in% c("only.tables", "all.but.atomic", "none")) {
+          defactor_vector(x, ...)
+      } else {
+          x <- data.table(defactor_vector(x, ...))
+          if(!is.null(x_atomic_name)) names(x) <- x_atomic_name
+          return(x)
+      }
   } else if(class(x)[1] == "list")
-    if((conv2dt %in% c("only.tables", "all.but.lists", "none")))
-      lapply(x, defactor, conv2dt = "none", ...)
-    else
-      data.table(lapply(x, defactor, conv2dt = "none", ...))
+      if((conv2dt %in% c("only.tables", "all.but.lists", "none")))
+          lapply(x, defactor, conv2dt = "none", ...)
+      else
+          data.table(lapply(x, defactor, conv2dt = "none", ...))
   else if(conv2dt != "none")
     as.data.table(lapply(x, defactor_vector, ...))
   else if(is.matrix(x))

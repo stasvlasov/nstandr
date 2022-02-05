@@ -1,4 +1,7 @@
 ## -------->>  [[file:../../harmonizer.src.org::*harmonize_x_split][harmonize_x_split:2]]
+harmonize_x_split <- harmonizer:::harmonize_x_split
+
+
 expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
                                , "MSLab Co."

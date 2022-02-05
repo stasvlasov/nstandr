@@ -1,12 +1,25 @@
 ## -------->>  [[file:../../harmonizer.src.org::*Umlaut Harmonization][Umlaut Harmonization:2]]
+expect_equal(
+    c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+             , "MSLab Co."
+             , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
+    magerman_detect_umlaut()
+, structure(list(x = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab Co.", 
+"ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+), x_has_umlaut = c(TRUE, FALSE, TRUE)), row.names = c(NA, -3L
+), class = c("data.table", "data.frame"))
+)
+
+
+## test naming
 expect_equal(c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
              , "MSLab Co."
              , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
-             magerman_detect_umlaut()
-           , structure(list(V1 = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab Co.", 
+             magerman_detect_umlaut(output_codes_col_name = "lala")
+           , structure(list(x = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab Co.", 
                                    "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
-                                   ), V1_coded = c("TRUE", NA, "TRUE")), row.names = c(NA, -3L), class = c("data.table", 
-                                                                                                           "data.frame")))
+                                   ), lala = c(TRUE, FALSE, TRUE)), row.names = c(NA, -3L), class = c("data.table", 
+                                                                                                      "data.frame")))
 
 
 

@@ -18,15 +18,14 @@ expect_equal(
         patterns_type = "ends",
         output_codes_col_name = "codes.new",
         patterns_codes_col = 1,
-        codes_merge = TRUE,
+        merge_existing_codes = "append_to_existing",
         rows = c(FALSE, TRUE, FALSE)
-    ),
-    data.table(name = c("MSlab Co.", "IBM Corp.", "Tilburg University"), codes = c("", "3", NA), lala = c(1, 1, 1), codes.new = c(
+    )
+   , data.table(name = c("MSlab Co.", "IBM Corp.", "Tilburg University"), codes = c("", "3", NA), lala = c(1, 1, 1), codes.new = c(
         NA,
         "Corp.", NA
     ))
 )
-
 
 ## with codes.omitted.val = NA
 expect_equal(
@@ -45,10 +44,10 @@ expect_equal(
         codes_omitted_rows_value = "omitted",
         output_codes_col_name = "codes_new",
         patterns_codes_col = 1,
-        codes_merge = TRUE,
+        merge_existing_codes = "append_to_existing",
         rows = c(FALSE, TRUE, FALSE)
-    ),
-    data.table(name = c("MSlab Co.", "IBM Corp.", "Tilburg University"), codes = c("", "3", NA), lala = c(1, 1, 1), codes_new = c("omitted", "Corp.", "omitted"))
+    )
+   , data.table(name = c("MSlab Co.", "IBM Corp.", "Tilburg University"), codes = c("", "3", NA), lala = c(1, 1, 1), codes_new = c("omitted", "Corp.", "omitted"))
 )
 
 ## testing x.rows again with x.codes.col
@@ -66,10 +65,10 @@ expect_equal(
     patterns_type = "ends",
     patterns_codes_col = 1,
     output_codes_col_name = "codes",
-    codes_merge = TRUE,
+    merge_existing_codes = "append_to_existing",
     rows = c(FALSE, TRUE, FALSE)
-    ),
-    structure(list(name = c("MSlab Co.", "IBM Corp.", "Tilburg University"), codes = list("", c("Corp.", "3"), NA_character_), lala = c(
+    )
+   , structure(list(name = c("MSlab Co.", "IBM Corp.", "Tilburg University"), codes = list("", c("Corp.", "3"), NA_character_), lala = c(
         1,
         1, 1
     )), row.names = c(NA, -3L), class = c("data.table", "data.frame"))
@@ -86,8 +85,9 @@ expect_equal(
     patterns_type = "ends",
     patterns_codes = "ala",
     return_only_codes = FALSE
-    ),
-    structure(list(V1 = c("MSlab Co.", "IBM Corp.", "Tilburg University"), V1_coded = c("ala", "ala", NA)), row.names = c(NA, -3L), class = c("data.table", "data.frame"))
+    )
+   ,
+    structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = c("ala", "ala", NA)), row.names = c(NA, -3L), class = c("data.table", "data.frame"))
 )
 
 expect_equal(
@@ -141,7 +141,7 @@ expect_equal(
     ),
     return_only_first_detected_code = FALSE
     ),
-    structure(list(V1 = c("MSlab Co.", "IBM Corp.", "Tilburg University"), V1_coded = list(c("corp", "corp2"), "corp2", character(0))), row.names = c(
+    structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = list(c("corp", "corp2"), "corp2", character(0))), row.names = c(
         NA,
         -3L
     ), class = c("data.table", "data.frame"))
@@ -162,7 +162,7 @@ expect_equal(
         some.extra.col = c(1, 2)
     )
     ),
-    structure(list(V1 = c("MSlab Co.", "IBM Corp.", "Tilburg University"), V1_coded = list(
+    structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = list(
         c("single code", "single code"), "single code",
         character(0)
     )), row.names = c(NA, -3L), class = c(
@@ -183,7 +183,7 @@ expect_equal(
     ),
     return_only_first_detected_code = TRUE
     ),
-    structure(list(V1 = c("MSlab Co.", "IBM Corp.", "Tilburg University"), V1_coded = c("FALSE", "TRUE", NA)), row.names = c(NA, -3L), class = c(
+    structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = c("FALSE", "TRUE", NA)), row.names = c(NA, -3L), class = c(
         "data.table",
         "data.frame"
     ))
@@ -204,7 +204,7 @@ expect_equal(
     return_only_first_detected_code = TRUE,
     patterns_type = "ends"
     ),
-    structure(list(V1 = c("MSlab Co.", "IBM Corp.", "Tilburg University"), V1_coded = c("corp", NA, NA)), row.names = c(NA, -3L), class = c("data.table", "data.frame"))
+    structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = c("corp", NA, NA)), row.names = c(NA, -3L), class = c("data.table", "data.frame"))
 )
 
 
@@ -227,10 +227,10 @@ expect_equal(
     return_only_first_detected_code = TRUE,
     patterns_type_col = 3
     ),
-    structure(list(V1 = c(
+    structure(list(x = c(
         "MSlab Co", "MS3lab Co", "MSlab8 Co.",
         "IBM Corp.", "Tilburg University", " TiU    "
-    ), V1_coded = c(
+    ), x_coded = c(
         "corp",
         "corp", "ms", "ibm", "univ", NA
     )), row.names = c(NA, -6L), class = c(
@@ -258,10 +258,10 @@ expect_equal(
     ),
     patterns_type_col = 3
     ),
-    structure(list(V1 = c(
+    structure(list(x = c(
         "MSlab Co", "MS3lab Co", "MSlab8 Co.",
         "IBM Corp.", "Tilburg University", " TiU    "
-    ), V1_coded = list(
+    ), x_coded = list(
         c("corp", "ms"), "corp", "ms", "ibm", "univ", character(0)
     )), row.names = c(
         NA,
@@ -289,7 +289,7 @@ expect_equal(
     patterns_type = "ends",
     patterns_codes = "corporation",
     output_codes_col_name = "codes",
-    codes_merge = TRUE,
+    merge_existing_codes = "append_to_existing",
     rows = c(FALSE, TRUE, FALSE)
     ),
     data.table(name = c("MSlab Co.", "IBM Corp.", "Tilburg University"), codes = list(c("cool firm", "best firm ever"), c("corporation", "cool firm"), "univer"), lala = c(1, 2, 3))
@@ -308,7 +308,7 @@ expect_equal(
     ),
     return_only_first_detected_code = FALSE
     ),
-    structure(list(V1 = c("MSlab Co.", "IBM Corp.", "Tilburg University"), V1_coded = c(NA_character_, NA_character_, NA_character_)), row.names = c(
+    structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = c(NA_character_, NA_character_, NA_character_)), row.names = c(
         NA,
         -3L
     ), class = c("data.table", "data.frame"))
@@ -329,7 +329,7 @@ expect_equal(
     return_only_first_detected_code = FALSE,
     no_match_code = "no_match"
     ),
-    structure(list(V1 = c("MSlab Co.", "IBM Corp.", "Tilburg University"), V1_coded = c("corp2", "no_match", "no_match")), row.names = c(NA, -3L), class = c("data.table", "data.frame"))
+    structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = c("corp2", "no_match", "no_match")), row.names = c(NA, -3L), class = c("data.table", "data.frame"))
 )
 
 
@@ -342,7 +342,7 @@ expect_equal(data.table(a = c("MSlab Co."
                  data.table(c("Corp.", "Co.", "Uni")
                           , type = c("corp", "corp2", "Uni")
                           , some.extra.col = c(1, 2, 3))
-               , codes_update_empty = TRUE
+               , merge_existing_codes = "replace_empty"
                , return_only_first_detected_code = FALSE
                , rows = c( TRUE, TRUE, FALSE)
                , no_match_code = "no_match")

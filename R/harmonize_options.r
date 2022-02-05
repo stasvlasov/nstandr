@@ -10,8 +10,8 @@
 ##' - 'append_to_col' :: append to `col`
 ##' - 'prepend_to_x' :: prepend to `x` data.frame like object
 ##' - 'append_to_x' :: append to `x` data.frame like object
-##' @param atomic_x_col_name If `x` is vector use this name for original column if it is in results. Default is "x". If `x` is table the name of `col` will be used.
-##' @param output_name Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:
+##' @param x_atomic_name If `x` is vector use this name for original column if it is in results. Default is "x". If `x` is table the name of `col` will be used.
+##' @param output_col_name Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:
 ##' @eval format_col_name(return_docs = TRUE)
 ##' @param append_output_copy Whether to append a copy of result vector to `x` object
 ##' @param output_copy_col_name How the append copy wiil be named
@@ -22,8 +22,8 @@ harmonize_options <- function(col = 1
                             , omitted_rows_value = NULL
                             , output_placement = "replace_col"
                             , name = NULL
-                            , atomic_x_col_name = "x"
-                            , output_name = "std{_col_name}"
+                            , x_atomic_name = "x"
+                            , output_col_name = "std{_col_name}"
                             , append_output_copy = FALSE
                             , output_copy_col_name = "std{_col_name}_copy{_procedure_index}{_procedure_name}") {
       ## do nothing

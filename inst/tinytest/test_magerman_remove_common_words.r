@@ -7,7 +7,7 @@ expect_equal(c("lksdjf MFG. GMBH CO,; INC"
              toupper() |>
              magerman_remove_legal_form_and_clean() |>
              magerman_remove_common_words()
-           , c("LKSDJF MFG. GMBH;", "MSLAB ", "IBM ", " MSLAB &LALAL  ", "KABUSHIKI KAISHA MSLAB "))
+, c("LKSDJF MFG. GMBH CO", "MSLAB ", "IBM ", "MSLAB &LALAL", "KABUSHIKI KAISHA MSLAB "))
 ## --------<<  Common Words:2 ends here
 
 
