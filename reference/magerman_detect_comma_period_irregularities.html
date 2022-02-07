@@ -58,34 +58,41 @@
 <dt>output_codes_col_name</dt>
 <dd><p>Same as in <code>detect_patterns</code></p></dd>
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="harmonize_options.html">harmonize_options</a></code></p><dl><dt><code>col</code></dt>
-<dd><p>Column of interest (the one we need to harmonize) in the <code>x</code> object (if it is data.frame like).</p></dd>
+<dd><p>Arguments passed on to <code><a href="detect_patterns.html">detect_patterns</a></code></p><dl><dt><code>patterns</code></dt>
+<dd><p>Accepts both vector or table. If patterns it is table can also include replacements column.</p></dd>
 
-    <dt><code>rows</code></dt>
-<dd><p>Logical vector to filter records of interest. Default is NULL which means do not filter records.</p></dd>
+    <dt><code>patterns_col</code></dt>
+<dd><p>If patterns is a table this specifies which column to use. Default is 1.</p></dd>
 
-    <dt><code>omitted_rows_value</code></dt>
-<dd><p>If <code>rows</code> parameter is set then merge <code>omitted_rows_value</code> with the results (filtered by <code>rows</code>). Either single string or a character vector of length <code>nrow(x)</code>. If NULL (the default) then original values of <code>col</code> are merged with results.</p></dd>
+    <dt><code>patterns_codes_col</code></dt>
+<dd><p>If patterns is table which column to use as codes column. Default is 2.</p></dd>
 
-    <dt><code>output_placement</code></dt>
-<dd><p>Where to inset retults (harmonized vector) in the <code>x</code> object. Default options is 'replace_col' which overwrides the <code>col</code> in <code>x</code> with results. Other options:</p><ul><li><p>'omit' :: do not write results back to table (usually used when <code>append_output_copy</code> is set for temporary values)</p></li>
-<li><p>'prepend_to_col' :: prepend to <code>col</code></p></li>
-<li><p>'append_to_col' :: append to <code>col</code></p></li>
-<li><p>'prepend_to_x' :: prepend to <code>x</code> data.frame like object</p></li>
-<li><p>'append_to_x' :: append to <code>x</code> data.frame like object</p></li>
-</ul></dd>
+    <dt><code>patterns_type</code></dt>
+<dd><p>Specifies kind(s) of patterns. Default is "fixed" (calling code<a href="https://rdrr.io/pkg/stringi/man/stri_replace.html" class="external-link">stri_replace_all_fixed</a>). Other options are:</p></dd>
 
-    <dt><code>x_atomic_name</code></dt>
-<dd><p>If <code>x</code> is vector use this name for original column if it is in results. Default is "x". If <code>x</code> is table the name of <code>col</code> will be used.</p></dd>
+    <dt><code>patterns_type_col</code></dt>
+<dd><p>Column in patterns table where you can specify types of patterns for each pattern. If set then <code>patterns.type</code> is ignored. Default is NULL.</p></dd>
 
-    <dt><code>output_col_name</code></dt>
-<dd><p>Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:</p></dd>
+    <dt><code>patterns_codes</code></dt>
+<dd><p>If provided use it as codes. Should be the same length as patterns. Default is NULL.</p></dd>
 
-    <dt><code>append_output_copy</code></dt>
-<dd><p>Whether to append a copy of result vector to <code>x</code> object</p></dd>
+    <dt><code>codes_omitted_rows_value</code></dt>
+<dd><p>If <code>rows</code> is set. Use this value to fill the omitted rows. When we update existing codes column Default is NULL which means that we use initial codes values for omitted rows. If there is no codes col to update omited rows will be filled with NA.</p></dd>
 
-    <dt><code>output_copy_col_name</code></dt>
-<dd><p>How the append copy wiil be named</p></dd>
+    <dt><code>no_match_code</code></dt>
+<dd><p>If provided code records that did not get any match with it.</p></dd>
+
+    <dt><code>merge_existing_codes</code></dt>
+<dd><p>Whether to merge newly detected codes with existing. Options are:</p></dd>
+
+    <dt><code>return_only_codes</code></dt>
+<dd><p>If toggled on then just return codes vector.</p></dd>
+
+    <dt><code>return_only_first_detected_code</code></dt>
+<dd><p>If TRUE then return only codes for the first detected pattern. If FALSE return list of all matched codes. Default is TRUE. (Currently does affect performance)</p></dd>
+
+    <dt><code>return_merge_codes_description</code></dt>
+<dd><p>Return description of choices for <code>merge_existing_codes</code> paramenter.</p></dd>
 
   
 </dl></dd>
