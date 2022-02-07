@@ -47,13 +47,13 @@ It does nothing. Returns NULL silently.
 Does nothing but stores (as its own default arguments) options that control vector handeling through harmonization process. These options are available in most harmonizer functions that accept \code{...} parameter.
 
 \itemize{
-\item {procedure_index} -
-\item {procedure_name} -
-\item {_procedure_index} -
-\item {_procedure_name} -
-\item {_col_name} -
-\item {col_name_} -
-\item {col_name} -
+\item {procedure_index} - replace '{procedure_index}' with a number of current standardization procedure is in the list of procedures
+\item {procedure_name} - replace '{procedure_name}' with name of current standardization procedure
+\item {_procedure_index} - replace '{\emph{procedure_index}' with a number of current standardization procedure is in the list of procedures, prefixed with '}'
+\item {\emph{procedure_name} - replace '{procedure_name}' with name of current standardization procedure, prefixed with '}'
+\item {_col_name} - replace '{\emph{col_name}' with the name of 'col' argument (i.e., col with input value), prefixed with '}'
+\item {col_name_} - replace '{col_name_}' with the name of 'col' argument (i.e., col with input value), suffixed with '_'
+\item {col_name} - replace '{col_name}' with the name of 'col' argument (i.e., col with input value)
 \item {_index_suffix} - Adds unique suffix (increment index) if the column name already exist. E.g. the following format '{col_name}{_index_suffix}' for names(x) = c('V', 'V_9', 'V_41') and col = 2 (i.e. col_name = 'V_9' in this example) would result in a new column named 'V_42'
 }
 }

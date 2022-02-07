@@ -49,25 +49,25 @@ format_col_name <- function(col_name_format
     procedure_name <- get0("harmonizer_harmonize_procedure_name", envir = parent.frame())
     replacements_list <- list(
         "procedure_index" = list(
-            doc = ""
+            doc = "replace '{procedure_index}' with a number of current standardization procedure is in the list of procedures"
           , val = replace_fixed_if_string(procedure_index))
       , "procedure_name" = list(
-            doc = ""
+            doc = "replace '{procedure_name}' with name of current standardization procedure"
           , val = replace_fixed_if_string(procedure_name))
       , "_procedure_index" = list(
-            doc = ""
+            doc = "replace '{_procedure_index}' with a number of current standardization procedure is in the list of procedures, prefixed with '_'"
           , val = replace_fixed_if_string(procedure_index, "_procedure_index"))
       , "_procedure_name" = list(
-            doc = ""
+            doc = "replace '{procedure_name}' with name of current standardization procedure, prefixed with '_'"
           , val = replace_fixed_if_string(procedure_name, "_procedure_name"))
       , "_col_name" = list(
-            doc = ""
+            doc = "replace '{_col_name}' with the name of 'col' argument (i.e., col with input value), prefixed with '_'"
           , val = replace_fixed_if_string(col_name, "_col_name"))
       , "col_name_" = list(
-            doc = ""
+            doc = "replace '{col_name_}' with the name of 'col' argument (i.e., col with input value), suffixed with '_'"
           , val = replace_fixed_if_string(col_name, "col_name_"))
       , "col_name" = list(
-            doc = ""
+            doc = "replace '{col_name}' with the name of 'col' argument (i.e., col with input value)"
           , val = replace_fixed_if_string(col_name))
       , "_index_suffix" = list(
             doc = "Adds unique suffix (increment index) if the column name already exist. E.g. the following format '{col_name}{_index_suffix}' for names(x) = c('V', 'V_9', 'V_41') and col = 2 (i.e. col_name = 'V_9' in this example) would result in a new column named 'V_42'"

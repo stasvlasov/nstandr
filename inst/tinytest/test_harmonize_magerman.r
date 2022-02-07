@@ -15,7 +15,8 @@ expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                       , foo = "I love coffee" ) |>
              harmonize_magerman(nrows_min_to_show_progress = 50
                               , show_progress = TRUE
-                              , detect_legal_form = FALSE)
+                              , detect_legal_form = FALSE
+                              , quite = TRUE)
            , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
                                , "MSLAEBAEHREFLSDLDFAE"
                                , "MSLAB"
@@ -38,7 +39,8 @@ expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
              harmonize_magerman(nrows_min_to_show_progress = 50
                               , show_progress = TRUE
                               , append_output_copy_before_common_words_removal = TRUE
-                              , detect_legal_form = FALSE)
+                              , detect_legal_form = FALSE
+                              , quite = TRUE)
            , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
                                , "MSLAEBAEHREFLSDLDFAE"
                                , "MSLAB"
@@ -68,7 +70,8 @@ expect_equal(data.table(foo = "I love coffee"
              harmonize_magerman(col = 2
                               , nrows_min_to_show_progress = 50
                               , show_progress = TRUE
-                              , detect_legal_form = FALSE)
+                              , detect_legal_form = FALSE
+                              , quite = TRUE)
            , data.table(foo = "I love coffee"
                       , name = c("MAEKAEROENIETOEFKUESNOE"
                                , "MSLAEBAEHREFLSDLDFAE"
@@ -91,7 +94,8 @@ expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                       , foo = "I love coffee" ) |>
              harmonize_magerman(nrows_min_to_show_progress = 50
                               , show_progress = TRUE
-                              , detect_legal_form = TRUE)
+                              , detect_legal_form = TRUE
+                              , quite = TRUE)
            , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
                                , "MSLAEBAEHREFLSDLDFAE"
                                , "MSLAB"

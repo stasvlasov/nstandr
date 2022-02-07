@@ -1,4 +1,3 @@
-
 # - Reference from [[associate-id:org:29i4s7t0y5i0][Harmonizer R package]] on [2021-06-05 Sat 22:51]
 #+PROPERTY: header-args:R  :comments link :session :mkdirp yes :padline yes
 * Frontpage
@@ -1397,6 +1396,45 @@ Tests:
 
 
 #+END_SRC
+*** inset_formals
+:PROPERTIES:
+:ID:       org:vdg1zja1ucj0
+:END:
+
+#+BEGIN_SRC R :tangle R/update_formals.r
+  inset_formals <- function(formals_args, new_args) {
+      checkmate::assert_subset(names(new_args)
+                             , choices = names(formals_args)
+                             , empty.ok = FALSE)
+      for (i in 1:length(new_args)) {
+          formals_args[names(new_args)[i]] <- new_args[i]
+      }
+      return(formals_args)
+  }
+
+
+  make_alias <- function(fun, new_formals_alist) {
+      default_formals <- formals(fun)
+      checkmate::assert_subset(names(new_formals_alist)
+                             , choices = names(default_formals)
+                             , empty.ok = FALSE)
+      for (i in 1:length(new_formals_alist)) {
+          default_formals[names(new_formals_alist)[i]] <- new_formals_alist[i]
+      }
+      formals(fun) <- default_formals
+      return(fun)
+  }
+
+#+END_SRC
+
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_inset_formals.r
+  inset_formals <- harmonizer:::inset_formals
+
+  expect_equal(inset_formals(formals(mean), alist(x = something_unevaluated))
+             , alist(x = something_unevaluated, ... = ))
+#+END_SRC
+
 
 ** Vector Handeling Functions
 :PROPERTIES:
@@ -2965,25 +3003,25 @@ Tests:
       procedure_name <- get0("harmonizer_harmonize_procedure_name", envir = parent.frame())
       replacements_list <- list(
           "procedure_index" = list(
-              doc = ""
+              doc = "replace '{procedure_index}' with a number of current standardization procedure is in the list of procedures"
             , val = replace_fixed_if_string(procedure_index))
         , "procedure_name" = list(
-              doc = ""
+              doc = "replace '{procedure_name}' with name of current standardization procedure"
             , val = replace_fixed_if_string(procedure_name))
         , "_procedure_index" = list(
-              doc = ""
+              doc = "replace '{_procedure_index}' with a number of current standardization procedure is in the list of procedures, prefixed with '_'"
             , val = replace_fixed_if_string(procedure_index, "_procedure_index"))
         , "_procedure_name" = list(
-              doc = ""
+              doc = "replace '{procedure_name}' with name of current standardization procedure, prefixed with '_'"
             , val = replace_fixed_if_string(procedure_name, "_procedure_name"))
         , "_col_name" = list(
-              doc = ""
+              doc = "replace '{_col_name}' with the name of 'col' argument (i.e., col with input value), prefixed with '_'"
             , val = replace_fixed_if_string(col_name, "_col_name"))
         , "col_name_" = list(
-              doc = ""
+              doc = "replace '{col_name_}' with the name of 'col' argument (i.e., col with input value), suffixed with '_'"
             , val = replace_fixed_if_string(col_name, "col_name_"))
         , "col_name" = list(
-              doc = ""
+              doc = "replace '{col_name}' with the name of 'col' argument (i.e., col with input value)"
             , val = replace_fixed_if_string(col_name))
         , "_index_suffix" = list(
               doc = "Adds unique suffix (increment index) if the column name already exist. E.g. the following format '{col_name}{_index_suffix}' for names(x) = c('V', 'V_9', 'V_41') and col = 2 (i.e. col_name = 'V_9' in this example) would result in a new column named 'V_42'"
@@ -4176,7 +4214,7 @@ Testing
 - Reference from [[id:org:6chkzp10fbj0][Refactor replace_patterns]] on [2022-01-02 Sun 14:42]
 :END:
 
-#+BEGIN_SRC R :tangle R/replace_patterns.r
+#+BEGIN_SRC R :tangle R/0_replace_patterns.r
   replace_exact <- function(x
                           , patterns
                           , replacements) {
@@ -4699,7 +4737,7 @@ even older
 :ID:       org:bb21tpb0wei0
 :END:
 
-#+BEGIN_SRC R :tangle R/detect_patterns.r
+#+BEGIN_SRC R :tangle R/0_detect_patterns.r
   ##' transpose list of vectors
   transpose_list_of_vectors <- function(l) {
       do.call(mapply, c(FUN = list(c), l, list(USE.NAMES = FALSE, SIMPLIFY = FALSE)))
@@ -4728,19 +4766,17 @@ even older
   #' @param patterns_col If patterns is a table this specifies which column to use. Default is 1.
   #' @param patterns_codes_col If patterns is table which column to use as codes column. Default is 2.
   #' @param patterns_type Specifies kind(s) of patterns. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are:
+  #' @eval escape_regex_for_type(return_docs = TRUE)
   #' @param patterns_type_col Column in patterns table where you can specify types of patterns for each pattern. If set then `patterns.type` is ignored. Default is NULL.
   #' @param patterns_codes If provided use it as codes. Should be the same length as patterns. Default is NULL.
-  #' @param output_codes_col_name 
+  #' @param output_codes_col_name If provided use it as a name for codes column (new if it does not exist or the one to update) in results.
   #' @param codes_omitted_rows_value If `rows` is set. Use this value to fill the omitted rows. When we update existing codes column Default is NULL which means that we use initial codes values for omitted rows. If there is no codes col to update omited rows will be filled with NA.
   #' @param no_match_code If provided code records that did not get any match with it. 
   #' @param merge_existing_codes Whether to merge newly detected codes with existing. Options are:
   #' @eval detect_patterns(return_merge_codes_description = TRUE)
-  #' @param codes_col_name If provided use it as a name for codes column (new if it does not exist or the one to update) in results.
-  #' @param codes_col_name_suffix If `codes_col_name` is not provided use this suffix to append to `col` name or `x_atomic_name`  (see`harmonize_options`).
   #' @param return_only_codes If toggled on then just return codes vector.
   #' @param return_only_first_detected_code If TRUE then return only codes for the first detected pattern. If FALSE return list of all matched codes. Default is TRUE. (Currently does affect performance)
-  #' 
-  #' @eval escape_regex_for_type(return_docs = TRUE)
+  #' @param return_merge_codes_description Return description of choices for `merge_existing_codes` paramenter.
   #' @inheritDotParams harmonize_options
   #' 
   #' @return The updated `x` table with codes column or just codes if `return_only_codes` is set.
@@ -5648,7 +5684,8 @@ The default harmonization procedures are the following (for now):
                         ,list("log", base = 10)
                        , "My function" = list(dummy, 10^6, show_progress = TRUE))
               , nrows_min_to_show_progress = 1
-              , progress_step_nrows = NULL)
+              , progress_step_nrows = NULL
+              , quite = TRUE)
   , c(0, 0.150514997831991, 0.238560627359831, 0.301029995663981, 
         0.349485002168009, 0.389075625191822, 0.422549020007129, 0.451544993495972, 
         0.477121254719662, 0.5, 0.520696342579113, 0.539590623023813, 
@@ -5705,32 +5742,33 @@ Patterns used to identify characters to clean
 
 The function below can be used to detect candidates for characters that need to be cleaned based on the table above.
 
-#+BEGIN_SRC R :tangle ./R/magerman.r
-  ##' @eval attr(magerman_detect_characters, "description")
-  ##' @param x table
-  ##' @param output_codes_col_name Same as in `detect_patterns`
-  ##' @inheritDotParams harmonize_options
-  ##' @return coded table
-  ##'
-  ##' @export
-  magerman_detect_characters <- function(x
-             , output_codes_col_name = "characters_cleaning_candidates"
-             , ...) {
-          patterns <- c("\\{.+\\}", "propriety coded characters {xxx}"
-                      , "\\[0.+\\]", "propriety coded characters [0xxx]"
-                      , "\\(.+\\)", "propriety coded characters (xxx)"
-                      , "&.+;", "sgml coded characters"
-                      , "<.+>", "html coded characters") |>
-              matrix(byrow = TRUE, ncol = 2) |>
-              data.frame()
-          detect_patterns(x
-                        , patterns                      
-                        , patterns_type = "regex"
-                        , output_codes_col_name = output_codes_col_name)
-      }
+#+BEGIN_SRC R :tangle R/magerman.r
+    ##' @eval attr(magerman_detect_characters, "description")
+    ##' @param x table
+    ##' @param output_codes_col_name Same as in `detect_patterns` (see below)
+    ##' @inheritDotParams detect_patterns
+    ##' @return coded table
+    ##'
+    ##' @export
+    magerman_detect_characters <- function(x
+               , output_codes_col_name = "characters_cleaning_candidates"
+               , ...) {
+            patterns <- c("\\{.+\\}", "propriety coded characters {xxx}"
+                        , "\\[0.+\\]", "propriety coded characters [0xxx]"
+                        , "\\(.+\\)", "propriety coded characters (xxx)"
+                        , "&.+;", "sgml coded characters"
+                        , "<.+>", "html coded characters") |>
+                matrix(byrow = TRUE, ncol = 2) |>
+                data.frame()
+            detect_patterns(x
+                          , patterns                      
+                          , patterns_type = "regex"
+                          , output_codes_col_name = output_codes_col_name
+                          , ...)
+        }
 
-  attr(magerman_detect_characters, "description") <-
-      "Detect candidates for characters that need to be cleaned"
+    attr(magerman_detect_characters, "description") <-
+        "Detect candidates for characters that need to be cleaned"
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_detect_characters.r
@@ -5751,7 +5789,7 @@ The function below can be used to detect candidates for characters that need to 
 :ID:       org:b6l29ts0lei0
 :END:
 
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Removes html codes
   ##' @param x table
   ##' @inheritDotParams harmonize_options
@@ -5792,7 +5830,7 @@ Table 7: SGML codes and their ASCII/ANSI equivalent
 
 #+call: make-rds-patterns-table(data = magerman_patterns_sgml_characters, data.name = "magerman_patterns_sgml_characters")
 
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Replaces sgml characters. Accept both vector and table and return either vector or a table
   ##' @param x table
   ##' @inheritDotParams replace_patterns
@@ -5858,7 +5896,7 @@ Table 8: Proprietary character codes and their ASCII/ANSI equivalent
 #+call: make-rds-patterns-table(data = magerman_patterns_proprietary_characters, data.name = "magerman_patterns_proprietary_characters")
 
 
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Replaces proprietary characters
   ##' @param x table
   ##' @inheritDotParams harmonize_options
@@ -5917,7 +5955,7 @@ Table 9: Accented characters and their unaccented equivalent
 
 #+call: make-rds-patterns-table(data = magerman_patterns_accented_characters, data.name = "magerman_patterns_accented_characters")
 
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Replaces accented characters
   ##'
   ##' Assumes that all characters are in caps.
@@ -5952,7 +5990,7 @@ Table 9: Accented characters and their unaccented equivalent
 
 Here one probably need to add smart quotes as well...
 
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Removes special characters. I.e., everything that is not:
   ## A-Z; 0-9; “-“; “+”; “’”; “””; “#”; “*”;“@”; “!”; “?”; “/”; “&”; “(“; “)”; “:”; “;”; “,”; “.”; “ “
   ##' @param x table
@@ -5985,7 +6023,7 @@ Here one probably need to add smart quotes as well...
 :PROPERTIES:
 :ID:       org:7zm5vw215ei0
 :END:
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Removes double spaces
   ##' @param x table
   ##' @inheritDotParams replace_patterns
@@ -6011,7 +6049,7 @@ Here one probably need to add smart quotes as well...
 :PROPERTIES:
 :ID:       org:4ir5vw215ei0
 :END:
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Removes double quotation irregularities
   ##' @param x table
   ##' @inheritDotParams harmonize_options
@@ -6035,7 +6073,7 @@ Here one probably need to add smart quotes as well...
                  , "\"\"Merry \"\"Cristmas\"\" Love\"\""))
 #+END_SRC
 
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Removes double quotation irregularities
   ##' @param x table
   ##' @inheritDotParams harmonize_options
@@ -6066,7 +6104,7 @@ Here one probably need to add smart quotes as well...
 :PROPERTIES:
 :ID:       org:2az5vw215ei0
 :END:
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Removes non alphanumeric characters
   ##' @param x table
   ##' @inheritDotParams harmonize_options
@@ -6126,49 +6164,50 @@ Patterns used to identify comma and period irregularities.
 
 The function below is the generalization for replacement of the above punctuation irregularities. This procedure is not a part of Margerman procedures.
 
-#+BEGIN_SRC R :tangle ./R/magerman.r
-  ##' Detects comma period irregularities
-  ##' @param x table
-  ##' @param output_codes_col_name Same as in `detect_patterns`
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
-  ##'
-  ##' @export
-  magerman_detect_comma_period_irregularities <- function(x,
-                                                          output_codes_col_name = "comma.period.irregularities.candidates",
-                                                          ...) {
-      patterns <- 
-          c(",([^\\s])", "Patterns with comma not followed by space"
-          , "\\s,", "Patterns with comma preceded by space"
-          , "([^A-Za-z0-9])\\.", "Patterns with period not preceded by a letter or digit"
-            ) |>
-          matrix(byrow = TRUE, ncol = 2) |>
-          data.frame()
-      detect_patterns(x
-                    , patterns
-                    , patterns_type = "regex"
-                    , output_codes_col_name = output_codes_col_name)
-  }
+#+BEGIN_SRC R :tangle R/magerman.r
+    ##' Detects comma period irregularities
+    ##' @param x table
+    ##' @param output_codes_col_name Same as in `detect_patterns`
+    ##' @inheritDotParams detect_patterns
+    ##' @return Harmonized table
+    ##'
+    ##' @export
+    magerman_detect_comma_period_irregularities <- function(x,
+                                                            output_codes_col_name = "comma.period.irregularities.candidates",
+                                                            ...) {
+        patterns <- 
+            c(",([^\\s])", "Patterns with comma not followed by space"
+            , "\\s,", "Patterns with comma preceded by space"
+            , "([^A-Za-z0-9])\\.", "Patterns with period not preceded by a letter or digit"
+              ) |>
+            matrix(byrow = TRUE, ncol = 2) |>
+            data.frame()
+        detect_patterns(x
+                      , patterns
+                      , patterns_type = "regex"
+                      , output_codes_col_name = output_codes_col_name
+                        , ...)
+    }
 
-  ##' Replaces comma period irregularities
-  ##' @param x table
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
-  ##'
-  ##' @export
-  magerman_replace_comma_period_irregularities_all <- function(x, ...) {
-      patterns <- c(
-          ",([^\\s])", ", $1",
-          "\\s,", ",",
-          "([^A-Za-z0-9])\\.", "$1"
-      ) |>
-          matrix(byrow = TRUE, ncol = 2) |>
-          data.frame()
-      replace_patterns(x
-                     , patterns
-                     , patterns_type = "regex"
-                       )
-  }
+    ##' Replaces comma period irregularities
+    ##' @param x table
+    ##' @inheritDotParams harmonize_options
+    ##' @return Harmonized table
+    ##'
+    ##' @export
+    magerman_replace_comma_period_irregularities_all <- function(x, ...) {
+        patterns <- c(
+            ",([^\\s])", ", $1",
+            "\\s,", ",",
+            "([^A-Za-z0-9])\\.", "$1"
+        ) |>
+            matrix(byrow = TRUE, ncol = 2) |>
+            data.frame()
+        replace_patterns(x
+                       , patterns
+                       , patterns_type = "regex"
+                         )
+    }
 
 #+END_SRC
 
@@ -6246,7 +6285,7 @@ Table 12: Patterns with period not preceded by a letter or digit
 #+call: make-rds-patterns-table(data = magerman_patterns_periods, data.name = "magerman_patterns_periods")
 
 
-#+BEGIN_SRC R   :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Replaces comma period irregularities
   ##' @param x object
   ##' @inheritDotParams harmonize_options
@@ -7424,67 +7463,149 @@ As the replacements and removals in the search and replace statements can lead t
 
 plus trim..."
 
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Detects legal form
-  ##' @param x table
-  ##' @param return_only_codes same as in `detect_patterns`
-  ##' @param patterns_codes same as in `detect_patterns`
-  ##' @param no_match_code same as in `detect_patterns`
-  ##' @param ... 
+  ##' 
+  ##' @inherit detect_patterns params return
   ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
+  ##' @family magerman
+  ##' @seealso detect_patterns
   ##'
   ##' @md
   ##' @export
-  magerman_detect_legal_form_end <- function(x
-                                           , return_only_codes = FALSE
-                                           , patterns_codes = NULL
-                                           , no_match_code = NULL
-                                           , merge_existing_codes = "replace_empty"
-                                           , output_codes_col_name = "{col_name_}legal_form"
-                                           , ...) {
-      detect_patterns(x
-                    , magerman_patterns_legal_form_end
-                    , patterns_codes_col = 3
-                    , patterns_codes = patterns_codes
-                    , patterns_type = "ends"
-                    , output_codes_col_name = output_codes_col_name
-                    , return_only_first_detected_code = TRUE
-                    , merge_existing_codes = merge_existing_codes
-                    , return_only_codes = return_only_codes
-                    , no_match_code = no_match_code)
-  }
+  magerman_detect_legal_form_end <- (function(fun, args) {
+      .fun <- fun; formals(.fun)[names(args)] <- args; return(.fun)
+  })(detect_patterns, alist(patterns = magerman_patterns_legal_form_end
+                          , patterns_type = "ends"
+                          , patterns_codes_col = 3
+                          , return_only_codes = FALSE
+                          , return_only_first_detected_code = TRUE
+                          , patterns_codes = NULL
+                          , no_match_code = NULL
+                          , merge_existing_codes = "replace_empty"
+                          , output_codes_col_name = "{col_name_}legal_form"))
 
 
 
+
+
+  ## formals(magerman_detect_legal_form_end) <-
+  ##     c(alist(
+  ##         patterns = magerman_patterns_legal_form_end
+  ##       , patterns_type = "ends"
+  ##       , patterns_codes_col = 3
+  ##       , return_only_codes = FALSE
+  ##       , return_only_first_detected_code = TRUE
+  ##       , patterns_codes = NULL
+  ##       , no_match_code = NULL
+  ##       , merge_existing_codes = "replace_empty"
+  ##       , output_codes_col_name = "{col_name_}legal_form")
+  ##       formals(detect_patterns)
+  ##     , )
+
+  ## names(c(formals(detect_patterns), ))
+
+  ## formals(magerman_detect_legal_form_end) <-
+  ##     inset_formals(
+  ##         formals(detect_patterns)
+  ##       , alist(
+  ##             patterns = magerman_patterns_legal_form_end
+  ##           , patterns_type = "ends"
+  ##           , patterns_codes_col = 3
+  ##           , return_only_codes = FALSE
+  ##           , return_only_first_detected_code = TRUE
+  ##           , patterns_codes = NULL
+  ##           , no_match_code = NULL
+  ##           , merge_existing_codes = "replace_empty"
+  ##           , output_codes_col_name = "{col_name_}legal_form"))
+
+
+  ## ##' Detects legal form
+  ## ##' @param x table
+  ## ##' @param return_only_codes same as in `detect_patterns`
+  ## ##' @param patterns_codes same as in `detect_patterns`
+  ## ##' @param no_match_code same as in `detect_patterns`
+  ## ##' @param ... 
+  ## ##' @inheritDotParams detect_patterns
+  ## ##' @return Harmonized table
+  ## ##'
+  ## ##' @md
+  ## ##' @export
+  ## magerman_detect_legal_form_end <- function(x
+  ##                                          , return_only_codes = FALSE
+  ##                                          , patterns_codes = NULL
+  ##                                          , no_match_code = NULL
+  ##                                          , merge_existing_codes = "replace_empty"
+  ##                                          , output_codes_col_name = "{col_name_}legal_form"
+  ##                                          , ...) {
+  ##     detect_patterns(x
+  ##                   , magerman_patterns_legal_form_end
+  ##                   , patterns_codes_col = 3
+  ##                   , patterns_codes = patterns_codes
+  ##                   , patterns_type = "ends"
+  ##                   , output_codes_col_name = output_codes_col_name
+  ##                   , return_only_first_detected_code = TRUE
+  ##                   , merge_existing_codes = merge_existing_codes
+  ##                   , return_only_codes = return_only_codes
+  ##                   , no_match_code = no_match_code
+  ##                   , ...)
+  ## }
+
+
+
+
+
+  ## ##' Replaces legal form
+  ## ##' @param x table
+  ## ##' @inheritDotParams harmonize_options
+  ## ##' @return Harmonized table
+  ## ##'
+  ## ##' @md
+  ## ##' @export
+  ## magerman_replace_legal_form_end <- function(x, ...) {
+  ##     replace_patterns(x
+  ##                    , patterns = magerman_patterns_legal_form_end
+  ##                    , patterns_type = "ends"
+  ##                    , ...)
+  ## }
 
 
   ##' Replaces legal form
-  ##' @param x table
+  ##' @inherit replace_patterns params return
   ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
+  ##' @family magerman
+  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
-  magerman_replace_legal_form_end <- function(x, ...) {
-      replace_patterns(x
-                     , patterns = magerman_patterns_legal_form_end
-                     , patterns_type = "ends")
-  }
+  magerman_replace_legal_form_end <- (function(fun, args) {
+      .fun <- fun; formals(.fun)[names(args)] <- args; return(.fun)
+  })(replace_patterns, alist(
+                           patterns = magerman_patterns_legal_form_end
+                         , patterns_type = "ends"
+                       ))
+
+
+
 
   ##' Detects legal form
   ##' @param x table
-  ##' @inheritDotParams harmonize_options
+  ##' @param ... 
+  ##' @param output_codes_col_name Same as in
+  ##' @inheritDotParams detect_patterns
   ##' @return Harmonzed table
   ##'
   ##' @md
   ##' @export
   magerman_detect_legal_form_beginning <- function(x
+                                                 , patterns = data.table(pattern = "KABUSHIKI KAISHA"
+                                                                       , legal.form = "KAISHA")
                                                  , ...
                                                  , output_codes_col_name = "{col_name_}legal_form") {
       detect_patterns(x
-                    , patterns = data.table(pattern = "KABUSHIKI KAISHA"
-                                          , legal.form = "KAISHA")
+                    , patterns = patterns
                     , patterns_type = "begins"
                     , merge_existing_codes = "replace_empty"
                     , return_only_first_detected_code = TRUE
@@ -7812,7 +7933,7 @@ Table 21: Common company words to be removed anywhere in a name
 #+call: make-rds-patterns-table(data = magerman_patterns_common_words_anywhere, data.name = "magerman_patterns_common_words_anywhere")
 
 
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Removes common words
   ##' @param x table
   ##' @inheritDotParams harmonize_options
@@ -7923,7 +8044,7 @@ Table 22: Spelling variations and their harmonized equivalent
 
 #+call: make-rds-patterns-table(data = magerman_patterns_spelling_variation, data.name = "magerman_patterns_spelling_variation")
 
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Replaces spelling variation
   ##' @param x table
   ##' @inheritDotParams harmonize_options
@@ -7952,7 +8073,7 @@ Table 22: Spelling variations and their harmonized equivalent
 :PROPERTIES:
 :ID:       org:rl10al703ei0
 :END:
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Condenses string
   ##' @param x table
   ##' @inheritDotParams harmonize_options
@@ -8015,7 +8136,7 @@ p. 44
 :PROPERTIES:
 :ID:       org:i680al703ei0
 :END:
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Detects umlauts
   ##' @param x table
   ##' @param return_only_codes same as `detect_patterns`
@@ -8268,7 +8389,7 @@ p. 44
 
 #+call: make-rds-patterns-table(data = magerman_procedures_table, data.name = "magerman_procedures_table", remove.single.quotes = "FALSE")
 
-#+BEGIN_SRC R :tangle ./R/magerman.r
+#+BEGIN_SRC R :tangle R/magerman.r
   ##' Harmonizes strings using exact procedures described in Magerman et al. 2009.
   ##' @param x table or vector
   ##' @param detect_legal_form Whether to detect legal forms. Default is FALSE
@@ -8328,7 +8449,8 @@ p. 44
                         , foo = "I love coffee" ) |>
                harmonize_magerman(nrows_min_to_show_progress = 50
                                 , show_progress = TRUE
-                                , detect_legal_form = FALSE)
+                                , detect_legal_form = FALSE
+                                , quite = TRUE)
              , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
                                  , "MSLAEBAEHREFLSDLDFAE"
                                  , "MSLAB"
@@ -8351,7 +8473,8 @@ p. 44
                harmonize_magerman(nrows_min_to_show_progress = 50
                                 , show_progress = TRUE
                                 , append_output_copy_before_common_words_removal = TRUE
-                                , detect_legal_form = FALSE)
+                                , detect_legal_form = FALSE
+                                , quite = TRUE)
              , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
                                  , "MSLAEBAEHREFLSDLDFAE"
                                  , "MSLAB"
@@ -8381,7 +8504,8 @@ p. 44
                harmonize_magerman(col = 2
                                 , nrows_min_to_show_progress = 50
                                 , show_progress = TRUE
-                                , detect_legal_form = FALSE)
+                                , detect_legal_form = FALSE
+                                , quite = TRUE)
              , data.table(foo = "I love coffee"
                         , name = c("MAEKAEROENIETOEFKUESNOE"
                                  , "MSLAEBAEHREFLSDLDFAE"
@@ -8404,7 +8528,8 @@ p. 44
                         , foo = "I love coffee" ) |>
                harmonize_magerman(nrows_min_to_show_progress = 50
                                 , show_progress = TRUE
-                                , detect_legal_form = TRUE)
+                                , detect_legal_form = TRUE
+                                , quite = TRUE)
              , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
                                  , "MSLAEBAEHREFLSDLDFAE"
                                  , "MSLAB"

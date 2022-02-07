@@ -1,8 +1,8 @@
 ## -------->>  [[file:../harmonizer.src.org::*Characters][Characters:1]]
 ##' @eval attr(magerman_detect_characters, "description")
 ##' @param x table
-##' @param output_codes_col_name Same as in `detect_patterns`
-##' @inheritDotParams harmonize_options
+##' @param output_codes_col_name Same as in `detect_patterns` (see below)
+##' @inheritDotParams detect_patterns
 ##' @return coded table
 ##'
 ##' @export
@@ -19,7 +19,8 @@ magerman_detect_characters <- function(x
         detect_patterns(x
                       , patterns                      
                       , patterns_type = "regex"
-                      , output_codes_col_name = output_codes_col_name)
+                      , output_codes_col_name = output_codes_col_name
+                      , ...)
     }
 
 attr(magerman_detect_characters, "description") <-
@@ -195,7 +196,7 @@ magerman_remove_non_alphanumeric_at_the_end <- function(x, ...) {
 ##' Detects comma period irregularities
 ##' @param x table
 ##' @param output_codes_col_name Same as in `detect_patterns`
-##' @inheritDotParams harmonize_options
+##' @inheritDotParams detect_patterns
 ##' @return Harmonized table
 ##'
 ##' @export
@@ -212,7 +213,8 @@ magerman_detect_comma_period_irregularities <- function(x,
     detect_patterns(x
                   , patterns
                   , patterns_type = "regex"
-                  , output_codes_col_name = output_codes_col_name)
+                  , output_codes_col_name = output_codes_col_name
+                    , ...)
 }
 
 ##' Replaces comma period irregularities
@@ -259,65 +261,147 @@ magerman_replace_comma_period_irregularities <- function(x, ...) {
 
 ## -------->>  [[file:../harmonizer.src.org::*Detect and replace legal forms][Detect and replace legal forms:1]]
 ##' Detects legal form
-##' @param x table
-##' @param return_only_codes same as in `detect_patterns`
-##' @param patterns_codes same as in `detect_patterns`
-##' @param no_match_code same as in `detect_patterns`
-##' @param ... 
+##' 
+##' @inherit detect_patterns params return
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
+##' @family magerman
+##' @seealso detect_patterns
 ##'
 ##' @md
 ##' @export
-magerman_detect_legal_form_end <- function(x
-                                         , return_only_codes = FALSE
-                                         , patterns_codes = NULL
-                                         , no_match_code = NULL
-                                         , merge_existing_codes = "replace_empty"
-                                         , output_codes_col_name = "{col_name_}legal_form"
-                                         , ...) {
-    detect_patterns(x
-                  , magerman_patterns_legal_form_end
-                  , patterns_codes_col = 3
-                  , patterns_codes = patterns_codes
-                  , patterns_type = "ends"
-                  , output_codes_col_name = output_codes_col_name
-                  , return_only_first_detected_code = TRUE
-                  , merge_existing_codes = merge_existing_codes
-                  , return_only_codes = return_only_codes
-                  , no_match_code = no_match_code)
-}
+magerman_detect_legal_form_end <- (function(fun, args) {
+    .fun <- fun; formals(.fun)[names(args)] <- args; return(.fun)
+})(detect_patterns, alist(patterns = magerman_patterns_legal_form_end
+                        , patterns_type = "ends"
+                        , patterns_codes_col = 3
+                        , return_only_codes = FALSE
+                        , return_only_first_detected_code = TRUE
+                        , patterns_codes = NULL
+                        , no_match_code = NULL
+                        , merge_existing_codes = "replace_empty"
+                        , output_codes_col_name = "{col_name_}legal_form"))
 
 
 
+
+
+## formals(magerman_detect_legal_form_end) <-
+##     c(alist(
+##         patterns = magerman_patterns_legal_form_end
+##       , patterns_type = "ends"
+##       , patterns_codes_col = 3
+##       , return_only_codes = FALSE
+##       , return_only_first_detected_code = TRUE
+##       , patterns_codes = NULL
+##       , no_match_code = NULL
+##       , merge_existing_codes = "replace_empty"
+##       , output_codes_col_name = "{col_name_}legal_form")
+##       formals(detect_patterns)
+##     , )
+
+## names(c(formals(detect_patterns), ))
+
+## formals(magerman_detect_legal_form_end) <-
+##     inset_formals(
+##         formals(detect_patterns)
+##       , alist(
+##             patterns = magerman_patterns_legal_form_end
+##           , patterns_type = "ends"
+##           , patterns_codes_col = 3
+##           , return_only_codes = FALSE
+##           , return_only_first_detected_code = TRUE
+##           , patterns_codes = NULL
+##           , no_match_code = NULL
+##           , merge_existing_codes = "replace_empty"
+##           , output_codes_col_name = "{col_name_}legal_form"))
+
+
+## ##' Detects legal form
+## ##' @param x table
+## ##' @param return_only_codes same as in `detect_patterns`
+## ##' @param patterns_codes same as in `detect_patterns`
+## ##' @param no_match_code same as in `detect_patterns`
+## ##' @param ... 
+## ##' @inheritDotParams detect_patterns
+## ##' @return Harmonized table
+## ##'
+## ##' @md
+## ##' @export
+## magerman_detect_legal_form_end <- function(x
+##                                          , return_only_codes = FALSE
+##                                          , patterns_codes = NULL
+##                                          , no_match_code = NULL
+##                                          , merge_existing_codes = "replace_empty"
+##                                          , output_codes_col_name = "{col_name_}legal_form"
+##                                          , ...) {
+##     detect_patterns(x
+##                   , magerman_patterns_legal_form_end
+##                   , patterns_codes_col = 3
+##                   , patterns_codes = patterns_codes
+##                   , patterns_type = "ends"
+##                   , output_codes_col_name = output_codes_col_name
+##                   , return_only_first_detected_code = TRUE
+##                   , merge_existing_codes = merge_existing_codes
+##                   , return_only_codes = return_only_codes
+##                   , no_match_code = no_match_code
+##                   , ...)
+## }
+
+
+
+
+
+## ##' Replaces legal form
+## ##' @param x table
+## ##' @inheritDotParams harmonize_options
+## ##' @return Harmonized table
+## ##'
+## ##' @md
+## ##' @export
+## magerman_replace_legal_form_end <- function(x, ...) {
+##     replace_patterns(x
+##                    , patterns = magerman_patterns_legal_form_end
+##                    , patterns_type = "ends"
+##                    , ...)
+## }
 
 
 ##' Replaces legal form
-##' @param x table
+##' @inherit replace_patterns params return
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
 ##'
 ##' @md
 ##' @export
-magerman_replace_legal_form_end <- function(x, ...) {
-    replace_patterns(x
-                   , patterns = magerman_patterns_legal_form_end
-                   , patterns_type = "ends")
-}
+magerman_replace_legal_form_end <- (function(fun, args) {
+    .fun <- fun; formals(.fun)[names(args)] <- args; return(.fun)
+})(replace_patterns, alist(
+                         patterns = magerman_patterns_legal_form_end
+                       , patterns_type = "ends"
+                     ))
+
+
+
 
 ##' Detects legal form
 ##' @param x table
-##' @inheritDotParams harmonize_options
+##' @param ... 
+##' @param output_codes_col_name Same as in
+##' @inheritDotParams detect_patterns
 ##' @return Harmonzed table
 ##'
 ##' @md
 ##' @export
 magerman_detect_legal_form_beginning <- function(x
+                                               , patterns = data.table(pattern = "KABUSHIKI KAISHA"
+                                                                     , legal.form = "KAISHA")
                                                , ...
                                                , output_codes_col_name = "{col_name_}legal_form") {
     detect_patterns(x
-                  , patterns = data.table(pattern = "KABUSHIKI KAISHA"
-                                        , legal.form = "KAISHA")
+                  , patterns = patterns
                   , patterns_type = "begins"
                   , merge_existing_codes = "replace_empty"
                   , return_only_first_detected_code = TRUE

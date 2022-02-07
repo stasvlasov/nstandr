@@ -6,22 +6,50 @@
 \usage{
 magerman_detect_legal_form_end(
   x,
-  return_only_codes = FALSE,
+  patterns = magerman_patterns_legal_form_end,
+  patterns_col = 1,
+  patterns_codes_col = 3,
+  patterns_type = "ends",
+  patterns_type_col = NULL,
   patterns_codes = NULL,
+  output_codes_col_name = "{col_name_}legal_form",
+  codes_omitted_rows_value = NULL,
   no_match_code = NULL,
   merge_existing_codes = "replace_empty",
-  output_codes_col_name = "{col_name_}legal_form",
+  return_only_codes = FALSE,
+  return_only_first_detected_code = TRUE,
+  return_merge_codes_description = FALSE,
   ...
 )
 }
 \arguments{
-\item{x}{table}
+\item{x}{Vector or table to detect in.}
 
-\item{return_only_codes}{same as in \code{detect_patterns}}
+\item{patterns}{Accepts both vector or table. If patterns it is table can also include replacements column.}
 
-\item{patterns_codes}{same as in \code{detect_patterns}}
+\item{patterns_col}{If patterns is a table this specifies which column to use. Default is 1.}
 
-\item{no_match_code}{same as in \code{detect_patterns}}
+\item{patterns_codes_col}{If patterns is table which column to use as codes column. Default is 2.}
+
+\item{patterns_type}{Specifies kind(s) of patterns. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are:}
+
+\item{patterns_type_col}{Column in patterns table where you can specify types of patterns for each pattern. If set then \code{patterns.type} is ignored. Default is NULL.}
+
+\item{patterns_codes}{If provided use it as codes. Should be the same length as patterns. Default is NULL.}
+
+\item{output_codes_col_name}{If provided use it as a name for codes column (new if it does not exist or the one to update) in results.}
+
+\item{codes_omitted_rows_value}{If \code{rows} is set. Use this value to fill the omitted rows. When we update existing codes column Default is NULL which means that we use initial codes values for omitted rows. If there is no codes col to update omited rows will be filled with NA.}
+
+\item{no_match_code}{If provided code records that did not get any match with it.}
+
+\item{merge_existing_codes}{Whether to merge newly detected codes with existing. Options are:}
+
+\item{return_only_codes}{If toggled on then just return codes vector.}
+
+\item{return_only_first_detected_code}{If TRUE then return only codes for the first detected pattern. If FALSE return list of all matched codes. Default is TRUE. (Currently does affect performance)}
+
+\item{return_merge_codes_description}{Return description of choices for \code{merge_existing_codes} paramenter.}
 
 \item{...}{
   Arguments passed on to \code{\link[=harmonize_options]{harmonize_options}}
@@ -49,3 +77,7 @@ Harmonized table
 \description{
 Detects legal form
 }
+\seealso{
+detect_patterns
+}
+\concept{magerman}

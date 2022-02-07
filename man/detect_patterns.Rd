@@ -37,7 +37,7 @@ detect_patterns(
 
 \item{patterns_codes}{If provided use it as codes. Should be the same length as patterns. Default is NULL.}
 
-\item{output_codes_col_name}{}
+\item{output_codes_col_name}{If provided use it as a name for codes column (new if it does not exist or the one to update) in results.}
 
 \item{codes_omitted_rows_value}{If \code{rows} is set. Use this value to fill the omitted rows. When we update existing codes column Default is NULL which means that we use initial codes values for omitted rows. If there is no codes col to update omited rows will be filled with NA.}
 
@@ -48,6 +48,8 @@ detect_patterns(
 \item{return_only_codes}{If toggled on then just return codes vector.}
 
 \item{return_only_first_detected_code}{If TRUE then return only codes for the first detected pattern. If FALSE return list of all matched codes. Default is TRUE. (Currently does affect performance)}
+
+\item{return_merge_codes_description}{Return description of choices for \code{merge_existing_codes} paramenter.}
 
 \item{...}{
   Arguments passed on to \code{\link[=harmonize_options]{harmonize_options}}
@@ -68,23 +70,12 @@ detect_patterns(
     \item{\code{append_output_copy}}{Whether to append a copy of result vector to \code{x} object}
     \item{\code{output_copy_col_name}}{How the append copy wiil be named}
   }}
-
-\item{codes_col_name}{If provided use it as a name for codes column (new if it does not exist or the one to update) in results.}
-
-\item{codes_col_name_suffix}{If \code{codes_col_name} is not provided use this suffix to append to \code{col} name or \code{x_atomic_name}  (see\code{harmonize_options}).}
 }
 \value{
 The updated \code{x} table with codes column or just codes if \code{return_only_codes} is set.
 }
 \description{
 Codes strings (e.g., organizational names) based on certain patterns
-
-\itemize{
-\item replace_all - Replace everything (entire column) with new codes.
-\item replace_empty - Code only records (i.e., rows) for which existing codes are empty (i.e., empty string, NA, empty list)
-\item append_to_existing - Merge with existing codes appending new ones to the end
-\item prepend_to_existing - Merge with existing codes prepending new ones to the front
-}
 
 \itemize{
 \item fixed  -  Match pattern string as it is within the target vector
@@ -95,5 +86,12 @@ Codes strings (e.g., organizational names) based on certain patterns
 \item exact  -  Match pattern string exactly (i.e., match equal strings)
 \item trim_exact  -  Match pattern string exactly (i.e., match equal strings) ignoring surrounding white-spaces
 \item regex  -  Match regex pattern
+}
+
+\itemize{
+\item replace_all - Replace everything (entire column) with new codes.
+\item replace_empty - Code only records (i.e., rows) for which existing codes are empty (i.e., empty string, NA, empty list)
+\item append_to_existing - Merge with existing codes appending new ones to the end
+\item prepend_to_existing - Merge with existing codes prepending new ones to the front
 }
 }
