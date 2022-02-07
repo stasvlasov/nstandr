@@ -1,267 +1,5 @@
 ## -------->>  [[file:../harmonizer.src.org::*Characters][Characters:1]]
-##' @eval attr(magerman_detect_characters, "description")
-##' @param x table
-##' @param output_codes_col_name Same as in `detect_patterns` (see below)
-##' @inheritDotParams detect_patterns
-##' @return coded table
-##'
-##' @export
-magerman_detect_characters <- function(x
-           , output_codes_col_name = "characters_cleaning_candidates"
-           , ...) {
-        patterns <- c("\\{.+\\}", "propriety coded characters {xxx}"
-                    , "\\[0.+\\]", "propriety coded characters [0xxx]"
-                    , "\\(.+\\)", "propriety coded characters (xxx)"
-                    , "&.+;", "sgml coded characters"
-                    , "<.+>", "html coded characters") |>
-            matrix(byrow = TRUE, ncol = 2) |>
-            data.frame()
-        detect_patterns(x
-                      , patterns                      
-                      , patterns_type = "regex"
-                      , output_codes_col_name = output_codes_col_name
-                      , ...)
-    }
-
-attr(magerman_detect_characters, "description") <-
-    "Detect candidates for characters that need to be cleaned"
-## --------<<  Characters:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*magerman.remove.html.codes][magerman.remove.html.codes:1]]
-##' Removes html codes
-##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return harmonized table
-##'
-##' @md
-##' @export
-magerman_remove_html_codes <- function(x, ...) {
-    replace_patterns(x
-        , patterns = "<BR>"
-        , replacements = " ")
-}
-## --------<<  magerman.remove.html.codes:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*magerman.replace.sgml.characters][magerman.replace.sgml.characters:1]]
-##' Replaces sgml characters. Accept both vector and table and return either vector or a table
-##' @param x table
-##' @inheritDotParams replace_patterns
-##' @return Harmonized table
-##'
-##' @md
-##' @export
-magerman_replace_sgml_characters <- function(x, ...) {
-    replace_patterns(x, magerman_patterns_sgml_characters)
-}
-## --------<<  magerman.replace.sgml.characters:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*magerman.replace.proprietary.characters][magerman.replace.proprietary.characters:1]]
-##' Replaces proprietary characters
-##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
-##'
-##' @md
-##' @export
-magerman_replace_proprietary_characters <- function(x, ...) {
-    replace_patterns(x, magerman_patterns_proprietary_characters)
-}
-## --------<<  magerman.replace.proprietary.characters:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*magerman.replace.accented.characters][magerman.replace.accented.characters:1]]
-##' Replaces accented characters
-##'
-##' Assumes that all characters are in caps.
-##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
-##'
-##' @md
-##' @export
-magerman_replace_accented_characters <- function(x, ...) {
-    replace_patterns(x, magerman_patterns_accented_characters)
-}
-## --------<<  magerman.replace.accented.characters:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*magerman.remove.special.characters][magerman.remove.special.characters:1]]
-##' Removes special characters. I.e., everything that is not:
-## A-Z; 0-9; “-“; “+”; “’”; “””; “#”; “*”;“@”; “!”; “?”; “/”; “&”; “(“; “)”; “:”; “;”; “,”; “.”; “ “
-##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
-##'
-##' @md
-##' @export
-magerman_remove_special_characters <- function(x, ...) {
-    replace_patterns(x
-                   , "[^A-Z0-9\\-+'\"#*;@!?/&():;,. ]"
-                   , patterns_type = "regex")
-}
-## --------<<  magerman.remove.special.characters:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.spaces][magerman.remove.double.spaces:1]]
-##' Removes double spaces
-##' @param x table
-##' @inheritDotParams replace_patterns
-##' @return Harmonized table
-##'
-##' @export
-magerman_remove_double_spaces <- function(x, ...) {
-    replace_patterns(x
-        , "\\s+"
-        , replacements = " "
-        , patterns_type = "regex")
-}
-## --------<<  magerman.remove.double.spaces:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:1]]
-##' Removes double quotation irregularities
-##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
-##'
-##' @export
-magerman_remove_double_quotation_marks_irregularities <- function(x, ...) {
-    replace_patterns(x
-        , patterns = c("^\"\"\\s(.*)\"$", "^\"(.*)\\s\"\"$")
-        , replacements = c("\"\"$1\"", "\"$1\"\"")
-        , patterns_type = "regex")
-}
-## --------<<  magerman.remove.double.quotation.marks.*:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:3]]
-##' Removes double quotation irregularities
-##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
-##'
-##' @md
-##' @export
-magerman_remove_double_quotation_marks_beginning_end <- function(x, ...) {
-    replace_patterns(x
-        , patterns = "^\"\"((?:(?!\"\").)*)\"\"$"
-        , replacements = "$1"
-        , patterns_type = "regex")
-}
-## --------<<  magerman.remove.double.quotation.marks.*:3 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*magerman.remove.non.alphanumeric.*][magerman.remove.non.alphanumeric.*:1]]
-##' Removes non alphanumeric characters
-##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
-##'
-##' @export
-magerman_remove_non_alphanumeric_at_the_beginning <- function(x, ...) {
-    replace_patterns(x
-        , patterns = "^[^A-Z0-9\"@('#!*/]+"
-        , patterns_type = "regex")
-}
-
-##' Removes non alphanumeric characters
-##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
-##'
-##' @md
-##' @export
-magerman_remove_non_alphanumeric_at_the_end <- function(x, ...) {
-    replace_patterns(x
-        , patterns = "[^A-Z0-9.'\")]+$"
-        , patterns_type = "regex")
-}
-## --------<<  magerman.remove.non.alphanumeric.*:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:1]]
-##' Detects comma period irregularities
-##' @param x table
-##' @param output_codes_col_name Same as in `detect_patterns`
-##' @inheritDotParams detect_patterns
-##' @return Harmonized table
-##'
-##' @export
-magerman_detect_comma_period_irregularities <- function(x,
-                                                        output_codes_col_name = "comma.period.irregularities.candidates",
-                                                        ...) {
-    patterns <- 
-        c(",([^\\s])", "Patterns with comma not followed by space"
-        , "\\s,", "Patterns with comma preceded by space"
-        , "([^A-Za-z0-9])\\.", "Patterns with period not preceded by a letter or digit"
-          ) |>
-        matrix(byrow = TRUE, ncol = 2) |>
-        data.frame()
-    detect_patterns(x
-                  , patterns
-                  , patterns_type = "regex"
-                  , output_codes_col_name = output_codes_col_name
-                    , ...)
-}
-
-##' Replaces comma period irregularities
-##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
-##'
-##' @export
-magerman_replace_comma_period_irregularities_all <- function(x, ...) {
-    patterns <- c(
-        ",([^\\s])", ", $1",
-        "\\s,", ",",
-        "([^A-Za-z0-9])\\.", "$1"
-    ) |>
-        matrix(byrow = TRUE, ncol = 2) |>
-        data.frame()
-    replace_patterns(x
-                   , patterns
-                   , patterns_type = "regex"
-                     )
-}
-## --------<<  magerman.replace.comma.period.irregularities.*:1 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:3]]
-##' Replaces comma period irregularities
-##' @param x object
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
-##'
-##' @export
-magerman_replace_comma_period_irregularities <- function(x, ...) {
-    patterns <- 
-        list(magerman_patterns_comma_followed_by_space
-           , magerman_patterns_comma_preceded_by_space
-           , magerman_patterns_periods) |>
-        data.table::rbindlist()
-    replace_patterns(x, patterns, patterns_type_col = 3)
-}
-## --------<<  magerman.replace.comma.period.irregularities.*:3 ends here
-
-
-
-## -------->>  [[file:../harmonizer.src.org::*Detect and replace legal forms][Detect and replace legal forms:1]]
-##' Detects legal form
-##' 
+##' @eval attr(magerman_detect_characters, "@title")
 ##' @inherit detect_patterns params return
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
@@ -270,104 +8,26 @@ magerman_replace_comma_period_irregularities <- function(x, ...) {
 ##'
 ##' @md
 ##' @export
-magerman_detect_legal_form_end <- (function(fun, args) {
-    .fun <- fun; formals(.fun)[names(args)] <- args; return(.fun)
-})(detect_patterns, alist(patterns = magerman_patterns_legal_form_end
-                        , patterns_type = "ends"
-                        , patterns_codes_col = 3
-                        , return_only_codes = FALSE
-                        , return_only_first_detected_code = TRUE
-                        , patterns_codes = NULL
-                        , no_match_code = NULL
-                        , merge_existing_codes = "replace_empty"
-                        , output_codes_col_name = "{col_name_}legal_form"))
+magerman_detect_characters <- make_alias(detect_patterns
+                                       , patterns =
+                                             c("\\{.+\\}", "propriety coded characters {xxx}"
+                                             , "\\[0.+\\]", "propriety coded characters [0xxx]"
+                                             , "\\(.+\\)", "propriety coded characters (xxx)"
+                                             , "&.+;", "sgml coded characters"
+                                             , "<.+>", "html coded characters") |>
+                                             matrix(byrow = TRUE, ncol = 2) |>
+                                             data.frame()
+                                       , patterns_type = "regex"
+                                       , output_codes_col_name = "characters_cleaning_candidates")
+
+attr(magerman_detect_characters, "@title") <-
+    "Detect candidates for characters that need to be cleaned"
+## --------<<  Characters:1 ends here
 
 
 
-
-
-## formals(magerman_detect_legal_form_end) <-
-##     c(alist(
-##         patterns = magerman_patterns_legal_form_end
-##       , patterns_type = "ends"
-##       , patterns_codes_col = 3
-##       , return_only_codes = FALSE
-##       , return_only_first_detected_code = TRUE
-##       , patterns_codes = NULL
-##       , no_match_code = NULL
-##       , merge_existing_codes = "replace_empty"
-##       , output_codes_col_name = "{col_name_}legal_form")
-##       formals(detect_patterns)
-##     , )
-
-## names(c(formals(detect_patterns), ))
-
-## formals(magerman_detect_legal_form_end) <-
-##     inset_formals(
-##         formals(detect_patterns)
-##       , alist(
-##             patterns = magerman_patterns_legal_form_end
-##           , patterns_type = "ends"
-##           , patterns_codes_col = 3
-##           , return_only_codes = FALSE
-##           , return_only_first_detected_code = TRUE
-##           , patterns_codes = NULL
-##           , no_match_code = NULL
-##           , merge_existing_codes = "replace_empty"
-##           , output_codes_col_name = "{col_name_}legal_form"))
-
-
-## ##' Detects legal form
-## ##' @param x table
-## ##' @param return_only_codes same as in `detect_patterns`
-## ##' @param patterns_codes same as in `detect_patterns`
-## ##' @param no_match_code same as in `detect_patterns`
-## ##' @param ... 
-## ##' @inheritDotParams detect_patterns
-## ##' @return Harmonized table
-## ##'
-## ##' @md
-## ##' @export
-## magerman_detect_legal_form_end <- function(x
-##                                          , return_only_codes = FALSE
-##                                          , patterns_codes = NULL
-##                                          , no_match_code = NULL
-##                                          , merge_existing_codes = "replace_empty"
-##                                          , output_codes_col_name = "{col_name_}legal_form"
-##                                          , ...) {
-##     detect_patterns(x
-##                   , magerman_patterns_legal_form_end
-##                   , patterns_codes_col = 3
-##                   , patterns_codes = patterns_codes
-##                   , patterns_type = "ends"
-##                   , output_codes_col_name = output_codes_col_name
-##                   , return_only_first_detected_code = TRUE
-##                   , merge_existing_codes = merge_existing_codes
-##                   , return_only_codes = return_only_codes
-##                   , no_match_code = no_match_code
-##                   , ...)
-## }
-
-
-
-
-
-## ##' Replaces legal form
-## ##' @param x table
-## ##' @inheritDotParams harmonize_options
-## ##' @return Harmonized table
-## ##'
-## ##' @md
-## ##' @export
-## magerman_replace_legal_form_end <- function(x, ...) {
-##     replace_patterns(x
-##                    , patterns = magerman_patterns_legal_form_end
-##                    , patterns_type = "ends"
-##                    , ...)
-## }
-
-
-##' Replaces legal form
+## -------->>  [[file:../harmonizer.src.org::*magerman.remove.html.codes][magerman.remove.html.codes:1]]
+##' @eval attr(magerman_remove_html_codes, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
@@ -376,90 +36,406 @@ magerman_detect_legal_form_end <- (function(fun, args) {
 ##'
 ##' @md
 ##' @export
-magerman_replace_legal_form_end <- (function(fun, args) {
-    .fun <- fun; formals(.fun)[names(args)] <- args; return(.fun)
-})(replace_patterns, alist(
-                         patterns = magerman_patterns_legal_form_end
-                       , patterns_type = "ends"
-                     ))
+magerman_remove_html_codes <- make_alias(replace_patterns
+                                       , patterns = "<BR>"
+                                       , replacements = " ")
+
+
+attr(magerman_remove_html_codes, "@title") <-
+    "Removes html codes"
+## --------<<  magerman.remove.html.codes:1 ends here
 
 
 
-
-##' Detects legal form
-##' @param x table
-##' @param ... 
-##' @param output_codes_col_name Same as in
-##' @inheritDotParams detect_patterns
-##' @return Harmonzed table
-##'
-##' @md
-##' @export
-magerman_detect_legal_form_beginning <- function(x
-                                               , patterns = data.table(pattern = "KABUSHIKI KAISHA"
-                                                                     , legal.form = "KAISHA")
-                                               , ...
-                                               , output_codes_col_name = "{col_name_}legal_form") {
-    detect_patterns(x
-                  , patterns = patterns
-                  , patterns_type = "begins"
-                  , merge_existing_codes = "replace_empty"
-                  , return_only_first_detected_code = TRUE
-                  , output_codes_col_name = output_codes_col_name)
-}
-
-##' Replaces legal form
-##' @param x table
+## -------->>  [[file:../harmonizer.src.org::*magerman.replace.sgml.characters][magerman.replace.sgml.characters:1]]
+##' @eval attr(magerman_replace_sgml_characters, "@title")
+##' @inherit replace_patterns params return
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
 ##'
 ##' @md
 ##' @export
-magerman_replace_legal_form_beginning <- function(x, ...) {
-    replace_patterns(x
-                   , patterns = "KABUSHIKI KAISHA"
-                   , patterns_type = "begins"
-                    , merge_existing_codes = "replace_empty")
-}
+magerman_replace_sgml_characters <- make_alias(replace_patterns
+                                             , patterns = magerman_patterns_sgml_characters)
+
+attr(magerman_replace_sgml_characters, "@title") <-
+    "Replaces sgml characters"
+## --------<<  magerman.replace.sgml.characters:1 ends here
 
 
 
-##' Detects legal form
-##' @param x table
+## -------->>  [[file:../harmonizer.src.org::*magerman.replace.proprietary.characters][magerman.replace.proprietary.characters:1]]
+##' @eval attr(magerman_replace_proprietary_characters, "@title")
+##' @inherit replace_patterns params return
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
 ##'
 ##' @md
 ##' @export
-magerman_detect_legal_form_middle <- function(x
-                                            , output_codes_col_name = "{col_name_}legal_form"
-                                            , ...) {
-    detect_patterns(x
-                  , patterns = magerman_patterns_legal_form_middle
-                  , patterns_codes_col = 3
-                  , patterns_type = "fixed"
-                  , return_only_first_detected_code = TRUE
-                  , merge_existing_codes = "replace_empty"
-                  , output_codes_col_name = output_codes_col_name)
-}
+magerman_replace_proprietary_characters <- make_alias(replace_patterns
+                                                    , patterns = magerman_patterns_proprietary_characters)
 
-##' Replaces legal form
-##' @param x table
+attr(magerman_replace_proprietary_characters, "@title") <-
+    "Replaces proprietary characters"
+## --------<<  magerman.replace.proprietary.characters:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*magerman.replace.accented.characters][magerman.replace.accented.characters:1]]
+##' @eval attr(magerman_replace_accented_characters, "@title")
+##' @inherit replace_patterns params return
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
 ##'
 ##' @md
 ##' @export
-magerman_replace_legal_form_middle <- function(x, ...) {
-    replace_patterns(x
-                   , patterns = magerman_patterns_legal_form_middle
-                   , patterns_type = "fixed")
-}
+magerman_replace_accented_characters <- make_alias(replace_patterns
+                                                 , patterns = magerman_patterns_accented_characters)
+
+attr(magerman_replace_accented_characters, "@title") <-
+    "Replaces accented characters"
+## --------<<  magerman.replace.accented.characters:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*magerman.remove.special.characters][magerman.remove.special.characters:1]]
+##' @eval attr(magerman_remove_special_characters, "@title")
+##' @description Removes everything that is not: A-Z; 0-9; “-“; “+”; “’”; “””; “#”;
+##' “*”;“@”; “!”; “?”; “/”; “&”; “(“; “)”; “:”; “;”; “,”; “.”; “ “
+##' @inherit replace_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
+##'
+##' @md
+##' @export
+magerman_remove_special_characters <- make_alias(replace_patterns
+                                               , patterns = "[^A-Z0-9\\-+'\"#*;@!?/&():;,. ]"
+                                               , patterns_type = "regex")
+
+attr(magerman_remove_special_characters, "@title") <-
+    "Removes special characters"
+## --------<<  magerman.remove.special.characters:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.spaces][magerman.remove.double.spaces:1]]
+##' @eval attr(magerman_remove_double_spaces, "@title")
+##' @inherit replace_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
+##'
+##' @md
+##' @export
+magerman_remove_double_spaces <- make_alias(replace_patterns
+                                          , patterns = "\\s+"
+                                          , replacements = " "
+                                          , patterns_type = "regex")
+
+attr(magerman_remove_double_spaces, "@title") <-
+    "Removes double spaces"
+## --------<<  magerman.remove.double.spaces:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:1]]
+##' @eval attr(magerman_remove_double_quotation_marks_irregularities, "@title")
+##' @inherit replace_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
+##'
+##' @md
+##' @export
+magerman_remove_double_quotation_marks_irregularities <- make_alias(replace_patterns
+                                                                  , patterns = c("^\"\"\\s(.*)\"$", "^\"(.*)\\s\"\"$")
+                                                                  , replacements = c("\"\"$1\"", "\"$1\"\"")
+                                                                  , patterns_type = "regex")
+
+attr(magerman_remove_double_quotation_marks_irregularities, "@title") <-
+    "Removes double quotation irregularities"
+## --------<<  magerman.remove.double.quotation.marks.*:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:3]]
+##' @eval attr(magerman_remove_double_quotation_marks_beginning_end, "@title")
+##' @inherit replace_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
+##'
+##' @md
+##' @export
+magerman_remove_double_quotation_marks_beginning_end <- make_alias(replace_patterns
+                                                                 , patterns = "^\"\"((?:(?!\"\").)*)\"\"$"
+                                                                 , replacements = "$1"
+                                                                 , patterns_type = "regex")
+
+attr(magerman_remove_double_quotation_marks_beginning_end, "@title") <-
+    "Removes double quotation irregularities"
+## --------<<  magerman.remove.double.quotation.marks.*:3 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*magerman.remove.non.alphanumeric.*][magerman.remove.non.alphanumeric.*:1]]
+##' @eval attr(magerman_remove_non_alphanumeric_at_the_beginning, "@title")
+##' @inherit replace_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
+##'
+##' @md
+##' @export
+magerman_remove_non_alphanumeric_at_the_beginning <- make_alias(replace_patterns
+                                                              , patterns = "^[^A-Z0-9\"@('#!*/]+"
+                                                              , patterns_type = "regex")
+
+attr(magerman_remove_non_alphanumeric_at_the_beginning, "@title") <-
+    "Removes non alphanumeric characters"
+
+
+##' @eval attr(magerman_remove_non_alphanumeric_at_the_end, "@title")
+##' @inherit replace_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
+##'
+##' @md
+##' @export
+magerman_remove_non_alphanumeric_at_the_end <- make_alias(replace_patterns
+                                                        , patterns = "[^A-Z0-9.'\")]+$"
+                                                        , patterns_type = "regex")
+
+attr(magerman_remove_non_alphanumeric_at_the_end, "@title") <-
+    "Removes non alphanumeric characters"
+## --------<<  magerman.remove.non.alphanumeric.*:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:1]]
+##' @eval attr(magerman_detect_comma_period_irregularities, "@title")
+##' @inherit detect_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso detect_patterns
+##'
+##' @md
+##' @export
+magerman_detect_comma_period_irregularities <- make_alias(detect_patterns
+                                                        , patterns = c(",([^\\s])", "Patterns with comma not followed by space"
+                                                                     , "\\s,", "Patterns with comma preceded by space"
+                                                                     , "([^A-Za-z0-9])\\.", "Patterns with period not preceded by a letter or digit") |>
+                                                              matrix(byrow = TRUE, ncol = 2) |>
+                                                              data.frame()
+                                                        , patterns_type = "regex"
+                                                        , output_codes_col_name = "comma.period.irregularities.candidates")
+
+attr(magerman_detect_comma_period_irregularities, "@title") <-
+    "Detects comma period irregularities"
+
+
+
+##' @eval attr(magerman_replace_comma_period_irregularities_all, "@title")
+##' @inherit replace_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
+##'
+##' @md
+##' @export
+magerman_replace_comma_period_irregularities_all <- make_alias(replace_patterns
+                                                             , patterns = c(",([^\\s])", ", $1"
+                                                                          , "\\s,", ","
+                                                                          , "([^A-Za-z0-9])\\.", "$1") |>
+                                                                   matrix(byrow = TRUE, ncol = 2) |>
+                                                                   data.frame()
+                                                             , patterns_type = "regex")
+
+attr(magerman_replace_comma_period_irregularities_all, "@title") <-
+    "Replaces comma period irregularities"
+## --------<<  magerman.replace.comma.period.irregularities.*:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:3]]
+##' @eval attr(magerman_replace_comma_period_irregularities, "@title")
+##' @inherit replace_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
+##'
+##' @md
+##' @export
+magerman_replace_comma_period_irregularities <- make_alias(replace_patterns
+                                                         , patterns = list(magerman_patterns_comma_followed_by_space
+                                                                         , magerman_patterns_comma_preceded_by_space
+                                                                         , magerman_patterns_periods) |>
+                                                               data.table::rbindlist()
+                                                         , patterns_type_col = 3)
+
+attr(magerman_replace_comma_period_irregularities, "@title") <-
+    "Replaces comma period irregularities"
+## --------<<  magerman.replace.comma.period.irregularities.*:3 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*Detect and replace legal forms][Detect and replace legal forms:1]]
+##' @eval attr(magerman_detect_legal_form_end, "@title")
+##' @inherit detect_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso detect_patterns
+##'
+##' @md
+##' @export
+magerman_detect_legal_form_end <- make_alias(detect_patterns
+                                           , patterns = magerman_patterns_legal_form_end
+                                           , patterns_type = "ends"
+                                           , patterns_codes_col = 3
+                                           , return_only_codes = FALSE
+                                           , return_only_first_detected_code = TRUE
+                                           , patterns_codes = NULL
+                                           , no_match_code = NULL
+                                           , merge_existing_codes = "replace_empty"
+                                           , output_codes_col_name = "{col_name_}legal_form")
+
+attr(magerman_detect_legal_form_end, "@title") <-
+    "Detects legal form"
 
 
 
 
-##' Detects legal form
+
+
+##' @eval attr(magerman_replace_legal_form_end, "@title")
+##' @inherit replace_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
+##'
+##' @md
+##' @export
+magerman_replace_legal_form_end <- make_alias(replace_patterns
+                                            , patterns = magerman_patterns_legal_form_end
+                                            , patterns_type = "ends")
+
+attr(magerman_replace_legal_form_end, "@title") <-
+    "Replaces legal form"
+
+
+
+
+
+
+##' @eval attr(magerman_detect_legal_form_beginning, "@title")
+##' @inherit detect_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso detect_patterns
+##'
+##' @md
+##' @export
+magerman_detect_legal_form_beginning <- make_alias(detect_patterns
+                                                 , patterns = data.table(pattern = "KABUSHIKI KAISHA"
+                                                                       , legal.form = "KAISHA")
+                                                 , patterns_type = "begins"
+                                                 , merge_existing_codes = "replace_empty"
+                                                 , return_only_first_detected_code = TRUE
+                                                 , output_codes_col_name = "{col_name_}legal_form")
+
+attr(magerman_detect_legal_form_beginning, "@title") <-
+    "Detects legal form"
+
+
+
+
+
+
+
+##' @eval attr(magerman_replace_legal_form_beginning, "@title")
+##' @inherit replace_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
+##'
+##' @md
+##' @export
+magerman_replace_legal_form_beginning <- make_alias(replace_patterns
+                                                  , patterns = "KABUSHIKI KAISHA"
+                                                  , patterns_type = "begins")
+
+attr(magerman_replace_legal_form_beginning, "@title") <-
+    "Replaces legal form"
+
+
+
+
+
+
+
+##' @eval attr(magerman_detect_legal_form_middle, "@title")
+##' @inherit detect_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso detect_patterns
+##'
+##' @md
+##' @export
+magerman_detect_legal_form_middle <- make_alias(detect_patterns
+                                              , patterns = magerman_patterns_legal_form_middle
+                                              , patterns_codes_col = 3
+                                              , patterns_type = "fixed"
+                                              , return_only_first_detected_code = TRUE
+                                              , merge_existing_codes = "replace_empty"
+                                              , output_codes_col_name = "{col_name_}legal_form")
+
+attr(magerman_detect_legal_form_middle, "@title") <-
+    "Detects legal form"
+
+
+
+
+##' @eval attr(magerman_replace_legal_form_middle, "@title")
+##' @inherit replace_patterns params return
+##' @inheritDotParams harmonize_options
+##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
+##'
+##' @md
+##' @export
+magerman_replace_legal_form_middle <- make_alias(replace_patterns
+                                               , patterns = magerman_patterns_legal_form_middle
+                                               , patterns_type = "fixed")
+
+attr(magerman_replace_legal_form_middle, "@title") <-
+    "Replace legal form"
+
+
+
+##' @eval attr(magerman_detect_legal_form, "@title")
 ##' @param x table
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
@@ -472,7 +448,11 @@ magerman_detect_legal_form <- function(x, ...) {
         magerman_detect_legal_form_middle()
 }
 
-##' Removes legal form
+
+attr(magerman_detect_legal_form, "@title") <-
+    "Detect legal form"
+
+##' @eval attr(magerman_remove_legal_form, "@title")
 ##' @param x table
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
@@ -491,7 +471,11 @@ magerman_remove_legal_form <- function(x, ...) {
         magerman_replace_legal_form_end()        
 }
 
-##' Removes legal form
+attr(magerman_remove_legal_form, "@title") <- "Removes legal form"
+
+
+
+##' @eval attr(magerman_remove_legal_form_and_clean, "@title")
 ##' @param x table
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
@@ -505,54 +489,68 @@ magerman_remove_legal_form_and_clean <- function(x, ...) {
             patterns_type = "regex"
         )
 }
+
+attr(magerman_remove_legal_form_and_clean, "@title") <- "Removes legal form"
 ## --------<<  Detect and replace legal forms:1 ends here
 
 
 
 ## -------->>  [[file:../harmonizer.src.org::*Common Words][Common Words:1]]
-##' Removes common words
-##' @param x table
+##' @eval attr(magerman_remove_common_words_at_the_end, "@title")
+##' @inherit replace_patterns params return
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
 ##'
 ##' @md
 ##' @export
-magerman_remove_common_words_at_the_end <- function(x, ...) {
-    replace_patterns(x
-        , patterns = magerman_patterns_common_words_at_the_end
-        , patterns_type = "ends")
-}
+magerman_remove_common_words_at_the_end <- make_alias(replace_patterns
+                                                    , patterns = magerman_patterns_common_words_at_the_end
+                                                    , patterns_type = "ends")
 
-##' Removes common words
-##' @param x table
+attr(magerman_remove_common_words_at_the_end, "@title") <-
+    "Removes common words"
+
+
+
+##' @eval attr(magerman_remove_common_words_at_the_beginning, "@title")
+##' @inherit replace_patterns params return
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
 ##'
 ##' @md
 ##' @export
-magerman_remove_common_words_at_the_beginning <- function(x, ...) {
-    replace_patterns(x
-        , patterns = magerman_patterns_common_words_at_the_beginning
-        , patterns_type = "begins")
-}
+magerman_remove_common_words_at_the_beginning <- make_alias(replace_patterns
+                                                          , patterns = magerman_patterns_common_words_at_the_beginning
+                                                          , patterns_type = "begins")
+
+attr(magerman_remove_common_words_at_the_beginning, "@title") <-
+    "Removes common words"
 
 
 
-##' Removes common words
-##' @param x table
+
+##' @eval attr(magerman_remove_common_words_anywhere, "@title")
+##' @inherit replace_patterns params return
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
 ##'
 ##' @md
 ##' @export
-magerman_remove_common_words_anywhere <- function(x, ...) {
-    replace_patterns(x
-        , patterns = magerman_patterns_common_words_anywhere
-        , patterns.type = "fixed")
-}
+magerman_remove_common_words_anywhere <- make_alias(replace_patterns
+                                                  , patterns = magerman_patterns_common_words_anywhere
+                                                  , patterns_type = "fixed")
+
+attr(magerman_remove_common_words_anywhere, "@title") <-
+    "Removes common words"
 
 
-##' Removes common words
+##' @eval attr(magerman_remove_common_words, "@title")
 ##' @param x table
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
@@ -565,67 +563,75 @@ magerman_remove_common_words <- function(x, ...) {
         magerman_remove_common_words_at_the_beginning() |>
         magerman_remove_common_words_anywhere()
 }
+
+attr(magerman_remove_common_words, "@title") <- "Removes common words"
 ## --------<<  Common Words:1 ends here
 
 
 
 ## -------->>  [[file:../harmonizer.src.org::*Spelling Variation][Spelling Variation:1]]
-##' Replaces spelling variation
-##' @param x table
+##' @eval attr(magerman_replace_spelling_variation, "@title")
+##' @inherit replace_patterns params return
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
 ##'
 ##' @md
 ##' @export
-magerman_replace_spelling_variation <- function(x, ...) {
-    replace_patterns(x, patterns = magerman_patterns_spelling_variation)
-}
+magerman_replace_spelling_variation <- make_alias(replace_patterns
+                                                , patterns = magerman_patterns_spelling_variation)
+
+attr(magerman_replace_spelling_variation, "@title") <-
+    "Replaces spelling variation"
 ## --------<<  Spelling Variation:1 ends here
 
 
 
 ## -------->>  [[file:../harmonizer.src.org::*Condensing][Condensing:1]]
-##' Condenses string
-##' @param x table
+##' @eval attr(magerman_condense, "@title")
+##' @inherit replace_patterns params return
 ##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
+##' @family magerman
+##' @seealso replace_patterns
 ##'
 ##' @md
 ##' @export
-magerman_condense <- function(x, ...) {
-    replace_patterns(x
-        , patterns = "[^a-zA-Z0-9]+"
-        , patterns_type = "regex")
-}
+magerman_condense <- make_alias(replace_patterns
+                              , patterns = "[^a-zA-Z0-9]+"
+                              , patterns_type = "regex")
+
+attr(magerman_condense, "@title") <-
+    "Condenses string"
 ## --------<<  Condensing:1 ends here
 
 
 
 ## -------->>  [[file:../harmonizer.src.org::*Umlaut Harmonization][Umlaut Harmonization:1]]
-##' Detects umlauts
-##' @param x table
-##' @param return_only_codes same as `detect_patterns`
-##' @param ... 
+##' @eval attr(magerman_detect_umlaut, "@title")
+##' @inherit detect_patterns params return
 ##' @inheritDotParams harmonize_options
-##' @return Coded table
+##' @return Harmonized table
+##' @family magerman
+##' @seealso detect_patterns
 ##'
 ##' @md
 ##' @export
-magerman_detect_umlaut <- function(x
-                                 , return_only_codes = FALSE
-                                 , output_codes_col_name = "{col_name_}has_umlaut"
-                                 , ...) {
-    detect_patterns(x
-                  , patterns = magerman_patterns_umlaut
-                  , patterns_type = "fixed"
-                  , patterns_codes = TRUE
-                  , no_match_code = FALSE
-                  , output_codes_col_name = output_codes_col_name
-                  , return_only_first_detected_code = TRUE
-                  , return_only_codes = return_only_codes)
-}
+magerman_detect_umlaut <- make_alias(detect_patterns
+                                   , patterns = magerman_patterns_umlaut
+                                   , patterns_type = "fixed"
+                                   , patterns_codes = TRUE
+                                   , no_match_code = FALSE
+                                   , output_codes_col_name = "{col_name_}has_umlaut"
+                                   , return_only_first_detected_code = TRUE
+                                   , return_only_codes = FALSE)
 
-##' Replaces Umlauts
+attr(magerman_detect_umlaut, "@title") <-
+    "Detects umlauts"
+
+
+##' @eval attr(magerman_replace_umlaut, "@title")
 ##' @param x Data
 ##' @param has_umlaut_col Column with logical values indicating weather a corresponding string has an umlaut. Default is NULL so it detects is automatically first
 ##' @param drop_has_umlaut_col Whether to drop `has_umlaut_col`. Default is FALSE
@@ -635,11 +641,11 @@ magerman_detect_umlaut <- function(x
 ##'
 ##' @md
 ##' @export
-magerman_replace_umlaut <- function(x,
-                                    has_umlaut_col = NULL,
-                                    drop_has_umlaut_col = TRUE,
-                                    replace_accented_characters = FALSE,
-                                    ...) {
+magerman_replace_umlaut <- function(x
+                                  , has_umlaut_col = NULL
+                                  , drop_has_umlaut_col = TRUE
+                                  , replace_accented_characters = FALSE
+                                  , ...) {
     ## get x vector...
     x_vector <- get_target(x)
     ## identify names with umlauts
@@ -648,7 +654,11 @@ magerman_replace_umlaut <- function(x,
             get_target(x, col = has_umlaut_col, output_placement = "replace_col")
         checkmate::assert_logical(has_umlaut)
         ## drop has_umlaut_col
-        if (isTRUE(drop_has_umlaut_col)) x[[has_umlaut_col]] <- NULL
+        if (isTRUE(drop_has_umlaut_col)) {
+            x[[has_umlaut_col]] <- NULL
+            ## make atomic just if only one col
+            if(x_width(x) == 1) x <- x[[1]]
+        }
     } else {
         replace_accented_characters <- TRUE
         has_umlaut <- 
@@ -697,6 +707,8 @@ magerman_replace_umlaut <- function(x,
         return(inset_target(x_vector, x))
     }
 }
+
+attr(magerman_replace_umlaut, "@title") <- "Replaces Umlauts"
 ## --------<<  Umlaut Harmonization:1 ends here
 
 

@@ -10,16 +10,15 @@ inset_formals <- function(formals_args, new_args) {
 }
 
 
-make_alias <- function(fun, new_formals_alist) {
-    default_formals <- formals(fun)
-    checkmate::assert_subset(names(new_formals_alist)
-                           , choices = names(default_formals)
+make_alias <- function(fun, ...) {
+    .fun <- fun
+    ## remove 1st and 2nd elemnts ('call' name and 'fun' arg)
+    args <- as.list(sys.call())[-(1:2)]
+    checkmate::assert_subset(names(args)
+                           , choices = names(formals(.fun))
                            , empty.ok = FALSE)
-    for (i in 1:length(new_formals_alist)) {
-        default_formals[names(new_formals_alist)[i]] <- new_formals_alist[i]
-    }
-    formals(fun) <- default_formals
-    return(fun)
+    formals(.fun)[names(args)] <- args
+    return(.fun)
 }
 ## --------<<  inset_formals:1 ends here
 

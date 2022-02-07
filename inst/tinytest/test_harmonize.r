@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*harmonize][harmonize:1]]
+## -------->>  [[file:../../harmonizer.src.org::*harmonize][harmonize:2]]
 dummy <- function(x, n) {
     for(i in 1:n) x <- sqrt(x)^2
     return(x)
@@ -41,6 +41,6 @@ expect_equal(
       0.974695003322457, 0.977121254719662, 0.979520696160547, 0.981893913672778, 
       0.984241474276968, 0.986563926799849, 0.988861802644424, 0.991135616519784, 
       0.993385867133122, 0.995613037846247, 0.997817597298775, 1))
-## --------<<  harmonize:1 ends here
+## --------<<  harmonize:2 ends here
 
 

@@ -7,35 +7,104 @@
 magerman_detect_legal_form_beginning(
   x,
   patterns = data.table(pattern = "KABUSHIKI KAISHA", legal.form = "KAISHA"),
-  ...,
-  output_codes_col_name = "{col_name_}legal_form"
+  patterns_col = 1,
+  patterns_codes_col = 2,
+  patterns_type = "begins",
+  patterns_type_col = NULL,
+  patterns_codes = NULL,
+  output_codes_col_name = "{col_name_}legal_form",
+  codes_omitted_rows_value = NULL,
+  no_match_code = NULL,
+  merge_existing_codes = "replace_empty",
+  return_only_codes = FALSE,
+  return_only_first_detected_code = TRUE,
+  return_merge_codes_description = FALSE,
+  ...
 )
 }
 \arguments{
-\item{x}{table}
+\item{x}{Vector or table to detect in.}
+
+\item{patterns}{Accepts both vector or table. If patterns it is table can also include replacements column.}
+
+\item{patterns_col}{If patterns is a table this specifies which column to use. Default is 1.}
+
+\item{patterns_codes_col}{If patterns is table which column to use as codes column. Default is 2.}
+
+\item{patterns_type}{Specifies kind(s) of patterns. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are:}
+
+\item{patterns_type_col}{Column in patterns table where you can specify types of patterns for each pattern. If set then \code{patterns.type} is ignored. Default is NULL.}
+
+\item{patterns_codes}{If provided use it as codes. Should be the same length as patterns. Default is NULL.}
+
+\item{output_codes_col_name}{If provided use it as a name for codes column (new if it does not exist or the one to update) in results.}
+
+\item{codes_omitted_rows_value}{If \code{rows} is set. Use this value to fill the omitted rows. When we update existing codes column Default is NULL which means that we use initial codes values for omitted rows. If there is no codes col to update omited rows will be filled with NA.}
+
+\item{no_match_code}{If provided code records that did not get any match with it.}
+
+\item{merge_existing_codes}{Whether to merge newly detected codes with existing. Options are:}
+
+\item{return_only_codes}{If toggled on then just return codes vector.}
+
+\item{return_only_first_detected_code}{If TRUE then return only codes for the first detected pattern. If FALSE return list of all matched codes. Default is TRUE. (Currently does affect performance)}
+
+\item{return_merge_codes_description}{Return description of choices for \code{merge_existing_codes} paramenter.}
 
 \item{...}{
-  Arguments passed on to \code{\link[=detect_patterns]{detect_patterns}}
+  Arguments passed on to \code{\link[=harmonize_options]{harmonize_options}}
   \describe{
-    \item{\code{patterns}}{Accepts both vector or table. If patterns it is table can also include replacements column.}
-    \item{\code{patterns_col}}{If patterns is a table this specifies which column to use. Default is 1.}
-    \item{\code{patterns_codes_col}}{If patterns is table which column to use as codes column. Default is 2.}
-    \item{\code{patterns_type}}{Specifies kind(s) of patterns. Default is "fixed" (calling code{\link[stringi]{stri_replace_all_fixed}}). Other options are:}
-    \item{\code{patterns_type_col}}{Column in patterns table where you can specify types of patterns for each pattern. If set then \code{patterns.type} is ignored. Default is NULL.}
-    \item{\code{patterns_codes}}{If provided use it as codes. Should be the same length as patterns. Default is NULL.}
-    \item{\code{codes_omitted_rows_value}}{If \code{rows} is set. Use this value to fill the omitted rows. When we update existing codes column Default is NULL which means that we use initial codes values for omitted rows. If there is no codes col to update omited rows will be filled with NA.}
-    \item{\code{no_match_code}}{If provided code records that did not get any match with it.}
-    \item{\code{merge_existing_codes}}{Whether to merge newly detected codes with existing. Options are:}
-    \item{\code{return_only_codes}}{If toggled on then just return codes vector.}
-    \item{\code{return_only_first_detected_code}}{If TRUE then return only codes for the first detected pattern. If FALSE return list of all matched codes. Default is TRUE. (Currently does affect performance)}
-    \item{\code{return_merge_codes_description}}{Return description of choices for \code{merge_existing_codes} paramenter.}
+    \item{\code{col}}{Column of interest (the one we need to harmonize) in the \code{x} object (if it is data.frame like).}
+    \item{\code{rows}}{Logical vector to filter records of interest. Default is NULL which means do not filter records.}
+    \item{\code{omitted_rows_value}}{If \code{rows} parameter is set then merge \code{omitted_rows_value} with the results (filtered by \code{rows}). Either single string or a character vector of length \code{nrow(x)}. If NULL (the default) then original values of \code{col} are merged with results.}
+    \item{\code{output_placement}}{Where to inset retults (harmonized vector) in the \code{x} object. Default options is 'replace_col' which overwrides the \code{col} in \code{x} with results. Other options:
+\itemize{
+\item 'omit' :: do not write results back to table (usually used when \code{append_output_copy} is set for temporary values)
+\item 'prepend_to_col' :: prepend to \code{col}
+\item 'append_to_col' :: append to \code{col}
+\item 'prepend_to_x' :: prepend to \code{x} data.frame like object
+\item 'append_to_x' :: append to \code{x} data.frame like object
+}}
+    \item{\code{x_atomic_name}}{If \code{x} is vector use this name for original column if it is in results. Default is "x". If \code{x} is table the name of \code{col} will be used.}
+    \item{\code{output_col_name}}{Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:}
+    \item{\code{append_output_copy}}{Whether to append a copy of result vector to \code{x} object}
+    \item{\code{output_copy_col_name}}{How the append copy wiil be named}
   }}
-
-\item{output_codes_col_name}{Same as in}
 }
 \value{
-Harmonzed table
+Harmonized table
 }
 \description{
 Detects legal form
 }
+\seealso{
+detect_patterns
+
+Other magerman: 
+\code{\link{magerman_condense}()},
+\code{\link{magerman_detect_characters}()},
+\code{\link{magerman_detect_comma_period_irregularities}()},
+\code{\link{magerman_detect_legal_form_end}()},
+\code{\link{magerman_detect_legal_form_middle}()},
+\code{\link{magerman_detect_umlaut}()},
+\code{\link{magerman_remove_common_words_anywhere}()},
+\code{\link{magerman_remove_common_words_at_the_beginning}()},
+\code{\link{magerman_remove_common_words_at_the_end}()},
+\code{\link{magerman_remove_double_quotation_marks_beginning_end}()},
+\code{\link{magerman_remove_double_quotation_marks_irregularities}()},
+\code{\link{magerman_remove_double_spaces}()},
+\code{\link{magerman_remove_html_codes}()},
+\code{\link{magerman_remove_non_alphanumeric_at_the_beginning}()},
+\code{\link{magerman_remove_non_alphanumeric_at_the_end}()},
+\code{\link{magerman_remove_special_characters}()},
+\code{\link{magerman_replace_accented_characters}()},
+\code{\link{magerman_replace_comma_period_irregularities_all}()},
+\code{\link{magerman_replace_comma_period_irregularities}()},
+\code{\link{magerman_replace_legal_form_beginning}()},
+\code{\link{magerman_replace_legal_form_end}()},
+\code{\link{magerman_replace_legal_form_middle}()},
+\code{\link{magerman_replace_proprietary_characters}()},
+\code{\link{magerman_replace_sgml_characters}()},
+\code{\link{magerman_replace_spelling_variation}()}
+}
+\concept{magerman}

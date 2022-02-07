@@ -4,10 +4,51 @@
 \alias{magerman_remove_double_quotation_marks_beginning_end}
 \title{Removes double quotation irregularities}
 \usage{
-magerman_remove_double_quotation_marks_beginning_end(x, ...)
+magerman_remove_double_quotation_marks_beginning_end(
+  x,
+  patterns = "^\\"\\"((?:(?!\\"\\").)*)\\"\\"$",
+  patterns_col = 1,
+  patterns_mode = "all",
+  patterns_mode_col = NULL,
+  patterns_type = "regex",
+  patterns_type_col = NULL,
+  patterns_replacements_col = 2,
+  replacements = "$1",
+  ...
+)
 }
 \arguments{
-\item{x}{table}
+\item{x}{Vector or table to harmonize.}
+
+\item{patterns}{Accepts both vector or table. If patterns is a
+table can also include replacements column.}
+
+\item{patterns_col}{If patterns is not a vector which column to
+use. Default is 1.}
+
+\item{patterns_mode}{Mode of matching. Could be one of c("all",
+"first", "last"). The default is "all" (it is 2x faster than
+"first" and "last" because of handy stri_replace_all_*
+functions). Also possible to pass a vector (same length as
+patterns)}
+
+\item{patterns_mode_col}{Column in patterns table with the mode of
+matching}
+
+\item{patterns_type}{Type of pattern for matching. Default is
+"fixed" (calling
+code{\link[stringi]{stri_replace_all_fixed}}). Other options
+are:}
+
+\item{patterns_type_col}{Column with the type of pattern in case
+when patterns should have different types}
+
+\item{patterns_replacements_col}{If patterns is not a vector and
+includes replacements which column to use for
+replacements. Default is 2.}
+
+\item{replacements}{If patterns does not have column with
+replacements provide it here.}
 
 \item{...}{
   Arguments passed on to \code{\link[=harmonize_options]{harmonize_options}}
@@ -35,3 +76,34 @@ Harmonized table
 \description{
 Removes double quotation irregularities
 }
+\seealso{
+replace_patterns
+
+Other magerman: 
+\code{\link{magerman_condense}()},
+\code{\link{magerman_detect_characters}()},
+\code{\link{magerman_detect_comma_period_irregularities}()},
+\code{\link{magerman_detect_legal_form_beginning}()},
+\code{\link{magerman_detect_legal_form_end}()},
+\code{\link{magerman_detect_legal_form_middle}()},
+\code{\link{magerman_detect_umlaut}()},
+\code{\link{magerman_remove_common_words_anywhere}()},
+\code{\link{magerman_remove_common_words_at_the_beginning}()},
+\code{\link{magerman_remove_common_words_at_the_end}()},
+\code{\link{magerman_remove_double_quotation_marks_irregularities}()},
+\code{\link{magerman_remove_double_spaces}()},
+\code{\link{magerman_remove_html_codes}()},
+\code{\link{magerman_remove_non_alphanumeric_at_the_beginning}()},
+\code{\link{magerman_remove_non_alphanumeric_at_the_end}()},
+\code{\link{magerman_remove_special_characters}()},
+\code{\link{magerman_replace_accented_characters}()},
+\code{\link{magerman_replace_comma_period_irregularities_all}()},
+\code{\link{magerman_replace_comma_period_irregularities}()},
+\code{\link{magerman_replace_legal_form_beginning}()},
+\code{\link{magerman_replace_legal_form_end}()},
+\code{\link{magerman_replace_legal_form_middle}()},
+\code{\link{magerman_replace_proprietary_characters}()},
+\code{\link{magerman_replace_sgml_characters}()},
+\code{\link{magerman_replace_spelling_variation}()}
+}
+\concept{magerman}

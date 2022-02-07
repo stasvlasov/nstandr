@@ -2,7 +2,7 @@
 % Please edit documentation in R/magerman.r
 \name{magerman_detect_legal_form}
 \alias{magerman_detect_legal_form}
-\title{Detects legal form}
+\title{Detect legal form}
 \usage{
 magerman_detect_legal_form(x, ...)
 }
@@ -33,5 +33,5 @@ magerman_detect_legal_form(x, ...)
 Harmonized table
 }
 \description{
-Detects legal form
+Detect legal form
 }
