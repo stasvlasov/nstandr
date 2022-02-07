@@ -44,13 +44,54 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">magerman_remove_common_words_at_the_end</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">magerman_remove_common_words_at_the_end</span><span class="op">(</span>
+  <span class="va">x</span>,
+  patterns <span class="op">=</span> <span class="va">magerman_patterns_common_words_at_the_end</span>,
+  patterns_col <span class="op">=</span> <span class="fl">1</span>,
+  patterns_mode <span class="op">=</span> <span class="st">"all"</span>,
+  patterns_mode_col <span class="op">=</span> <span class="cn">NULL</span>,
+  patterns_type <span class="op">=</span> <span class="st">"ends"</span>,
+  patterns_type_col <span class="op">=</span> <span class="cn">NULL</span>,
+  patterns_replacements_col <span class="op">=</span> <span class="fl">2</span>,
+  replacements <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.recursive.html" class="external-link">is.atomic</a></span><span class="op">(</span><span class="va">patterns</span><span class="op">)</span><span class="op">)</span> <span class="st">""</span> <span class="kw">else</span> <span class="cn">NULL</span>,
+  <span class="va">...</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
-<dd><p>table</p></dd>
+<dd><p>Vector or table to harmonize.</p></dd>
+<dt>patterns</dt>
+<dd><p>Accepts both vector or table. If patterns is a
+table can also include replacements column.</p></dd>
+<dt>patterns_col</dt>
+<dd><p>If patterns is not a vector which column to
+use. Default is 1.</p></dd>
+<dt>patterns_mode</dt>
+<dd><p>Mode of matching. Could be one of c("all",
+"first", "last"). The default is "all" (it is 2x faster than
+"first" and "last" because of handy stri_replace_all_*
+functions). Also possible to pass a vector (same length as
+patterns)</p></dd>
+<dt>patterns_mode_col</dt>
+<dd><p>Column in patterns table with the mode of
+matching</p></dd>
+<dt>patterns_type</dt>
+<dd><p>Type of pattern for matching. Default is
+"fixed" (calling
+code<a href="https://rdrr.io/pkg/stringi/man/stri_replace.html" class="external-link">stri_replace_all_fixed</a>). Other options
+are:</p></dd>
+<dt>patterns_type_col</dt>
+<dd><p>Column with the type of pattern in case
+when patterns should have different types</p></dd>
+<dt>patterns_replacements_col</dt>
+<dd><p>If patterns is not a vector and
+includes replacements which column to use for
+replacements. Default is 2.</p></dd>
+<dt>replacements</dt>
+<dd><p>If patterns does not have column with
+replacements provide it here.</p></dd>
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="harmonize_options.html">harmonize_options</a></code></p><dl><dt><code>col</code></dt>
 <dd><p>Column of interest (the one we need to harmonize) in the <code>x</code> object (if it is data.frame like).</p></dd>
@@ -87,6 +128,36 @@
     <div id="value">
     <h2>Value</h2>
     <p>Harmonized table</p>
+    </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p>replace_patterns</p>
+<p>Other magerman: 
+<code><a href="magerman_condense.html">magerman_condense</a>()</code>,
+<code><a href="magerman_detect_characters.html">magerman_detect_characters</a>()</code>,
+<code><a href="magerman_detect_comma_period_irregularities.html">magerman_detect_comma_period_irregularities</a>()</code>,
+<code><a href="magerman_detect_legal_form_beginning.html">magerman_detect_legal_form_beginning</a>()</code>,
+<code><a href="magerman_detect_legal_form_end.html">magerman_detect_legal_form_end</a>()</code>,
+<code><a href="magerman_detect_legal_form_middle.html">magerman_detect_legal_form_middle</a>()</code>,
+<code><a href="magerman_detect_umlaut.html">magerman_detect_umlaut</a>()</code>,
+<code><a href="magerman_remove_common_words_anywhere.html">magerman_remove_common_words_anywhere</a>()</code>,
+<code><a href="magerman_remove_common_words_at_the_beginning.html">magerman_remove_common_words_at_the_beginning</a>()</code>,
+<code><a href="magerman_remove_double_quotation_marks_beginning_end.html">magerman_remove_double_quotation_marks_beginning_end</a>()</code>,
+<code><a href="magerman_remove_double_quotation_marks_irregularities.html">magerman_remove_double_quotation_marks_irregularities</a>()</code>,
+<code><a href="magerman_remove_double_spaces.html">magerman_remove_double_spaces</a>()</code>,
+<code><a href="magerman_remove_html_codes.html">magerman_remove_html_codes</a>()</code>,
+<code><a href="magerman_remove_non_alphanumeric_at_the_beginning.html">magerman_remove_non_alphanumeric_at_the_beginning</a>()</code>,
+<code><a href="magerman_remove_non_alphanumeric_at_the_end.html">magerman_remove_non_alphanumeric_at_the_end</a>()</code>,
+<code><a href="magerman_remove_special_characters.html">magerman_remove_special_characters</a>()</code>,
+<code><a href="magerman_replace_accented_characters.html">magerman_replace_accented_characters</a>()</code>,
+<code><a href="magerman_replace_comma_period_irregularities_all.html">magerman_replace_comma_period_irregularities_all</a>()</code>,
+<code><a href="magerman_replace_comma_period_irregularities.html">magerman_replace_comma_period_irregularities</a>()</code>,
+<code><a href="magerman_replace_legal_form_beginning.html">magerman_replace_legal_form_beginning</a>()</code>,
+<code><a href="magerman_replace_legal_form_end.html">magerman_replace_legal_form_end</a>()</code>,
+<code><a href="magerman_replace_legal_form_middle.html">magerman_replace_legal_form_middle</a>()</code>,
+<code><a href="magerman_replace_proprietary_characters.html">magerman_replace_proprietary_characters</a>()</code>,
+<code><a href="magerman_replace_sgml_characters.html">magerman_replace_sgml_characters</a>()</code>,
+<code><a href="magerman_replace_spelling_variation.html">magerman_replace_spelling_variation</a>()</code></p></div>
     </div>
 
   </div>
