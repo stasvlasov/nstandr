@@ -13,73 +13,73 @@
     <loc>/reference/check_rows.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.combabbrev.html</loc>
+    <loc>/reference/cockburn_combabbrev.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.detect.corp.html</loc>
+    <loc>/reference/cockburn_detect_corp.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.detect.govt.html</loc>
+    <loc>/reference/cockburn_detect_govt.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.detect.hosp.html</loc>
+    <loc>/reference/cockburn_detect_hosp.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.detect.indiv.html</loc>
+    <loc>/reference/cockburn_detect_indiv.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.detect.inst.conds.1.html</loc>
+    <loc>/reference/cockburn_detect_inst.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.detect.inst.conds.2.html</loc>
+    <loc>/reference/cockburn_detect_inst_conds.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.detect.inst.conds.html</loc>
+    <loc>/reference/cockburn_detect_inst_conds_1.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.detect.inst.german.html</loc>
+    <loc>/reference/cockburn_detect_inst_conds_2.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.detect.inst.html</loc>
+    <loc>/reference/cockburn_detect_inst_german.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.detect.type.html</loc>
+    <loc>/reference/cockburn_detect_type.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.detect.univ.html</loc>
+    <loc>/reference/cockburn_detect_univ.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.detect.uspto.html</loc>
+    <loc>/reference/cockburn_detect_uspto.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.remove.standard.names.html</loc>
+    <loc>/reference/cockburn_remove_standard_names.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.remove.uspto.html</loc>
+    <loc>/reference/cockburn_remove_uspto.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.replace.compustat.html</loc>
+    <loc>/reference/cockburn_replace_compustat.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.replace.compustat.names.html</loc>
+    <loc>/reference/cockburn_replace_compustat_names.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.replace.derwent.html</loc>
+    <loc>/reference/cockburn_replace_derwent.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.replace.govt.html</loc>
+    <loc>/reference/cockburn_replace_govt.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.replace.punctuation.html</loc>
+    <loc>/reference/cockburn_replace_punctuation.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.replace.standard.names.html</loc>
+    <loc>/reference/cockburn_replace_standard_names.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.replace.type.html</loc>
+    <loc>/reference/cockburn_replace_type.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn.replace.univ.html</loc>
+    <loc>/reference/cockburn_replace_univ.html</loc>
   </url>
   <url>
     <loc>/reference/defactor.html</loc>
@@ -118,9 +118,6 @@
     <loc>/reference/get_vector.html</loc>
   </url>
   <url>
-    <loc>/reference/harmonize.cockburn.html</loc>
-  </url>
-  <url>
     <loc>/reference/harmonize.dehtmlize.html</loc>
   </url>
   <url>
@@ -152,6 +149,9 @@
   </url>
   <url>
     <loc>/reference/harmonize_add_suffix.html</loc>
+  </url>
+  <url>
+    <loc>/reference/harmonize_cockburn.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize_data_length.html</loc>
