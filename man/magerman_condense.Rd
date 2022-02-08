@@ -80,6 +80,21 @@ Condenses string
 replace_patterns
 
 Other magerman: 
+\code{\link{cockburn_detect_corp}()},
+\code{\link{cockburn_detect_govt}()},
+\code{\link{cockburn_detect_hosp}()},
+\code{\link{cockburn_detect_indiv}()},
+\code{\link{cockburn_detect_inst_conds_1}()},
+\code{\link{cockburn_detect_inst}()},
+\code{\link{cockburn_detect_univ}()},
+\code{\link{cockburn_detect_uspto}()},
+\code{\link{cockburn_remove_standard_names}()},
+\code{\link{cockburn_remove_uspto}()},
+\code{\link{cockburn_replace_compustat_names}()},
+\code{\link{cockburn_replace_compustat}()},
+\code{\link{cockburn_replace_derwent}()},
+\code{\link{cockburn_replace_govt}()},
+\code{\link{cockburn_replace_univ}()},
 \code{\link{magerman_detect_characters}()},
 \code{\link{magerman_detect_comma_period_irregularities}()},
 \code{\link{magerman_detect_legal_form_beginning}()},

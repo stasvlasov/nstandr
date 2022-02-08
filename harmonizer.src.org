@@ -76,7 +76,7 @@ Harmonization procedures are flexible and can be specified with setting ~procedu
                     , "harmonize.remove.brackets"
                     , "harmonize_toupper"
                     , list("harmonize_squish_spaces", wrap_in_spaces = TRUE)
-                    , "cockburn.replace.punctuation"
+                    , "cockburn_replace_punctuation"
                     , "harmonize_squish_spaces"))
 
 #+END_SRC
@@ -624,7 +624,7 @@ Adjust "ensure_version" verstions manually:
            (dots-r-pkg-path "~/org/research/dots/dots.src.org")
            ;; assume running in target pkg dir
            (r-pkg-path (file-name-directory (buffer-file-name)))
-           (tangle-to-file (concat r-pkg-path "R/get_dots.r"))
+           (tangle-to-file (concat r-pkg-path "R/0_get_dots.r"))
            ;; this is used as condition in 'bind-get-dots' call in dots.src.org
            tangling-from-harmonizer-R-package
            ;; turn off babel prompts
@@ -1003,14 +1003,20 @@ Test:
 :PROPERTIES:
 :ID:       org:3ya1f8s0lei0
 :END:
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/0_unlist_if_possible.r
   ##' If column in the `x` table is list unlist it if possible
   ##' @param x object
   ##' @param replace_zero_length_with Default is replace NULLs with NA_character_ because vector of just NA is a logical class
+  ##' @param remove_empty_values remove NA, "", etc. from list elements.  (see [harmonize_omit_empty()])
   ##' @return updated object
   ##' @export
-  unlist_if_possible <- function(x, replace_zero_length_with = NA_character_) {
+  unlist_if_possible <- function(x
+                               , replace_zero_length_with = NA_character_
+                               , remove_empty_values = TRUE) {
       if(is.list(x)) {
+          if(remove_empty_values) {
+              x <- lapply(x, harmonize_omit_empty)
+          }
           len <- sapply(x, length)
           if(all(len == 1)) {
               unlist(x, recursive = FALSE, use.names = FALSE)
@@ -1027,14 +1033,32 @@ Test:
   }
 #+END_SRC
 
+#+BEGIN_SRC R :tangle inst/tinytest/test_unlist_if_possible.r
 
-  #+name: 
-#+BEGIN_SRC R
-    ## Tests
-      ## c(1,2,3,4) %>% harmonize.unlist.column
-      ## list(c("a"), NULL, 3, "5", character(0)) %>% harmonize.unlist.column
-      ## list(c("a"), 3, "5") %>% harmonize.unlist.column
-      ## list(c("a", "b", "c"), NULL, 3, "5", character(0)) %>% harmonize.unlist.column
+
+  expect_equal(c(1,2,3,4) |> unlist_if_possible()
+             , c(1, 2, 3, 4))
+
+  expect_equal(list(c("a"), NULL, 3, "5", character(0)) |> unlist_if_possible()
+             , c("a", NA, "3", "5", NA))
+
+
+  expect_equal(list(c("a"), 3, "5") |> unlist_if_possible()
+             , c("a", "3", "5"))
+
+
+  expect_equal(list(c("a", "b", "c"), NULL, 3, "5", character(0)) |> unlist_if_possible()
+             , list(c("a", "b", "c"), NULL, 3, "5", character(0)))
+
+
+  expect_equal(list(c("a", NA, ""), NULL, 3, "5", character(0)) |> unlist_if_possible()
+             , c("a", NA, "3", "5", NA))
+
+
+  expect_equal(list(c("a", NA, ""), NULL, 3, "5", character(0)) |> unlist_if_possible(remove_empty_values = FALSE)
+             , list(c("a", NA, ""), NULL, 3, "5", character(0)))
+
+
 #+END_SRC
 *** harmonize.dehtmlize
 :PROPERTIES:
@@ -1395,45 +1419,6 @@ Tests:
 
 
 #+END_SRC
-*** inset_formals
-:PROPERTIES:
-:ID:       org:vdg1zja1ucj0
-:END:
-
-#+BEGIN_SRC R :tangle R/0_make_alias.r
-  inset_formals <- function(formals_args, new_args) {
-      checkmate::assert_subset(names(new_args)
-                             , choices = names(formals_args)
-                             , empty.ok = FALSE)
-      for (i in 1:length(new_args)) {
-          formals_args[names(new_args)[i]] <- new_args[i]
-      }
-      return(formals_args)
-  }
-
-
-  make_alias <- function(fun, ...) {
-      .fun <- fun
-      ## remove 1st and 2nd elemnts ('call' name and 'fun' arg)
-      args <- as.list(sys.call())[-(1:2)]
-      checkmate::assert_subset(names(args)
-                             , choices = names(formals(.fun))
-                             , empty.ok = FALSE)
-      formals(.fun)[names(args)] <- args
-      return(.fun)
-  }
-
-#+END_SRC
-
-
-#+BEGIN_SRC R :tangle inst/tinytest/test_inset_formals.r
-  inset_formals <- harmonizer:::inset_formals
-
-  expect_equal(inset_formals(formals(mean), alist(x = something_unevaluated))
-             , alist(x = something_unevaluated, ... = ))
-#+END_SRC
-
-
 ** Vector Handeling Functions
 :PROPERTIES:
 :ID:       org:kakfib50bci0
@@ -1442,7 +1427,7 @@ Tests:
 :PROPERTIES:
 :ID:       org:rixkspb0wei0
 :END:
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/0_x_length_and_width.r
   ##' Gets lengths of the object
   ##'
   ##' @param data input data (table)
@@ -1494,7 +1479,7 @@ Tests:
 :PROPERTIES:
 :ID:       org:3971f8s0lei0
 :END:
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/0_is_x_empty.r
   ##' Checks if all elements in vercor(s) are either "", NA, NULL or have zero length
   ##' @param x input data to check each vector
   ##' @param return_as_true_if_x_zero_length how to interpret zero lenth input. If TRUE then it returns TRUE. Otherwise NULL.
@@ -1656,7 +1641,7 @@ Tests:
 :PROPERTIES:
 :ID:       org:x3j0f8s0lei0
 :END:
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/0_defactor.r
   ##' Converts factor to character
   ##' @param x a vector
   ##' @param check.numeric check if vector is numeric. Default is TRUE. Takes longer with this check but avoids type conversion (numeric to character).
@@ -2253,7 +2238,7 @@ Tests:
 :ID:       org:p323mg11m9j0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonize_options.r
+#+BEGIN_SRC R :tangle R/0_harmonize_options.r
   ##' Does nothing but stores (as its own default arguments) options that control vector handeling through harmonization process. These options are available in most harmonizer functions that accept `...` parameter.
   ##' 
   ##' @param col Column of interest (the one we need to harmonize) in the `x` object (if it is data.frame like).
@@ -2291,7 +2276,7 @@ Tests:
 :ID:       org:5aj0v1y0lbj0
 :END:
 
-#+BEGIN_SRC R :tangle R/check_harmonize_options.r
+#+BEGIN_SRC R :tangle R/0_check_harmonize_options.r
   report_arg_checks <- function (collection
                                , which_call_to_report = -2L
                                , call_to_report = NULL) {
@@ -2316,7 +2301,7 @@ Tests:
                       , missing_ok = FALSE
                       , null_ok = FALSE) {
       assertion_fails <- checkmate::makeAssertCollection()
-      checkmate::assert_multi_class(col, c("character", "numeric"), add = assertion_fails)
+      checkmate::assert_multi_class(col, c("character", "integer", "numeric"), add = assertion_fails)
       if (is.character(col)) {
           checkmate::assert_multi_class(x, c("data.frame", "data.table"), add = assertion_fails)
           checkmate::assert_character(col
@@ -2647,7 +2632,7 @@ Tests:
 :ID:       org:y3obsm80daj0
 :END:
 
-#+BEGIN_SRC R :tangle R/get_harmonize_options.r
+#+BEGIN_SRC R :tangle R/0_get_harmonize_options.r
   ##' Gets `harmonize_options` at point with consistent updates up through calling stack.
   ##'
   ##' Limited to max stack of 3 calls and calls that include at least `data` and `...` formals (`harmonizer` functions specific) up to `.GlobalEnv` or `harmonize` call.
@@ -2774,7 +2759,7 @@ Tests:
 
 *** get_vector
 
-#+BEGIN_SRC R :tangle R/get_vector.r
+#+BEGIN_SRC R :tangle R/0_get_vector.r
   ##' Gets vector by column and defactor if needed. Optionaly one can
   ##' provide a fallback_value which will be returned if col is not
   ##' specified.
@@ -2950,7 +2935,7 @@ Tests:
 :PROPERTIES:
 :ID:       org:77wbsm80daj0
 :END:
-#+BEGIN_SRC R :tangle R/handel_target_naming_indexing.r
+#+BEGIN_SRC R :tangle R/0_handel_target_naming_indexing.r
   ## naming col
   make_indexed_col_name <- function(col_name
                                   , x_names = NULL
@@ -3172,7 +3157,7 @@ Tests:
 
 #+END_SRC
 
-#+BEGIN_SRC R :tangle R/handel_target.r
+#+BEGIN_SRC R :tangle R/0_handel_target.r
 
   ##' Gets a target vector to harmonize.
   ##'
@@ -4061,13 +4046,51 @@ Testing
 
 #+END_SRC
 
+*** inset_formals
+:PROPERTIES:
+:ID:       org:vdg1zja1ucj0
+:END:
+
+#+BEGIN_SRC R :tangle R/0_make_alias.r
+  inset_formals <- function(formals_args, new_args) {
+      checkmate::assert_subset(names(new_args)
+                             , choices = names(formals_args)
+                             , empty.ok = FALSE)
+      for (i in 1:length(new_args)) {
+          formals_args[names(new_args)[i]] <- new_args[i]
+      }
+      return(formals_args)
+  }
+
+
+  make_alias <- function(fun, ...) {
+      .fun <- fun
+      ## remove 1st and 2nd elemnts ('call' name and 'fun' arg)
+      args <- as.list(sys.call())[-(1:2)]
+      checkmate::assert_subset(names(args)
+                             , choices = names(formals(.fun))
+                             , empty.ok = FALSE)
+      formals(.fun)[names(args)] <- args
+      return(.fun)
+  }
+
+#+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_inset_formals.r
+  inset_formals <- harmonizer:::inset_formals
+
+  expect_equal(inset_formals(formals(mean), alist(x = something_unevaluated))
+             , alist(x = something_unevaluated, ... = ))
+#+END_SRC
+
+
 ** replace and detect functions
 *** harmonize_escape_regex
 :PROPERTIES:
 :ID:       org:uj31f8s0lei0
 :END:
 
-#+BEGIN_SRC R :tangle R/escape_patterns.r
+#+BEGIN_SRC R :tangle R/0_escape_patterns.r
   ##' Escapes special for regex characters
   ##' @param string character vector
   ##' @return character vector with all special to regex characters escaped
@@ -4212,12 +4235,12 @@ Testing
 - Reference from [[id:org:6chkzp10fbj0][Refactor replace_patterns]] on [2022-01-02 Sun 14:42]
 :END:
 
-#+BEGIN_SRC R :tangle R/0_replace_patterns.r
+#+BEGIN_SRC R :tangle R/1_replace_patterns.r
   replace_exact <- function(x
                           , patterns
                           , replacements) {
       if ((requireNamespace("fastmatch", quietly = TRUE))) {
-          match <- fmatch
+          match <- fastmatch:::fmatch
       }
       matches <- match(x, patterns)
       x[!is.na(matches)] <- replacements[matches][!is.na(matches)]
@@ -4735,7 +4758,7 @@ even older
 :ID:       org:bb21tpb0wei0
 :END:
 
-#+BEGIN_SRC R :tangle R/0_detect_patterns.r
+#+BEGIN_SRC R :tangle R/1_detect_patterns.r
   ##' transpose list of vectors
   transpose_list_of_vectors <- function(l) {
       do.call(mapply, c(FUN = list(c), l, list(USE.NAMES = FALSE, SIMPLIFY = FALSE)))
@@ -5509,7 +5532,7 @@ The default harmonization procedures are the following (for now):
 |  4 | Upper casing                       | 'harmonize_toupper'                              |
 |    |                                    |                                                  |
 |    | *Cleaning*                         |                                                  |
-|  5 | Standardizing organizational names | 'cockburn.replace.punctuation'                   |
+|  5 | Standardizing organizational names | 'cockburn_replace_punctuation'                   |
 |  6 | Removing brackets                  | 'harmonize.remove.brackets'                      |
 |  7 | Cleaning spaces                    | 'harmonize_squish_spaces'                        |
 
@@ -8673,7 +8696,7 @@ p. 44
 * Cockburn, et al. (2009) - Harmonization Procedure
 
 ** Utils
-*** cockburn.combabbrev
+*** cockburn_combabbrev
 :PROPERTIES:
 :ID:       org:z3bhq6914gi0
 :END:
@@ -8683,59 +8706,89 @@ p. 44
   ##'
   ##' @param x Object (table or vector)
   ##' @param wrap_in_spaces Whether to wrap strings in spaces before processing because the algorithm assumes assumes that each string begins and ends with space. Default is TRUE.
-  ##' @inheritDotParams harmonize.x
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##' 
   ##' @md 
-  ##' @import magrittr
   ##' @export 
-  cockburn.combabbrev <- function(x
+  cockburn_combabbrev <- function(x
                                 , wrap_in_spaces = TRUE
                                 , ...) {
-    x.vector <-
-      harmonize.x(x, ...) %>%
+      x_vector <- get_target(x) 
       ## wrap in spaces
-      {if(wrap_in_spaces) paste0(" ", ., " ") else .}
-    ## collapse
-    sapply(x.vector, function(org.name) {
-      reg  <- gregexpr("(?=\\s\\w(\\s+)\\w\\s)", org.name, perl = TRUE)
-      ## check if there are matches
-      if(reg[[1]][1] != -1) {
-        char <- strsplit(org.name, "", fixed = TRUE) %>% unlist
-        pos <- mapply(function(from, length.out) seq(from, length.out = length.out)
-                    , from = attr(reg[[1]],"capture.start")
-                    , length.out = attr(reg[[1]],"capture.length")
-                    , SIMPLIFY = FALSE) %>% unlist
-        char %>% inset(pos, "") %>% paste(collapse = "")
-      } else org.name
-    }) %>% harmonize.x(x, ., ...)
+      if (wrap_in_spaces) {
+          x_vector <- paste0(" ", x_vector, " ")
+      }
+      ## collapse
+      sapply(x_vector, \(org_name) {
+          reg  <- gregexpr("(?=\\s\\w(\\s+)\\w\\s)", org_name, perl = TRUE)
+          ## check if there are matches
+          if(reg[[1]][1] != -1) {
+              char <- strsplit(org_name, "", fixed = TRUE) |> unlist()
+              pos <- mapply(function(from, length.out) seq(from, length.out = length.out)
+                          , from = attr(reg[[1]],"capture.start")
+                          , length.out = attr(reg[[1]],"capture.length")
+                          , SIMPLIFY = FALSE) |> unlist()
+              char[pos] <- ""
+              char |> paste(collapse = "")
+          } else {
+              org_name
+          }
+      }) |>
+          inset_target(x)
   }
 
-  ## ## test
-  ## c(" A B Comp"
-  ## , " A  B Comp a"
-  ## , " I B M "
-  ## , "I B M bla-bla n bla C O") %>%
-  ##   cockburn.combabbrev
 
-  ## data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-  ##                   , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-  ##                   , " M S Lab Co."
-  ##                   , "MSLaeb Comp."
-  ##                   , "MSLab Comp. Ltd."
-  ##                   , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>% rep(20)
-  ##          , foo = "I love coffee" ) %>%
-  ##   cockburn.combabbrev
-
-
-  ## c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-  ## , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-  ## , "MSLab Co."
-  ## , "MSLaeb Comp."
-  ## , "MSLab Comp. Ltd."
-  ## , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>%
-  ##   cockburn.combabbrev
 #+END_SRC
+
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_combabbrev.r
+  expect_equal(c(" A B Comp"
+               , " A  B Comp a"
+               , " I B M "
+               , "I B M bla-bla n bla C O") |>
+               cockburn_combabbrev()
+             , c(`  A B Comp ` = "  AB Comp ", `  A  B Comp a ` = "  AB Comp a ", 
+                 `  I B M  ` = "  IBM  ", ` I B M bla-bla n bla C O ` = " IBM bla-bla n bla CO "
+                 ))
+
+
+
+  expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                 , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+                                 , " M S Lab Co."
+                                 , "MSLaeb Comp."
+                                 , "MSLab Comp. Ltd."
+                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |> rep(20)
+                        , foo = "I love coffee" ) |>
+               cockburn_combabbrev()
+             , structure(list(name = c(" MÄKARÖNI ETÖ FKÜSNÖ Ltd ", " MSLab CÖ. <a href=lsdldf> <br> <\\a> ", 
+                                       "  MS Lab Co. ", " MSLaeb Comp. ", " MSLab Comp. Ltd. ", " ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ ") |> rep(20)
+                            , foo = c("I love coffee"|> rep(120))), row.names = c(NA, -120L), class = c("data.table", 
+                                                                                                        "data.frame")))
+
+  expect_equal({
+  a <- c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+      , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+      , " M S Lab Co."
+      , "MSLaeb Comp."
+      , "MSLab Comp. Ltd."
+      , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
+      cockburn_combabbrev()
+  names(a) <- NULL
+  a
+  }
+  , c(" MÄKARÖNI ETÖ FKÜSNÖ Ltd ", " MSLab CÖ. <a href=lsdldf> <br> <\\a> ", 
+  "  MS Lab Co. ", " MSLaeb Comp. ", " MSLab Comp. Ltd. ", " ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ "
+  )
+  )
+
+
+
+#+END_SRC
+
+
+
 
 ** Standartization
 *** Derwent
@@ -8754,27 +8807,30 @@ Implementation of derwent_standardisation_BHH.do from https://sites.google.com/s
 
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
-  ##' Performs Derwent standardization of organizational names
-  ##'
-  ##' It is a version from Cockburn, I. M., A. Agrawal, J. Bessen, J. H. S. Graham, B. H. Hall, and M. MacGarvie (2009), The NBER Patent Citations Datafile Update. It differs from original dervert standartization
-  ##' @param x object
-  ##' @inheritDotParams replace_patterns
+  ##' @eval attr(cockburn_replace_derwent, "@title")
+  ##' @description It is a version from Cockburn, I. M., A. Agrawal,
+  ##'     J. Bessen, J. H. S. Graham, B. H. Hall, and M. MacGarvie
+  ##'     (2009), The NBER Patent Citations Datafile Update. It differs
+  ##'     from original dervert standartization
+  ##' @inherit replace_patterns params return
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
-  ##' 
-  ##' @md 
-  ##' @export 
-  cockburn.replace.derwent <- function(x
-                             , ...) {
-    replace_patterns(x
-                    , patterns = cockburn.patterns.derwent
-                    , patterns.mode = "first"
-                    , ...)
-  }
+  ##' @family magerman
+  ##' @seealso replace_patterns
+  ##'
+  ##' @md
+  ##' @export
+  cockburn_replace_derwent <- make_alias(replace_patterns
+                                       , patterns = cockburn_patterns_derwent
+                                       , patterns_mode = "first")
+
+  attr(cockburn_replace_derwent, "@title") <-
+      "Performs Derwent standardization of organizational names"
 #+END_SRC
 
 **** Derwent Standartization Table
-#+call: make-rds-patterns-table(data = cockburn.patterns.derwent, data.name = "cockburn.patterns.derwent"))
-#+NAME: cockburn.patterns.derwent
+#+call: make-rds-patterns-table(data = cockburn_patterns_derwent, data.name = "cockburn_patterns_derwent"))
+#+NAME: cockburn_patterns_derwent
 | pattern                                                                        | replacement          |
 |--------------------------------------------------------------------------------+----------------------|
 | ' A B '                                                                        | ' AB '               |
@@ -9514,51 +9570,57 @@ Implementation of derwent_standardisation_BHH.do from https://sites.google.com/s
 COMPUSTAT specific standardization for organizational names. Implementation of initial part nameonly_main.do from  https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
-  ##' COMPUSTAT specific standardization for organizational names
-  ##'
-  ##' @param x object
-  ##' @inheritDotParams replace_patterns
+  ##' @eval attr(cockburn_replace_compustat, "@title")
+  ##' @inherit replace_patterns params return
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
-  ##' 
-  ##' @md 
-  ##' @export 
-  cockburn.replace.compustat <- function(x
-                               , ...) {
-    replace_patterns(x
-                    , patterns = cockburn.patterns.compustat
-                    , ...)
-  }
-
-
-
-  ##' COMPUSTAT specific standardization for organizational names. Full name replacements.
+  ##' @family magerman
+  ##' @seealso replace_patterns
   ##'
-  ##' @param x object
-  ##' @inheritDotParams replace_patterns
-  ##' @return Harmonized table
-  ##' 
-  ##' @md 
-  ##' @export 
-  cockburn.replace.compustat.names <- function(x
-                                     , ...) {
-    replace_patterns(x
-                    , patterns = cockburn.patterns.compustat.names
-                    , patterns.type = "trim.exact"
-                    , ...)
-  }
+  ##' @md
+  ##' @export
+  cockburn_replace_compustat <- make_alias(replace_patterns
+                                         , patterns = cockburn_patterns_compustat)
 
-  ## Test
-  ## c("WESTINGHOUSE ELEC  "
-  ## , "GRACE (W R) & CO"
-  ## , "GRACE (W R) & CO Ltd.") %>% 
-  ##   cockburn.compustat.names
+  attr(cockburn_replace_compustat, "@title") <-
+      "COMPUSTAT specific standardization for organizational names"
+
+
+
+  ##' @eval attr(cockburn_replace_compustat_names, "@title")
+  ##' @inherit replace_patterns params return
+  ##' @inheritDotParams harmonize_options
+  ##' @return Harmonized table
+  ##' @family magerman
+  ##' @seealso replace_patterns
+  ##'
+  ##' @md
+  ##' @export
+  cockburn_replace_compustat_names <- make_alias(replace_patterns
+                                               , patterns = cockburn_patterns_compustat_names
+                                               , patterns_type = "trim_exact")
+
+  attr(cockburn_replace_compustat_names, "@title") <-
+      "COMPUSTAT specific standardization for organizational names. Full name replacements."
+
+#+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_replace_compustat.r
+  expect_equal(c("WESTINGHOUSE ELEC  "
+             , "GRACE (W R) & CO"
+             , "GRACE (W R) & CO Ltd.") |>
+             cockburn_replace_compustat_names()
+           , c(" WESTINGHOUSE ELECTRIC CORP. ", " W. R. GRACE & CO. ", "GRACE (W R) & CO Ltd."
+               ))
 #+END_SRC
 
 **** Table: Compustat Standartization
 - pattern type :: fixed (see doc for harmonize.replace)
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.compustat, data.name = "cockburn.patterns.compustat")
-#+NAME: cockburn.patterns.compustat
+#+call: make-rds-patterns-table(data = cockburn_patterns_compustat, data.name = "cockburn_patterns_compustat")
+#+NAME: cockburn_patterns_compustat
+| "pattern"                                      | "replacement"          |
+|------------------------------------------------+------------------------|
 | '-ADR'                                         | ' '                    |
 | '-ADS'                                         | ' '                    |
 | '-CL A '                                       | ' '                    |
@@ -9802,41 +9864,34 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 | ' WSTN '                                       | ' WESTERN '            |
 | ' WTR '                                        | ' WATER '              |
 
-
-
-
 **** Table: Compustat Standartization Names
 - pattern type :: trim.exact (see doc for harmonize.replace)
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.compustat.names, data.name = "cockburn.patterns.compustat.names")
-
-#+name: cockburn.patterns.compustat.names
-| ' A. L. WILLIAMS CORP. '                       | 'WILLIAMS (A.L.) CORP'       |
-| ' B. F. GOODRICH CO. '                         | 'GOODRICH CORP'              |
-| ' BELL + HOWELL COMPANY '                      | 'BELL & HOWELL OPERATING CO' |
-| ' BENDIX CORPORATION(NOW ALLIED-SIGNAL INC.) ' | 'BENDIX CORP'                |
-| ' BORG-WARNER CORPORATION '                    | 'BORGWARNER INC'             |
-| ' CHRYSLER MOTORS CORPORATION '                | 'CHRYSLER CORP'              |
-| ' CISCO TECHNOLOGY, INC. '                     | 'CISCO SYSTEMS INC'          |
-| ' DELL PRODUCTS, L.P. '                        | 'DELL INC'                   |
-| ' DELPHI TECHNOLOGIES, INC. '                  | 'DELPHI CORP'                |
-| ' E. I. DU PONT DE NEMOURS AND COMPANY '       | 'DU PONT (E I) DE NEMOURS'   |
-| ' E. R. SQUIBB + SONS, INC. '                  | 'SQUIBB CORP'                |
-| ' ELI LILLY AND COMPANY '                      | 'LILLY (ELI) & CO'           |
-| ' G. D. SEARLE & CO. '                         | 'SEARLE (G.D.) & CO'         |
-| ' MINNESOTA MINING AND MANUFACTURING COMPANY ' | '3M CO'                      |
-| ' OWENS-CORNING FIBERGLAS CORPORATION '        | 'OWENS CORNING'              |
-| ' SCHLUMBERGER TECHNOLOGY CORPORATION '        | 'SCHLUMBERGER LTD'           |
-| ' SCI-MED LIFE SYSTEMS, INC. '                 | 'SICMED LIFE SYSTEMS'        |
-| ' TDK CORPORATION '                            | 'TDK CORP'                   |
-| ' UNITED STATES SURGICAL CORPORATION '         | 'U S SURGICAL CORP'          |
-| ' W. R. GRACE & CO. '                          | 'GRACE (W R) & CO'           |
-| ' WESTINGHOUSE ELECTRIC CORP. '                | 'WESTINGHOUSE ELEC'          |
-
-
-
-
-
+#+call: make-rds-patterns-table(data = cockburn_patterns_compustat_names, data.name = "cockburn_patterns_compustat_names")
+#+name: cockburn_patterns_compustat_names
+| "pattern"                                      | "replacement"                |
+|------------------------------+------------------------------------------------|
+| 'WILLIAMS (A.L.) CORP'       | ' A. L. WILLIAMS CORP. '                       |
+| 'GOODRICH CORP'              | ' B. F. GOODRICH CO. '                         |
+| 'BELL & HOWELL OPERATING CO' | ' BELL + HOWELL COMPANY '                      |
+| 'BENDIX CORP'                | ' BENDIX CORPORATION(NOW ALLIED-SIGNAL INC.) ' |
+| 'BORGWARNER INC'             | ' BORG-WARNER CORPORATION '                    |
+| 'CHRYSLER CORP'              | ' CHRYSLER MOTORS CORPORATION '                |
+| 'CISCO SYSTEMS INC'          | ' CISCO TECHNOLOGY, INC. '                     |
+| 'DELL INC'                   | ' DELL PRODUCTS, L.P. '                        |
+| 'DELPHI CORP'                | ' DELPHI TECHNOLOGIES, INC. '                  |
+| 'DU PONT (E I) DE NEMOURS'   | ' E. I. DU PONT DE NEMOURS AND COMPANY '       |
+| 'SQUIBB CORP'                | ' E. R. SQUIBB + SONS, INC. '                  |
+| 'LILLY (ELI) & CO'           | ' ELI LILLY AND COMPANY '                      |
+| 'SEARLE (G.D.) & CO'         | ' G. D. SEARLE & CO. '                         |
+| '3M CO'                      | ' MINNESOTA MINING AND MANUFACTURING COMPANY ' |
+| 'OWENS CORNING'              | ' OWENS-CORNING FIBERGLAS CORPORATION '        |
+| 'SCHLUMBERGER LTD'           | ' SCHLUMBERGER TECHNOLOGY CORPORATION '        |
+| 'SICMED LIFE SYSTEMS'        | ' SCI-MED LIFE SYSTEMS, INC. '                 |
+| 'TDK CORP'                   | ' TDK CORPORATION '                            |
+| 'U S SURGICAL CORP'          | ' UNITED STATES SURGICAL CORPORATION '         |
+| 'GRACE (W R) & CO'           | ' W. R. GRACE & CO. '                          |
+| 'WESTINGHOUSE ELEC'          | ' WESTINGHOUSE ELECTRIC CORP. '                |
 
 *** Identify Entity Type
 :PROPERTIES:
@@ -9846,38 +9901,32 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' Identifies Entity Type
   ##'
   ##' @param x vector or table
-  ##' @param procedures.message For debuging. If set will message which procedures were done.
+  ##' @param verbose For debuging. If set will message which procedures were done.
   ##' @inheritDotParams harmonize.detect
   ##' @return Harmonized table
   ##' 
   ##' @md 
   ##' @export 
-  cockburn.detect.type <- function(x
-                                 , procedures.message = FALSE
+  cockburn_detect_type <- function(x
+                                 , verbose = FALSE
                                  , ...) {
-    procedure.message <- function(x, name) {
-      if(procedures.message) message(name)
-      return(x)
-    }
-    x %>% 
-      cockburn.detect.corp(...) %T>% 
-      procedure.message("cockburn.detect.corp") %>%
-      cockburn.detect.indiv(...) %T>% 
-      procedure.message("cockburn.detect.indiv") %>%
-      cockburn.detect.govt(...) %T>% 
-      procedure.message("cockburn.detect.govt") %>%
-      cockburn.detect.univ(...) %T>% 
-      procedure.message("cockburn.detect.univ") %>%
-      cockburn.detect.inst(...) %T>% 
-      procedure.message("cockburn.detect.inst") %T>%
-      cockburn.detect.inst.conds(...) %T>% 
-      procedure.message("cockburn.detect.inst.conds") %>%
-      cockburn.detect.inst.german(...) %T>% 
-      procedure.message("cockburn.detect.inst.german") %>%
-      cockburn.detect.hosp(...) %T>% 
-      procedure.message("cockburn.detect.hosp") %>%
-      return()
+      do_verbosely <- \(x, fun) {
+          fun_name <- deparse(substitute(fun))
+          if(verbose) message("- ", fun_name)
+          x <- do.call(fun, list(x))
+          return(x)
+      }
+      x |> 
+          do_verbosely(cockburn_detect_corp) |>
+          do_verbosely(cockburn_detect_indiv) |>
+          do_verbosely(cockburn_detect_govt) |>
+          do_verbosely(cockburn_detect_univ) |>
+          do_verbosely(cockburn_detect_inst) |>
+          do_verbosely(cockburn_detect_inst_conds) |>
+          do_verbosely(cockburn_detect_inst_german) |>
+          do_verbosely(cockburn_detect_hosp)
   }
+
 
   ##' Cleanup Entity Type
   ##'
@@ -9887,12 +9936,13 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' 
   ##' @md 
   ##' @export 
-  cockburn.replace.type <- function(x, ...) {
-    x %>% 
-      cockburn.replace.govt(...) %>% 
-      cockburn.replace.univ(...) %>% 
-      return()
+  cockburn_replace_type <- function(x, ...) {
+      x |> 
+          cockburn_replace_govt() |> 
+          cockburn_replace_univ()
   }
+
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle no
@@ -9907,8 +9957,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   , " TILBURG UNIVERSTIY "
   , " VU UNIVERSTITAET "
   , " FUNDATION LEGALY REPRESENTED BY STAS") %>%
-    cockburn.detect.type(procedures.message = TRUE)
-    ## cockburn.detect.type(codes.name = "type")
+    cockburn_detect_type(procedures_message = TRUE)
+    ## cockburn_detect_type(codes.name = "type")
 
   data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                     , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
@@ -9917,7 +9967,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                     , "MSLab Comp. Ltd."
                     , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ  UNIVERSITY") %>% rep(20)
            , foo = "I love coffee" ) %>%
-    cockburn.detect.type
+    cockburn_detect_type
 
 
   c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
@@ -9926,7 +9976,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                     , "MSLaeb Comp."
                     , "MSLab Comp. Ltd."
   , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ UNIVERSITY") %>% rep(20) %>%
-    cockburn.detect.type
+    cockburn_detect_type
 #+END_SRC
 
 **** Firms (Corporates)
@@ -9935,45 +9985,45 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :END:
 - code :: "firm"
 #+BEGIN_SRC R :tangle ./R/cockburn.r
-  ##' Detect Corporates (code - "firm")
-  ##'
-  ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
-  ##' 
-  ##' @param x vector or table
-  ##' @param codes.name 
-  ##' @param x.codes.merge 
-  ##' @param ... 
-  ##' @inheritDotParams harmonize.detect
+  ##' @eval attr(cockburn_detect_corp, "@title")
+  ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
+  ##' @inherit detect_patterns params return
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
-  ##' 
-  ##' @md 
-  ##' @export 
-  cockburn.detect.corp <- function(x
-                                 , codes.name = "entity.type"
-                                 , x.codes.merge = TRUE 
-                                 , ...) {
-    harmonize.detect(x
-                   , codes.name = codes.name
-                   , x.codes.merge = x.codes.merge
-                   , patterns = cockburn.patterns.corp
-                   , codes = "firm"
-                   , return.only.first.detected.code = TRUE
-                   , ...)
-  }
+  ##' @family magerman
+  ##' @seealso detect_patterns
+  ##'
+  ##' @md
+  ##' @export
+  cockburn_detect_corp <- make_alias(detect_patterns
+                                   , patterns = cockburn_patterns_corp
+                                   , output_codes_col_name = "entity_type"
+                                   , merge_existing_codes = "append_to_existing"
+                                   , patterns_codes = "firm"
+                                   , return_only_first_detected_code = TRUE)
 
-  ## test
-  ## c(" DR VLASOV & BROTHER "
-  ## ,  "MSlab & C"
-  ## , " S.VLASOV PHD "
-  ## , "LEGALY REPRESENTED BY STAS") %>%
-  ## cockburn.detect.corp
+  attr(cockburn_detect_corp, "@title") <-
+      "Detect Corporates (code - 'firm')"
+
 #+END_SRC
 
-***** table - cockburn.patterns.corp
+#+BEGIN_SRC R :tangle inst/tinytest/cockburn_detect_corp.r
+  expect_equal(c(" DR VLASOV & BROTHER "
+            ,  "MSlab & C"
+            , " S.VLASOV PHD "
+            , "LEGALY REPRESENTED BY STAS") |>
+            cockburn_detect_corp()
+          , structure(list(x = c(" DR VLASOV & BROTHER ", "MSlab & C", " S.VLASOV PHD ", 
+                                 "LEGALY REPRESENTED BY STAS"), entity_type = c("firm", NA, NA, 
+                                                                                NA)), row.names = c(NA, -4L), class = c("data.table", "data.frame"
+                                                                                                                        )))
+#+END_SRC
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.corp, data.name = "cockburn.patterns.corp")
 
-#+name: cockburn.patterns.corp
+***** table - cockburn_patterns_corp
+
+#+call: make-rds-patterns-table(data = cockburn_patterns_corp, data.name = "cockburn_patterns_corp")
+#+name: cockburn_patterns_corp
 | ' & BRO '                                                |
 | ' & BROTHER '                                            |
 | ' & C '                                                  |
@@ -10846,54 +10896,69 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 - code :: "indiv"
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
-  ##' Detect Individuals (Non-Corporates group)
-  ##'
-  ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
-  ##' 
-  ##' @param x vector or table
-  ##' @inheritDotParams harmonize.detect
+  ##' @eval attr(cockburn_detect_indiv, "@title")
+  ##' @description From non_corporates.do file. Source -
+  ##'     https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
+  ##' @inherit detect_patterns params return
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
-  ##' 
-  ##' @md 
-  ##' @export 
-  cockburn.detect.indiv <- function(x
-                                 , codes.name = "entity.type"
-                                 , x.codes.merge = TRUE
-                                 , ...) {
-    harmonize.detect(x
-                   , codes.name = codes.name
-                   , x.codes.merge = x.codes.merge
-                   , patterns = cockburn.patterns.indiv
-                   , codes = "indiv"
-                   , return.only.first.detected.code = TRUE
-                   , ...)
-  }
+  ##' @family magerman
+  ##' @seealso detect_patterns
+  ##'
+  ##' @md
+  ##' @export
+  cockburn_detect_indiv <- make_alias(detect_patterns
+                                    , patterns = cockburn_patterns_indiv
+                                    , patterns_codes = "indiv"
+                                    , output_codes_col_name = "entity_type"
+                                    , merge_existing_codes = "append_to_existing"
+                                    , return_only_first_detected_code = TRUE)
 
-  ## test
-  ## c(" DR VLASOV "
-  ## , " S.VLASOV PHD "
-  ## , "LEGALY REPRESENTED BY STAS") %>%
-  ## cockburn.detect.indiv
+  attr(cockburn_detect_indiv, "@title") <-
+      "Detect Individuals (Non-Corporates group)"
 
-    ## c(" DR VLASOV "
-    ## , " S.VLASOV PHD "
-    ## , " STANICA LEGALY REPRESENTED BY STAS"
-    ## , " DR VLASOV & BROTHER "
-    ## , "MSlab & C"
-    ## , "LEGALY REPRESENTED BY STAS"
-    ## , " REPUBLIC LEGALY REPRESENTED BY STAS"
-    ## , " TILBURG UNIVERSTIY "
-    ## , " VU UNIVERSTITAET "
-    ## , " FUNDATION LEGALY REPRESENTED BY STAS") %>%
-    ##   cockburn.detect.indiv %>%
-    ##   cockburn.detect.govt %>%
-    ##   cockburn.detect.indiv
 #+END_SRC
 
-***** table - cockburn.patterns.indiv
-#+call: make-rds-patterns-table(data = cockburn.patterns.indiv, data.name = "cockburn.patterns.indiv")
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_detect_indiv.r
 
-#+name: cockburn.patterns.indiv
+  expect_equal(c(" DR VLASOV "
+               , " S.VLASOV PHD "
+               , "LEGALY REPRESENTED BY STAS") |>
+               cockburn_detect_indiv()
+             , structure(list(x = c(" DR VLASOV ", " S.VLASOV PHD ", "LEGALY REPRESENTED BY STAS"
+                                    ), entity_type = c("indiv", "indiv", NA)), row.names = c(NA, 
+                                                                                             -3L), class = c("data.table", "data.frame")))
+
+
+
+  expect_equal(c(" DR VLASOV "
+               , " S.VLASOV PHD "
+               , " STANICA LEGALY REPRESENTED BY STAS"
+               , " DR VLASOV & BROTHER "
+               , "MSlab & C"
+               , "LEGALY REPRESENTED BY STAS"
+               , " REPUBLIC LEGALY REPRESENTED BY STAS"
+               , " TILBURG UNIVERSTIY "
+               , " VU UNIVERSTITAET "
+               , " FUNDATION LEGALY REPRESENTED BY STAS") |>
+               cockburn_detect_indiv() |>
+               cockburn_detect_govt() |>
+               cockburn_detect_indiv()
+  , structure(list(x = c(" DR VLASOV ", " S.VLASOV PHD ", " STANICA LEGALY REPRESENTED BY STAS", 
+  " DR VLASOV & BROTHER ", "MSlab & C", "LEGALY REPRESENTED BY STAS", 
+  " REPUBLIC LEGALY REPRESENTED BY STAS", " TILBURG UNIVERSTIY ", 
+  " VU UNIVERSTITAET ", " FUNDATION LEGALY REPRESENTED BY STAS"
+  ), entity_type = list(c("indiv", "indiv"), c("indiv", "indiv"
+  ), c("indiv", "indiv"), c("indiv", "indiv"), character(0), character(0), 
+      c("indiv", "govt", "indiv"), character(0), character(0), 
+      c("indiv", "indiv"))), row.names = c(NA, -10L), class = c("data.table", 
+  "data.frame")))
+#+END_SRC
+
+
+***** table - cockburn_patterns_indiv
+#+call: make-rds-patterns-table(data = cockburn_patterns_indiv, data.name = "cockburn_patterns_indiv")
+#+name: cockburn_patterns_indiv
 | ' GEB '                       |
 | ' DECEASED '                  |
 | ' DECEDE '                    |
@@ -10943,62 +11008,71 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 - code :: "govt"
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
-  ##' Detect Goverment Organizations (Non-Corporates group)
-  ##'
-  ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
-  ##' 
-  ##' @param x vector or table
-  ##' @inheritDotParams harmonize.detect
+  ##' @eval attr(cockburn_detect_govt, "@title")
+  ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
+  ##' @inherit detect_patterns params return
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
-  ##' 
-  ##' @md 
-  ##' @export 
-  cockburn.detect.govt <- function(x
-                                 , codes.name = "entity.type"
-                                 , x.codes.merge = TRUE 
-                                 , ...) {
-    harmonize.detect(x
-                   , codes.name = codes.name
-                   , x.codes.merge = x.codes.merge
-                   , patterns = cockburn.patterns.govt
-                   , codes = "govt"
-                   , return.only.first.detected.code = TRUE
-                   , ...)
-  }
-
-  ## test
-  ## c(" DR VLASOV "
-  ## , " S.VLASOV PHD "
-  ## , " REPUBLIC LEGALY REPRESENTED BY STAS") %>%
-  ## cockburn.detect.govt
-
-
-  ##' Cleanup Goverment Organizations (Non-Corporates group)
+  ##' @family magerman
+  ##' @seealso detect_patterns
   ##'
-  ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
-  ##' 
-  ##' @param x vector or table
-  ##' @inheritDotParams harmonize.detect
+  ##' @md
+  ##' @export
+  cockburn_detect_govt <- make_alias(detect_patterns
+                                   , patterns = cockburn_patterns_govt
+                                   , patterns_codes = "govt"
+                                   , output_codes_col_name = "entity_type"
+                                   , merge_existing_codes = "append_to_existing"
+                                   , return_only_first_detected_code = TRUE)
+
+  attr(cockburn_detect_govt, "@title") <-
+      "Detect Goverment Organizations (Non-Corporates group)"
+
+
+
+
+  ##' @eval attr(cockburn_replace_govt, "@title")
+  ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
+  ##' @inherit replace_patterns params return
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
-  ##' 
-  ##' @md 
-  ##' @export 
-  cockburn.replace.govt <- function(x, ...) {
-      replace_patterns(x
-                      , patterns = cockburn.patterns.govt.cleanup
-                      , ...)
-  }
+  ##' @family magerman
+  ##' @seealso replace_patterns
+  ##'
+  ##' @md
+  ##' @export
+  cockburn_replace_govt <- make_alias(replace_patterns
+                                    , patterns = cockburn_patterns_govt_cleanup)
+
+  attr(cockburn_replace_govt, "@title") <-
+      "Cleanup Goverment Organizations (Non-Corporates group)"
 
 
-  ## test
-  ## " VERY IMPORTANT SEC OF THE DEPT OF  " %>% cockburn.replace.govt
 #+END_SRC
 
-***** table - cockburn.patterns.govt
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_replace_govt.r
+  expect_equal(c(" DR VLASOV "
+               , " S.VLASOV PHD "
+               , " REPUBLIC LEGALY REPRESENTED BY STAS") |>
+               cockburn_detect_govt()
+             , structure(list(x = c(" DR VLASOV ", " S.VLASOV PHD ", " REPUBLIC LEGALY REPRESENTED BY STAS"
+                                    ), entity_type = c(NA, NA, "govt")), row.names = c(NA, -3L), class = c("data.table", 
+                                                                                                           "data.frame")))
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.govt, data.name = "cockburn.patterns.govt")
+  expect_equal(" VERY IMPORTANT SEC OF THE DEPT OF  " |>
+               cockburn_replace_govt()
+             , " VERY IMPORTANT DEPT OF  ")
 
-#+name: cockburn.patterns.govt
+
+
+
+#+END_SRC
+
+
+***** table - cockburn_patterns_govt
+
+#+call: make-rds-patterns-table(data = cockburn_patterns_govt, data.name = "cockburn_patterns_govt")
+#+name: cockburn_patterns_govt
 | ' NAT RES COUNCIL '                       |
 | ' NAT RES INST '                          |
 | ' NAT SCI COUNCIL '                       |
@@ -11087,12 +11161,11 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 | ' CENT NAT DETUDES SPATIALES '            |
 | ' DESY '                                  |
 
-***** table - cockburn.patterns.govt.cleanup
+***** table - cockburn_patterns_govt_cleanup
 
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.govt.cleanup, data.name = "cockburn.patterns.govt.cleanup")
-
-#+name: cockburn.patterns.govt.cleanup
+#+call: make-rds-patterns-table(data = cockburn_patterns_govt_cleanup, data.name = "cockburn_patterns_govt_cleanup")
+#+name: cockburn_patterns_govt_cleanup
 | pattern                | replacement |
 |------------------------+-------------|
 | ' SEC OF DEPT OF '     | ' DEPT OF ' |
@@ -11106,63 +11179,81 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 - code :: "univ"
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
-  ##' Detect Universities (Non-Corporates group)
-  ##'
-  ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
-  ##' 
-  ##' @param x vector or table
-  ##' @inheritDotParams harmonize.detect
+  ##' @eval attr(cockburn_detect_univ, "@title")
+  ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
+  ##' @inherit detect_patterns params return
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
-  ##' 
-  ##' @md 
-  ##' @export 
-  cockburn.detect.univ <- function(x
-                                 , codes.name = "entity.type"
-                                 , x.codes.merge = TRUE 
-                                 , ...) {
-    harmonize.detect(x
-                   , codes.name = codes.name
-                   , x.codes.merge = x.codes.merge
-                   , patterns = cockburn.patterns.univ
-                   , codes = "univ"
-                   , return.only.first.detected.code = TRUE
-                   , ...)
-  }
-
-  ## test
-  ## c(" TILBURG UNIVERSTIY "
-  ## , " VU UNIVERSTITAET "
-  ## , "LEGALY REPRESENTED BY STAS") %>%
-  ## cockburn.detect.univ
-
-
-  ##' Cleanup Universities (Non-Corporates group)
+  ##' @family magerman
+  ##' @seealso detect_patterns
   ##'
-  ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
-  ##' 
-  ##' @param x vector or table
-  ##' @inheritDotParams harmonize.detect
-  ##' @return Harmonized table
-  ##' 
-  ##' @md 
-  ##' @export 
-  cockburn.replace.univ <- function(x, ...) {
-      replace_patterns(x
-                      , patterns = cockburn.patterns.univ.cleanup
-                      , ...)
-  }
+  ##' @md
+  ##' @export
+  cockburn_detect_univ <- make_alias(detect_patterns
+                                   , patterns = cockburn_patterns_univ
+                                   , patterns_codes = "univ"
+                                   , output_codes_col_name = "entity_type"
+                                   , merge_existing_codes = "append_to_existing"
+                                   , return_only_first_detected_code = TRUE)
 
-  ## test
-  ## c(" SUPERVISORS OF THE TILBURG UNIVERSTIY "
-  ## , " VU UNIVERSTITAET "
-  ## , "LEGALY REPRESENTED BY STAS") %>%
-  ## cockburn.replace.univ
+  attr(cockburn_detect_univ, "@title") <-
+      "Detect Universities (Non-Corporates group)"
+
+
+
+
+
+
+
+  ##' @eval attr(cockburn_replace_univ, "@title")
+  ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
+  ##' @inherit replace_patterns params return
+  ##' @inheritDotParams harmonize_options
+  ##' @return Harmonized table
+  ##' @family magerman
+  ##' @seealso replace_patterns
+  ##'
+  ##' @md
+  ##' @export
+  cockburn_replace_univ <- make_alias(replace_patterns
+                                    , patterns = cockburn_patterns_univ_cleanup)
+
+  attr(cockburn_replace_univ, "@title") <-
+      "Cleanup Universities (Non-Corporates group)"
+
+
+
 #+END_SRC
 
-***** table - universities
-#+call: make-rds-patterns-table(data = cockburn.patterns.univ, data.name = "cockburn.patterns.univ")
 
-#+name: cockburn.patterns.univ
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_replace_univ.r
+
+  expect_equal(c(" TILBURG UNIVERSTIY "
+               , " VU UNIVERSTITAET "
+               , "LEGALY REPRESENTED BY STAS") |>
+               cockburn_detect_univ()
+             , structure(list(x = c(" TILBURG UNIVERSTIY ", " VU UNIVERSTITAET ", 
+                                    "LEGALY REPRESENTED BY STAS"), entity_type = c("univ", "univ", 
+                                                                                   NA)), row.names = c(NA, -3L), class = c("data.table", "data.frame"
+                                                                                                                           )))
+
+
+
+  expect_equal(c(" SUPERVISORS OF THE TILBURG UNIVERSTIY "
+               , " VU UNIVERSTITAET "
+               , "LEGALY REPRESENTED BY STAS") |>
+               cockburn_replace_univ()
+             , c(" TILBURG UNIVERSTIY ", " VU UNIVERSTITAET ", "LEGALY REPRESENTED BY STAS"
+                 ))
+
+
+#+END_SRC
+
+
+***** table - universities
+#+call: make-rds-patterns-table(data = cockburn_patterns_univ, data.name = "cockburn_patterns_univ")
+#+name: cockburn_patterns_univ
 | ' ACADEM'                   |
 | ' ACAD '                    |
 | ' AKAD '                    |
@@ -11200,9 +11291,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 | ' KU LEUVEN '               |
 
 ***** table - clean up university names
-#+call: make-rds-patterns-table(data = cockburn.patterns.univ.cleanup, data.name = "cockburn.patterns.univ.cleanup")
-
-#+name: cockburn.patterns.univ.cleanup
+#+call: make-rds-patterns-table(data = cockburn_patterns_univ_cleanup, data.name = "cockburn_patterns_univ_cleanup")
+#+name: cockburn_patterns_univ_cleanup
 | pattern                         | replacement |
 |---------------------------------+-------------|
 | ' BOARD OF REGENTS OF THE '     | ' '         |
@@ -11241,41 +11331,49 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :END:
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
-  ##' Detect Non-profit Institutes (Non-Corporates group)
-  ##'
-  ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
-  ##' 
-  ##' @param x vector or table
-  ##' @inheritDotParams harmonize.detect
+  ##' @eval attr(cockburn_detect_inst, "@title")
+  ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
+  ##' @inherit detect_patterns params return
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
-  ##' 
-  ##' @md 
-  ##' @export 
-  cockburn.detect.inst <- function(x
-                                 , codes.name = "entity.type"
-                                 , x.codes.merge = TRUE 
-                                 , ...) {
-    harmonize.detect(x
-                   , codes.name = codes.name
-                   , x.codes.merge = x.codes.merge
-                   , patterns = cockburn.patterns.inst
-                   , codes = "inst"
-                   , return.only.first.detected.code = TRUE
-                   , ...)
-  }
+  ##' @family magerman
+  ##' @seealso detect_patterns
+  ##'
+  ##' @md
+  ##' @export
+  cockburn_detect_inst <- make_alias(detect_patterns
+                                   , patterns = cockburn_patterns_inst
+                                   , patterns_codes = "inst"
+                                   , output_codes_col_name = "entity_type"
+                                   , merge_existing_codes = "append_to_existing"
+                                   , return_only_first_detected_code = TRUE)
 
-  ## test
-  ## c(" DR VLASOV "
-  ## , " S.VLASOV PHD "
-  ## , " FUNDATION LEGALY REPRESENTED BY STAS") %>%
-  ## cockburn.detect.inst
+  attr(cockburn_detect_inst, "@title") <-
+      "Detect Non-profit Institutes (Non-Corporates group)"
+
+
 #+END_SRC
 
-***** table - cockburn.patterns.inst
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.inst, data.name = "cockburn.patterns.inst")
 
-#+name: cockburn.patterns.inst
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockb.r
+  expect_equal(c(" DR VLASOV "
+               , " S.VLASOV PHD "
+               , " FUNDATION LEGALY REPRESENTED BY STAS") |>
+               cockburn_detect_inst()
+             , structure(list(x = c(" DR VLASOV ", " S.VLASOV PHD ", " FUNDATION LEGALY REPRESENTED BY STAS"
+                                    ), entity_type = c(NA, NA, "inst")), row.names = c(NA, -3L), class = c("data.table", 
+                                                                                                           "data.frame")))
+
+
+  #+END_SRC
+
+
+
+***** table - cockburn_patterns_inst
+
+#+call: make-rds-patterns-table(data = cockburn_patterns_inst, data.name = "cockburn_patterns_inst")
+#+name: cockburn_patterns_inst
 | ' RESEARCH COUNCIL '               |
 | ' RES COUNCIL '                    |
 | ' FRAUNHOFER GES '                 |
@@ -11333,124 +11431,157 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 | ' INST '       | >0 & asstype~="univ"                 |
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
-  ##' Detects Non-profit institutes with special conditions
-  ##'
-  ##' @param x table. Expected that x has a column with codes for universities
-  ##' @param codes.col column with codes for universities ("univ"). Default is last column of x
-  ##' @inheritDotParams harmonize.detect
-  ##' @return Harmonized table
-  ##' 
-  ##' @md
-  ##' @export
-  cockburn.detect.inst.conds.1 <- function(x
-                                         , codes.name = "entity.type"
-                                         , x.codes.merge = TRUE
+    ##' @eval attr(cockburn_detect_inst_conds_1, "@title")
+    ##' @description STATA equivalent: replace asstype = "inst" if strpos(standard_name," COUNCIL OF ")>0 & strpos(standard_name," RES ")>0
+    ##' @inherit detect_patterns params return
+    ##' @inheritDotParams harmonize_options
+    ##' @return Harmonized table
+    ##' @family magerman
+    ##' @seealso detect_patterns
+    ##'
+    ##' @md
+    ##' @export
+    cockburn_detect_inst_conds_1 <- make_alias(detect_patterns
+                                             , patterns = " COUNCIL OF .* RES | RES .* COUNCIL OF "
+                                             , patterns_type = "regex"
+                                             , patterns_codes = "inst"
+                                             , output_codes_col_name = "entity_type"
+                                             , merge_existing_codes = "append_to_existing"
+                                             , return_only_first_detected_code = TRUE)
+
+    attr(cockburn_detect_inst_conds_1, "@title") <-
+        "Detects Non-profit institutes with special conditions"
+
+
+
+    ##' Detects Non-profit institutes with special conditions
+    ##'
+    ##' STATA equivalent
+    ##' replace asstype = "inst" if strpos(standard_name," FOUND ")~=0 & asstype~="univ"
+    ##' assume a bug: " FOUND ")~=0 -> " FOUND ")>0
+    ##' replace asstype = "inst" if strpos(standard_name," INST ")>0 & asstype~="univ"
+    ##' 
+    ##' @param x table. Expected that x has a column with codes for universities
+    ##' @param output_codes_col_name column with codes for universities ("univ"). Default is last column of x
+    ##' @param merge_existing_codes same as in [detect_patterns()]
+    ##' @inheritDotParams harmonize_options
+    ##' @return Harmonized table
+    ##' 
+    ##' @md
+    ##' @export
+    cockburn_detect_inst_conds_2 <- function(x
+                                           , output_codes_col_name = "entity_type"
+                                           , merge_existing_codes = "append_to_existing"
+                                           , ...) {
+
+        codes <- get_target(x
+                          , col = output_codes_col_name
+                          , return_null_for_new_col = TRUE)
+        conds <-
+            lapply(codes, `%in%`, "univ") |>
+            sapply(any, na.rm = TRUE)
+        conds <- if(length(conds) == 0) NULL else !conds
+        x_vec <- get_target(x)
+        .x <- data.table(x_vec, codes)
+        names(.x) <- c("x", output_codes_col_name)
+        coded <- detect_patterns(x = .x
+                               , patterns = c(" FOUND "
+                                             , " INST ")
+                               , col = 1
+                               , output_placement = "replace_col"
+                               , rows = conds
+                               , output_codes_col_name = output_codes_col_name
+                               , patterns_codes = "inst"
+                               , merge_existing_codes = merge_existing_codes
+                               , return_only_first_detected_code = TRUE
+                               , return_only_codes = TRUE)
+        inset_target(coded, x, col = output_codes_col_name, output_placement = "replace_col")
+    }
+
+
+
+
+    ##' Detects Non-profit institutes with special conditions
+    ##'
+    ##' @param x table. Expected that x has a column with codes for universities
+    ##' @param merge_existing_codes same as in [detect_patterns()]
+    ##' @param output_codes_col_name column with codes for universities ("univ"). Default is last column of x
+    ##' @inheritDotParams harmonize_options
+    ##' @return Harmonized table
+    ##' 
+    ##' @md
+    ##' @export
+    cockburn_detect_inst_conds <- function(x
+                                         , merge_existing_codes = "append_to_existing"
+                                         , output_codes_col_name = "entity_type"
                                          , ...) {
-      ## STATA equvalent
-      ## replace asstype = "inst" if strpos(standard_name," COUNCIL OF ")>0 & strpos(standard_name," RES ")>0
-      harmonize.detect(x
-                     , patterns = " COUNCIL OF .* RES | RES .* COUNCIL OF "
-                     , patterns.type = "regex"
-                     , codes = "inst"
-                     , codes.name = codes.name
-                     , x.codes.merge = x.codes.merge
-                     , return.only.first.detected.code = TRUE
-                     , ...)
-          }
+      x |> 
+          cockburn_detect_inst_conds_1(merge_existing_codes = merge_existing_codes
+                                     , output_codes_col_name = output_codes_col_name) |>
+          cockburn_detect_inst_conds_2(output_codes_col_name = output_codes_col_name
+                                     , merge_existing_codes = merge_existing_codes)
+    }
 
-
-  ##' Detects Non-profit institutes with special conditions
-  ##'
-  ##' @param x table. Expected that x has a column with codes for universities
-  ##' @param codes.col column with codes for universities ("univ"). Default is last column of x
-  ##' @inheritDotParams harmonize.detect
-  ##' @return Harmonized table
-  ##' 
-  ##' @md
-  ##' @export
-  cockburn.detect.inst.conds.2 <- function(x
-                                         , codes.name = "entity.type"
-                                         , x.codes.merge = TRUE
-                                         , ...) {
-      ## STATA equvalent
-      ## replace asstype = "inst" if strpos(standard_name," FOUND ")~=0 & asstype~="univ"
-      ## assume a bug: " FOUND ")~=0 -> " FOUND ")>0
-      ## replace asstype = "inst" if strpos(standard_name," INST ")>0 & asstype~="univ"
-      codes <- harmonize.x(x, x.col = codes.name, ...)
-      conds <- codes %>%
-          lapply(equals, "univ") %>% 
-          sapply(any, na.rm = TRUE) %>%
-          not
-      x.vec <- harmonize.x(x, ...)
-      coded <- harmonize.detect(x = data.table(x.vec, codes)
-                              , patterns = c(" FOUND "
-                                           , " INST ")
-                              , x.rows = conds
-                              , codes = "inst"
-                              , x.codes.merge = x.codes.merge
-                              , return.only.first.detected.code = TRUE
-                              , return.only.codes = TRUE)
-      harmonize.x.dots(x, coded, x.col = codes.name
-                     , x.col.update = TRUE)
-  }
-
-
-
-
-  ##' Detects Non-profit institutes with special conditions
-  ##'
-  ##' @param x table. Expected that x has a column with codes for universities
-  ##' @param codes.col column with codes for universities ("univ"). Default is last column of x
-  ##' @inheritDotParams harmonize.detect
-  ##' @return Harmonized table
-  ##' 
-  ##' @md
-  ##' @export
-  cockburn.detect.inst.conds <- function(x
-                                       , x.codes.merge = TRUE
-                                       , codes.name = "entity.type"
-                                       , ...) {
-    x %>% 
-      cockburn.detect.inst.conds.1(x.codes.merge = x.codes.merge
-                                 , codes.name = codes.name) %>%
-      cockburn.detect.inst.conds.2(codes.name = codes.name
-                                 , x.codes.merge = x.codes.merge) %>%
-      return()
-  }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle no
-   ## tests
-  data.table(org = c(" EVIL FOUND OF BIG CORP "
-                   , " EVIL FOUND OF BIG CORP "
-                   , " INT INST OF MAGIC"
-                   , " COUNCIL OF PARANORMAL RES & DEV "
-                   , " COUNCIL OF GROWN UP KIDS ")
-           , entity.type = list(c("univ", "gov"), NA, "univ", NA, "gov")) %>%
-  cockburn.detect.inst.conds.2
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_detect_inst_conds.r
+  expect_equal(data.table(org = c(" EVIL FOUND OF BIG CORP "
+                                , " EVIL FOUND OF BIG CORP "
+                                , " INT INST OF MAGIC"
+                                , " COUNCIL OF PARANORMAL RES & DEV "
+                                , " COUNCIL OF GROWN UP KIDS ")
+                        , entity_type = list(c("univ", "gov"), NA, "univ", NA, "gov")) |>
+               cockburn_detect_inst_conds_2()
+             , structure(list(org = c(" EVIL FOUND OF BIG CORP ", " EVIL FOUND OF BIG CORP ", 
+                                      " INT INST OF MAGIC", " COUNCIL OF PARANORMAL RES & DEV ", " COUNCIL OF GROWN UP KIDS "
+                                      ), entity_type = list(c("univ", "gov"), "inst", "univ", NA_character_, 
+                                                            "gov")), row.names = c(NA, -5L), class = c("data.table", 
+                                                                                                       "data.frame")))
 
-  data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-                    , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-                    , "MSLab Co."
-                    , "MSLaeb Comp."
-                    , " COUNCIL OF PARANORMAL RES & DEV "
-                    , "MSLab Comp. Ltd."
-                    , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>% rep(20)
-           , foo = "I love coffee" ) %>%
-    cockburn.detect.inst.conds(x.codes.merge = TRUE)
 
-  data.table(org = c(" DR VLASOV "
-                   , " S.VLASOV PHD "
-                   , " STANICA LEGALY REPRESENTED BY STAS"
-                   , " DR VLASOV & BROTHER "
-                   , "MSlab & C"
-                   , "LEGALY REPRESENTED BY STAS"
-                   , " REPUBLIC LEGALY REPRESENTED BY STAS"
-                   , " TILBURG UNIVERSTIY "
-                   , " VU UNIVERSTITAET "
-                   , " FUNDATION LEGALY REPRESENTED BY STAS")
-           , entity.type = list(c("univ", "gov"), NA, "univ", NA, "gov")) %>%
-    cockburn.detect.inst.conds
+
+
+  expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                 , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+                                 , "MSLab Co."
+                                 , "MSLaeb Comp."
+                                 , " INST OF PARANORMAL RES & DEV "
+                                 , "MSLab Comp. Ltd."
+                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ")
+                        , foo = "I love coffee") |>
+               cockburn_detect_inst_conds(merge_existing_codes = "append_to_existing")
+             , structure(list(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+                                       "MSLab Co.", "MSLaeb Comp.", " INST OF PARANORMAL RES & DEV ", 
+                                       "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
+                                       ), foo = c("I love coffee", "I love coffee", "I love coffee", 
+                                                  "I love coffee", "I love coffee", "I love coffee", "I love coffee"
+                                                  ), entity_type = c(NA, NA, NA, NA, "inst", NA, NA)), row.names = c(NA, 
+                                                                                                                     -7L), class = c("data.table", "data.frame")))
+
+
+
+  expect_equal(data.table(org = c(" DR VLASOV "
+                                , " S.VLASOV PHD "
+                                , " STANICA LEGALY REPRESENTED BY STAS INST "
+                                , " INST DR VLASOV & BROTHER "
+                                , "MSlab & C"
+                                , "LEGALY REPRESENTED BY STAS"
+                                , " REPUBLIC LEGALY REPRESENTED BY STAS"
+                                , " TILBURG UNIVERSTIY "
+                                , " VU UNIVERSTITAET "
+                                , " FUNDATION LEGALY REPRESENTED BY STAS")
+                        , entity_type = list(c("univ", "gov"), NA, "univ", NA, "gov")) |>
+               cockburn_detect_inst_conds()
+             , structure(list(org = c(" DR VLASOV ", " S.VLASOV PHD ", " STANICA LEGALY REPRESENTED BY STAS INST ", 
+                                      " INST DR VLASOV & BROTHER ", "MSlab & C", "LEGALY REPRESENTED BY STAS", 
+                                      " REPUBLIC LEGALY REPRESENTED BY STAS", " TILBURG UNIVERSTIY ", 
+                                      " VU UNIVERSTITAET ", " FUNDATION LEGALY REPRESENTED BY STAS"
+                                      ), entity_type = list(c("univ", "gov"), NA_character_, "univ", 
+                                                            "inst", "gov", c("univ", "gov"), NA_character_, "univ", NA_character_, 
+                                                            "gov")), row.names = c(NA, -10L), class = c("data.table", 
+                                                                                                        "data.frame")))
+
+
 
 
 #+END_SRC
@@ -11461,48 +11592,56 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :END:
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
-  ##' Detects German Non-profit institutes
-  ##'
-  ##' "EINGETRAGENER VEREIN. NON PROFIT SOCIETY/ASSOCIATION."
-  ##' 
+  ##' @eval attr(cockburn_detect_inst_german, "@title")
+  ##' @description "EINGETRAGENER VEREIN. NON PROFIT SOCIETY/ASSOCIATION."
   ##' @param x table
-  ##' @inheritDotParams harmonize.detect
+  ##' @param output_codes_col_name same as in [detect_patterns()]
+  ##' @param merge_existing_codes same as in [detect_patterns()]
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##' 
   ##' @md 
   ##' @export 
-  cockburn.detect.inst.german <- function(x
-                                 , codes.name = "entity.type"
-                                 , x.codes.merge = TRUE 
+  cockburn_detect_inst_german <- function(x
+                                 , output_codes_col_name = "entity_type"
+                                 , merge_existing_codes = "append_to_existing"
                                  , ...) {
-    conds <- harmonize.detect(x, patterns = c(" UNIV "
-                                            , " GMBH "
-                                            , " KGAA "
-                                            , " KG "
-                                            , " AG "
-                                            , " EG "
-                                            , " OHG ")
-                            , codes = TRUE
-                            , return.only.first.detected.code = TRUE
-                            , return.only.codes = TRUE) %>%
-        unlist %>% sapply(isTRUE) %>% not
-    harmonize.detect(x, patterns = c(" STIFTUNG "
-                                   , " EINGETRAGENER VEREIN ")
-                   , codes.name = codes.name
-                   , x.codes.merge = x.codes.merge
-                   , x.rows = conds
-                   , codes = "inst"
-                   , return.only.first.detected.code = TRUE
-                   , ...)
+      rows <- get_col_and_rows()$rows
+      conds <- detect_patterns(x
+                             , patterns = c(" UNIV "
+                                          , " GMBH "
+                                          , " KGAA "
+                                          , " KG "
+                                          , " AG "
+                                          , " EG "
+                                          , " OHG ")
+                             , patterns_codes = TRUE
+                             , no_match_code = FALSE
+                             , return_only_first_detected_code = TRUE
+                             , return_only_codes = TRUE)
+      detect_patterns(x, patterns = c(" STIFTUNG "
+                                    , " EINGETRAGENER VEREIN ")
+                    , output_codes_col_name = output_codes_col_name
+                    , merge_existing_codes = merge_existing_codes
+                    , rows = and_rows(rows, conds, x)
+                    , patterns_codes = "inst"
+                    , return_only_first_detected_code = TRUE)
   }
+
+  attr(cockburn_detect_inst_german, "@title") <- "Detects German Non-profit institutes"
 #+END_SRC
 
-#+BEGIN_SRC R :results none :session :tangle no :eval no-export
-      ## Test
-      c(" EINGETRAGENER VEREIN UNIV "
-      , " BERLIN EINGETRAGENER VEREIN "
-      , " STIFTUNG ") %>% 
-          cockburn.detect.inst.german
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_detect_inst_german.r
+  expect_equal(c(" EINGETRAGENER VEREIN UNIV "
+               , " BERLIN EINGETRAGENER VEREIN "
+               , " STIFTUNG ") |>
+               cockburn_detect_inst_german()
+             , structure(list(x = c(" EINGETRAGENER VEREIN UNIV ", " BERLIN EINGETRAGENER VEREIN ", 
+                                    " STIFTUNG "), entity_type = c("inst", NA, NA)), row.names = c(NA, 
+                                                                                                   -3L), class = c("data.table", "data.frame")))
+
+
 #+END_SRC
 
 
@@ -11512,43 +11651,44 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :END:
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
-  ##' Detect Hospitals (Non-Corporates group)
-  ##'
-  ##' From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
-  ##' 
-  ##' @param x vector or table
-  ##' @inheritDotParams harmonize.detect
+  ##' @eval attr(cockburn_detect_hosp, "@title")
+  ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
+  ##' @inherit detect_patterns params return
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
-  ##' 
-  ##' @md 
-  ##' @export 
-  cockburn.detect.hosp <- function(x
-                                 , codes.name = "entity.type"
-                                 , x.codes.merge = TRUE 
-                                 , ...) {
-    harmonize.detect(x
-                   , codes.name = codes.name
-                   , x.codes.merge = x.codes.merge
-                   , patterns = cockburn.patterns.hosp
-                   , codes = "hosp"
-                   , return.only.first.detected.code = TRUE
-                   , ...)
-  }
+  ##' @family magerman
+  ##' @seealso detect_patterns
+  ##'
+  ##' @md
+  ##' @export
+  cockburn_detect_hosp <- make_alias(detect_patterns
+                                   , patterns = cockburn_patterns_hosp
+                                   , patterns_codes = "hosp"
+                                   , return_only_first_detected_code = TRUE
+                                   , output_codes_col_name = "entity_type"
+                                   , merge_existing_codes = "append_to_existing")
 
+  attr(cockburn_detect_hosp, "@title") <-
+      "Detect Hospitals (Non-Corporates group)"
 
-
-
-  ## test
-  ## c(" DR VLASOV "
-  ## , " S.VLASOV PHD "
-  ## , " STANICA LEGALY REPRESENTED BY STAS") %>%
-  ##     cockburn.detect.hosp
 #+END_SRC
 
-***** table - cockburn.patterns.hosp
-#+call: make-rds-patterns-table(data = cockburn.patterns.hosp, data.name = "cockburn.patterns.hosp")
 
-#+name: cockburn.patterns.hosp
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_detect_hosp.r
+  expect_equal(c(" DR VLASOV "
+               , " S.VLASOV PHD "
+               , " STANICA LEGALY REPRESENTED BY STAS") |>
+               cockburn_detect_hosp()
+             , structure(list(x = c(" DR VLASOV ", " S.VLASOV PHD ", " STANICA LEGALY REPRESENTED BY STAS"
+                                    ), entity_type = c(NA, NA, "hosp")), row.names = c(NA, -3L), class = c("data.table", 
+                                                                                                           "data.frame")))
+
+#+END_SRC
+
+***** table - cockburn_patterns_hosp
+#+call: make-rds-patterns-table(data = cockburn_patterns_hosp, data.name = "cockburn_patterns_hosp")
+
+#+name: cockburn_patterns_hosp
 | ' AMTS SYGEHUS '        |
 | ' AMTSSYGEHUS '         |
 | ' BOLNHITSA '           |
@@ -11618,36 +11758,42 @@ Following funciton removes punctuation and standardise some symbols. Implementat
   ##' Removes punctuation and standardise some symbols. 
   ##'
   ##' @param x object
-  ##' @inheritDotParams replace_patterns
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##' 
   ##' @md
-  ##' @import magrittr
   ##' @export 
-  cockburn.replace.punctuation <- function(x
+  cockburn_replace_punctuation <- function(x
                                            , ...) {
-    x %>%
-      harmonize.replace(patterns = cockburn.patterns.punctuation.and, ...) %>%
-      harmonize.replace(patterns = cockburn.patterns.punctuation.the
-                      , patterns.type.col = 3, ...) %>%
-      ## I swapted patstat with amadeus otherwise Ã²Ã¢ÃªÃ®Ã© will not become oaeie
-      harmonize.replace(patterns = cockburn.patterns.punctuation.patstat, ...) %>% 
-      harmonize.replace(patterns = cockburn.patterns.punctuation.amadeus, ...) %>%
-      harmonize.replace(patterns = cockburn.patterns.punctuation.char, ...)
+    x |>
+        replace_patterns(patterns = cockburn_replace_punctuation_and) |>
+        replace_patterns(patterns = cockburn_replace_punctuation_the
+                       , patterns_type_col = 3) |>
+        ## I swapted patstat with amadeus otherwise Ã²Ã¢ÃªÃ®Ã© will not become oaeie
+        replace_patterns(patterns = cockburn_replace_punctuation_patstat) |> 
+        replace_patterns(patterns = cockburn_replace_punctuation_amadeus) |>
+        replace_patterns(patterns = cockburn_replace_punctuation_char)
   }
 
-  ## Test
-  ## c("WESTINGHOUSE, |.?^&*@ ELEC  "
-  ## , "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©"
-  ## , "GRACE (W/R) & CO Ltd.") %>% 
-  ##   cockburn.replace.punctuation
 #+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_replace_punctuation.r
+  expect_equal(c("WESTINGHOUSE, |.?^&*@ ELEC  "
+               , "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©"
+               , "GRACE (W/R) & CO Ltd.") |> 
+               cockburn_replace_punctuation()
+             , c("WESTINGHOUSE &  ELEC  ", "GRACE W EN R  &  CO   oaeie", "GRACE W R  &  CO Ltd"))
+
+#+END_SRC
+
+
+
 
 **** table - & (EPO Espace)
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.punctuation.and, data.name = "cockburn.patterns.punctuation.and")
+#+call: make-rds-patterns-table(data = cockburn_replace_punctuation_and, data.name = "cockburn_replace_punctuation_and")
 
-#+name: cockburn.patterns.punctuation.and
+#+name: cockburn_replace_punctuation_and
 | pattern | replacement |
 |---------+-------------|
 | '&AMP;' | ' & '       |
@@ -11659,9 +11805,9 @@ Following funciton removes punctuation and standardise some symbols. Implementat
 
 **** table - the (British)
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.punctuation.the, data.name = "cockburn.patterns.punctuation.the")
+#+call: make-rds-patterns-table(data = cockburn_replace_punctuation_the, data.name = "cockburn_replace_punctuation_the")
 
-#+name: cockburn.patterns.punctuation.the
+#+name: cockburn_replace_punctuation_the
 | pattern | replacement | type   |
 |---------+-------------+--------|
 | '(THE)' | ''          | ends   |
@@ -11678,9 +11824,9 @@ ISO8859-1 (AMADEUS)
 
 **** table - Accented characters - AMADEUS
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.punctuation.amadeus, data.name = "cockburn.patterns.punctuation.amadeus")
+#+call: make-rds-patterns-table(data = cockburn_replace_punctuation_amadeus, data.name = "cockburn_replace_punctuation_amadeus")
 
-#+name: cockburn.patterns.punctuation.amadeus
+#+name: cockburn_replace_punctuation_amadeus
 | pattern | replacement | codepoint |
 |---------+-------------+-----------|
 | À       | A           |       192 |
@@ -11748,9 +11894,9 @@ ISO8859-1 (AMADEUS)
 
 **** table - Accented characters - EPO PATSTAT
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.punctuation.patstat, data.name = "cockburn.patterns.punctuation.patstat")
+#+call: make-rds-patterns-table(data = cockburn_replace_punctuation_patstat, data.name = "cockburn_replace_punctuation_patstat")
 
-#+name: cockburn.patterns.punctuation.patstat
+#+name: cockburn_replace_punctuation_patstat
 | pattern | replacement | code1 | code2 | name                     |
 |---------+-------------+-------+-------+--------------------------|
 | Ã       | a           |   195 |   160 | a grave                  |
@@ -11777,9 +11923,9 @@ ISO8859-1 (AMADEUS)
 
 **** table - strips out all punctuation characters
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.punctuation.char, data.name = "cockburn.patterns.punctuation.char")
+#+call: make-rds-patterns-table(data = cockburn_replace_punctuation_char, data.name = "cockburn_replace_punctuation_char")
 
-#+name: cockburn.patterns.punctuation.char
+#+name: cockburn_replace_punctuation_char
 | pattern  | replacement |
 |----------+-------------|
 | '''      | ''          |
@@ -11815,9 +11961,6 @@ ISO8859-1 (AMADEUS)
 | '#'      | ''          |
 | '-'      | ' '         |
 
-
-
-
 *** Standard Name
 :PROPERTIES:
 :ID:       org:tnnchlb1cgi0
@@ -11831,31 +11974,36 @@ ISO8859-1 (AMADEUS)
   ##' @return Harmonized table
   ##' 
   ##' @md
-  ##' @import magrittr
   ##' @export 
-  cockburn.replace.standard.names <- function(x
+  cockburn_replace_standard_names <- function(x
                                               , ...) {
-    x %>%
-      cockburn.replace.derwent(...) %>% 
-      replace_patterns(patterns = cockburn.patterns.standard.names.additional, ...) %>% 
-      replace_patterns(patterns = cockburn.patterns.standard.names.country.specific, ...)
+    x |>
+      cockburn_replace_derwent() |> 
+      replace_patterns(patterns = cockburn_patterns_standard_names_additional) |> 
+      replace_patterns(patterns = cockburn_patterns_standard_names_country_specific)
   }
 #+END_SRC
 
-#+BEGIN_SRC R :results none :session :tangle no :eval no-export
-  ## Test
-  c("WESTINGHOUSE, |.?^&*@ ELEC  "
-  , "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
-  , "GRACE (W/R) & CO LTD ") %>% 
-   cockburn.replace.standard.names
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_replace_standard_names.r
+  expect_equal(c("WESTINGHOUSE, |.?^&*@ ELEC  "
+               , "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
+               , "GRACE (W/R) & CO LTD ") |>
+               cockburn_replace_standard_names(output_placement = "append_to_x")
+             , structure(list(x = c("WESTINGHOUSE, |.?^&*@ ELEC  ", "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED ", 
+                                    "GRACE (W/R) & CO LTD "), std_x = c("WESTINGHOUSE, |.?^&*@ ELEC  ", 
+                                                                        "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LTD ", "GRACE (W/R) & CO LTD "
+                                                                        )), row.names = c(NA, -3L), class = c("data.table", "data.frame")))
+
+
 #+END_SRC
 
 
 **** table - additional changes
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.standard.names.additional, data.name = "cockburn.patterns.standard.names.additional")
+#+call: make-rds-patterns-table(data = cockburn_patterns_standard_names_additional, data.name = "cockburn_patterns_standard_names_additional")
 
-#+name: cockburn.patterns.standard.names.additional
+#+name: cockburn_patterns_standard_names_additional
 | pattern        | replacement |
 |----------------+-------------|
 | ' RES & DEV '  | ' R&D '     |
@@ -11863,9 +12011,9 @@ ISO8859-1 (AMADEUS)
 
 **** table - country specific work
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.standard.names.country.specific, data.name = "cockburn.patterns.standard.names.country.specific")
+#+call: make-rds-patterns-table(data = cockburn_patterns_standard_names_country_specific, data.name = "cockburn_patterns_standard_names_country_specific")
 
-#+name: cockburn.patterns.standard.names.country.specific
+#+name: cockburn_patterns_standard_names_country_specific
 | pattern                                                | replacement       | country            |
 |--------------------------------------------------------+-------------------+--------------------|
 | ' PUBLIC LIMITED '                                     | ' PLC '           | UNITED KINGDOM     |
@@ -11980,35 +12128,41 @@ ISO8859-1 (AMADEUS)
 :END:
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
-  ##' Creates so called stem name (a name with all legal entity identifiers removed)
-  ##'
-  ##' @param x object
-  ##' @inheritDotParams replace_patterns
+  ##' @eval attr(cockburn_remove_standard_names, "@title")
+  ##' @inherit replace_patterns params return
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
-  ##' 
+  ##' @family magerman
+  ##' @seealso replace_patterns
+  ##'
   ##' @md
-  ##' @import magrittr
-  ##' @export 
-  cockburn.remove.standard.names <- function(x
-                                              , ...) {
-    replace_patterns(x
-                    , patterns = cockburn.patterns.stem.name
-                    , replacements = " "
-                    , ...) 
-  }
+  ##' @export
+  cockburn_remove_standard_names <- make_alias(replace_patterns
+                                             , patterns = cockburn_patterns_stem_name
+                                             , replacements = " ")
 
-  ## Test
-  ## c("WESTINGHOUSE, |.?^&*@ ELEC  "
-  ## , "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
-  ## , "GRACE (W/R) & CO LTD ") %>% 
-  ##  cockburn.remove.standard.names
+  attr(cockburn_remove_standard_names, "@title") <-
+      "Creates so called stem name (a name with all legal entity identifiers removed)"
+
+
 #+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_remove_standard_names.r
+  expect_equal(c("WESTINGHOUSE, |.?^&*@ ELEC  "
+               , "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
+               , "GRACE (W/R) & CO LTD ") |>
+               cockburn_remove_standard_names()
+             , c("WESTINGHOUSE, |.?^&*@ ELEC  ", "GRACE (W EN R) - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED ", "GRACE (W/R) "))
+
+
+#+END_SRC
+
 
 creates a name with all legal entity identifiers removed
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.stem.name, data.name = "cockburn.patterns.stem.name")
+#+call: make-rds-patterns-table(data = cockburn_patterns_stem_name, data.name = "cockburn_patterns_stem_name")
 
-#+name: cockburn.patterns.stem.name
+#+name: cockburn_patterns_stem_name
 | pattern             | replacement | country                      |
 |---------------------+-------------+------------------------------|
 | ' LTD '             | ' '         | UNITED KINGDOM               |
@@ -12152,78 +12306,88 @@ creates a name with all legal entity identifiers removed
 | ' KOGYO KK '        | ' '         | Japan                        |
 | ' KK '              | ' '         | Japan                        |
 
-
-
 *** USPTO special
 :PROPERTIES:
 :ID:       org:mex64a51nki0
 :END:
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
-  ##' Removes special USPTO codes.
-  ##'
-  ##' @param x object
-  ##' @inheritDotParams replace_patterns
-  ##' @return Harmonized table
-  ##' 
-  ##' @md
-  ##' @import magrittr
-  ##' @export 
-  cockburn.remove.uspto <- function(x
-                                       , ...) {
-    replace_patterns(x, patterns = cockburn.patterns.uspto, ...) 
-  }
+    ##' @eval attr(cockburn_remove_uspto, "@title")
+    ##' @inherit replace_patterns params return
+    ##' @inheritDotParams harmonize_options
+    ##' @return Harmonized table
+    ##' @family magerman
+    ##' @seealso replace_patterns
+    ##'
+    ##' @md
+    ##' @export
+    cockburn_remove_uspto <- make_alias(replace_patterns
+                                      , patterns = cockburn_patterns_uspto)
+
+    attr(cockburn_remove_uspto, "@title") <-
+        "Removes special USPTO codes."
 
 
 
-  ##' Special USPTO codes. Codes as "indiv"
-  ##'
-  ##' @param x object
-  ##' @inheritDotParams harmonize.detect
-  ##' @return Harmonized table
-  ##' 
-  ##' @md
-  ##' @import magrittr
-  ##' @export 
-  cockburn.detect.uspto <- function(x
-                                       , ...) {
-    harmonize.detect(x
-                   , patterns = ";"
-                   , codes = "indiv"
-                   , codes.name = "entity.type"
-                   , return.only.first.detected.code = TRUE
-                   , ...) 
-  }
 
-  ## ## Test
-  ## c("WESTINGHOUSE, |.?^&*@ ELEC-CONN.  "
-  ## , "GRACE-CONN. (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
-  ## , "Bechara;John") %>% 
-  ##  cockburn.remove.uspto.code
+    ##' @eval attr(cockburn_detect_uspto, "@title")
+    ##' @inherit detect_patterns params return
+    ##' @inheritDotParams harmonize_options
+    ##' @return Harmonized table
+    ##' @family magerman
+    ##' @seealso detect_patterns
+    ##'
+    ##' @md
+    ##' @export
+    cockburn_detect_uspto <- make_alias(detect_patterns
+                                      , patterns = ";"
+                                      , patterns_codes = "indiv"
+                                      , output_codes_col_name = "entity_type"
+                                      , return_only_first_detected_code = TRUE)
 
-  ## c("WESTINGHOUSE, |.?^&*@ ELEC-CONN.  "
-  ## , "GRACE-CONN. (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
-  ## , "Bechara;John") %>% 
-  ##   cockburn.detect.uspto.code
+    attr(cockburn_detect_uspto, "@title") <-
+        "Special USPTO codes. Codes as 'indiv'"
+
+
 #+END_SRC
 
 
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_detect_uspto.r
+  expect_equal(c("WESTINGHOUSE, |.?^&*@ ELEC-CONN.  "
+               , "GRACE-CONN. (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
+               , "Bechara;John") |> 
+               cockburn_remove_uspto()
+             , c("WESTINGHOUSE, |.?^&*@ ELEC  ", "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED ", 
+                 "Bechara ; John"))
 
-#+call: make-rds-patterns-table(data = cockburn.patterns.uspto, data.name = "cockburn.patterns.uspto")
 
-#+name: cockburn.patterns.uspto
+
+  expect_equal(c("WESTINGHOUSE, |.?^&*@ ELEC-CONN.  "
+               , "GRACE-CONN. (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
+               , "Bechara;John") |> 
+               cockburn_detect_uspto()
+             , structure(list(x = c("WESTINGHOUSE, |.?^&*@ ELEC-CONN.  ", "GRACE-CONN. (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED ", 
+                                    "Bechara;John"), entity_type = c(NA, NA, "indiv")), row.names = c(NA, 
+                                                                                                      -3L), class = c("data.table", "data.frame")))
+
+
+
+#+END_SRC
+
+
+#+call: make-rds-patterns-table(data = cockburn_patterns_uspto, data.name = "cockburn_patterns_uspto")
+
+#+name: cockburn_patterns_uspto
 | pattern  | replacement |
 |----------+-------------|
 | '-CONN.' | ''          |
 | ';'      | ' ; '       |
 
 ** Combined Cockburn Procedures
-*** main_coname2.do
-:PROPERTIES:
-:ID:       org:ns374a51nki0
-:END:
 
-#+NAME: cockburn.procedures_table
+basically reproduces the 'main_coname2.do' stata file
+
+#+NAME: cockburn_procedures_table
 | no | message                                                     | function.call                                    |
 |----+-------------------------------------------------------------+--------------------------------------------------|
 |    | *Prepossessing*                                             |                                                  |
@@ -12231,85 +12395,140 @@ creates a name with all legal entity identifiers removed
 |  2 | Upper casing                                                | 'harmonize_toupper'                              |
 |    |                                                             |                                                  |
 |    | *Standartization*                                           |                                                  |
-|  3 | Special removals and recoding for USPTO names               | 'cockburn.detect.uspto'                          |
-|  4 | Standardization of symbols and removals of some punctuation | 'cockburn.replace.punctuation'                   |
-|  5 | Standardization of names (Derwent, etc.)                    | 'cockburn.replace.standard.names'                |
-|  6 | Identification of organization type                         | 'cockburn.detect.type'                           |
-|  7 | Cleaning organization type                                  | 'cockburn.replace.type'                          |
-|  8 | Combining single char sequences                             | 'cockburn.combabbrev'                            |
-|  9 | Removal of legal entity identifiers                         | 'cockburn.remove.standard.names'                 |
+|  3 | Special removals and recoding for USPTO names               | 'cockburn_detect_uspto'                          |
+|  4 | Standardization of symbols and removals of some punctuation | 'cockburn_replace_punctuation'                   |
+|  5 | Standardization of names (Derwent, etc.)                    | 'cockburn_replace_standard_names'                |
+|  6 | Identification of organization type                         | 'cockburn_detect_type'                           |
+|  7 | Cleaning organization type                                  | 'cockburn_replace_type'                          |
+|  8 | Combining single char sequences                             | 'cockburn_combabbrev'                            |
+|  9 | Removal of legal entity identifiers                         | 'cockburn_remove_standard_names'                 |
 | 10 | Cleaning spaces                                             | 'harmonize_squish_spaces'                        |
 
-#+call: make-rds-patterns-table(data = cockburn.procedures_table, data.name = "cockburn.procedures_table", remove.single.quotes = "FALSE")
+#+call: make-rds-patterns-table(data = cockburn_procedures_table, data.name = "cockburn_procedures_table", remove.single.quotes = "FALSE")
 
 #+BEGIN_SRC R :tangle ./R/cockburn.r
   ##' Harmonizes strings using exact procedures described in Cockburn, et al. (2009)
   ##' @param x table or vector
-  ##' @param cockburn.procedures list of procedures to pass to `harmonize` function. Default is `cockburn.procedures.list`
-  ##' @param detect.legal.form Whether to detect legal forms. Default is FALSE
-  ##' @param return.x.before.common.words.removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
-  ##' @param return.x.cols.all Whether to return initial column in x. Default is FALSE
+  ##' @param cockburn_procedures list of procedures to pass to `harmonize` function. Default is `cockburn_procedures.list`
+  ##' @param detect_legal_form Whether to detect legal forms. Default is FALSE
+  ##' @param return_x_before_common_words_removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
   ##' @inheritDotParams harmonize
   ##' @return Harmonized table
   ##'
   ##' @references Cockburn, et al. (2009)
   ##' 
   ##' @md 
-  ##' @import magrittr
   ##' @export 
-  harmonize.cockburn <- function(x
-                               , cockburn.procedures = cockburn.procedures_table
-                               , detect.legal.form = FALSE
-                               , return.x.before.common.words.removal = FALSE
-                               , return.x.cols.all = FALSE
+  harmonize_cockburn <- function(x
+                               , cockburn_procedures = cockburn_procedures_table
+                               , detect_legal_form = FALSE
+                               , return_x_before_common_words_removal = FALSE
                                , ... ) {
-      if(is.data.frame(cockburn.procedures)) {
-          cockburn.procedures %<>% harmonize_make_procedures_list
+      if(is.data.frame(cockburn_procedures)) {
+          cockburn_procedures <- harmonize_make_procedures_list(cockburn_procedures)
       }
-    ## do some tweaks on cockburn.procedures
-    if(!detect.legal.form) {
-      cockburn.procedures %<>%
-        extract(sapply(., extract2, 1) %>%
-                is_in(c("cockburn.detect.type"
-                      , "cockburn.detect.uspto")) %>%
-                not)
+    ## do some tweaks on cockburn_procedures
+    if(!detect_legal_form) {
+        cockburn_procedures <-
+            cockburn_procedures[
+                !(sapply(cockburn_procedures, `[[`, 1) %in% 
+                  c("cockburn_detect_type", "cockburn_detect_uspto"))
+            ]
+
     }
-    if(return.x.before.common.words.removal) {
-      cockburn.procedures %<>% 
-        inset2(sapply(., extract2, 1) %>%
-               equals("cockburn.remove.standard.names") %>%
-               which
-             , list("cockburn.remove.standard.names"
-                  , return.x.cols.all = TRUE))
+      if(return_x_before_common_words_removal) {
+        cockburn_procedures[[
+            which(sapply(cockburn_procedures, `[[` , 1) %in% "cockburn_combabbrev")
+        ]] <- list("cockburn_combabbrev", append_output_copy = TRUE)
     }
-    if(return.x.cols.all) {
-      cockburn.procedures %<>% 
-        inset2(1, c(as.list(extract2(.,1))
-                  , return.x.cols.all = TRUE))
-    }
-    harmonize(x, cockburn.procedures, ...)
+    harmonize(x, cockburn_procedures, ...)
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle no
-  ## Test
-   data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-                     , "M S Lab CÖ. <a href=lsdldf> <br> <\\a>"
-                     , "MSLab Co."
-                     , "MSLaeb Comp."
-                     , "MSLab Comp. Ltd."
-                     , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") %>% rep(20)
-            , foo = "Coffee" ) %>%
-     ## harmonize.cockburn()
-     ## harmonize.cockburn(detect.legal.form = TRUE)
-     ## harmonize.cockburn(return.x.cols.all = TRUE)
-     ## harmonize.cockburn(return.x.before.common.words.removal = TRUE)
-     harmonize.cockburn(progress.min = 100
-                      , detect.legal.form = TRUE)
+#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_cockburn.r
+
+  expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                 , "M S Lab CÖ. <a href=lsdldf> <br> <\\a>"
+                                 , "MSLab Co."
+                                 , "MSLaeb Comp."
+                                 , "MSLab Comp. Ltd."
+                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |> rep(20)
+                        , foo = "Coffee" ) |>
+               harmonize_cockburn(quite = TRUE)
+             , structure(list(name = c("MAEKAROENI ETOE FKUESNOE", "MS LAB COE A HREF=LSDLDF BR A", 
+                                       "MSLAB", "MSLAEB COMP", "MSLAB COMP", "AAAAAEAAECEEEEIIIIDNOOOOOEOUUUUEYŸ") |> rep(20)
+                            , foo = "Coffee" |> rep(120)), row.names = c(NA, -120L), class = c("data.table", 
+                                                                                               "data.frame")))
+
+
+
+
+
+
+  expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                 , "M S Lab CÖ. <a href=lsdldf> <br> <\\a>"
+                                 , "MSLab Co."
+                                 , "MSLaeb Comp."
+                                 , "MSLab Comp. Ltd."
+                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |> rep(20)
+                        , foo = "Coffee" ) |>
+               harmonize_cockburn(detect_legal_form = TRUE, quite = TRUE)
+             , structure(list(name = c("MAEKAROENI ETOE FKUESNOE", "MS LAB COE A HREF=LSDLDF BR A", 
+                                       "MSLAB", "MSLAEB COMP", "MSLAB COMP", "AAAAAEAAECEEEEIIIIDNOOOOOEOUUUUEYŸ") |> rep(20)
+                            , foo = "Coffee" |> rep(120)
+                            , entity_type = c(rep("firm", 5), NA) |>
+                                  rep(20)
+                              ), row.names = c(NA, -120L), class = c("data.table", 
+                                                                     "data.frame")))
+
+
+
+
+  expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                 , "M S Lab CÖ. <a href=lsdldf> <br> <\\a>"
+                                 , "MSLab Co."
+                                 , "MSLaeb Comp."
+                                 , "MSLab Comp. Ltd."
+                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |> rep(20)
+                        , foo = "Coffee" ) |>
+               harmonize_cockburn(return_x_before_common_words_removal = TRUE
+                                , quite = TRUE)
+             , structure(list(name = c("MAEKAROENI ETOE FKUESNOE", "MS LAB COE A HREF=LSDLDF BR A", 
+                                       "MSLAB", "MSLAEB COMP", "MSLAB COMP", "AAAAAEAAECEEEEIIIIDNOOOOOEOUUUUEYŸ") |> rep(20)
+                            , foo = "Coffee" |> rep(120)
+                       , std_name_copy = c("  MAEKAROENI ETOE FKUESNOE LTD  ", "  MS LAB COE A HREF=LSDLDF BR A  ", 
+                                           "  MSLAB CO  ", "  MSLAEB COMP  ", "  MSLAB COMP LTD  ", "  AAAAAEAAECEEEEIIIIDNOOOOOEOUUUUEYŸ  ") |>
+                             rep(20))
+                       , row.names = c(NA, -120L), class = c("data.table", 
+                                                             "data.frame")))
+
+
+
+
+
+
+
+  ## test progress (but it is so sloww...)
+  expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                 , "M S Lab CÖ. <a href=lsdldf> <br> <\\a>"
+                                 , "MSLab Co."
+                                 , "MSLaeb Comp."
+                                 , "MSLab Comp. Ltd."
+                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |> rep(20)
+                        , foo = "Coffee" ) |>
+               harmonize_cockburn(nrows_min_to_show_progress = 100
+                                , detect_legal_form = TRUE
+                                , quite = TRUE)
+             , structure(list(name = c("MAEKAROENI ETOE FKUESNOE", "MS LAB COE A HREF=LSDLDF BR A", 
+                                       "MSLAB", "MSLAEB COMP", "MSLAB COMP", "AAAAAEAAECEEEEIIIIDNOOOOOEOUUUUEYŸ") |> rep(20)
+                            , foo = "Coffee" |> rep(120)
+                            , entity_type = c(rep("firm", 5), NA) |>
+                                  rep(20)
+                              ), row.names = c(NA, -120L), class = c("data.table", 
+                                                                     "data.frame")))
 #+END_SRC
 
 ** Old Code
-
 :PROPERTIES:
 :ID:       org:k43ijzz0cai0
 :END:
@@ -12508,7 +12727,6 @@ creates a name with all legal entity identifiers removed
   }
 
 #+END_SRC
-
 
 #+BEGIN_SRC R  :tangle no
        ## Subsitutes strings
