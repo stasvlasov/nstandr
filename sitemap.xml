@@ -4,6 +4,12 @@
     <loc>/404.html</loc>
   </url>
   <url>
+    <loc>/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>/LICENSE.html</loc>
+  </url>
+  <url>
     <loc>/authors.html</loc>
   </url>
   <url>
@@ -91,12 +97,6 @@
     <loc>/reference/detect_patterns.html</loc>
   </url>
   <url>
-    <loc>/reference/dots.and.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dots.default.html</loc>
-  </url>
-  <url>
     <loc>/reference/escape_regex.html</loc>
   </url>
   <url>
@@ -118,31 +118,10 @@
     <loc>/reference/get_vector.html</loc>
   </url>
   <url>
-    <loc>/reference/harmonize.detect.html</loc>
-  </url>
-  <url>
     <loc>/reference/harmonize.html</loc>
   </url>
   <url>
-    <loc>/reference/harmonize.match.arg.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize.x.dots.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize.x.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_add_suffix.html</loc>
-  </url>
-  <url>
     <loc>/reference/harmonize_cockburn.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_data_length.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_data_width.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize_dehtmlize.html</loc>
@@ -152,15 +131,6 @@
   </url>
   <url>
     <loc>/reference/harmonize_is_data_empty.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_is_ok_col.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_is_ok_dots.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_is_ok_type.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize_magerman.html</loc>
@@ -182,9 +152,6 @@
   </url>
   <url>
     <loc>/reference/harmonize_squish_spaces.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_target_get.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize_toascii.html</loc>
@@ -301,12 +268,12 @@
     <loc>/reference/replace_patterns.html</loc>
   </url>
   <url>
-    <loc>/reference/transpose_list_of_vectors.html</loc>
-  </url>
-  <url>
     <loc>/reference/unlist_if_possible.html</loc>
   </url>
   <url>
     <loc>/reference/x_length.html</loc>
+  </url>
+  <url>
+    <loc>/reference/x_width.html</loc>
   </url>
 </urlset>

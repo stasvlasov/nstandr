@@ -61,6 +61,8 @@
 <dd><p>If set then collapse characters in the main column of the <code>x</code> (i.e., <code>x.col</code>) as to a single string. It will increase performance (at least for relatively short tables). Default is FALSE</p></dd>
 <dt>as_single_string_sep</dt>
 <dd><p>delimiter for collapsed strings to uncollapse it later. Default is "#_|".</p></dd>
+<dt>use_read_xml</dt>
+<dd><p>If set the it will parse XML. Default is FALSE which means it parses HTML</p></dd>
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="harmonize_options.html">harmonize_options</a></code></p><dl><dt><code>col</code></dt>
 <dd><p>Column of interest (the one we need to harmonize) in the <code>x</code> object (if it is data.frame like).</p></dd>
@@ -93,8 +95,6 @@
 
   
 </dl></dd>
-<dt>read.xml</dt>
-<dd><p>If set the it will parse XML. Default is FALSE which means it parses HTML</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
