@@ -1,12 +1,14 @@
 Package: harmonizer
 Title: Harmonization of Organizational Names
-Version: 0.4
+Version: 0.0.0.9000
 Date: 2022-02-10
 Authors@R: 
     person("Stanislav", "Vlasov", , "s.vlasov@uvt.nl", role = c("aut", "cre"))
 Description: Harmonizes organizational names using steps described in
     Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more.
 License: MIT + file LICENSE
+URL: https://stasvlasov.github.io/harmonizer/
+BugReports: https://github.com/stasvlasov/harmonizer/issues
 Depends: 
     R (>= 3.5.0)
 Imports: 
@@ -29,6 +31,9 @@ References: Magerman, T., Looy, V., Bart, & Song, X. (2006). Data
     Harmonizing and combining large datasets - an application to
     firm-level patent and accounting data. National Bureau of Economic
     Research Working Paper Series, (15851). Retrieved from
-    http://www.nber.org/papers/w15851.pdf
+    http://www.nber.org/papers/w15851.pdf, Wasi, N., & Flaaen, A. (2015).
+    Record linkage using Stata: Preprocessing, linking, and reviewing
+    utilities. The Stata Journal, 15(3), 672-697.
+    https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2

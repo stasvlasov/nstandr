@@ -15,6 +15,14 @@ Magerman, Looy, Bart, & Song (2006) but not only.  This is work
 in progress. Please, file an issues or suggestion if you have
 any.  The main function is \code{\link[=harmonize]{harmonize()}}.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://stasvlasov.github.io/harmonizer/}
+  \item Report bugs at \url{https://github.com/stasvlasov/harmonizer/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Stanislav Vlasov \email{s.vlasov@uvt.nl}
 

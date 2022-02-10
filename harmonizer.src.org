@@ -457,14 +457,16 @@ Adjust "ensure_version" verstions manually:
   list(Title  = "Harmonization of Organizational Names"
      , Date = Sys.Date()
      , "Authors@R" = 'as.person("Stanislav Vlasov <s.vlasov@uvt.nl> [aut, cre]")'
-     , Version = "0.4"
+     , Version = "0.0.0.9000"
+     , URL = "https://stasvlasov.github.io/harmonizer/"
+     , BugReports = "https://github.com/stasvlasov/harmonizer/issues"
      , Imports = paste(
            paste0(dependencies$packages, " (>= ", dependencies$ensure_version, ")")
          , collapse = ", ")
      , Depends = "R (>= 3.5.0)"
      , Suggests = paste(suggests$packages, collapse = ", ")
      , Description = "Harmonizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more."
-     , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851.pdf") |>
+     , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851.pdf, Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. The Stata Journal, 15(3), 672-697. https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf") |>
       usethis::use_description(check_name = TRUE
                              , roxygen = TRUE)
   usethis::use_mit_license()
