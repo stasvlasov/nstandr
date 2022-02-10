@@ -14,7 +14,7 @@
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/harmonizer)
 #+end_export
 
-The R package =harmonizer= makes standardized organizational names using procedures described by Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009).
+The R package =harmonizer= makes standardized organizational names using procedures described by Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015).
 
 This is work in progress. Please, file an issue or a suggestion if you have any.
 
@@ -46,6 +46,9 @@ The package provides its main function =harmonize= that expect character vector 
 Magerman, T., Looy, V., Bart, & Song, X. (2006). /Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization/ (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470
 
 Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. /National Bureau of Economic Research Working Paper Series/, (15851). Retrieved from http://www.nber.org/papers/w15851 http://www.nber.org/papers/w15851.pdf
+
+Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. The Stata Journal, 15(3), 672-697. Retrieved from https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf
+
 
 
 * Citing
@@ -7174,7 +7177,6 @@ p. 44
 
 
 * Cockburn, et al. (2009) - Harmonization Procedure
-
 ** Utils
 *** cockburn_combabbrev
 :PROPERTIES:
@@ -11004,4 +11006,206 @@ basically reproduces the 'main_coname2.do' stata file
                                                                      "data.frame")))
 
 #+END_SRC
+
+* Wasi & Flaaen (2015) - Harmonization Procedure
+
+Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. The Stata Journal, 15(3), 672-697.
+
+https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf
+
+
+** p10_namecomp_patterns.csv
+
+#+call: make-rds-patterns-table(data = wasi_flaaen_patterns_namecomp, data.name = "wasi_flaaen_patterns_namecomp")
+#+NAME: wasi_flaaen_patterns_namecomp
+| "pattern"         | "replacement" |
+|-------------------+---------------|
+| DBA               | DBA           |
+| D/B/A             | DBA           |
+| D.B.A.            | DBA           |
+| D B A             | DBA           |
+| T/A               | DBA           |
+| FKA               | FKA           |
+| F/K/A             | FKA           |
+| F.K.A.            | FKA           |
+| F K A             | FKA           |
+| FNA               | FKA           |
+| F/N/A             | FKA           |
+| F.N.A.            | FKA           |
+| F N A             | FKA           |
+| FORMERLY KNOWN AS | FKA           |
+| FORMERLY          | FKA           |
+| AS SUCCESSOR TO   | FKA           |
+| SUCCESSOR TO      | FKA           |
+| ATTN              | ATTN          |
+| C/O               | ATTN          |
+
+
+** p21_spchar_namespecialcases.csv
+
+.COM,DOTCOM
+A+,APLUS
++,&
+@WORK,ATWORK
+
+
+** p22_spchar_remove.csv
+
+!
+#
+$
+%
+'
+*
+=
+?
+@
+^
+_
+`
+~
+
+** p23_spchar_rplcwithspace.csv
+
+(
+)
+.
+,
+-
+/
+:
+;
+<
+>
+[
+\
+]
+{
+|
+}
+
+** p30_std_entity.csv
+ASSC,ASSC
+ASSO,ASSC
+ASSN,ASSC
+ASSOC,ASSC
+ASSOCATES,ASSC
+ASSICATES,ASSC
+ASSOCIA,ASSC
+ASSOCIATES,ASSC
+ASSOCIATION,ASSC
+A SOLE PROPRIETOR,ASP
+A SOLE PROPRIETORSHIP ,ASP
+SOLE PROPRIETORSHIP,ASP
+SOLE PROPRIETOR,ASP
+SOLE PROP,ASP
+CO OPERATIVE,COOP
+CO OPERATIVES,COOP
+COOPERATIVE,COOP
+COOPERATIVES,COOP
+CO OP,COOP
+COMPANY,CO
+COMPNAY,CO
+COMPANIES,CO
+COMPAN,CO
+CORPORATION,CORP
+COPORATION,CORP
+CORPORTATION,CORP
+CORPORATE,CORP
+CORPORATTION,CORP
+ET AL PA,ET AL PTR
+ET AL P A,ET AL PTR
+ET AL GEN PTR,ET AL PTR
+ET AL PTR,ET AL PTR
+ET AL PTRS,ET AL PTR
+ET AL PTNR,ET AL PTR
+INCORP,INC
+INCORPORATION,INC
+INCORPORATED,INC
+INCORPORAT,INC
+LIMITED,LTD
+LTD PARTNERSHIP,LTD PTR
+PROFESSIONAL CORPORATION,PC
+PROF CORPORATION ,PC
+A PROF CORP,PC
+PROF CORP,PC
+PRT,PTR
+PRTSHIP,PTR
+PRTSP,PTR
+PTN,PTR
+PTNR,PTR
+PTNRS,PTR
+PTNRSHIP,PTR
+PTNSHP,PTR
+PTRS,PTR
+PTRSHP,PTR
+PTS,PTR
+PTSHIP,PTR
+PTSHP,PTR
+SERVICE CORPORATION,SC
+SERVICE CORP,SC
+SVC CORP,SC
+& AFFILIATES,& AFF
+& AFFILIATED COMPANIES,& AFF
+& AFFILIATED COS,& AFF
+& AFFILIATED CO,& AFF
+& ITS AFFILIATED COS,& AFF
+& ITS AFFILIATED CO,& AFF
+& SUBSIDIARIES,& SUBS
+& SUBSIDIARY,& SUBS
+& ALL OF ITS US SUBSIDIARIES,& SUBS
+& ITS SUBSIDIARIES,& SUBS
+& SUBSID,& SUBS
+
+** p40_std_commonwrd_name.csv
+
+ADMINISTRATORS,ADMIN
+ADMINISTRATOR,ADMIN
+ADMINISTRATION,ADMIN
+ADMINISTRATIVE,ADMIN
+BROTHERS,BROS
+CREDIT UNION,CU
+CR UN,CU
+CHEMICAL,CHEM
+CHEMICALS,CHEM
+DEPARTMENT,DEPT
+DOTCOMS,DOTCOM
+DOT COM,DOTCOM
+ELEC,ELEC
+ELECTRIC,ELEC
+ELECTRICS,ELEC
+ELECTRONIC,ELEC
+ELECTRONICS,ELEC
+ENGINEERS,ENGR
+ENGINEERING,ENGR
+ENGINEER,ENGR
+ENTERPRISE,ENT
+ENTERP,ENT
+ENTERPRISES,ENT
+ENTERPRIZES,ENT
+ENTERPRS,ENT
+ENTPR,ENT
+ENTR,ENT
+ENTRPRSE,ENT
+ENTRPSE,ENT
+FEDERAL CREDIT UNION,FCU
+FEDERAL CREDIT UN,FCU
+FEDERAL CR UN,FCU
+FEDERAL CU,FCU
+FED CR UN,FCU
+FED CU,FCU
+GROUP,GRP
+INSURANCE,INS
+LABORATORIES,LAB
+LABS,LAB
+MANUFACTURING,MFG
+MANUFACTURI,MFG
+MANAGEMENT,MGT
+MANAGMENT,MGT
+MGMNT,MGT
+MGMT,MGT
+PRODUCTS,PROD
+PRODS,PROD
+SYSTEMS,SYS
+
 

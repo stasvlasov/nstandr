@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/stasvlasov/harmonizer/branch/master/graph/badge.svg?token=OQVJ7NRXO5)](https://codecov.io/gh/stasvlasov/harmonizer)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/harmonizer)
 
-The R package `harmonizer` makes standardized organizational names using procedures described by Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009).
+The R package `harmonizer` makes standardized organizational names using procedures described by Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015).
 
 This is work in progress. Please, file an issue or a suggestion if you have any.
 
@@ -34,4 +34,6 @@ The package provides its main function `harmonize` that expect character vector 
 Magerman, T., Looy, V., Bart, & Song, X. (2006). *Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization* (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from <http://papers.ssrn.com/abstract=944470>
 
 Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. *National Bureau of Economic Research Working Paper Series*, (15851). Retrieved from <http://www.nber.org/papers/w15851> <http://www.nber.org/papers/w15851.pdf>
+
+Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. The Stata Journal, 15(3), 672-697. Retrieved from <https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf>
 
