@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*harmonize_make_procedures_list][harmonize_make_procedures_list:1]]
+## -------->>  [[file:../../harmonizer.src.org::*harmonize_make_procedures_list][harmonize_make_procedures_list:2]]
 harmonize_make_procedures_list <- harmonizer:::harmonize_make_procedures_list
 
 expect_equal(data.frame(no = c(3,2,"-", "")
@@ -29,6 +29,6 @@ expect_equal(harmonize_make_procedures_list(harmonizer:::magerman_procedures_tab
                   Condensing = "magerman_condense", `Fixing umlaut variations` = list(
                                                         "magerman_replace_umlaut", has_umlaut_col = "magerman_umlaut", 
                                                         progress = FALSE)))
-## --------<<  harmonize_make_procedures_list:1 ends here
+## --------<<  harmonize_make_procedures_list:2 ends here
 
 

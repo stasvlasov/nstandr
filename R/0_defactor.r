@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*harmonize.defactor][harmonize.defactor:1]]
+## -------->>  [[file:../harmonizer.src.org::*defactor][defactor:1]]
 ##' Converts factor to character
 ##' @param x a vector
 ##' @param check.numeric check if vector is numeric. Default is TRUE. Takes longer with this check but avoids type conversion (numeric to character).
@@ -66,6 +66,6 @@ defactor <- function(x
                 , stringsAsFactors = FALSE)
   else x
 }
-## --------<<  harmonize.defactor:1 ends here
+## --------<<  defactor:1 ends here
 
 

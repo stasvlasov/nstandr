@@ -41,6 +41,50 @@ expect_equal(
       0.974695003322457, 0.977121254719662, 0.979520696160547, 0.981893913672778, 
       0.984241474276968, 0.986563926799849, 0.988861802644424, 0.991135616519784, 
       0.993385867133122, 0.995613037846247, 0.997817597298775, 1))
+
+
+
+expect_equal(c("žŸong-ÂÃÇÈÏa\n\u00b5 &oacute;\u00b5<p>,  INt LTD &AMP; Co;  "
+             , "<br> the $ (&AMP; C&oacute;MP comPANY) Ïotta"
+             , "Tempshield Cryo-Protection™"
+             , "Ábcdêãçoàúü"
+             , "Polgen Sp. z o.o. <U+0096> Sp. K."
+             , "Polgen Sp. z o.o. – Sp. K."
+             , "Jerome® <br>"
+             , "Controlled Environments®  Magazine"
+             , "a\n\u00b5\u00b5"
+             , "fa\xE7ile"
+             , "fa\xc3\xa7ile"
+             , "MSlab CO. CO., LTD."
+             , "MSlab, A \\SOCIETE ANONYME\\"
+             , "S.A.S. University Co., {PE}, Ltd. (Europe)"
+             , "Analytical Technologies Limited"
+             , "Anasys Instruments Corporation"
+             , "C4 Control de Contaminacion Ltda"
+             , "Crescent Scientific Pvt Ltd."
+             , "Daigger & Co., Inc."
+             , "Dell Inc."
+             , "Deltalab. S.L.U."
+             , "DLAB Scientific Co.,Ltd."
+             , "ebro Electronic GmbH und Co. KG"
+             , "Ecom spol. s r.o., s.r.o., akc. spol."
+             , "G.A.S. mbH"
+             , "Glassco Laboratory Equipments PVT LTD"
+             , "Lhasa Limited"
+             , "rose plastic USA, LLLP"
+             , "a;sdkfjsdlkfj;laswee\'\" asdf Co.") |>
+             harmonize(quite = TRUE)
+           , c("ZYONG AACEIA U OU INT LTD & CO", "THE & COMP COMPANY IOTTA", 
+               "TEMPSHIELD CRYO PROTECTION", "ABCDEACOAUU", "POLGEN SP Z OO SP K", 
+               "POLGEN SP Z OO SP K", "JEROME", "CONTROLLED ENVIRONMENTS MAGAZINE", 
+               "A UU", "FAILE", "FACILE", "MSLAB CO CO LTD", "MSLAB A SOCIETE ANONYME", 
+               "SAS UNIVERSITY CO PE LTD EUROPE", "ANALYTICAL TECHNOLOGIES LIMITED", 
+               "ANASYS INSTRUMENTS CORPORATION", "C4 CONTROL DE CONTAMINACION LTDA", 
+               "CRESCENT SCIENTIFIC PVT LTD", "DAIGGER & CO INC", "DELL INC", 
+               "DELTALAB SLU", "DLAB SCIENTIFIC COLTD", "EBRO ELECTRONIC GMBH & CO KG", 
+               "ECOM SPOL S RO SRO AKC SPOL", "GAS MBH", "GLASSCO LABORATORY EQUIPMENTS PVT LTD", 
+               "LHASA LIMITED", "ROSE PLASTIC USA LLLP", "ASDKFJSDLKFJLASWEE\" ASDF CO"
+               ))
 ## --------<<  harmonize:2 ends here
 
 

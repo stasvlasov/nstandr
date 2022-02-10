@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*harmonize.defactor][harmonize.defactor:2]]
+## -------->>  [[file:../../harmonizer.src.org::*defactor][defactor:2]]
 defactor_vector <- harmonizer:::defactor_vector
 
 
@@ -66,6 +66,6 @@ expect_equal(c(c(1,2,3), 4,5,6,7) |>
              defactor(conv2dt = "all")
            , structure(list(V1 = c(1, 2, 3, 4, 5, 6, 7)), row.names = c(NA, 
                                                                         -7L), class = c("data.table", "data.frame")))
-## --------<<  harmonize.defactor:2 ends here
+## --------<<  defactor:2 ends here
 
 
