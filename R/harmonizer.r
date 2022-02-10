@@ -11,26 +11,6 @@
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*harmonize_x_split][harmonize_x_split:1]]
-##' Splits the object (table) in chunks by rows
-##'
-##' Convenient to apply some function to the table in chunks, e.g., if you want to add display of progress.
-##'
-##' @param x object or table
-##' @param by number of rows to split by
-##' @param len length of the table (nrow). If it is NULL then use x_length(x)
-##' 
-##' @return List of (sub)tables
-harmonize_x_split <- function(x, by, len = NULL) {
-    if(is.null(len)) len <- x_length(x)
-    split(x, rep(seq(1, len %/% by +1)
-               , each = by
-               , length.out = len))
-}
-## --------<<  harmonize_x_split:1 ends here
-
-
-
 ## -------->>  [[file:../harmonizer.src.org::*harmonize_toupper][harmonize_toupper:1]]
 ##' @eval attr(harmonize_toupper, "description")
 ##' 
@@ -52,154 +32,169 @@ attr(harmonize_toupper, "description") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*harmonize.remove.brackets][harmonize.remove.brackets:1]]
-##' Removes brackets and content in brackets
+## -------->>  [[file:../harmonizer.src.org::*harmonize_remove_brackets][harmonize_remove_brackets:1]]
+##' @eval attr(harmonize_remove_brackets, "@title")
 ##' @param x object (table)
-##' @inheritDotParams harmonize.x
+##' @inheritDotParams harmonize_options
 ##' @return updated object
 ##' 
-##' @import stringr magrittr
 ##' @export
-harmonize.remove.brackets  <- function(x, ...) {
-  harmonize.x(x, ...) %>% 
-    str_replace_all("<[^<>]*>|\\([^()]*\\)|\\{[^{}]*\\}|\\[[^\\[\\]]*\\]", "") %>%
-    harmonize.x(x, ., ...)
+harmonize_remove_brackets  <- function(x, ...) {
+    get_target(x) |>
+        stri_replace_all_regex("<[^<>]*>|\\([^()]*\\)|\\{[^{}]*\\}|\\[[^\\[\\]]*\\]", "") |>
+        inset_target(x)
 }
-## --------<<  harmonize.remove.brackets:1 ends here
+
+attr(harmonize_remove_brackets, "@title") <- "Removes brackets and content in brackets"
+## --------<<  harmonize_remove_brackets:1 ends here
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*harmonize.remove.quotes][harmonize.remove.quotes:1]]
-##' Removes double quotes (deprecated)
+## -------->>  [[file:../harmonizer.src.org::*harmonize_remove_quotes][harmonize_remove_quotes:1]]
+##' Removes double quotes
 ##' 
-##' (This is a separate procedure because read.csv can not get this substitution in old version of harmonizer)
-##'
 ##' @param x an object
-##' @inheritDotParams harmonize.x
+##' @inheritDotParams harmonize_options
 ##' @return updated object
-##' 
-##' @import stringr magrittr
-harmonize.remove.quotes <- function(x, ...) {
-  harmonize.x(x, ...) %>% 
-    stri_replace_all_fixed("\"", "") %>% 
-    harmonize.x(x, ., ...)
+##' @export
+harmonize_remove_quotes <- function(x, ...) {
+        get_target(x) |>
+          stri_replace_all_regex("\"", "") |>
+          inset_target(x)
 }
-## --------<<  harmonize.remove.quotes:1 ends here
+## --------<<  harmonize_remove_quotes:1 ends here
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*harmonize.dehtmlize][harmonize.dehtmlize:1]]
-#' Converts HTML characters to UTF-8 (this one is 1/3 faster than htmlParse but it is still very slow)
-## from - http://stackoverflow.com/questions/5060076
-#' @param x object (table)
-#' @param as.single.string If set then collapse characters in the main column of the `x` (i.e., `x.col`) as to a single string. It will increase performance (at least for relatively short tables). Default is FALSE
-#' @param as.single.string.sep delimiter for collapsed strings to uncollapse it later. Default is "#_|".
-#' @param read.xml If set the it will parse XML. Default is FALSE which means it parses HTML
-#' @inheritDotParams harmonize.x
-#' @return updated object
+## -------->>  [[file:../harmonizer.src.org::*harmonize_dehtmlize][harmonize_dehtmlize:1]]
+#' Converts HTML characters to UTF-8
 #'
-#' @import xml2 magrittr
+#' The method is about 1/3 faster than htmlParse but it is still quite slow
+#' @param x object (table)
+#' @param as_single_string If set then collapse characters in the main column of the `x` (i.e., `x.col`) as to a single string. It will increase performance (at least for relatively short tables). Default is FALSE
+#' @param as_single_string_sep delimiter for collapsed strings to uncollapse it later. Default is "#_|".
+#' @param read.xml If set the it will parse XML. Default is FALSE which means it parses HTML
+#' @inheritDotParams harmonize_options
+#' @return updated object
+#' @references http://stackoverflow.com/questions/5060076
+#'
 #' @export
-harmonize.dehtmlize <- function(x
-                              , as.single.string = FALSE
-                              , as.single.string.sep = "#_|"
-                              , read.xml = FALSE
+harmonize_dehtmlize <- function(x
+                              , as_single_string = FALSE
+                              , as_single_string_sep = "#_|"
+                              , use_read_xml = FALSE
                               , ...) {
-  x.vector <- harmonize.x(x, ...)
-  if(as.single.string) {
-    x.vector %>%
-      paste0(collapse = as.single.string.sep) %>%
-      paste0paste0("<x>", ., "</x>") %>% 
-      {if(read.xml) read.xml(.)
-       else read_html(.)} %>%
-      xml_text %>% 
-      strsplit(as.single.string.sep, fixed = TRUE)[[1]]
-  } else {
-    sapply(x.vector, function(str) {
-      paste0("<x>", str, "</x>") %>%
-        {if(read.xml) read.xml(.)
-         else read_html(.)} %>%
-        xml_text
-    })    
-  } %>% 
-    harmonize.x(x, ., ...) %>%
-    return()
+    x_vector <- get_target(x)
+    if(as_single_string) {
+        x_vector <- paste0(x_vector, collapse = as_single_string_sep)
+        x_vector <- paste0("<x>", x_vector, "</x>")
+        x_vector <- 
+            (if(use_read_xml) {
+                 xml2::read_xml(x_vector)
+             } else {
+                 xml2::read_html(x_vector)
+             }) |> xml2::xml_text()
+        strsplit(x_vector, as_single_string_sep, fixed = TRUE)[[1]]
+    } else {
+        sapply(x_vector, \(str) {
+            str <- paste0("<x>", str, "</x>")
+            (if(use_read_xml) {
+                 xml2::read_xml(str)
+             } else {
+                 xml2::read_html(str)
+             }) |> xml2::xml_text()
+        }, USE.NAMES = FALSE)    
+    } |> inset_target(x)
 }
-## --------<<  harmonize.dehtmlize:1 ends here
+## --------<<  harmonize_dehtmlize:1 ends here
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*harmonize.detect.enc][harmonize.detect.enc:1]]
+## -------->>  [[file:../harmonizer.src.org::*harmonize_detect_enc][harmonize_detect_enc:1]]
 #' Detects string encoding
 #' @param x object
-#' @param codes.append basically `harmonized.append` parameter passed to `harmonize.x` but with new defaults. Default is TRUE.
-#' @param codes.suffix basically `harmonized.suffix` parameter passed to `harmonize.x` but with new defaults. Default is "encoding"
-#' @param return.codes.only If set it overwrites `return.x.cols` and `x.harmonized.col.update` parameters passed to `harmonize.x`. Default is FALSE.
-#' @inheritDotParams harmonize.x
+#' @param output_codes_col_name Same as in [detect_patterns()]
+#' @param return_only_codes Same as in [detect_patterns()]
+#' @param ... 
+#' @inheritDotParams harmonize_options
 #' @return updated object
 #'
-#' @import stringi magrittr
 #' @export
-harmonize.detect.enc <- function(x
-                               , codes.append = TRUE
-                               , codes.suffix = "encoding"
+harmonize_detect_enc <- function(x
+                               , output_codes_col_name = "{col_name_}encoding"
+                               , return_only_codes = FALSE
                                , ...) {
-  available.enc.list <- iconvlist()
-  x.vector <- harmonize.x.dots(x
-                             , harmonized.suffix = codes.suffix
-                             , harmonized.append = codes.append)
-  stri_enc_detect(x.vector) %>%
-    lapply(function(enc) {
-      enc %<>% extract2("Encoding")
-      first.ok.enc <- (enc %in% available.enc.list) %>% which %>% extract(1)
-      if(length(first.ok.enc) == 0) ""
-      else enc[[first.ok.enc]]
-    }) %>%
-    unlist %>%
-    harmonize.x.dots(x, .
-                   , harmonized.suffix = codes.suffix
-                   , harmonized.append = codes.append) %>% 
-    return()
+    available_enc_list <- iconvlist()
+    x_vector <- get_target(x) |>
+        stringi::stri_enc_detect() |>
+        lapply(function(enc) {
+            enc <- extract2(enc, "Encoding")
+            first_ok_enc <- which(enc %in% available_enc_list)[1]
+            if(length(first_ok_enc) == 0) ""
+            else enc[[first_ok_enc]]
+        }) |> unlist()
+    if(return_only_codes) {
+        x_vector
+    } else {
+        inset_target(x_vector
+                   , x
+                   , output_placement = "omit"
+                   , output_copy_col_name = output_codes_col_name
+                   , append_output_copy = TRUE)
+    }
 }
-## --------<<  harmonize.detect.enc:1 ends here
+## --------<<  harmonize_detect_enc:1 ends here
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*harmonize.toascii][harmonize.toascii:1]]
+## -------->>  [[file:../harmonizer.src.org::*harmonize_toascii][harmonize_toascii:1]]
 #' Translates non-ascii symbols to its ascii equivalent
 #' 
 #' @param str String to translate
-#' @param detect.encoding Detect encoding of individual elements
-#' @inheritDotParams harmonize.x
-#' 
-#' @import stringi stringr magrittr
+#' @param detect_encoding Detect encoding of individual elements (slower). Allows to work with mixed encodings.
+#' @inheritDotParams harmonize_options
 #' 
 #' @export
-harmonize.toascii <- function(x
-                            , detect.encoding = FALSE
+harmonize_toascii <- function(x
+                            , detect_encoding = FALSE
                             , ...) {
-  str <- harmonize.x(x, ...)
-  utf <- harmonizer.patterns.ascii$utf %>% paste(collapse = "")
-  ascii <- harmonizer.patterns.ascii$ascii %>% paste(collapse = "")
-  {if(detect.encoding)  # detect encoding of individual elements
-     mapply(function(name, enc)
-       iconv(name
-           , from = enc
-           , to = "UTF-8"
-           , sub = "") %>%
-       {chartr(utf, ascii, .)}
-     , str
-     , harmonize.detect.enc(str, return.x.cols = NULL)
-     , SIMPLIFY = FALSE, USE.NAMES = FALSE) %>%
-       unlist %>% 
-       iconv(to = "ASCII", sub = "")
-   else
-     enc2utf8(str) %>% 
-       {chartr(utf, ascii, .)} %>% 
-       iconv(to = "ASCII", sub = "")} %>%
-    harmonize.x(x, ., ...)
+  str <- get_target(x)
+  utf <- harmonizer_patterns_ascii$utf |> paste(collapse = "")
+  ascii <- harmonizer_patterns_ascii$ascii |> paste(collapse = "")
+  (if(detect_encoding) {
+       mapply(
+           \(name, enc) chartr(utf, ascii, iconv(name, from = enc, to = "UTF-8", sub = ""))
+         , str
+         , harmonize_detect_enc(str, return_only_codes = TRUE)
+         , SIMPLIFY = FALSE, USE.NAMES = FALSE) |>
+           unlist() |>
+           iconv(to = "ASCII", sub = "")
+   } else {
+       chartr(utf, ascii, enc2utf8(str)) |> 
+           iconv(to = "ASCII", sub = "")
+   }) |> inset_target(x)
 }
-## --------<<  harmonize.toascii:1 ends here
+## --------<<  harmonize_toascii:1 ends here
+
+
+
+## -------->>  [[file:../harmonizer.src.org::*harmonize_x_split][harmonize_x_split:1]]
+##' Splits the object (table) in chunks by rows
+##'
+##' Convenient to apply some function to the table in chunks, e.g., if you want to add display of progress.
+##'
+##' @param x object or table
+##' @param by number of rows to split by
+##' @param len length of the table (nrow). If it is NULL then use x_length(x)
+##' 
+##' @return List of (sub)tables
+harmonize_x_split <- function(x, by, len = NULL) {
+    if(is.null(len)) len <- x_length(x)
+    split(x, rep(seq(1, len %/% by +1)
+               , each = by
+               , length.out = len))
+}
+## --------<<  harmonize_x_split:1 ends here
 
 
 

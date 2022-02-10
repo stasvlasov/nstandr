@@ -4,8 +4,8 @@ expect_equal(c(" A B Comp"
              , " I B M "
              , "I B M bla-bla n bla C O") |>
              cockburn_combabbrev()
-           , c(`  A B Comp ` = "  AB Comp ", `  A  B Comp a ` = "  AB Comp a ", 
-               `  I B M  ` = "  IBM  ", ` I B M bla-bla n bla C O ` = " IBM bla-bla n bla CO "
+           , c("  AB Comp ", "  AB Comp a ", 
+               "  IBM  ", " IBM bla-bla n bla CO "
                ))
 
 
@@ -31,8 +31,6 @@ a <- c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
     , "MSLab Comp. Ltd."
     , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
     cockburn_combabbrev()
-names(a) <- NULL
-a
 }
 , c(" MÄKARÖNI ETÖ FKÜSNÖ Ltd ", " MSLab CÖ. <a href=lsdldf> <br> <\\a> ", 
 "  MS Lab Co. ", " MSLaeb Comp. ", " MSLab Comp. Ltd. ", " ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ "

@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*harmonize.unlist.column][harmonize.unlist.column:1]]
+## -------->>  [[file:../harmonizer.src.org::*unlist_if_possible][unlist_if_possible:1]]
 ##' If column in the `x` table is list unlist it if possible
 ##' @param x object
 ##' @param replace_zero_length_with Default is replace NULLs with NA_character_ because vector of just NA is a logical class
@@ -26,6 +26,6 @@ unlist_if_possible <- function(x
         return(x)
     }
 }
-## --------<<  harmonize.unlist.column:1 ends here
+## --------<<  unlist_if_possible:1 ends here
 
 

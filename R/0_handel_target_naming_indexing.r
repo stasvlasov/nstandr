@@ -135,7 +135,8 @@ infer_post_inset_col_from_pre_inset_col <- function(col, x_names, output_placeme
           , append_to_col = col
           , prepend_to_col = col + 1
           , append_to_x = col
-          , prepend_to_x = col + 1)
+          , prepend_to_x = col + 1
+          , omit = col)
     }
 }
 
@@ -148,6 +149,7 @@ infer_if_post_inset_col_possible <- function(col, x_names, output_placement) {
       , append_to_x = ifelse(col == length(x_names), FALSE, TRUE)
       , prepend_to_x = ifelse(col == 1, FALSE, TRUE)
       , prepend_to_col = ifelse(col == 1, FALSE, TRUE)
+      , omit = TRUE
     )
 }
 
@@ -160,7 +162,8 @@ infer_moving_target_from_post_inset_col <- function(col, x_names, output_placeme
       , append_to_col = col + 1
       , prepend_to_col = col - 1
       , append_to_x = length(x_names)
-      , prepend_to_x = 1)
+      , prepend_to_x = 1
+      , omit = NULL)
     if(as_name) {
         x_names[return_col]
     } else {

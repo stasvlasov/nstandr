@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Combined Cockburn Procedures][Combined Cockburn Procedures:1]]
+## -------->>  [[file:../../harmonizer.src.org::*Combined Cockburn Procedures][Combined Cockburn Procedures:2]]
 expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                , "M S Lab CÖ. <a href=lsdldf> <br> <\\a>"
                                , "MSLab Co."
@@ -78,6 +78,6 @@ expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                 rep(20)
                             ), row.names = c(NA, -120L), class = c("data.table", 
                                                                    "data.frame")))
-## --------<<  Combined Cockburn Procedures:1 ends here
+## --------<<  Combined Cockburn Procedures:2 ends here
 
 

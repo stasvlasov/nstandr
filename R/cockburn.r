@@ -31,7 +31,7 @@ cockburn_combabbrev <- function(x
         } else {
             org_name
         }
-    }) |>
+    }, USE.NAMES = FALSE) |>
         inset_target(x)
 }
 ## --------<<  cockburn_combabbrev:1 ends here
