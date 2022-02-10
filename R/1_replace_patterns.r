@@ -3,7 +3,7 @@ replace_exact <- function(x
                         , patterns
                         , replacements) {
     if ((requireNamespace("fastmatch", quietly = TRUE))) {
-        match <- fastmatch:::fmatch
+        match <- fastmatch::fmatch
     }
     matches <- match(x, patterns)
     x[!is.na(matches)] <- replacements[matches][!is.na(matches)]

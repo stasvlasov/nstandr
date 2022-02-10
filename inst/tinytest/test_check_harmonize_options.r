@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*check_harmonize_options][check_harmonize_options:2]]
+## -------->>  [[file:../../harmonizer.src.org::*check_harmonize_options][check_harmonize_options:1]]
 require("data.table")
 
 check_harmonize_options <- harmonizer:::check_harmonize_options
@@ -15,7 +15,7 @@ testing_check_arguments <- function(x, ...) {
     return(TRUE)
 }
 
-expect_true(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), name = "c"))
+expect_true(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), output_col_name = "c"))
 ## bad output_placement name
 expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), output_placement = "omitted"))
 
@@ -32,11 +32,11 @@ testing_check_arguments <- function(x, ...) {
 
 
 ## taken name
-expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), name = "b"))
+expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), output_col_name = "b"))
 ## testing append copy prefix (taken name)
 expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b"), a_harmonized = TRUE)))
 ## test rows
 expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), rows = c(1,1)))
-## --------<<  check_harmonize_options:2 ends here
+## --------<<  check_harmonize_options:1 ends here
 
 

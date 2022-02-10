@@ -143,12 +143,12 @@ check_harmonize_options <- function(dots
                      , add = assertion_fails)
         ## check 'name'
         checkmate::assert_string(
-                       name
+                       output_col_name
                      , null.ok = TRUE
                      , add = assertion_fails)
-        if(check_name_duplicates && !is.null(name) && !is.atomic(x)) {
+        if(check_name_duplicates && !is.null(output_col_name) && !is.atomic(x)) {
             checkmate::assert_names(
-                           name
+                           output_col_name
                          , type = "ids"
                          , what = "colnames"
                          , disjunct.from = names(x)

@@ -73,7 +73,7 @@ harmonize_remove_quotes <- function(x, ...) {
 #' @param x object (table)
 #' @param as_single_string If set then collapse characters in the main column of the `x` (i.e., `x.col`) as to a single string. It will increase performance (at least for relatively short tables). Default is FALSE
 #' @param as_single_string_sep delimiter for collapsed strings to uncollapse it later. Default is "#_|".
-#' @param read.xml If set the it will parse XML. Default is FALSE which means it parses HTML
+#' @param use_read_xml If set the it will parse XML. Default is FALSE which means it parses HTML
 #' @inheritDotParams harmonize_options
 #' @return updated object
 #' @references http://stackoverflow.com/questions/5060076
@@ -150,7 +150,7 @@ harmonize_detect_enc <- function(x
 ## -------->>  [[file:../harmonizer.src.org::*harmonize_toascii][harmonize_toascii:1]]
 #' Translates non-ascii symbols to its ascii equivalent
 #' 
-#' @param str String to translate
+#' @param x String to translate
 #' @param detect_encoding Detect encoding of individual elements (slower). Allows to work with mixed encodings.
 #' @inheritDotParams harmonize_options
 #' 
@@ -203,19 +203,17 @@ harmonize_x_split <- function(x, by, len = NULL) {
 ##' 
 ##' @param x object (table)
 ##' @param procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `harmonize_make_procedures_list` (see its help for the correct format of data.frame with procedures). Default is `harmonizer_default_procedures_table`
-##' @param show_progress 
+##' @param show_progress Whether to report progress percentage. Default is TRUE
 ##' @param nrows_min_to_show_progress The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5
 ##' @param progress_step_nrows If set it will divide the x into chunk of this amount of rows. Default is NULL.
 ##' @param progress_step_in_percent Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.
 ##' @param progress_message_use_names Should we use names from `procedures` list to report progress. Default is TRUE.
 ##' @param quite Suppress all messages. Default is FALSE.
 ##' @param save_intermediate_x_to_var For debuging of standartization procedures. Saves intermediate results to this variable. If procedures finish without errors then the variable will be removed.
-##' @param progress Show the progress? Default is TRUE
 ##' @inheritDotParams harmonize_options
 ##' 
-##' @return
+##' @return harmonized data
 ##'
-##' @import stringi stringr magrittr
 ##' @export
 harmonize <- function(x
                     , procedures = harmonizer_default_procedures_table

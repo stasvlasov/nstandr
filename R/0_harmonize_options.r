@@ -21,7 +21,6 @@ harmonize_options <- function(col = 1
                             , rows = NULL
                             , omitted_rows_value = NULL
                             , output_placement = "replace_col"
-                            , name = NULL
                             , x_atomic_name = "x"
                             , output_col_name = "std{_col_name}"
                             , append_output_copy = FALSE

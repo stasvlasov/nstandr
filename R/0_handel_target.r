@@ -1,13 +1,10 @@
 ## -------->>  [[file:../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:2]]
 ##' Gets a target vector to harmonize.
 ##'
-##' @param data Input data. Can be vector, data.frame or a data.table
-##' @param col Column of interest in the input `data`. The vector we would like to work with. This parameter is ignored if input `data` is a vector (checked by `is.atomic`)
-##' @param rows Rows of interest
-##' @param ... Ignored arguments that are meant for `inset_vector`
+##' @param x  Input data. Can be vector, data.frame or a data.table
+##' @param return_null_for_new_col Return NULL if target in not yet created (inset)
 ##' @return A vector. Factors in imput `data` are converted to string.
-##'
-##' @md
+##' @inheritDotParams harmonize_options
 get_target <- function(x, return_null_for_new_col = FALSE, ...) {
     if(is.null(x)) return(NULL)
     with(dots <- get_harmonize_options(), {

@@ -453,7 +453,6 @@ Adjust "ensure_version" verstions manually:
   list(Title  = "Harmonization of Organizational Names"
      , Date = Sys.Date()
      , "Authors@R" = 'as.person("Stanislav Vlasov <s.vlasov@uvt.nl> [aut, cre]")'
-     , License = "MIT License"
      , Version = "0.4"
      , Imports = paste(
            paste0(dependencies$packages, " (>= ", dependencies$ensure_version, ")")
@@ -464,6 +463,7 @@ Adjust "ensure_version" verstions manually:
      , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851.pdf") |>
       usethis::use_description(check_name = TRUE
                              , roxygen = TRUE)
+  usethis::use_mit_license()
 
   ## Update name spaces and documentation for functions
   roxygenise()
@@ -644,7 +644,7 @@ Adjust "ensure_version" verstions manually:
   #' @param x object (table)
   #' @param as_single_string If set then collapse characters in the main column of the `x` (i.e., `x.col`) as to a single string. It will increase performance (at least for relatively short tables). Default is FALSE
   #' @param as_single_string_sep delimiter for collapsed strings to uncollapse it later. Default is "#_|".
-  #' @param read.xml If set the it will parse XML. Default is FALSE which means it parses HTML
+  #' @param use_read_xml If set the it will parse XML. Default is FALSE which means it parses HTML
   #' @inheritDotParams harmonize_options
   #' @return updated object
   #' @references http://stackoverflow.com/questions/5060076
@@ -772,7 +772,7 @@ Adjust "ensure_version" verstions manually:
 #+BEGIN_SRC R :tangle R/harmonizer.r
   #' Translates non-ascii symbols to its ascii equivalent
   #' 
-  #' @param str String to translate
+  #' @param x String to translate
   #' @param detect_encoding Detect encoding of individual elements (slower). Allows to work with mixed encodings.
   #' @inheritDotParams harmonize_options
   #' 
@@ -945,20 +945,31 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 #+BEGIN_SRC R :tangle R/0_harmonize_make_procedures_list.r
   ##' Makes list of procedures calls from table.
   ##'
-  ##' Table should have at least two columns - messages and fuctions calls. Each function call should be a string of the following format "'function.name', arg1 = val1, arg2 = val2" (same as arguments for `do.call` function).
+  ##' Table should have at least two columns - messages and fuctions
+  ##' calls. Each function call should be a string of the following
+  ##' format "'function.name', arg1 = val1, arg2 = val2" (same as
+  ##' arguments for `do.call` function).
   ##' 
   ##' @param procedures_table Table to use
-  ##' @param message_field name of the column with messages that will be displayed when each call is executed
-  ##' @param function_call_field name of the column where function (harmonization procedures) calls are listed.
-  ##' @param no.field name of the column where the number of procedure is specified. Also this field indicates if the row in the table is just a comment in which case it will be removed if `remove_comments` is set (which is set by default)
+  ##' @param message_field name of the column with messages that will be
+  ##'     displayed when each call is executed
+  ##' @param function_call_field name of the column where function
+  ##'     (harmonization procedures) calls are listed.
+  ##' @param no_field name of the column where the number of procedure
+  ##'     is specified. Also this field indicates if the row in the
+  ##'     table is just a comment in which case it will be removed if
+  ##'     `remove_comments` is set (which is set by default)
   ##' @param remove_comments Whether to remove comments.
-  ##' 
+  ##' @param sort_by_no_field Whether to sort the list by col named
+  ##'     `no_field`
+  ##' @param comments Values (character string) in the first col that
+  ##'     makes entire row as commented out
   ##' @return List of named function calls. Names are messages.
   ##' 
   harmonize_make_procedures_list <- function(procedures_table
                                            , message_field = "message"
                                            , function_call_field = "function.call"
-                                           , no.field = "no"
+                                           , no_field = "no"
                                            , remove_comments = TRUE
                                            , sort_by_no_field = TRUE
                                            , comments = c("#", "-", "")) {
@@ -966,13 +977,13 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
       if(remove_comments) {
           procedures_table <- 
               procedures_table[
-                  !(procedures_table[[no.field]] %in% comments)
+                  !(procedures_table[[no_field]] %in% comments)
                 , ]
       }
       if(sort_by_no_field) {
           procedures_table <-
               procedures_table[
-                  procedures_table[[no.field]] |>
+                  procedures_table[[no_field]] |>
                   as.numeric() |>
                   order()
                 , ]
@@ -1405,7 +1416,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##'
   ##' @param x an object
   ##' @param conv2dt What to convert to data.table
-  ##' @param ... 
+  ##' @param x_atomic_name Name to use as a col name if x is atomic
   ##' @inheritDotParams defactor_vector
   ##' @return object of the same type without factors
   ##'  
@@ -1549,7 +1560,6 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
                               , rows = NULL
                               , omitted_rows_value = NULL
                               , output_placement = "replace_col"
-                              , name = NULL
                               , x_atomic_name = "x"
                               , output_col_name = "std{_col_name}"
                               , append_output_copy = FALSE
@@ -1709,12 +1719,12 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
                        , add = assertion_fails)
           ## check 'name'
           checkmate::assert_string(
-                         name
+                         output_col_name
                        , null.ok = TRUE
                        , add = assertion_fails)
-          if(check_name_duplicates && !is.null(name) && !is.atomic(x)) {
+          if(check_name_duplicates && !is.null(output_col_name) && !is.atomic(x)) {
               checkmate::assert_names(
-                             name
+                             output_col_name
                            , type = "ids"
                            , what = "colnames"
                            , disjunct.from = names(x)
@@ -1774,7 +1784,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
       return(TRUE)
   }
 
-  expect_true(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), name = "c"))
+  expect_true(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), output_col_name = "c"))
   ## bad output_placement name
   expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), output_placement = "omitted"))
 
@@ -1791,7 +1801,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 
 
   ## taken name
-  expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), name = "b"))
+  expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), output_col_name = "b"))
   ## testing append copy prefix (taken name)
   expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b"), a_harmonized = TRUE)))
   ## test rows
@@ -2449,16 +2459,12 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 #+END_SRC
 
 #+BEGIN_SRC R :tangle R/0_handel_target.r
-
   ##' Gets a target vector to harmonize.
   ##'
-  ##' @param data Input data. Can be vector, data.frame or a data.table
-  ##' @param col Column of interest in the input `data`. The vector we would like to work with. This parameter is ignored if input `data` is a vector (checked by `is.atomic`)
-  ##' @param rows Rows of interest
-  ##' @param ... Ignored arguments that are meant for `inset_vector`
+  ##' @param x  Input data. Can be vector, data.frame or a data.table
+  ##' @param return_null_for_new_col Return NULL if target in not yet created (inset)
   ##' @return A vector. Factors in imput `data` are converted to string.
-  ##'
-  ##' @md
+  ##' @inheritDotParams harmonize_options
   get_target <- function(x, return_null_for_new_col = FALSE, ...) {
       if(is.null(x)) return(NULL)
       with(dots <- get_harmonize_options(), {
@@ -3164,7 +3170,7 @@ Tests:
                           , patterns
                           , replacements) {
       if ((requireNamespace("fastmatch", quietly = TRUE))) {
-          match <- fastmatch:::fmatch
+          match <- fastmatch::fmatch
       }
       matches <- match(x, patterns)
       x[!is.na(matches)] <- replacements[matches][!is.na(matches)]
@@ -3422,7 +3428,6 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
 :END:
 
 #+BEGIN_SRC R :tangle R/1_detect_patterns.r
-  ##' transpose list of vectors
   transpose_list_of_vectors <- function(l) {
       do.call(mapply, c(FUN = list(c), l, list(USE.NAMES = FALSE, SIMPLIFY = FALSE)))
   }
@@ -3974,19 +3979,17 @@ The default harmonization procedures are the following (for now):
   ##' 
   ##' @param x object (table)
   ##' @param procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `harmonize_make_procedures_list` (see its help for the correct format of data.frame with procedures). Default is `harmonizer_default_procedures_table`
-  ##' @param show_progress 
+  ##' @param show_progress Whether to report progress percentage. Default is TRUE
   ##' @param nrows_min_to_show_progress The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5
   ##' @param progress_step_nrows If set it will divide the x into chunk of this amount of rows. Default is NULL.
   ##' @param progress_step_in_percent Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.
   ##' @param progress_message_use_names Should we use names from `procedures` list to report progress. Default is TRUE.
   ##' @param quite Suppress all messages. Default is FALSE.
   ##' @param save_intermediate_x_to_var For debuging of standartization procedures. Saves intermediate results to this variable. If procedures finish without errors then the variable will be removed.
-  ##' @param progress Show the progress? Default is TRUE
   ##' @inheritDotParams harmonize_options
   ##' 
-  ##' @return
+  ##' @return harmonized data
   ##'
-  ##' @import stringi stringr magrittr
   ##' @export
   harmonize <- function(x
                       , procedures = harmonizer_default_procedures_table
@@ -7177,7 +7180,7 @@ p. 44
 :ID:       org:z3bhq6914gi0
 :END:
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' Collapses single character sequences
   ##'
   ##' @param x Object (table or vector)
@@ -7280,7 +7283,7 @@ Implementation of derwent_standardisation_BHH.do from https://sites.google.com/s
 4) space before and after added by BHH"
 
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_replace_derwent, "@title")
   ##' @description It is a version from Cockburn, I. M., A. Agrawal,
   ##'     J. Bessen, J. H. S. Graham, B. H. Hall, and M. MacGarvie
@@ -8043,7 +8046,7 @@ Implementation of derwent_standardisation_BHH.do from https://sites.google.com/s
 :END:
 COMPUSTAT specific standardization for organizational names. Implementation of initial part nameonly_main.do from  https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_replace_compustat, "@title")
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams harmonize_options
@@ -8371,12 +8374,12 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :PROPERTIES:
 :ID:       org:fyt54a51nki0
 :END:
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' Identifies Entity Type
   ##'
   ##' @param x vector or table
   ##' @param verbose For debuging. If set will message which procedures were done.
-  ##' @inheritDotParams harmonize.detect
+  ##' @inheritDotParams harmonize_options
   ##' @return Harmonized table
   ##' 
   ##' @md 
@@ -8458,7 +8461,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :ID:       org:nvtj6q51nki0
 :END:
 - code :: "firm"
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_detect_corp, "@title")
   ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit detect_patterns params return
@@ -9369,7 +9372,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :END:
 - code :: "indiv"
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_detect_indiv, "@title")
   ##' @description From non_corporates.do file. Source -
   ##'     https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -9481,7 +9484,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :END:
 - code :: "govt"
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_detect_govt, "@title")
   ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit detect_patterns params return
@@ -9652,7 +9655,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :END:
 - code :: "univ"
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_detect_univ, "@title")
   ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit detect_patterns params return
@@ -9804,7 +9807,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :ID:       org:owhk6q51nki0
 :END:
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_detect_inst, "@title")
   ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit detect_patterns params return
@@ -9828,9 +9831,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 
 #+END_SRC
 
-
-
-#+BEGIN_SRC R :tangle inst/tinytest/test_cockb.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_detect_inst.r
   expect_equal(c(" DR VLASOV "
                , " S.VLASOV PHD "
                , " FUNDATION LEGALY REPRESENTED BY STAS") |>
@@ -9904,7 +9905,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 | ' FOUND '      | ~=0 & asstype~="univ"                |
 | ' INST '       | >0 & asstype~="univ"                 |
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
     ##' @eval attr(cockburn_detect_inst_conds_1, "@title")
     ##' @description STATA equivalent: replace asstype = "inst" if strpos(standard_name," COUNCIL OF ")>0 & strpos(standard_name," RES ")>0
     ##' @inherit detect_patterns params return
@@ -10065,7 +10066,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :ID:       org:vxuk6q51nki0
 :END:
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_detect_inst_german, "@title")
   ##' @description "EINGETRAGENER VEREIN. NON PROFIT SOCIETY/ASSOCIATION."
   ##' @param x table
@@ -10124,7 +10125,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :ID:       org:pk0l6q51nki0
 :END:
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_detect_hosp, "@title")
   ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit detect_patterns params return
@@ -10228,7 +10229,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 :END:
 Following funciton removes punctuation and standardise some symbols. Implementation of punctuation2.do from  https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' Removes punctuation and standardise some symbols. 
   ##'
   ##' @param x object
@@ -10440,7 +10441,7 @@ ISO8859-1 (AMADEUS)
 :ID:       org:tnnchlb1cgi0
 :END:
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' Create standard name
   ##'
   ##' @param x object
@@ -10601,7 +10602,7 @@ ISO8859-1 (AMADEUS)
 :ID:       org:k5q64a51nki0
 :END:
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_remove_standard_names, "@title")
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams harmonize_options
@@ -10785,7 +10786,7 @@ creates a name with all legal entity identifiers removed
 :ID:       org:mex64a51nki0
 :END:
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
     ##' @eval attr(cockburn_remove_uspto, "@title")
     ##' @inherit replace_patterns params return
     ##' @inheritDotParams harmonize_options
@@ -10880,7 +10881,7 @@ basically reproduces the 'main_coname2.do' stata file
 
 #+call: make-rds-patterns-table(data = cockburn_procedures_table, data.name = "cockburn_procedures_table", remove.single.quotes = "FALSE")
 
-#+BEGIN_SRC R :tangle ./R/cockburn.r
+#+BEGIN_SRC R :tangle R/cockburn.r
   ##' Harmonizes strings using exact procedures described in Cockburn, et al. (2009)
   ##' @param x table or vector
   ##' @param cockburn_procedures list of procedures to pass to `harmonize` function. Default is `cockburn_procedures.list`

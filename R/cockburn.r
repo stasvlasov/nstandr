@@ -104,7 +104,7 @@ attr(cockburn_replace_compustat_names, "@title") <-
 ##'
 ##' @param x vector or table
 ##' @param verbose For debuging. If set will message which procedures were done.
-##' @inheritDotParams harmonize.detect
+##' @inheritDotParams harmonize_options
 ##' @return Harmonized table
 ##' 
 ##' @md 

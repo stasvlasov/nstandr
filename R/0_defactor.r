@@ -26,7 +26,7 @@ defactor_vector <- function(x, check.numeric = FALSE) {
 ##'
 ##' @param x an object
 ##' @param conv2dt What to convert to data.table
-##' @param ... 
+##' @param x_atomic_name Name to use as a col name if x is atomic
 ##' @inheritDotParams defactor_vector
 ##' @return object of the same type without factors
 ##'  
