@@ -58,16 +58,7 @@
   <div class="contents col-md-9">
 
 
-<p>The R package <code>harmonizer</code> standardizes (harmonizes) organizational names.</p>
-<p>The task of merging large datasets becomes more common these days as more and more data is coming. However, there is still no standard tool for that task according to Thoma et al. (2010).</p>
-<p>Initially this task was performed manually (e.g., Griliches, 1981) and relatively recently some automatic tools start to emerge. This package is meant to a framework for name harmonization procedures and consolidate prior efforts of researchers that were working on the similar task.</p>
-<p>This R package currently includes contributions of Thoma et al. (2010), Magerman et al. (2006) and Cockburn et al. (2009) with number of additional cleaning procedures.</p>
-<p>The detailed procedures can be found here:</p>
-<ul>
-<li><a href="res/magerman.code.html">Magerman et al. (2006)</a></li>
-<li><a href="res/cockburn.code.html">Cockburn et al. (2009)</a></li>
-</ul>
-<p>Harmonization of names is a separate tasks from name matching. Most of the harmonizing procedures works separately on an individual string and independent on the corpus of names. Nevertheless, some of harmonization procedures can also consider the whole corpus of names for harmonizing, e.g., as it is a case in Magerman’s umlaut harmonization procedure. Processing of such procedures can not be done now in parallel.</p>
+<p>The R package <code>harmonizer</code> makes standardized organizational names using procedures described by Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009).</p>
 <p>This is work in progress. Please, file an issue or a suggestion if you have any.</p>
 <div class="section level1">
 <div class="page-header"><h1 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -84,130 +75,20 @@
 <h1 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h1>
 <p>The package provides its main function <code>harmonize</code> that expect character vector of organization names as input and returns its harmonized version.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>org.names.test &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"žŸong-ÃÇÈÏ</span><span class="ch">\n</span><span class="st">\u00b5&amp;oacute;\u00b5&lt;p&gt;, LTD Co;  "</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>                  , <span class="st">"&lt;br&gt; the $(Ldt &amp;AMP; C&amp;oacute;MP) Ïotta INt"</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>                  , <span class="st">"Masha  &amp;AMP;Lena Ltd. (Spb)"</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>                  , <span class="st">"bla-bla-bla Ltd."</span>)</span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="kw">data.frame</span>(<span class="dt">harmonized =</span> <span class="kw">harmonize</span>(org.names.test)</span>
-<span id="cb2-6"><a href="#cb2-6"></a>         , <span class="dt">original =</span> org.names.test)</span>
-<span id="cb2-7"><a href="#cb2-7"></a></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="co">#           harmonized                                    original</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a><span class="co">#  1    ZYONG ACEI UOU        žŸong-ÃÇÈÏ\nµ&amp;oacute;µ&lt;p&gt;, LTD Co;  </span></span>
-<span id="cb2-10"><a href="#cb2-10"></a><span class="co">#  2         IOTTA INT &lt;br&gt; the $(Ldt &amp;AMP; C&amp;oacute;MP) Ïotta INt</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a><span class="co">#  3      MASHA &amp; LENA                 Masha  &amp;AMP;Lena Ltd. (Spb)</span></span>
-<span id="cb2-12"><a href="#cb2-12"></a><span class="co">#  4       BLA BLA BLA                            bla-bla-bla Ltd.</span></span></code></pre></div>
-<div class="section level2">
-<h2 id="harmonization-procedures">Harmonization procedures<a class="anchor" aria-label="anchor" href="#harmonization-procedures"></a>
-</h2>
-<p>Harmonization procedures are flexible and can be specified with setting <code>procedures</code> option like so:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>org.names.test <span class="op">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="st">    </span><span class="kw">harmonize</span>(<span class="dt">procedures =</span> <span class="kw">list</span>(</span>
-<span id="cb3-3"><a href="#cb3-3"></a>                  <span class="kw">list</span>(<span class="st">"harmonize.toascii"</span>, <span class="dt">detect.encoding =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb3-4"><a href="#cb3-4"></a>                , <span class="st">"harmonize.remove.brackets"</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a>                , <span class="st">"harmonize.toupper"</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>                , <span class="kw">list</span>(<span class="st">"harmonize.squish.spaces"</span>, <span class="dt">wrap.in.spaces =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb3-7"><a href="#cb3-7"></a>                , <span class="st">"cockburn.replace.punctuation"</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>                , <span class="st">"harmonize.squish.spaces"</span>))</span></code></pre></div>
-<p>The default harmonization procedures are described in the literate <a href="harmonizer.src.html">source file</a>.</p>
-</div>
-<div class="section level2">
-<h2 id="displaying-harmonization-progress">Displaying harmonization progress<a class="anchor" aria-label="anchor" href="#displaying-harmonization-progress"></a>
-</h2>
-<p>Useful for big data tables. The option <code>progress.by</code> tells how often to update the progress. (If you have 10<sup>7</sup> records it is recommended to set <code>progress.by</code> as 10<sup>5</sup> or more.) Setting this option will slow the harmonization down a little.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>org.names.test <span class="op">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="st">    </span><span class="kw">harmonize</span>(<span class="dt">progress.by =</span> <span class="dv">1</span>)</span>
-<span id="cb4-3"><a href="#cb4-3"></a></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="co">## Running harmonizer procedures:</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="co">## * toascii ...            DONE</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="co">## * remove.brackets ...        DONE</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="co">## * toupper ...            DONE</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="co">## * apply.nber ...          73%</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="visualizing-harmonization-algorithm">Visualizing harmonization algorithm<a class="anchor" aria-label="anchor" href="#visualizing-harmonization-algorithm"></a>
-</h2>
-<p>The package can generate simple visualization for harmonization algorithm (procedures). For example:</p>
-<div class="figure">
-<img src="./img/harmonization.png" alt=""><p class="caption">img</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="comparison-of-alternative-harmonization-algorithms">Comparison of alternative harmonization algorithms<a class="anchor" aria-label="anchor" href="#comparison-of-alternative-harmonization-algorithms"></a>
-</h2>
-<p>Knowing ground truth whether any two text strings that represents organizational names are the same organizational name or assuming that some algorithm produces such ground truth the package uses simple well known statistics (see table below) of pair-wise name comparison to assess relative performance of specific algorithm.</p>
-<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides" class="table">
-<colgroup>
-<col class="org-left">
-<col class="org-left">
-<col class="org-left">
-</colgroup>
-<thead><tr>
-<th scope="col" class="org-left">
- 
-</th>
-<th scope="col" class="org-left">
-<i>Same set by ground truth</i>
-</th>
-<th scope="col" class="org-left">
-<i>Different sets by ground truth</i>
-</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="org-left">
-<i>Same set by algorithm</i>
-</td>
-<td class="org-left">
-True Positive (<b>TP</b>)
-</td>
-<td class="org-left">
-False Positive (<b>FP</b>)
-</td>
-</tr>
-<tr>
-<td class="org-left">
-<i>Different sets by algorithm</i>
-</td>
-<td class="org-left">
-False Negative (<b>FN</b>)
-</td>
-<td class="org-left">
-True Negative (<b>TN</b>)
-</td>
-</tr>
-</tbody>
-</table>
-<p>Relative performance metrics:</p>
-<ul>
-<li>pair-wise precision / cluster precision [TP/(TP +FP)]</li>
-<li>pair-wise recall / cluster recall [TP/(TP +FN)]</li>
-<li>pair-wise / cluster F1 (harmonic mean of precision and recall)</li>
-<li>pairwise accuracy</li>
-<li>average cluster purity</li>
-<li>K metric</li>
-</ul>
-</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">c</span>(<span class="st">"žŸong-ÃÇÈÏ</span><span class="ch">\n</span><span class="st">\u00b5&amp;oacute;\u00b5&lt;p&gt;, LTD Co;  "</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>, <span class="st">"&lt;br&gt; the $(Ldt &amp;AMP; C&amp;oacute;MP) Ïotta INt"</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>, <span class="st">"Masha  &amp;AMP;Lena Ltd. (Spb)"</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>, <span class="st">"bla-bla-bla Ltd."</span>) <span class="op">|</span><span class="er">&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="st">    </span><span class="kw">harmonize</span>(<span class="dt">output_placement =</span> <span class="st">"append_to_x"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co">#                                              x           std_x</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="co">#  1        žŸong-ÃÇÈÏ\nµ&amp;oacute;µ&lt;p&gt;, LTD Co;    ZYONG ACEI UOU</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a><span class="co">#  2 &lt;br&gt; the $(Ldt &amp;AMP; C&amp;oacute;MP) Ïotta INt       IOTTA INT</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="co">#  3                 Masha  &amp;AMP;Lena Ltd. (Spb)    MASHA &amp; LENA</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co">#  4                            bla-bla-bla Ltd.     BLA BLA BLA</span></span></code></pre></div>
 </div>
 <div class="section level1">
-<h1 id="other-relevant-literature">Other relevant literature<a class="anchor" aria-label="anchor" href="#other-relevant-literature"></a>
-</h1>
-<p>Balasubramanian, N., &amp; Sivadasan, J. (2010). <em>NBER Patent Data-BR Bridge: User Guide and Technical Documentation</em> (SSRN Scholarly Paper No. ID 1695013). Rochester, NY: Social Science Research Network. Retrieved from <a href="http://papers.ssrn.com/abstract=1695013" class="external-link uri">http://papers.ssrn.com/abstract=1695013</a></p>
-<p>Bosch-Capblanch, X. (2011). Harmonisation of variables names prior to conducting statistical analyses with multiple datasets: an automated approach. <em>Bmc Medical Informatics and Decision Making</em>, 11. <a href="http://doi.org/10.1186/1472-6947-11-33" class="external-link uri">http://doi.org/10.1186/1472-6947-11-33</a></p>
-<p>Callaert, J., Du Plessis, M., Grouwels, J., Lecocq, C., Magerman, T., Peeters, B., … Vereyen, C. (2011). Patent statistics at eurostat: Methods for regionalisation, sector allocation and name harmonisation. Retrieved from <a href="https://lirias.kuleuven.be/bitstream/123456789/312061/1/2011-07-05" class="external-link uri">https://lirias.kuleuven.be/bitstream/123456789/312061/1/2011-07-05</a></p>
-<p>Codes, E. M. (2006). WORLD PATENTS INDEX. Retrieved from <a href="https://www5d.delphion.com/derwent/docs/patentee_codes.pdf" class="external-link uri">https://www5d.delphion.com/derwent/docs/patentee_codes.pdf</a></p>
-<p>Du Plessis, M., Van Looy, B., Song, X., &amp; Magerman, T. (2010). Data production methods for harmonized patent statistics: Patentee sector allocation 2009. Retrieved from <a href="https://lirias.kuleuven.be/handle/123456789/264237" class="external-link uri">https://lirias.kuleuven.be/handle/123456789/264237</a></p>
-<p>Li, G.-C., Lai, R., D’Amour, A., Doolin, D. M., Sun, Y., Torvik, V. I., … Fleming, L. (2014). Disambiguation and co-authorship networks of the U.S. patent inventor database (1975–2010). <em>Research Policy</em>, 43(6), 941–955. <a href="http://doi.org/10.1016/j.respol.2014.01.012" class="external-link uri">http://doi.org/10.1016/j.respol.2014.01.012</a></p>
-<p>Lissoni, F., Coffano, M., Maurino, A., Pezzoni, M., &amp; Tarasconi, G. (2010). APE-INV’s “Name Game” algorithm challenge: A guideline for benchmark data analysis &amp; reporting. <em>Version</em>, 1, 875–889.</p>
-<p>Peeters, B., Song, X., Callaert, J., Grouwels, J., &amp; Van Looy, B. (2010a). Harmonizing harmonized patentee names: an exploratory assessment of top patentees. Retrieved from <a href="https://lirias.kuleuven.be/handle/123456789/264238" class="external-link uri">https://lirias.kuleuven.be/handle/123456789/264238</a></p>
-<p>Peeters, B., Song, X., Callaert, J., Grouwels, J., &amp; Van Looy, B. (2010b). Harmonizing harmonized patentee names: an exploratory assessment of top patentees. Retrieved from <a href="https://lirias.kuleuven.be/bitstream/123456789/264238/1/2010-03-18" class="external-link uri">https://lirias.kuleuven.be/bitstream/123456789/264238/1/2010-03-18</a></p>
-<p>Pesenhofer, A., Berger, H., &amp; Dittenbach, M. (2011). Offering New Insights by Harmonizing Patents, Taxonomies and Linked Data. In M. Lupu, K. Mayer, J. Tait, &amp; A. J. Trippe (Eds.), <em>Current Challenges in Patent Information Retrieval</em> (Vol. 29, pp. 357–371). Dordrecht: Springer. Retrieved from ://WOS:000290417900018</p>
-<p>Raffo, J., &amp; Lhuillery, S. (2009). How to play the “Names Game”: Patent retrieval comparing different heuristics. <em>Research Policy</em>, 38(10), 1617–1627. <a href="http://doi.org/10.1016/j.respol.2009.08.001" class="external-link uri">http://doi.org/10.1016/j.respol.2009.08.001</a></p>
-<p>Van der Loo, M. P. (2014). The stringdist package for approximate string matching. <em>The R Journal</em>, 6, 111–122.</p>
-<p>Wasi, N., Flaaen, A., &amp; others. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. <em>Stata Journal</em>, 15(3), 672–697.</p>
-<p>Winkler, W. E. (2006). <em>Overview of record linkage and current research directions</em>. Bureau of the Census. Retrieved from <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.79.1519" class="external-link uri">http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.79.1519</a></p>
-</div>
-<div class="section level1">
-<h1 id="how-to-cite-this-r-package">How to cite this R package<a class="anchor" aria-label="anchor" href="#how-to-cite-this-r-package"></a>
+<h1 id="citing">Citing<a class="anchor" aria-label="anchor" href="#citing"></a>
 </h1>
 </div>
 

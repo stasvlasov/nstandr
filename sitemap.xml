@@ -118,12 +118,6 @@
     <loc>/reference/get_vector.html</loc>
   </url>
   <url>
-    <loc>/reference/harmonize.dehtmlize.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize.detect.enc.html</loc>
-  </url>
-  <url>
     <loc>/reference/harmonize.detect.html</loc>
   </url>
   <url>
@@ -131,15 +125,6 @@
   </url>
   <url>
     <loc>/reference/harmonize.match.arg.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize.remove.brackets.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize.remove.quotes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize.toascii.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize.x.dots.html</loc>
@@ -158,6 +143,12 @@
   </url>
   <url>
     <loc>/reference/harmonize_data_width.html</loc>
+  </url>
+  <url>
+    <loc>/reference/harmonize_dehtmlize.html</loc>
+  </url>
+  <url>
+    <loc>/reference/harmonize_detect_enc.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize_is_data_empty.html</loc>
@@ -184,10 +175,19 @@
     <loc>/reference/harmonize_options.html</loc>
   </url>
   <url>
+    <loc>/reference/harmonize_remove_brackets.html</loc>
+  </url>
+  <url>
+    <loc>/reference/harmonize_remove_quotes.html</loc>
+  </url>
+  <url>
     <loc>/reference/harmonize_squish_spaces.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize_target_get.html</loc>
+  </url>
+  <url>
+    <loc>/reference/harmonize_toascii.html</loc>
   </url>
   <url>
     <loc>/reference/harmonize_toupper.html</loc>
