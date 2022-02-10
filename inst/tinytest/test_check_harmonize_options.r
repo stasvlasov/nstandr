@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*check_harmonize_options][check_harmonize_options:1]]
+## -------->>  [[file:../../harmonizer.src.org::*check_harmonize_options][check_harmonize_options:2]]
 require("data.table")
 
 check_harmonize_options <- harmonizer:::check_harmonize_options
@@ -37,6 +37,6 @@ expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), ou
 expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b"), a_harmonized = TRUE)))
 ## test rows
 expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), rows = c(1,1)))
-## --------<<  check_harmonize_options:1 ends here
+## --------<<  check_harmonize_options:2 ends here
 
 
