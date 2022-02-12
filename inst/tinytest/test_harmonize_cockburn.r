@@ -28,7 +28,7 @@ expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
            , structure(list(name = c("MAEKAROENI ETOE FKUESNOE", "MS LAB COE A HREF=LSDLDF BR A", 
                                      "MSLAB", "MSLAEB COMP", "MSLAB COMP", "AAAAAEAAECEEEEIIIIDNOOOOOEOUUUUEYŸ") |> rep(20)
                           , foo = "Coffee" |> rep(120)
-                          , entity_type = c(rep("firm", 5), NA) |>
+                          , name_entity_type = c(rep("firm", 5), NA) |>
                                 rep(20)
                             ), row.names = c(NA, -120L), class = c("data.table", 
                                                                    "data.frame")))
@@ -74,7 +74,7 @@ expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
            , structure(list(name = c("MAEKAROENI ETOE FKUESNOE", "MS LAB COE A HREF=LSDLDF BR A", 
                                      "MSLAB", "MSLAEB COMP", "MSLAB COMP", "AAAAAEAAECEEEEIIIIDNOOOOOEOUUUUEYŸ") |> rep(20)
                           , foo = "Coffee" |> rep(120)
-                          , entity_type = c(rep("firm", 5), NA) |>
+                          , name_entity_type = c(rep("firm", 5), NA) |>
                                 rep(20)
                             ), row.names = c(NA, -120L), class = c("data.table", 
                                                                    "data.frame")))

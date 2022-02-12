@@ -1,7 +1,7 @@
 Package: harmonizer
 Title: Harmonization of Organizational Names
 Version: 0.0.0.9000
-Date: 2022-02-10
+Date: 2022-02-12
 Authors@R: 
     person("Stanislav", "Vlasov", , "s.vlasov@uvt.nl", role = c("aut", "cre"))
 Description: Harmonizes organizational names using steps described in
@@ -14,9 +14,7 @@ Depends:
 Imports: 
     checkmate (>= 2.0.0),
     data.table (>= 1.13.0),
-    magrittr (>= 1.5.0),
     stringi (>= 1.6.0),
-    stringr (>= 1.4.0),
     xml2 (>= 1.0.0)
 Suggests: 
     fastmatch,

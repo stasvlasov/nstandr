@@ -13,7 +13,7 @@ expect_equal(c("WESTINGHOUSE, |.?^&*@ ELEC-CONN.  "
              , "Bechara;John") |> 
              cockburn_detect_uspto()
            , structure(list(x = c("WESTINGHOUSE, |.?^&*@ ELEC-CONN.  ", "GRACE-CONN. (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED ", 
-                                  "Bechara;John"), entity_type = c(NA, NA, "indiv")), row.names = c(NA, 
+                                  "Bechara;John"), x_entity_type = c(NA, NA, "indiv")), row.names = c(NA, 
                                                                                                     -3L), class = c("data.table", "data.frame")))
 ## --------<<  USPTO special:2 ends here
 

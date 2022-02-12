@@ -12,7 +12,7 @@ cockburn_detect_indiv(
   patterns_type = "fixed",
   patterns_type_col = NULL,
   patterns_codes = "indiv",
-  output_codes_col_name = "entity_type",
+  output_codes_col_name = "{col_name_}entity_type",
   codes_omitted_rows_value = NULL,
   no_match_code = NULL,
   merge_existing_codes = "append_to_existing",

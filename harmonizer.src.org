@@ -436,8 +436,6 @@ To call all calls
 | stringi    |           1.7.6 |          1.6.0 |      |
 | xml2       |           1.3.2 |          1.0.0 |      |
 | checkmate  |           2.0.0 |          2.0.0 |      |
-| magrittr   |           2.0.1 |          1.5.0 |      |
-| stringr    |           1.4.0 |          1.4.0 |      |
 #+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
 
 Adjust "ensure_version" verstions manually:
@@ -1723,14 +1721,15 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
                            , "append_to_x"
                            , "omit")
                        , add = assertion_fails)
-          ## check 'name'
+          ## check 'output_col_name'
           checkmate::assert_string(
                          output_col_name
-                       , null.ok = TRUE
                        , add = assertion_fails)
-          if(check_name_duplicates && !is.null(output_col_name) && !is.atomic(x)) {
+          if(check_name_duplicates && !is.atomic(x)) {
+              output_col_name_formated <-
+                  infer_moving_target_from_names(names(x), col, output_col_name, output_placement)
               checkmate::assert_names(
-                             output_col_name
+                             output_col_name_formated
                            , type = "ids"
                            , what = "colnames"
                            , disjunct.from = names(x)
@@ -8427,38 +8426,68 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 
 #+END_SRC
 
-#+BEGIN_SRC R :tangle no
-   ## ## Tests
-  c(" DR VLASOV "
-  , " S.VLASOV PHD "
-  , " STANICA LEGALY REPRESENTED BY STAS"
-  , " DR VLASOV & BROTHER "
-  , "MSlab & C"
-  , "LEGALY REPRESENTED BY STAS"
-  , " REPUBLIC LEGALY REPRESENTED BY STAS"
-  , " TILBURG UNIVERSTIY "
-  , " VU UNIVERSTITAET "
-  , " FUNDATION LEGALY REPRESENTED BY STAS") %>%
-    cockburn_detect_type(procedures_message = TRUE)
-    ## cockburn_detect_type(codes.name = "type")
-
-  data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-                    , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-                    , "MSLab Co."
-                    , "MSLaeb Comp."
-                    , "MSLab Comp. Ltd."
-                    , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ  UNIVERSITY") %>% rep(20)
-           , foo = "I love coffee" ) %>%
-    cockburn_detect_type
+#+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_replace_type.r
+  expect_equal(c(" DR VLASOV "
+               , " S.VLASOV PHD "
+               , " STANICA LEGALY REPRESENTED BY STAS"
+               , " DR VLASOV & BROTHER "
+               , "MSlab & C"
+               , "LEGALY REPRESENTED BY STAS"
+               , " REPUBLIC LEGALY REPRESENTED BY STAS"
+               , " TILBURG UNIVERSTIY "
+               , " VU UNIVERSTITAET "
+               , " FUNDATION LEGALY REPRESENTED BY STAS") |>
+               cockburn_detect_type(verbose = FALSE)
+             , structure(list(x = c(" DR VLASOV ", " S.VLASOV PHD ", " STANICA LEGALY REPRESENTED BY STAS", 
+                                    " DR VLASOV & BROTHER ", "MSlab & C", "LEGALY REPRESENTED BY STAS", 
+                                    " REPUBLIC LEGALY REPRESENTED BY STAS", " TILBURG UNIVERSTIY ", 
+                                    " VU UNIVERSTITAET ", " FUNDATION LEGALY REPRESENTED BY STAS"
+                                    ), x_entity_type = list("indiv", "indiv", c("hosp", "indiv"), 
+                                                            c("indiv", "firm"), character(0), character(0), c("govt", 
+                                                                                                              "indiv"), "univ", "univ", c("inst", "indiv"))), row.names = c(NA, 
+                                                                                                                                                                            -10L), class = c("data.table", "data.frame")))
 
 
-  c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-                    , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-                    , "MSLab Co."
-                    , "MSLaeb Comp."
-                    , "MSLab Comp. Ltd."
-  , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ UNIVERSITY") %>% rep(20) %>%
-    cockburn_detect_type
+
+
+  expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+                                 , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+                                 , "MSLab Co."
+                                 , "MSLaeb Comp."
+                                 , "MSLab Comp. Ltd."
+                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ  UNIVERSITY") |> rep(2)
+                        , foo = "I love coffee" ) |>
+               cockburn_detect_type()
+             , structure(list(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+                                       "MSLab Co.", "MSLaeb Comp.", "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ  UNIVERSITY", 
+                                       "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+                                       "MSLab Co.", "MSLaeb Comp.", "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ  UNIVERSITY"
+                                       ), foo = c("I love coffee", "I love coffee", "I love coffee", 
+                                                  "I love coffee", "I love coffee", "I love coffee", "I love coffee", 
+                                                  "I love coffee", "I love coffee", "I love coffee", "I love coffee", 
+                                                  "I love coffee"), name_entity_type = c(NA, NA, NA, NA, NA, "univ", 
+                                                                                         NA, NA, NA, NA, NA, "univ")), row.names = c(NA, -12L), class = c("data.table", 
+                                                                                                                                                          "data.frame")))
+
+
+
+
+  expect_equal(c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+               , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
+               , "MSLab Co."
+               , "MSLaeb Comp."
+               , "MSLab Comp. Ltd."
+               , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ UNIVERSITY") |> rep(2) |>
+               cockburn_detect_type()
+             , structure(list(x = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+                                    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ UNIVERSITY", 
+                                    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
+                                    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ UNIVERSITY"
+                                    ), x_entity_type = c(NA, NA, NA, NA, NA, "univ", NA, NA, NA, 
+                                                         NA, NA, "univ")), row.names = c(NA, -12L), class = c("data.table", 
+                                                                                                              "data.frame")))
+
+
 #+END_SRC
 
 **** Firms (Corporates)
@@ -8479,7 +8508,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @export
   cockburn_detect_corp <- make_alias(detect_patterns
                                    , patterns = cockburn_patterns_corp
-                                   , output_codes_col_name = "entity_type"
+                                   , output_codes_col_name = "{col_name_}entity_type"
                                    , merge_existing_codes = "append_to_existing"
                                    , patterns_codes = "firm"
                                    , return_only_first_detected_code = TRUE)
@@ -8496,7 +8525,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
             , "LEGALY REPRESENTED BY STAS") |>
             cockburn_detect_corp()
           , structure(list(x = c(" DR VLASOV & BROTHER ", "MSlab & C", " S.VLASOV PHD ", 
-                                 "LEGALY REPRESENTED BY STAS"), entity_type = c("firm", NA, NA, 
+                                 "LEGALY REPRESENTED BY STAS"), x_entity_type = c("firm", NA, NA, 
                                                                                 NA)), row.names = c(NA, -4L), class = c("data.table", "data.frame"
                                                                                                                         )))
 #+END_SRC
@@ -9392,7 +9421,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   cockburn_detect_indiv <- make_alias(detect_patterns
                                     , patterns = cockburn_patterns_indiv
                                     , patterns_codes = "indiv"
-                                    , output_codes_col_name = "entity_type"
+                                    , output_codes_col_name = "{col_name_}entity_type"
                                     , merge_existing_codes = "append_to_existing"
                                     , return_only_first_detected_code = TRUE)
 
@@ -9408,7 +9437,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                , "LEGALY REPRESENTED BY STAS") |>
                cockburn_detect_indiv()
              , structure(list(x = c(" DR VLASOV ", " S.VLASOV PHD ", "LEGALY REPRESENTED BY STAS"
-                                    ), entity_type = c("indiv", "indiv", NA)), row.names = c(NA, 
+                                    ), x_entity_type = c("indiv", "indiv", NA)), row.names = c(NA, 
                                                                                              -3L), class = c("data.table", "data.frame")))
 
 
@@ -9430,7 +9459,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   " DR VLASOV & BROTHER ", "MSlab & C", "LEGALY REPRESENTED BY STAS", 
   " REPUBLIC LEGALY REPRESENTED BY STAS", " TILBURG UNIVERSTIY ", 
   " VU UNIVERSTITAET ", " FUNDATION LEGALY REPRESENTED BY STAS"
-  ), entity_type = list(c("indiv", "indiv"), c("indiv", "indiv"
+  ), x_entity_type = list(c("indiv", "indiv"), c("indiv", "indiv"
   ), c("indiv", "indiv"), c("indiv", "indiv"), character(0), character(0), 
       c("indiv", "govt", "indiv"), character(0), character(0), 
       c("indiv", "indiv"))), row.names = c(NA, -10L), class = c("data.table", 
@@ -9503,7 +9532,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   cockburn_detect_govt <- make_alias(detect_patterns
                                    , patterns = cockburn_patterns_govt
                                    , patterns_codes = "govt"
-                                   , output_codes_col_name = "entity_type"
+                                   , output_codes_col_name = "{col_name_}entity_type"
                                    , merge_existing_codes = "append_to_existing"
                                    , return_only_first_detected_code = TRUE)
 
@@ -9538,7 +9567,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                , " REPUBLIC LEGALY REPRESENTED BY STAS") |>
                cockburn_detect_govt()
              , structure(list(x = c(" DR VLASOV ", " S.VLASOV PHD ", " REPUBLIC LEGALY REPRESENTED BY STAS"
-                                    ), entity_type = c(NA, NA, "govt")), row.names = c(NA, -3L), class = c("data.table", 
+                                    ), x_entity_type = c(NA, NA, "govt")), row.names = c(NA, -3L), class = c("data.table", 
                                                                                                            "data.frame")))
 
   expect_equal(" VERY IMPORTANT SEC OF THE DEPT OF  " |>
@@ -9674,7 +9703,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   cockburn_detect_univ <- make_alias(detect_patterns
                                    , patterns = cockburn_patterns_univ
                                    , patterns_codes = "univ"
-                                   , output_codes_col_name = "entity_type"
+                                   , output_codes_col_name = "{col_name_}entity_type"
                                    , merge_existing_codes = "append_to_existing"
                                    , return_only_first_detected_code = TRUE)
 
@@ -9716,7 +9745,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                , "LEGALY REPRESENTED BY STAS") |>
                cockburn_detect_univ()
              , structure(list(x = c(" TILBURG UNIVERSTIY ", " VU UNIVERSTITAET ", 
-                                    "LEGALY REPRESENTED BY STAS"), entity_type = c("univ", "univ", 
+                                    "LEGALY REPRESENTED BY STAS"), x_entity_type = c("univ", "univ", 
                                                                                    NA)), row.names = c(NA, -3L), class = c("data.table", "data.frame"
                                                                                                                            )))
 
@@ -9826,7 +9855,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   cockburn_detect_inst <- make_alias(detect_patterns
                                    , patterns = cockburn_patterns_inst
                                    , patterns_codes = "inst"
-                                   , output_codes_col_name = "entity_type"
+                                   , output_codes_col_name = "{col_name_}entity_type"
                                    , merge_existing_codes = "append_to_existing"
                                    , return_only_first_detected_code = TRUE)
 
@@ -9842,7 +9871,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                , " FUNDATION LEGALY REPRESENTED BY STAS") |>
                cockburn_detect_inst()
              , structure(list(x = c(" DR VLASOV ", " S.VLASOV PHD ", " FUNDATION LEGALY REPRESENTED BY STAS"
-                                    ), entity_type = c(NA, NA, "inst")), row.names = c(NA, -3L), class = c("data.table", 
+                                    ), x_entity_type = c(NA, NA, "inst")), row.names = c(NA, -3L), class = c("data.table", 
                                                                                                            "data.frame")))
 
 
@@ -9911,96 +9940,88 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 | ' INST '       | >0 & asstype~="univ"                 |
 
 #+BEGIN_SRC R :tangle R/cockburn.r
-    ##' @eval attr(cockburn_detect_inst_conds_1, "@title")
-    ##' @description STATA equivalent: replace asstype = "inst" if strpos(standard_name," COUNCIL OF ")>0 & strpos(standard_name," RES ")>0
-    ##' @inherit detect_patterns params return
-    ##' @inheritDotParams harmonize_options
-    ##' @return Harmonized table
-    ##' @family magerman
-    ##' @seealso detect_patterns
-    ##'
-    ##' @md
-    ##' @export
-    cockburn_detect_inst_conds_1 <- make_alias(detect_patterns
-                                             , patterns = " COUNCIL OF .* RES | RES .* COUNCIL OF "
-                                             , patterns_type = "regex"
-                                             , patterns_codes = "inst"
-                                             , output_codes_col_name = "entity_type"
-                                             , merge_existing_codes = "append_to_existing"
-                                             , return_only_first_detected_code = TRUE)
-
-    attr(cockburn_detect_inst_conds_1, "@title") <-
-        "Detects Non-profit institutes with special conditions"
-
-
-
-    ##' Detects Non-profit institutes with special conditions
-    ##'
-    ##' STATA equivalent
-    ##' replace asstype = "inst" if strpos(standard_name," FOUND ")~=0 & asstype~="univ"
-    ##' assume a bug: " FOUND ")~=0 -> " FOUND ")>0
-    ##' replace asstype = "inst" if strpos(standard_name," INST ")>0 & asstype~="univ"
-    ##' 
-    ##' @param x table. Expected that x has a column with codes for universities
-    ##' @param output_codes_col_name column with codes for universities ("univ"). Default is last column of x
-    ##' @param merge_existing_codes same as in [detect_patterns()]
-    ##' @inheritDotParams harmonize_options
-    ##' @return Harmonized table
-    ##' 
-    ##' @md
-    ##' @export
-    cockburn_detect_inst_conds_2 <- function(x
-                                           , output_codes_col_name = "entity_type"
+  ##' @eval attr(cockburn_detect_inst_conds_1, "@title")
+  ##' @description STATA equivalent: replace asstype = "inst" if strpos(standard_name," COUNCIL OF ")>0 & strpos(standard_name," RES ")>0
+  ##' @inherit detect_patterns params return
+  ##' @inheritDotParams harmonize_options
+  ##' @return Harmonized table
+  ##' @family magerman
+  ##' @seealso detect_patterns
+  ##'
+  ##' @md
+  ##' @export
+  cockburn_detect_inst_conds_1 <- make_alias(detect_patterns
+                                           , patterns = " COUNCIL OF .* RES | RES .* COUNCIL OF "
+                                           , patterns_type = "regex"
+                                           , patterns_codes = "inst"
+                                           , output_codes_col_name = "{col_name_}entity_type"
                                            , merge_existing_codes = "append_to_existing"
-                                           , ...) {
+                                           , return_only_first_detected_code = TRUE)
 
-        codes <- get_target(x
-                          , col = output_codes_col_name
-                          , return_null_for_new_col = TRUE)
-        conds <-
-            lapply(codes, `%in%`, "univ") |>
-            sapply(any, na.rm = TRUE)
-        conds <- if(length(conds) == 0) NULL else !conds
-        x_vec <- get_target(x)
-        .x <- data.table(x_vec, codes)
-        names(.x) <- c("x", output_codes_col_name)
-        coded <- detect_patterns(x = .x
-                               , patterns = c(" FOUND "
-                                             , " INST ")
-                               , col = 1
-                               , output_placement = "replace_col"
-                               , rows = conds
-                               , output_codes_col_name = output_codes_col_name
-                               , patterns_codes = "inst"
-                               , merge_existing_codes = merge_existing_codes
-                               , return_only_first_detected_code = TRUE
-                               , return_only_codes = TRUE)
-        inset_target(coded, x, col = output_codes_col_name, output_placement = "replace_col")
-    }
+  attr(cockburn_detect_inst_conds_1, "@title") <-
+      "Detects Non-profit institutes with special conditions"
 
 
 
-
-    ##' Detects Non-profit institutes with special conditions
-    ##'
-    ##' @param x table. Expected that x has a column with codes for universities
-    ##' @param merge_existing_codes same as in [detect_patterns()]
-    ##' @param output_codes_col_name column with codes for universities ("univ"). Default is last column of x
-    ##' @inheritDotParams harmonize_options
-    ##' @return Harmonized table
-    ##' 
-    ##' @md
-    ##' @export
-    cockburn_detect_inst_conds <- function(x
+  ##' Detects Non-profit institutes with special conditions
+  ##'
+  ##' STATA equivalent
+  ##' replace asstype = "inst" if strpos(standard_name," FOUND ")~=0 & asstype~="univ"
+  ##' assume a bug: " FOUND ")~=0 -> " FOUND ")>0
+  ##' replace asstype = "inst" if strpos(standard_name," INST ")>0 & asstype~="univ"
+  ##' 
+  ##' @param x table. Expected that x has a column with codes for universities
+  ##' @param output_codes_col_name column with codes for universities ("univ"). Default is last column of x
+  ##' @param merge_existing_codes same as in [detect_patterns()]
+  ##' @inheritDotParams harmonize_options
+  ##' @return Harmonized table
+  ##' 
+  ##' @md
+  ##' @export
+  cockburn_detect_inst_conds_2 <- function(x
+                                         , output_codes_col_name = "{col_name_}entity_type"
                                          , merge_existing_codes = "append_to_existing"
-                                         , output_codes_col_name = "entity_type"
                                          , ...) {
-      x |> 
-          cockburn_detect_inst_conds_1(merge_existing_codes = merge_existing_codes
-                                     , output_codes_col_name = output_codes_col_name) |>
-          cockburn_detect_inst_conds_2(output_codes_col_name = output_codes_col_name
-                                     , merge_existing_codes = merge_existing_codes)
-    }
+      conds <- get_target(x
+                        , output_col_name = output_codes_col_name
+                        , output_placement = "append_to_x"
+                        , rows = NULL
+                        , return_null_for_new_col = TRUE) |>
+          lapply(`%in%`, "univ") |>
+          sapply(any, na.rm = TRUE) |>
+          (\(conds) if(length(conds) == 0) NULL else !conds)()
+      rows <- get_col_and_rows()$rows
+      detect_patterns(x
+                    , patterns = c(" FOUND "
+                                 , " INST ")
+                    , rows = and_rows(conds, rows, x)
+                    , output_codes_col_name = output_codes_col_name
+                    , patterns_codes = "inst"
+                    , merge_existing_codes = merge_existing_codes
+                    , return_only_first_detected_code = TRUE)
+  }
+
+
+  ##' Detects Non-profit institutes with special conditions
+  ##'
+  ##' @param x table. Expected that x has a column with codes for universities
+  ##' @param merge_existing_codes same as in [detect_patterns()]
+  ##' @param output_codes_col_name column with codes for universities ("univ"). Default is last column of x
+  ##' @inheritDotParams harmonize_options
+  ##' @return Harmonized table
+  ##' 
+  ##' @md
+  ##' @export
+  cockburn_detect_inst_conds <- function(x
+                                       , merge_existing_codes = "append_to_existing"
+                                       , output_codes_col_name = "{col_name_}entity_type"
+                                       , ...) {
+    x |> 
+        cockburn_detect_inst_conds_1(merge_existing_codes = merge_existing_codes
+                                   , output_codes_col_name = output_codes_col_name) |>
+        cockburn_detect_inst_conds_2(output_codes_col_name = output_codes_col_name
+                                   , merge_existing_codes = merge_existing_codes)
+  }
 
 #+END_SRC
 
@@ -10010,11 +10031,11 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                                 , " INT INST OF MAGIC"
                                 , " COUNCIL OF PARANORMAL RES & DEV "
                                 , " COUNCIL OF GROWN UP KIDS ")
-                        , entity_type = list(c("univ", "gov"), NA, "univ", NA, "gov")) |>
+                        , org_entity_type = list(c("univ", "gov"), NA, "univ", NA, "gov")) |>
                cockburn_detect_inst_conds_2()
              , structure(list(org = c(" EVIL FOUND OF BIG CORP ", " EVIL FOUND OF BIG CORP ", 
                                       " INT INST OF MAGIC", " COUNCIL OF PARANORMAL RES & DEV ", " COUNCIL OF GROWN UP KIDS "
-                                      ), entity_type = list(c("univ", "gov"), "inst", "univ", NA_character_, 
+                                      ), org_entity_type = list(c("univ", "gov"), "inst", "univ", NA_character_, 
                                                             "gov")), row.names = c(NA, -5L), class = c("data.table", 
                                                                                                        "data.frame")))
 
@@ -10035,7 +10056,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                                        "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
                                        ), foo = c("I love coffee", "I love coffee", "I love coffee", 
                                                   "I love coffee", "I love coffee", "I love coffee", "I love coffee"
-                                                  ), entity_type = c(NA, NA, NA, NA, "inst", NA, NA)), row.names = c(NA, 
+                                                  ), name_entity_type = c(NA, NA, NA, NA, "inst", NA, NA)), row.names = c(NA, 
                                                                                                                      -7L), class = c("data.table", "data.frame")))
 
 
@@ -10050,13 +10071,13 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                                 , " TILBURG UNIVERSTIY "
                                 , " VU UNIVERSTITAET "
                                 , " FUNDATION LEGALY REPRESENTED BY STAS")
-                        , entity_type = list(c("univ", "gov"), NA, "univ", NA, "gov")) |>
+                        , org_entity_type = list(c("univ", "gov"), NA, "univ", NA, "gov")) |>
                cockburn_detect_inst_conds()
              , structure(list(org = c(" DR VLASOV ", " S.VLASOV PHD ", " STANICA LEGALY REPRESENTED BY STAS INST ", 
                                       " INST DR VLASOV & BROTHER ", "MSlab & C", "LEGALY REPRESENTED BY STAS", 
                                       " REPUBLIC LEGALY REPRESENTED BY STAS", " TILBURG UNIVERSTIY ", 
                                       " VU UNIVERSTITAET ", " FUNDATION LEGALY REPRESENTED BY STAS"
-                                      ), entity_type = list(c("univ", "gov"), NA_character_, "univ", 
+                                      ), org_entity_type = list(c("univ", "gov"), NA_character_, "univ", 
                                                             "inst", "gov", c("univ", "gov"), NA_character_, "univ", NA_character_, 
                                                             "gov")), row.names = c(NA, -10L), class = c("data.table", 
                                                                                                         "data.frame")))
@@ -10083,7 +10104,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @md 
   ##' @export 
   cockburn_detect_inst_german <- function(x
-                                 , output_codes_col_name = "entity_type"
+                                 , output_codes_col_name = "{col_name_}entity_type"
                                  , merge_existing_codes = "append_to_existing"
                                  , ...) {
       rows <- get_col_and_rows()$rows
@@ -10118,7 +10139,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                , " STIFTUNG ") |>
                cockburn_detect_inst_german()
              , structure(list(x = c(" EINGETRAGENER VEREIN UNIV ", " BERLIN EINGETRAGENER VEREIN ", 
-                                    " STIFTUNG "), entity_type = c("inst", NA, NA)), row.names = c(NA, 
+                                    " STIFTUNG "), x_entity_type = c("inst", NA, NA)), row.names = c(NA, 
                                                                                                    -3L), class = c("data.table", "data.frame")))
 
 
@@ -10145,7 +10166,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                                    , patterns = cockburn_patterns_hosp
                                    , patterns_codes = "hosp"
                                    , return_only_first_detected_code = TRUE
-                                   , output_codes_col_name = "entity_type"
+                                   , output_codes_col_name = "{col_name_}entity_type"
                                    , merge_existing_codes = "append_to_existing")
 
   attr(cockburn_detect_hosp, "@title") <-
@@ -10160,7 +10181,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
                , " STANICA LEGALY REPRESENTED BY STAS") |>
                cockburn_detect_hosp()
              , structure(list(x = c(" DR VLASOV ", " S.VLASOV PHD ", " STANICA LEGALY REPRESENTED BY STAS"
-                                    ), entity_type = c(NA, NA, "hosp")), row.names = c(NA, -3L), class = c("data.table", 
+                                    ), x_entity_type = c(NA, NA, "hosp")), row.names = c(NA, -3L), class = c("data.table", 
                                                                                                            "data.frame")))
 
 #+END_SRC
@@ -10822,7 +10843,7 @@ creates a name with all legal entity identifiers removed
     cockburn_detect_uspto <- make_alias(detect_patterns
                                       , patterns = ";"
                                       , patterns_codes = "indiv"
-                                      , output_codes_col_name = "entity_type"
+                                      , output_codes_col_name = "{col_name_}entity_type"
                                       , return_only_first_detected_code = TRUE)
 
     attr(cockburn_detect_uspto, "@title") <-
@@ -10847,7 +10868,7 @@ creates a name with all legal entity identifiers removed
                , "Bechara;John") |> 
                cockburn_detect_uspto()
              , structure(list(x = c("WESTINGHOUSE, |.?^&*@ ELEC-CONN.  ", "GRACE-CONN. (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED ", 
-                                    "Bechara;John"), entity_type = c(NA, NA, "indiv")), row.names = c(NA, 
+                                    "Bechara;John"), x_entity_type = c(NA, NA, "indiv")), row.names = c(NA, 
                                                                                                       -3L), class = c("data.table", "data.frame")))
 
 
@@ -10956,7 +10977,7 @@ basically reproduces the 'main_coname2.do' stata file
              , structure(list(name = c("MAEKAROENI ETOE FKUESNOE", "MS LAB COE A HREF=LSDLDF BR A", 
                                        "MSLAB", "MSLAEB COMP", "MSLAB COMP", "AAAAAEAAECEEEEIIIIDNOOOOOEOUUUUEYŸ") |> rep(20)
                             , foo = "Coffee" |> rep(120)
-                            , entity_type = c(rep("firm", 5), NA) |>
+                            , name_entity_type = c(rep("firm", 5), NA) |>
                                   rep(20)
                               ), row.names = c(NA, -120L), class = c("data.table", 
                                                                      "data.frame")))
@@ -11002,7 +11023,7 @@ basically reproduces the 'main_coname2.do' stata file
              , structure(list(name = c("MAEKAROENI ETOE FKUESNOE", "MS LAB COE A HREF=LSDLDF BR A", 
                                        "MSLAB", "MSLAEB COMP", "MSLAB COMP", "AAAAAEAAECEEEEIIIIDNOOOOOEOUUUUEYŸ") |> rep(20)
                             , foo = "Coffee" |> rep(120)
-                            , entity_type = c(rep("firm", 5), NA) |>
+                            , name_entity_type = c(rep("firm", 5), NA) |>
                                   rep(20)
                               ), row.names = c(NA, -120L), class = c("data.table", 
                                                                      "data.frame")))

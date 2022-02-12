@@ -12,7 +12,7 @@ cockburn_detect_inst_conds_1(
   patterns_type = "regex",
   patterns_type_col = NULL,
   patterns_codes = "inst",
-  output_codes_col_name = "entity_type",
+  output_codes_col_name = "{col_name_}entity_type",
   codes_omitted_rows_value = NULL,
   no_match_code = NULL,
   merge_existing_codes = "append_to_existing",

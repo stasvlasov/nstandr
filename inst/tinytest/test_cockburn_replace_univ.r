@@ -4,7 +4,7 @@ expect_equal(c(" TILBURG UNIVERSTIY "
              , "LEGALY REPRESENTED BY STAS") |>
              cockburn_detect_univ()
            , structure(list(x = c(" TILBURG UNIVERSTIY ", " VU UNIVERSTITAET ", 
-                                  "LEGALY REPRESENTED BY STAS"), entity_type = c("univ", "univ", 
+                                  "LEGALY REPRESENTED BY STAS"), x_entity_type = c("univ", "univ", 
                                                                                  NA)), row.names = c(NA, -3L), class = c("data.table", "data.frame"
                                                                                                                          )))
 

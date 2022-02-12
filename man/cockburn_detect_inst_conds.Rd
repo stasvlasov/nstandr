@@ -7,7 +7,7 @@
 cockburn_detect_inst_conds(
   x,
   merge_existing_codes = "append_to_existing",
-  output_codes_col_name = "entity_type",
+  output_codes_col_name = "{col_name_}entity_type",
   ...
 )
 }

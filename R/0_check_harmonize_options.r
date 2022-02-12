@@ -141,14 +141,15 @@ check_harmonize_options <- function(dots
                          , "append_to_x"
                          , "omit")
                      , add = assertion_fails)
-        ## check 'name'
+        ## check 'output_col_name'
         checkmate::assert_string(
                        output_col_name
-                     , null.ok = TRUE
                      , add = assertion_fails)
-        if(check_name_duplicates && !is.null(output_col_name) && !is.atomic(x)) {
+        if(check_name_duplicates && !is.atomic(x)) {
+            output_col_name_formated <-
+                infer_moving_target_from_names(names(x), col, output_col_name, output_placement)
             checkmate::assert_names(
-                           output_col_name
+                           output_col_name_formated
                          , type = "ids"
                          , what = "colnames"
                          , disjunct.from = names(x)

@@ -4,11 +4,11 @@ expect_equal(data.table(org = c(" EVIL FOUND OF BIG CORP "
                               , " INT INST OF MAGIC"
                               , " COUNCIL OF PARANORMAL RES & DEV "
                               , " COUNCIL OF GROWN UP KIDS ")
-                      , entity_type = list(c("univ", "gov"), NA, "univ", NA, "gov")) |>
+                      , org_entity_type = list(c("univ", "gov"), NA, "univ", NA, "gov")) |>
              cockburn_detect_inst_conds_2()
            , structure(list(org = c(" EVIL FOUND OF BIG CORP ", " EVIL FOUND OF BIG CORP ", 
                                     " INT INST OF MAGIC", " COUNCIL OF PARANORMAL RES & DEV ", " COUNCIL OF GROWN UP KIDS "
-                                    ), entity_type = list(c("univ", "gov"), "inst", "univ", NA_character_, 
+                                    ), org_entity_type = list(c("univ", "gov"), "inst", "univ", NA_character_, 
                                                           "gov")), row.names = c(NA, -5L), class = c("data.table", 
                                                                                                      "data.frame")))
 
@@ -29,7 +29,7 @@ expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                      "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
                                      ), foo = c("I love coffee", "I love coffee", "I love coffee", 
                                                 "I love coffee", "I love coffee", "I love coffee", "I love coffee"
-                                                ), entity_type = c(NA, NA, NA, NA, "inst", NA, NA)), row.names = c(NA, 
+                                                ), name_entity_type = c(NA, NA, NA, NA, "inst", NA, NA)), row.names = c(NA, 
                                                                                                                    -7L), class = c("data.table", "data.frame")))
 
 
@@ -44,13 +44,13 @@ expect_equal(data.table(org = c(" DR VLASOV "
                               , " TILBURG UNIVERSTIY "
                               , " VU UNIVERSTITAET "
                               , " FUNDATION LEGALY REPRESENTED BY STAS")
-                      , entity_type = list(c("univ", "gov"), NA, "univ", NA, "gov")) |>
+                      , org_entity_type = list(c("univ", "gov"), NA, "univ", NA, "gov")) |>
              cockburn_detect_inst_conds()
            , structure(list(org = c(" DR VLASOV ", " S.VLASOV PHD ", " STANICA LEGALY REPRESENTED BY STAS INST ", 
                                     " INST DR VLASOV & BROTHER ", "MSlab & C", "LEGALY REPRESENTED BY STAS", 
                                     " REPUBLIC LEGALY REPRESENTED BY STAS", " TILBURG UNIVERSTIY ", 
                                     " VU UNIVERSTITAET ", " FUNDATION LEGALY REPRESENTED BY STAS"
-                                    ), entity_type = list(c("univ", "gov"), NA_character_, "univ", 
+                                    ), org_entity_type = list(c("univ", "gov"), NA_character_, "univ", 
                                                           "inst", "gov", c("univ", "gov"), NA_character_, "univ", NA_character_, 
                                                           "gov")), row.names = c(NA, -10L), class = c("data.table", 
                                                                                                       "data.frame")))

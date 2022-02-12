@@ -6,7 +6,7 @@
 \usage{
 cockburn_detect_inst_german(
   x,
-  output_codes_col_name = "entity_type",
+  output_codes_col_name = "{col_name_}entity_type",
   merge_existing_codes = "append_to_existing",
   ...
 )

@@ -160,7 +160,7 @@ cockburn_replace_type <- function(x, ...) {
 ##' @export
 cockburn_detect_corp <- make_alias(detect_patterns
                                  , patterns = cockburn_patterns_corp
-                                 , output_codes_col_name = "entity_type"
+                                 , output_codes_col_name = "{col_name_}entity_type"
                                  , merge_existing_codes = "append_to_existing"
                                  , patterns_codes = "firm"
                                  , return_only_first_detected_code = TRUE)
@@ -186,7 +186,7 @@ attr(cockburn_detect_corp, "@title") <-
 cockburn_detect_indiv <- make_alias(detect_patterns
                                   , patterns = cockburn_patterns_indiv
                                   , patterns_codes = "indiv"
-                                  , output_codes_col_name = "entity_type"
+                                  , output_codes_col_name = "{col_name_}entity_type"
                                   , merge_existing_codes = "append_to_existing"
                                   , return_only_first_detected_code = TRUE)
 
@@ -210,7 +210,7 @@ attr(cockburn_detect_indiv, "@title") <-
 cockburn_detect_govt <- make_alias(detect_patterns
                                  , patterns = cockburn_patterns_govt
                                  , patterns_codes = "govt"
-                                 , output_codes_col_name = "entity_type"
+                                 , output_codes_col_name = "{col_name_}entity_type"
                                  , merge_existing_codes = "append_to_existing"
                                  , return_only_first_detected_code = TRUE)
 
@@ -253,7 +253,7 @@ attr(cockburn_replace_govt, "@title") <-
 cockburn_detect_univ <- make_alias(detect_patterns
                                  , patterns = cockburn_patterns_univ
                                  , patterns_codes = "univ"
-                                 , output_codes_col_name = "entity_type"
+                                 , output_codes_col_name = "{col_name_}entity_type"
                                  , merge_existing_codes = "append_to_existing"
                                  , return_only_first_detected_code = TRUE)
 
@@ -299,7 +299,7 @@ attr(cockburn_replace_univ, "@title") <-
 cockburn_detect_inst <- make_alias(detect_patterns
                                  , patterns = cockburn_patterns_inst
                                  , patterns_codes = "inst"
-                                 , output_codes_col_name = "entity_type"
+                                 , output_codes_col_name = "{col_name_}entity_type"
                                  , merge_existing_codes = "append_to_existing"
                                  , return_only_first_detected_code = TRUE)
 
@@ -324,7 +324,7 @@ cockburn_detect_inst_conds_1 <- make_alias(detect_patterns
                                          , patterns = " COUNCIL OF .* RES | RES .* COUNCIL OF "
                                          , patterns_type = "regex"
                                          , patterns_codes = "inst"
-                                         , output_codes_col_name = "entity_type"
+                                         , output_codes_col_name = "{col_name_}entity_type"
                                          , merge_existing_codes = "append_to_existing"
                                          , return_only_first_detected_code = TRUE)
 
@@ -349,35 +349,27 @@ attr(cockburn_detect_inst_conds_1, "@title") <-
 ##' @md
 ##' @export
 cockburn_detect_inst_conds_2 <- function(x
-                                       , output_codes_col_name = "entity_type"
+                                       , output_codes_col_name = "{col_name_}entity_type"
                                        , merge_existing_codes = "append_to_existing"
                                        , ...) {
-
-    codes <- get_target(x
-                      , col = output_codes_col_name
-                      , return_null_for_new_col = TRUE)
-    conds <-
-        lapply(codes, `%in%`, "univ") |>
-        sapply(any, na.rm = TRUE)
-    conds <- if(length(conds) == 0) NULL else !conds
-    x_vec <- get_target(x)
-    .x <- data.table(x_vec, codes)
-    names(.x) <- c("x", output_codes_col_name)
-    coded <- detect_patterns(x = .x
-                           , patterns = c(" FOUND "
-                                         , " INST ")
-                           , col = 1
-                           , output_placement = "replace_col"
-                           , rows = conds
-                           , output_codes_col_name = output_codes_col_name
-                           , patterns_codes = "inst"
-                           , merge_existing_codes = merge_existing_codes
-                           , return_only_first_detected_code = TRUE
-                           , return_only_codes = TRUE)
-    inset_target(coded, x, col = output_codes_col_name, output_placement = "replace_col")
+    conds <- get_target(x
+                      , output_col_name = output_codes_col_name
+                      , output_placement = "append_to_x"
+                      , rows = NULL
+                      , return_null_for_new_col = TRUE) |>
+        lapply(`%in%`, "univ") |>
+        sapply(any, na.rm = TRUE) |>
+        (\(conds) if(length(conds) == 0) NULL else !conds)()
+    rows <- get_col_and_rows()$rows
+    detect_patterns(x
+                  , patterns = c(" FOUND "
+                               , " INST ")
+                  , rows = and_rows(conds, rows, x)
+                  , output_codes_col_name = output_codes_col_name
+                  , patterns_codes = "inst"
+                  , merge_existing_codes = merge_existing_codes
+                  , return_only_first_detected_code = TRUE)
 }
-
-
 
 
 ##' Detects Non-profit institutes with special conditions
@@ -392,7 +384,7 @@ cockburn_detect_inst_conds_2 <- function(x
 ##' @export
 cockburn_detect_inst_conds <- function(x
                                      , merge_existing_codes = "append_to_existing"
-                                     , output_codes_col_name = "entity_type"
+                                     , output_codes_col_name = "{col_name_}entity_type"
                                      , ...) {
   x |> 
       cockburn_detect_inst_conds_1(merge_existing_codes = merge_existing_codes
@@ -416,7 +408,7 @@ cockburn_detect_inst_conds <- function(x
 ##' @md 
 ##' @export 
 cockburn_detect_inst_german <- function(x
-                               , output_codes_col_name = "entity_type"
+                               , output_codes_col_name = "{col_name_}entity_type"
                                , merge_existing_codes = "append_to_existing"
                                , ...) {
     rows <- get_col_and_rows()$rows
@@ -461,7 +453,7 @@ cockburn_detect_hosp <- make_alias(detect_patterns
                                  , patterns = cockburn_patterns_hosp
                                  , patterns_codes = "hosp"
                                  , return_only_first_detected_code = TRUE
-                                 , output_codes_col_name = "entity_type"
+                                 , output_codes_col_name = "{col_name_}entity_type"
                                  , merge_existing_codes = "append_to_existing")
 
 attr(cockburn_detect_hosp, "@title") <-
@@ -565,7 +557,7 @@ attr(cockburn_remove_uspto, "@title") <-
 cockburn_detect_uspto <- make_alias(detect_patterns
                                   , patterns = ";"
                                   , patterns_codes = "indiv"
-                                  , output_codes_col_name = "entity_type"
+                                  , output_codes_col_name = "{col_name_}entity_type"
                                   , return_only_first_detected_code = TRUE)
 
 attr(cockburn_detect_uspto, "@title") <-

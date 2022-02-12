@@ -4,7 +4,7 @@ expect_equal(c(" DR VLASOV "
              , " REPUBLIC LEGALY REPRESENTED BY STAS") |>
              cockburn_detect_govt()
            , structure(list(x = c(" DR VLASOV ", " S.VLASOV PHD ", " REPUBLIC LEGALY REPRESENTED BY STAS"
-                                  ), entity_type = c(NA, NA, "govt")), row.names = c(NA, -3L), class = c("data.table", 
+                                  ), x_entity_type = c(NA, NA, "govt")), row.names = c(NA, -3L), class = c("data.table", 
                                                                                                          "data.frame")))
 
 expect_equal(" VERY IMPORTANT SEC OF THE DEPT OF  " |>
