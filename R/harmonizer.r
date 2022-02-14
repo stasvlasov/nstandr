@@ -41,7 +41,7 @@ attr(harmonize_toupper, "description") <-
 ##' @export
 harmonize_remove_brackets  <- function(x, ...) {
     get_target(x) |>
-        stri_replace_all_regex("<[^<>]*>|\\([^()]*\\)|\\{[^{}]*\\}|\\[[^\\[\\]]*\\]", "") |>
+        stringi::stri_replace_all_regex("<[^<>]*>|\\([^()]*\\)|\\{[^{}]*\\}|\\[[^\\[\\]]*\\]", "") |>
         inset_target(x)
 }
 
@@ -128,7 +128,7 @@ harmonize_detect_enc <- function(x
     x_vector <- get_target(x) |>
         stringi::stri_enc_detect() |>
         lapply(function(enc) {
-            enc <- extract2(enc, "Encoding")
+            enc <- enc[["Encoding"]]
             first_ok_enc <- which(enc %in% available_enc_list)[1]
             if(length(first_ok_enc) == 0) ""
             else enc[[first_ok_enc]]

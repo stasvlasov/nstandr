@@ -601,7 +601,7 @@ Adjust "ensure_version" verstions manually:
   ##' @export
   harmonize_remove_brackets  <- function(x, ...) {
       get_target(x) |>
-          stri_replace_all_regex("<[^<>]*>|\\([^()]*\\)|\\{[^{}]*\\}|\\[[^\\[\\]]*\\]", "") |>
+          stringi::stri_replace_all_regex("<[^<>]*>|\\([^()]*\\)|\\{[^{}]*\\}|\\[[^\\[\\]]*\\]", "") |>
           inset_target(x)
   }
 
@@ -716,7 +716,7 @@ Adjust "ensure_version" verstions manually:
       x_vector <- get_target(x) |>
           stringi::stri_enc_detect() |>
           lapply(function(enc) {
-              enc <- extract2(enc, "Encoding")
+              enc <- enc[["Encoding"]]
               first_ok_enc <- which(enc %in% available_enc_list)[1]
               if(length(first_ok_enc) == 0) ""
               else enc[[first_ok_enc]]
@@ -1423,7 +1423,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##' @param x_atomic_name Name to use as a col name if x is atomic
   ##' @inheritDotParams defactor_vector
   ##' @return object of the same type without factors
-  ##'  
+  ##' @import data.table
   ##' @export
   defactor <- function(x
                      , conv2dt = c("only.tables"
@@ -1438,7 +1438,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
         if(conv2dt %in% c("only.tables", "all.but.atomic", "none")) {
             defactor_vector(x, ...)
         } else {
-            x <- data.table::data.table(defactor_vector(x, ...))
+            x <- data.table(defactor_vector(x, ...))
             if(!is.null(x_atomic_name)) names(x) <- x_atomic_name
             return(x)
         }
@@ -1446,13 +1446,13 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
         if((conv2dt %in% c("only.tables", "all.but.lists", "none")))
             lapply(x, defactor, conv2dt = "none", ...)
         else
-            data.table::data.table(lapply(x, defactor, conv2dt = "none", ...))
+            data.table(lapply(x, defactor, conv2dt = "none", ...))
     else if(conv2dt != "none")
-      data.table::as.data.table(lapply(x, defactor_vector, ...))
+      as.data.table(lapply(x, defactor_vector, ...))
     else if(is.matrix(x))
       as.matrix(lapply(x, defactor_vector, ...))
-    else if(data.table::is.data.table(x))
-      data.table::as.data.table(lapply(x, defactor_vector, ...))
+    else if(is.data.table(x))
+      as.data.table(lapply(x, defactor_vector, ...))
     else if(is.data.frame(x))
       as.data.frame(lapply(x, defactor_vector, ...)
                   , stringsAsFactors = FALSE)
