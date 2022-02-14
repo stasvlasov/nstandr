@@ -30,8 +30,6 @@ defactor_vector <- function(x, check.numeric = FALSE) {
 ##' @inheritDotParams defactor_vector
 ##' @return object of the same type without factors
 ##'  
-##' @import data.table
-##' 
 ##' @export
 defactor <- function(x
                    , conv2dt = c("only.tables"
@@ -46,7 +44,7 @@ defactor <- function(x
       if(conv2dt %in% c("only.tables", "all.but.atomic", "none")) {
           defactor_vector(x, ...)
       } else {
-          x <- data.table(defactor_vector(x, ...))
+          x <- data.table::data.table(defactor_vector(x, ...))
           if(!is.null(x_atomic_name)) names(x) <- x_atomic_name
           return(x)
       }
@@ -54,13 +52,13 @@ defactor <- function(x
       if((conv2dt %in% c("only.tables", "all.but.lists", "none")))
           lapply(x, defactor, conv2dt = "none", ...)
       else
-          data.table(lapply(x, defactor, conv2dt = "none", ...))
+          data.table::data.table(lapply(x, defactor, conv2dt = "none", ...))
   else if(conv2dt != "none")
-    as.data.table(lapply(x, defactor_vector, ...))
+    data.table::as.data.table(lapply(x, defactor_vector, ...))
   else if(is.matrix(x))
     as.matrix(lapply(x, defactor_vector, ...))
-  else if(is.data.table(x))
-    as.data.table(lapply(x, defactor_vector, ...))
+  else if(data.table::is.data.table(x))
+    data.table::as.data.table(lapply(x, defactor_vector, ...))
   else if(is.data.frame(x))
     as.data.frame(lapply(x, defactor_vector, ...)
                 , stringsAsFactors = FALSE)

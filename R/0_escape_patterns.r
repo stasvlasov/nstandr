@@ -94,8 +94,6 @@ escape_regex_for_type <- function(string
 ##'     characters. Options are:
 ##' @eval escape_regex_for_type(return_docs = TRUE)
 ##' @return string with all special to regex characters escaped
-##'
-##' @import stringr
 escape_regex_for_types <- function(patterns, types, escape_fixed = FALSE) {
     choices <- escape_regex_for_type(return_choices = TRUE)
     if(length(types) == 1 || length(unique(types)) == 1) {

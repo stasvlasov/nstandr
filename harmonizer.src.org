@@ -1424,8 +1424,6 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##' @inheritDotParams defactor_vector
   ##' @return object of the same type without factors
   ##'  
-  ##' @import data.table
-  ##' 
   ##' @export
   defactor <- function(x
                      , conv2dt = c("only.tables"
@@ -1440,7 +1438,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
         if(conv2dt %in% c("only.tables", "all.but.atomic", "none")) {
             defactor_vector(x, ...)
         } else {
-            x <- data.table(defactor_vector(x, ...))
+            x <- data.table::data.table(defactor_vector(x, ...))
             if(!is.null(x_atomic_name)) names(x) <- x_atomic_name
             return(x)
         }
@@ -1448,13 +1446,13 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
         if((conv2dt %in% c("only.tables", "all.but.lists", "none")))
             lapply(x, defactor, conv2dt = "none", ...)
         else
-            data.table(lapply(x, defactor, conv2dt = "none", ...))
+            data.table::data.table(lapply(x, defactor, conv2dt = "none", ...))
     else if(conv2dt != "none")
-      as.data.table(lapply(x, defactor_vector, ...))
+      data.table::as.data.table(lapply(x, defactor_vector, ...))
     else if(is.matrix(x))
       as.matrix(lapply(x, defactor_vector, ...))
-    else if(is.data.table(x))
-      as.data.table(lapply(x, defactor_vector, ...))
+    else if(data.table::is.data.table(x))
+      data.table::as.data.table(lapply(x, defactor_vector, ...))
     else if(is.data.frame(x))
       as.data.frame(lapply(x, defactor_vector, ...)
                   , stringsAsFactors = FALSE)
@@ -3121,8 +3119,6 @@ Tests:
   ##'     characters. Options are:
   ##' @eval escape_regex_for_type(return_docs = TRUE)
   ##' @return string with all special to regex characters escaped
-  ##'
-  ##' @import stringr
   escape_regex_for_types <- function(patterns, types, escape_fixed = FALSE) {
       choices <- escape_regex_for_type(return_choices = TRUE)
       if(length(types) == 1 || length(unique(types)) == 1) {
@@ -3246,8 +3242,6 @@ Tests:
   ##' @return If nothing was indicated to cbind to results then it
   ##'     returns harmonized vector. If something is needs to be cbind
   ##'     then it returns data.table
-  ##' @import stringi stringr magrittr
-  ##' 
   ##' @export
   replace_patterns <- function(x
                               , patterns
@@ -3475,8 +3469,6 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
   #' 
   #' @return The updated `x` table with codes column or just codes if `return_only_codes` is set.
   #'
-  #' @import stringi stringr magrittr
-  #' 
   #' @export
   detect_patterns <- function(x
                             , patterns
@@ -8427,67 +8419,99 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_replace_type.r
-  expect_equal(c(" DR VLASOV "
-               , " S.VLASOV PHD "
-               , " STANICA LEGALY REPRESENTED BY STAS"
-               , " DR VLASOV & BROTHER "
-               , "MSlab & C"
-               , "LEGALY REPRESENTED BY STAS"
-               , " REPUBLIC LEGALY REPRESENTED BY STAS"
-               , " TILBURG UNIVERSTIY "
-               , " VU UNIVERSTITAET "
-               , " FUNDATION LEGALY REPRESENTED BY STAS") |>
-               cockburn_detect_type(verbose = FALSE)
-             , structure(list(x = c(" DR VLASOV ", " S.VLASOV PHD ", " STANICA LEGALY REPRESENTED BY STAS", 
-                                    " DR VLASOV & BROTHER ", "MSlab & C", "LEGALY REPRESENTED BY STAS", 
-                                    " REPUBLIC LEGALY REPRESENTED BY STAS", " TILBURG UNIVERSTIY ", 
-                                    " VU UNIVERSTITAET ", " FUNDATION LEGALY REPRESENTED BY STAS"
-                                    ), x_entity_type = list("indiv", "indiv", c("hosp", "indiv"), 
-                                                            c("indiv", "firm"), character(0), character(0), c("govt", 
-                                                                                                              "indiv"), "univ", "univ", c("inst", "indiv"))), row.names = c(NA, 
-                                                                                                                                                                            -10L), class = c("data.table", "data.frame")))
+
+  expect_equal(
+      c(
+          " DR VLASOV ",
+          " S.VLASOV PHD ",
+          " STANICA LEGALY REPRESENTED BY STAS",
+          " DR VLASOV & BROTHER ",
+          "MSlab & C",
+          "LEGALY REPRESENTED BY STAS",
+          " REPUBLIC LEGALY REPRESENTED BY STAS",
+          " TILBURG UNIVERSTIY ",
+          " VU UNIVERSTITAET ",
+          " FUNDATION LEGALY REPRESENTED BY STAS"
+      ) |>
+          cockburn_detect_type(verbose = FALSE),
+      structure(list(x = c(
+          " DR VLASOV ", " S.VLASOV PHD ", " STANICA LEGALY REPRESENTED BY STAS",
+          " DR VLASOV & BROTHER ", "MSlab & C", "LEGALY REPRESENTED BY STAS",
+          " REPUBLIC LEGALY REPRESENTED BY STAS", " TILBURG UNIVERSTIY ",
+          " VU UNIVERSTITAET ", " FUNDATION LEGALY REPRESENTED BY STAS"
+      ), x_entity_type = list(
+          "indiv", "indiv", c("hosp", "indiv"),
+          c("indiv", "firm"), character(0), character(0), c(
+              "govt",
+              "indiv"
+          ), "univ", "univ", c("inst", "indiv")
+      )), row.names = c(
+          NA,
+          -10L
+      ), class = c("data.table", "data.frame"))
+  )
 
 
 
 
-  expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-                                 , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-                                 , "MSLab Co."
-                                 , "MSLaeb Comp."
-                                 , "MSLab Comp. Ltd."
-                                 , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ  UNIVERSITY") |> rep(2)
-                        , foo = "I love coffee" ) |>
-               cockburn_detect_type()
-             , structure(list(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
-                                       "MSLab Co.", "MSLaeb Comp.", "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ  UNIVERSITY", 
-                                       "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
-                                       "MSLab Co.", "MSLaeb Comp.", "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ  UNIVERSITY"
-                                       ), foo = c("I love coffee", "I love coffee", "I love coffee", 
-                                                  "I love coffee", "I love coffee", "I love coffee", "I love coffee", 
-                                                  "I love coffee", "I love coffee", "I love coffee", "I love coffee", 
-                                                  "I love coffee"), name_entity_type = c(NA, NA, NA, NA, NA, "univ", 
-                                                                                         NA, NA, NA, NA, NA, "univ")), row.names = c(NA, -12L), class = c("data.table", 
-                                                                                                                                                          "data.frame")))
+  expect_equal(
+      data.table(
+          name = c(
+              "MÄKARÖNI ETÖ FKÜSNÖ Ltd",
+              "MSLab CÖ. <a href=lsdldf> <br> <\\a>",
+              "MSLab Co.",
+              "MSLaeb Comp.",
+              "MSLab Comp. Ltd.",
+              "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ  UNIVERSITY"
+          ) |> rep(2),
+          foo = "I love coffee"
+      ) |>
+          cockburn_detect_type(),
+      structure(list(name = c(
+          "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>",
+          "MSLab Co.", "MSLaeb Comp.", "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ  UNIVERSITY",
+          "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>",
+          "MSLab Co.", "MSLaeb Comp.", "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ  UNIVERSITY"
+      ), foo = c(
+          "I love coffee", "I love coffee", "I love coffee",
+          "I love coffee", "I love coffee", "I love coffee", "I love coffee",
+          "I love coffee", "I love coffee", "I love coffee", "I love coffee",
+          "I love coffee"
+      ), name_entity_type = c(
+          NA, NA, NA, NA, NA, "univ",
+          NA, NA, NA, NA, NA, "univ"
+      )), row.names = c(NA, -12L), class = c(
+          "data.table",
+          "data.frame"
+      ))
+  )
 
 
 
 
-  expect_equal(c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
-               , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
-               , "MSLab Co."
-               , "MSLaeb Comp."
-               , "MSLab Comp. Ltd."
-               , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ UNIVERSITY") |> rep(2) |>
-               cockburn_detect_type()
-             , structure(list(x = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
-                                    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ UNIVERSITY", 
-                                    "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
-                                    "MSLab Co.", "MSLaeb Comp.", "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ UNIVERSITY"
-                                    ), x_entity_type = c(NA, NA, NA, NA, NA, "univ", NA, NA, NA, 
-                                                         NA, NA, "univ")), row.names = c(NA, -12L), class = c("data.table", 
-                                                                                                              "data.frame")))
-
-
+  expect_equal(
+      c(
+          "MÄKARÖNI ETÖ FKÜSNÖ Ltd",
+          "MSLab CÖ. <a href=lsdldf> <br> <\\a>",
+          "MSLab Co.",
+          "MSLaeb Comp.",
+          "MSLab Comp. Ltd.",
+          "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ UNIVERSITY"
+      ) |> rep(2) |>
+          cockburn_detect_type(),
+      structure(list(x = c(
+          "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>",
+          "MSLab Co.", "MSLaeb Comp.", "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ UNIVERSITY",
+          "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>",
+          "MSLab Co.", "MSLaeb Comp.", "MSLab Comp. Ltd.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ UNIVERSITY"
+      ), x_entity_type = c(
+          NA, NA, NA, NA, NA, "univ", NA, NA, NA,
+          NA, NA, "univ"
+      )), row.names = c(NA, -12L), class = c(
+          "data.table",
+          "data.frame"
+      ))
+  )
 #+END_SRC
 
 **** Firms (Corporates)

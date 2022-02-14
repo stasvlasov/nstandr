@@ -41,8 +41,6 @@ or_rows <- function(rows_1, rows_2, x) {
 #' 
 #' @return The updated `x` table with codes column or just codes if `return_only_codes` is set.
 #'
-#' @import stringi stringr magrittr
-#' 
 #' @export
 detect_patterns <- function(x
                           , patterns

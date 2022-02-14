@@ -74,8 +74,6 @@ replace_regex_by_mode <- function(x
 ##' @return If nothing was indicated to cbind to results then it
 ##'     returns harmonized vector. If something is needs to be cbind
 ##'     then it returns data.table
-##' @import stringi stringr magrittr
-##' 
 ##' @export
 replace_patterns <- function(x
                             , patterns
