@@ -59,7 +59,7 @@ attr(harmonize_remove_brackets, "@title") <- "Removes brackets and content in br
 ##' @export
 harmonize_remove_quotes <- function(x, ...) {
         get_target(x) |>
-          stri_replace_all_regex("\"", "") |>
+          stringi::stri_replace_all_regex("\"", "") |>
           inset_target(x)
 }
 ## --------<<  harmonize_remove_quotes:1 ends here

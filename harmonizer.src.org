@@ -25,20 +25,148 @@ This is work in progress. Please, file an issue or a suggestion if you have any.
 #+END_SRC
 
 ** Usage
-The package provides its main function =harmonize= that expect character vector of organization names as input and returns its harmonized version.
+The package provides its main function =harmonize=. The function expect character vector of organization names as input and returns its harmonized version.
 
+For the standardization methods described in Magerman et al. (2006) and Cockburn et al. (2009) you can use =harmonize_magerman= and =harmonize_cockburn= respectively. These functions are similar to =harmonize(x, procedures=harmonizer:::magerman_procedures_list))= and =harmonize(x, procedures=harmonizer:::cockburn_procedures_list))= but with additional options for tweaking original procedures and with more documentation.
+
+Here is an example of =harmonize_magerman= usage
 #+BEGIN_SRC R
-  c("žŸong-ÃÇÈÏ\n\u00b5&oacute;\u00b5<p>, LTD Co;  "
-  , "<br> the $(Ldt &AMP; C&oacute;MP) Ïotta INt"
-  , "Masha  &AMP;Lena Ltd. (Spb)"
-  , "bla-bla-bla Ltd.") |>
-      harmonize(output_placement = "append_to_x")
+  textConnection("SGS-THOMSON MICROELECTRONICS
+  S.G.S. THOMSON MICROELECTRONICS S.R.L.
+  S.G.S. THOMSON MICROELECTRONICS, S.R.L.
+  S.G.S.-THOMSON MICROELECTRONICS S.R.L.
+  SGS - THOMSON MICROELECTRONICS S.A.
+  SGS - THOMSON MICROELECTRONICS S.R.L.
+  SGS - THOMSON MICROELECTRONICS, INC.
+  SGS - THOMSON MICROELECTRONICS, S.R.L.
+  SGS THOMSON MICROELECTRONICS S.A.
+  SGS THOMSON MICROELECTRONICS S.R.L.
+  SGS THOMSON MICROELECTRONICS SA
+  SGS THOMSON MICROELECTRONICS SRL
+  SGS THOMSON MICROELECTRONICS, INC.
+  SGS THOMSON MICROELECTRONICS, S.A.
+  SGS- THOMSON MICROELECTRONICS, S.A.
+  SGS THOMSON MICROELECTRONICS, S.R.L.
+  SGS- THOMSON MICROELECTRONICS<BR>(PTE) LTD.
+  SGS THOMSON-MICROELECTRONICS SA
+  SGS-THOMSON MICROELECTRONIC S.A.
+  SGS-THOMSON MICROELECTRONICS
+  SGS-THOMSON MICROELECTRONICS GMBH
+  SGS-THOMSON MICROELECTRONICS INC.
+  SGS-THOMSON MICROELECTRONICS LIMITED
+  SGS-THOMSON MICROELECTRONICS LTD.
+  SGS-THOMSON MICROELECTRONICS PTE LTD
+  SGS-THOMSON MICROELECTRONICS PTE LTD.
+  SGS-THOMSON MICROELECTRONICS PTE. LIMITED
+  SGS-THOMSON MICROELECTRONICS PTE. LTD.
+  SGS-THOMSON MICROELECTRONICS S. R. L.
+  SGS-THOMSON MICROELECTRONICS S.A
+  SGS-THOMSON MICROELECTRONICS S.A.
+  SGS-THOMSON MICROELECTRONICS S.P.A.
+  SGS-THOMSON MICROELECTRONICS S.R. L.
+  SGS-THOMSON MICROELECTRONICS S.R.L
+  SGS-THOMSON MICROELECTRONICS S.R.L.
+  SGS--THOMSON MICROELECTRONICS S.R.L.
+  SGS-THOMSON MICROELECTRONICS SA
+  SGS-THOMSON MICROELECTRONICS SPA
+  SGS-THOMSON MICROELECTRONICS SRL
+  SGS-THOMSON MICROELECTRONICS SRL.
+  SGS-THOMSON MICROELECTRONICS, GMBH
+  SGS-THOMSON MICROELECTRONICS, INC
+  SGS-THOMSON MICROELECTRONICS, INC.
+  SGS-THOMSON MICROELECTRONICS, LTD.
+  SGS-THOMSON MICROELECTRONICS, PTE LTD.
+  SGS-THOMSON MICROELECTRONICS, S.A.
+  SGS-THOMSON MICROELECTRONICS, S.R.L.
+  SGS-THOMSON MICROELECTRONICS, S.RL
+  SGS-THOMSON MICROELECTRONICS, SA
+  SGS-THOMSON MICROELECTRONICS, SA.
+  SGS-THOMSON MICROELECTRONICS, SRL
+  SGS-THOMSON MICROELECTRONICS,S.R.L.") |>
+      readLines() |>
+      harmonize_magerman(output_placement = "append_to_x")
 
-  #                                              x           std_x
-  #  1        žŸong-ÃÇÈÏ\nµ&oacute;µ<p>, LTD Co;    ZYONG ACEI UOU
-  #  2 <br> the $(Ldt &AMP; C&oacute;MP) Ïotta INt       IOTTA INT
-  #  3                 Masha  &AMP;Lena Ltd. (Spb)    MASHA & LENA
-  #  4                            bla-bla-bla Ltd.     BLA BLA BLA
+  # 
+  # Applying harmonization procedures:
+  # -----------------------------------------------------------------
+  # 
+  # * Upper casing                                               DONE
+  # * Cleaning spaces                                            DONE
+  # * Removing HTML codes                                        DONE
+  # * Cleaning spaces (2)                                        DONE
+  # * Replacing SGML coded characters                            DONE
+  # * Replacing proprietary characters                           DONE
+  # * Detecting Umlauts                                          DONE
+  # * Replacing accented characters                              DONE
+  # * Removing special characters                                DONE
+  # * Fixing quotation irregularities                            DONE
+  # * Removing double quotations                                 DONE
+  # * Removing non alphanumeric characters (1)                   DONE
+  # * Removing non alphanumeric characters (2)                   DONE
+  # * Fixing comma and period irregularities                     DONE
+  # * Removing legal form                                        DONE
+  # * Removing common words                                      DONE
+  # * Fixing spelling variations                                 DONE
+  # * Condensing                                                 DONE
+  # * Fixing umlaut variations                                   DONE
+  # 
+  # -----------------------------------------------------------------
+  # Harmonization is done!
+  # 
+  #                                               x                     std_x
+  #  1:                SGS-THOMSON MICROELECTRONICS SGSTHOMSONMICROELECTRONIC
+  #  2:      S.G.S. THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC
+  #  3:     S.G.S. THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC
+  #  4:      S.G.S.-THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC
+  #  5:         SGS - THOMSON MICROELECTRONICS S.A. SGSTHOMSONMICROELECTRONIC
+  #  6:       SGS - THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC
+  #  7:        SGS - THOMSON MICROELECTRONICS, INC. SGSTHOMSONMICROELECTRONIC
+  #  8:      SGS - THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC
+  #  9:           SGS THOMSON MICROELECTRONICS S.A. SGSTHOMSONMICROELECTRONIC
+  # 10:         SGS THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC
+  # 11:             SGS THOMSON MICROELECTRONICS SA SGSTHOMSONMICROELECTRONIC
+  # 12:            SGS THOMSON MICROELECTRONICS SRL SGSTHOMSONMICROELECTRONIC
+  # 13:          SGS THOMSON MICROELECTRONICS, INC. SGSTHOMSONMICROELECTRONIC
+  # 14:          SGS THOMSON MICROELECTRONICS, S.A. SGSTHOMSONMICROELECTRONIC
+  # 15:         SGS- THOMSON MICROELECTRONICS, S.A. SGSTHOMSONMICROELECTRONIC
+  # 16:        SGS THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC
+  # 17: SGS- THOMSON MICROELECTRONICS<BR>(PTE) LTD. SGSTHOMSONMICROELECTRONIC
+  # 18:             SGS THOMSON-MICROELECTRONICS SA SGSTHOMSONMICROELECTRONIC
+  # 19:            SGS-THOMSON MICROELECTRONIC S.A. SGSTHOMSONMICROELECTRONIC
+  # 20:                SGS-THOMSON MICROELECTRONICS SGSTHOMSONMICROELECTRONIC
+  # 21:           SGS-THOMSON MICROELECTRONICS GMBH SGSTHOMSONMICROELECTRONIC
+  # 22:           SGS-THOMSON MICROELECTRONICS INC. SGSTHOMSONMICROELECTRONIC
+  # 23:        SGS-THOMSON MICROELECTRONICS LIMITED SGSTHOMSONMICROELECTRONIC
+  # 24:           SGS-THOMSON MICROELECTRONICS LTD. SGSTHOMSONMICROELECTRONIC
+  # 25:        SGS-THOMSON MICROELECTRONICS PTE LTD SGSTHOMSONMICROELECTRONIC
+  # 26:       SGS-THOMSON MICROELECTRONICS PTE LTD. SGSTHOMSONMICROELECTRONIC
+  # 27:   SGS-THOMSON MICROELECTRONICS PTE. LIMITED SGSTHOMSONMICROELECTRONIC
+  # 28:      SGS-THOMSON MICROELECTRONICS PTE. LTD. SGSTHOMSONMICROELECTRONIC
+  # 29:       SGS-THOMSON MICROELECTRONICS S. R. L. SGSTHOMSONMICROELECTRONIC
+  # 30:            SGS-THOMSON MICROELECTRONICS S.A SGSTHOMSONMICROELECTRONIC
+  # 31:           SGS-THOMSON MICROELECTRONICS S.A. SGSTHOMSONMICROELECTRONIC
+  # 32:         SGS-THOMSON MICROELECTRONICS S.P.A. SGSTHOMSONMICROELECTRONIC
+  # 33:        SGS-THOMSON MICROELECTRONICS S.R. L. SGSTHOMSONMICROELECTRONIC
+  # 34:          SGS-THOMSON MICROELECTRONICS S.R.L SGSTHOMSONMICROELECTRONIC
+  # 35:         SGS-THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC
+  # 36:        SGS--THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC
+  # 37:             SGS-THOMSON MICROELECTRONICS SA SGSTHOMSONMICROELECTRONIC
+  # 38:            SGS-THOMSON MICROELECTRONICS SPA SGSTHOMSONMICROELECTRONIC
+  # 39:            SGS-THOMSON MICROELECTRONICS SRL SGSTHOMSONMICROELECTRONIC
+  # 40:           SGS-THOMSON MICROELECTRONICS SRL. SGSTHOMSONMICROELECTRONIC
+  # 41:          SGS-THOMSON MICROELECTRONICS, GMBH SGSTHOMSONMICROELECTRONIC
+  # 42:           SGS-THOMSON MICROELECTRONICS, INC SGSTHOMSONMICROELECTRONIC
+  # 43:          SGS-THOMSON MICROELECTRONICS, INC. SGSTHOMSONMICROELECTRONIC
+  # 44:          SGS-THOMSON MICROELECTRONICS, LTD. SGSTHOMSONMICROELECTRONIC
+  # 45:      SGS-THOMSON MICROELECTRONICS, PTE LTD. SGSTHOMSONMICROELECTRONIC
+  # 46:          SGS-THOMSON MICROELECTRONICS, S.A. SGSTHOMSONMICROELECTRONIC
+  # 47:        SGS-THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC
+  # 48:          SGS-THOMSON MICROELECTRONICS, S.RL SGSTHOMSONMICROELECTRONIC
+  # 49:            SGS-THOMSON MICROELECTRONICS, SA SGSTHOMSONMICROELECTRONIC
+  # 50:           SGS-THOMSON MICROELECTRONICS, SA. SGSTHOMSONMICROELECTRONIC
+  # 51:           SGS-THOMSON MICROELECTRONICS, SRL SGSTHOMSONMICROELECTRONIC
+  # 52:         SGS-THOMSON MICROELECTRONICS,S.R.L. SGSTHOMSONMICROELECTRONIC
+  #                                               x                     std_x
 #+END_SRC
 
 ** References
@@ -290,6 +418,108 @@ To call all calls
     (org-babel-map-call-lines nil (call-interactively 'org-babel-execute-maybe)))
 #+END_SRC
 
+#+name: make-rds-procedures-list
+#+header: :colnames no
+#+header: :var data = "default.data.table"
+#+header: :var data.name = "default.data.name"
+#+header: :var data.names = "first.row"
+#+header: :var data.dir = "./data"
+#+header: :var remove.single.quotes = "TRUE"
+#+header: :var add.to.rda = "TRUE"
+#+header: :var rda.filename = "sysdata"
+#+header: :var rda.dir = "./R"
+#+begin_src R :tangle no :noweb yes
+  require("magrittr")
+  require("stringr")
+  require("stringi")
+  require("data.table")
+  require("romRDS")
+
+  ## just in case if there is not directory
+  dir.create(data.dir, recursive = TRUE, showWarnings = FALSE)
+
+  ## make a path for saving .rds
+  data.path  <-
+      data.name %>% 
+      paste0(".rds") %>%
+      file.path(data.dir, .)
+
+  ## just in case if there is not directory
+  dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
+
+  <<harmonize_make_procedures_list>>
+
+  ## make a path for saving .rda
+  rda.path  <-
+      rda.filename %>% 
+      paste0(".rda") %>%
+      file.path(rda.dir, .)
+
+  if(length(data) == 1) {
+      data %<>%
+          extract2(1) %>%
+          ## small fix for the stings trimming problem
+          {if(as.logical(remove.single.quotes))
+               str_replace(.,"^'(.*)'$", "\\1")
+           else .} %>%
+          ## work around | character in the strings
+          stri_replace_all_fixed("\\vert", "|")
+      ## save data to .rda (filename is the same as var name)
+      saveRDS(data, data.path)
+  } else {  
+      ## fix for column names
+      if(data.names == "first.row") {
+          ## only works when option :colnames no
+          data.names <- 
+              data %>%
+              extract(1,) %>%
+              unlist %>% 
+              tolower %>%
+              make.names
+          data %<>% 
+              extract(-1,) %>%
+              set_names(data.names)
+      }
+      ## small fix for the stings trimming problem
+      ## only remove quotes when they is on the both sides of the string
+      ## it will then convert everything into strings
+      data <- {
+          if(as.logical(remove.single.quotes)) {
+              lapply(data,str_replace, "^'(.*)'$", "\\1")
+          } else {
+              data
+          }
+      } |>
+          ## work around | character in the strings
+          lapply(stri_replace_all_fixed, "\\vert", "|") |>
+          as.data.table() |>
+          harmonize_make_procedures_list()
+
+      ## save data to .rda (filename is the same as var name)
+      saveRDS(data, data.path)
+  }
+
+  message(data.name, " is saved!")
+
+
+
+  ## add all .rds to R/sysdata.rda
+  ## (variable names are the same as .rds files)
+  if(!is.null(add.to.rda)) {
+      dir(data.dir) %>% 
+          sapply(romRDS
+               , dir = data.dir
+               , quietly = TRUE
+               , return_obj_name = TRUE
+               , do_not_make = TRUE
+               , obj_name_has_extention = TRUE) %>%
+          save(list = ., file = rda.path)
+  }
+
+  message(".rda is updated!")
+
+#+end_src
+
 #+label: Rename and save org tables to .rds files
 #+name: make-rds-patterns-table
 #+header: :colnames no
@@ -374,16 +604,15 @@ To call all calls
           sapply(romRDS
                , dir = data.dir
                , quietly = TRUE
-               , return.obj.name = TRUE
-               , do.not.make = TRUE
-               , obj.name.has.extention = TRUE) %>%
+               , return_obj_name = TRUE
+               , do_not_make = TRUE
+               , obj_name_has_extention = TRUE) %>%
           save(list = ., file = rda.path)
   }
   
   message(".rda is updated!")
   
 #+end_src
-
 
 #+name: make-rda
 #+header: :var data.dir = "./data"
@@ -632,7 +861,7 @@ Adjust "ensure_version" verstions manually:
   ##' @export
   harmonize_remove_quotes <- function(x, ...) {
           get_target(x) |>
-            stri_replace_all_regex("\"", "") |>
+            stringi::stri_replace_all_regex("\"", "") |>
             inset_target(x)
   }
 #+END_SRC
@@ -946,6 +1175,8 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 :PROPERTIES:
 :ID:       org:i762gum0fqi0
 :END:
+
+#+name: harmonize_make_procedures_list
 #+BEGIN_SRC R :tangle R/0_harmonize_make_procedures_list.r
   ##' Makes list of procedures calls from table.
   ##'
@@ -977,7 +1208,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
                                            , remove_comments = TRUE
                                            , sort_by_no_field = TRUE
                                            , comments = c("#", "-", "")) {
-      procedures_table <- defactor(procedures_table)
+      ## procedures_table <- defactor(procedures_table)
       if(remove_comments) {
           procedures_table <- 
               procedures_table[
@@ -6883,6 +7114,9 @@ p. 44
 
 #+call: make-rds-patterns-table(data = magerman_procedures_table, data.name = "magerman_procedures_table", remove.single.quotes = "FALSE")
 
+#+call: make-rds-procedures-list(data = magerman_procedures_table, data.name = "magerman_procedures_list", remove.single.quotes = "FALSE")
+
+
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' Harmonizes strings using exact procedures described in Magerman et al. 2009.
   ##' @param x table or vector
@@ -6899,8 +7133,7 @@ p. 44
                                , detect_legal_form = FALSE
                                , append_output_copy_before_common_words_removal = FALSE
                                , ...) {
-      magerman_procedures <-
-          harmonize_make_procedures_list(magerman_procedures_table)
+      magerman_procedures <- magerman_procedures_list
       ## do some tweaks on magerman_procedures
       if (!detect_legal_form) {
           is_magerman_detect_legal_form <- 
@@ -10930,6 +11163,8 @@ basically reproduces the 'main_coname2.do' stata file
 | 10 | Cleaning spaces                                             | 'harmonize_squish_spaces'                        |
 
 #+call: make-rds-patterns-table(data = cockburn_procedures_table, data.name = "cockburn_procedures_table", remove.single.quotes = "FALSE")
+
+#+call: make-rds-procedures-list(data = cockburn_procedures_table, data.name = "cockburn_procedures_list", remove.single.quotes = "FALSE")
 
 #+BEGIN_SRC R :tangle R/cockburn.r
   ##' Harmonizes strings using exact procedures described in Cockburn, et al. (2009)

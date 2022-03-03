@@ -14,19 +14,148 @@ This is work in progress. Please, file an issue or a suggestion if you have any.
 
 # Usage
 
-The package provides its main function `harmonize` that expect character vector of organization names as input and returns its harmonized version.
+The package provides its main function `harmonize`. The function expect character vector of organization names as input and returns its harmonized version.
 
-    c("žŸong-ÃÇÈÏ\n\u00b5&oacute;\u00b5<p>, LTD Co;  "
-    , "<br> the $(Ldt &AMP; C&oacute;MP) Ïotta INt"
-    , "Masha  &AMP;Lena Ltd. (Spb)"
-    , "bla-bla-bla Ltd.") |>
-        harmonize(output_placement = "append_to_x")
+For the standardization methods described in Magerman et al. (2006) and Cockburn et al. (2009) you can use `harmonize_magerman` and `harmonize_cockburn` respectively. These functions are similar to `harmonize(x, procedures=harmonizer:::magerman_procedures_list))` and `harmonize(x, procedures=harmonizer:::cockburn_procedures_list))` but with additional options for tweaking original procedures and with more documentation.
+
+Here is an example of `harmonize_magerman` usage
+
+    textConnection("SGS-THOMSON MICROELECTRONICS
+    S.G.S. THOMSON MICROELECTRONICS S.R.L.
+    S.G.S. THOMSON MICROELECTRONICS, S.R.L.
+    S.G.S.-THOMSON MICROELECTRONICS S.R.L.
+    SGS - THOMSON MICROELECTRONICS S.A.
+    SGS - THOMSON MICROELECTRONICS S.R.L.
+    SGS - THOMSON MICROELECTRONICS, INC.
+    SGS - THOMSON MICROELECTRONICS, S.R.L.
+    SGS THOMSON MICROELECTRONICS S.A.
+    SGS THOMSON MICROELECTRONICS S.R.L.
+    SGS THOMSON MICROELECTRONICS SA
+    SGS THOMSON MICROELECTRONICS SRL
+    SGS THOMSON MICROELECTRONICS, INC.
+    SGS THOMSON MICROELECTRONICS, S.A.
+    SGS- THOMSON MICROELECTRONICS, S.A.
+    SGS THOMSON MICROELECTRONICS, S.R.L.
+    SGS- THOMSON MICROELECTRONICS<BR>(PTE) LTD.
+    SGS THOMSON-MICROELECTRONICS SA
+    SGS-THOMSON MICROELECTRONIC S.A.
+    SGS-THOMSON MICROELECTRONICS
+    SGS-THOMSON MICROELECTRONICS GMBH
+    SGS-THOMSON MICROELECTRONICS INC.
+    SGS-THOMSON MICROELECTRONICS LIMITED
+    SGS-THOMSON MICROELECTRONICS LTD.
+    SGS-THOMSON MICROELECTRONICS PTE LTD
+    SGS-THOMSON MICROELECTRONICS PTE LTD.
+    SGS-THOMSON MICROELECTRONICS PTE. LIMITED
+    SGS-THOMSON MICROELECTRONICS PTE. LTD.
+    SGS-THOMSON MICROELECTRONICS S. R. L.
+    SGS-THOMSON MICROELECTRONICS S.A
+    SGS-THOMSON MICROELECTRONICS S.A.
+    SGS-THOMSON MICROELECTRONICS S.P.A.
+    SGS-THOMSON MICROELECTRONICS S.R. L.
+    SGS-THOMSON MICROELECTRONICS S.R.L
+    SGS-THOMSON MICROELECTRONICS S.R.L.
+    SGS--THOMSON MICROELECTRONICS S.R.L.
+    SGS-THOMSON MICROELECTRONICS SA
+    SGS-THOMSON MICROELECTRONICS SPA
+    SGS-THOMSON MICROELECTRONICS SRL
+    SGS-THOMSON MICROELECTRONICS SRL.
+    SGS-THOMSON MICROELECTRONICS, GMBH
+    SGS-THOMSON MICROELECTRONICS, INC
+    SGS-THOMSON MICROELECTRONICS, INC.
+    SGS-THOMSON MICROELECTRONICS, LTD.
+    SGS-THOMSON MICROELECTRONICS, PTE LTD.
+    SGS-THOMSON MICROELECTRONICS, S.A.
+    SGS-THOMSON MICROELECTRONICS, S.R.L.
+    SGS-THOMSON MICROELECTRONICS, S.RL
+    SGS-THOMSON MICROELECTRONICS, SA
+    SGS-THOMSON MICROELECTRONICS, SA.
+    SGS-THOMSON MICROELECTRONICS, SRL
+    SGS-THOMSON MICROELECTRONICS,S.R.L.") |>
+        readLines() |>
+        harmonize_magerman(output_placement = "append_to_x")
     
-    #                                              x           std_x
-    #  1        žŸong-ÃÇÈÏ\nµ&oacute;µ<p>, LTD Co;    ZYONG ACEI UOU
-    #  2 <br> the $(Ldt &AMP; C&oacute;MP) Ïotta INt       IOTTA INT
-    #  3                 Masha  &AMP;Lena Ltd. (Spb)    MASHA & LENA
-    #  4                            bla-bla-bla Ltd.     BLA BLA BLA
+    # 
+    # Applying harmonization procedures:
+    # -----------------------------------------------------------------
+    # 
+    # * Upper casing                                               DONE
+    # * Cleaning spaces                                            DONE
+    # * Removing HTML codes                                        DONE
+    # * Cleaning spaces (2)                                        DONE
+    # * Replacing SGML coded characters                            DONE
+    # * Replacing proprietary characters                           DONE
+    # * Detecting Umlauts                                          DONE
+    # * Replacing accented characters                              DONE
+    # * Removing special characters                                DONE
+    # * Fixing quotation irregularities                            DONE
+    # * Removing double quotations                                 DONE
+    # * Removing non alphanumeric characters (1)                   DONE
+    # * Removing non alphanumeric characters (2)                   DONE
+    # * Fixing comma and period irregularities                     DONE
+    # * Removing legal form                                        DONE
+    # * Removing common words                                      DONE
+    # * Fixing spelling variations                                 DONE
+    # * Condensing                                                 DONE
+    # * Fixing umlaut variations                                   DONE
+    # 
+    # -----------------------------------------------------------------
+    # Harmonization is done!
+    # 
+    #                                               x                     std_x
+    #  1:                SGS-THOMSON MICROELECTRONICS SGSTHOMSONMICROELECTRONIC
+    #  2:      S.G.S. THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC
+    #  3:     S.G.S. THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC
+    #  4:      S.G.S.-THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC
+    #  5:         SGS - THOMSON MICROELECTRONICS S.A. SGSTHOMSONMICROELECTRONIC
+    #  6:       SGS - THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC
+    #  7:        SGS - THOMSON MICROELECTRONICS, INC. SGSTHOMSONMICROELECTRONIC
+    #  8:      SGS - THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC
+    #  9:           SGS THOMSON MICROELECTRONICS S.A. SGSTHOMSONMICROELECTRONIC
+    # 10:         SGS THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC
+    # 11:             SGS THOMSON MICROELECTRONICS SA SGSTHOMSONMICROELECTRONIC
+    # 12:            SGS THOMSON MICROELECTRONICS SRL SGSTHOMSONMICROELECTRONIC
+    # 13:          SGS THOMSON MICROELECTRONICS, INC. SGSTHOMSONMICROELECTRONIC
+    # 14:          SGS THOMSON MICROELECTRONICS, S.A. SGSTHOMSONMICROELECTRONIC
+    # 15:         SGS- THOMSON MICROELECTRONICS, S.A. SGSTHOMSONMICROELECTRONIC
+    # 16:        SGS THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC
+    # 17: SGS- THOMSON MICROELECTRONICS<BR>(PTE) LTD. SGSTHOMSONMICROELECTRONIC
+    # 18:             SGS THOMSON-MICROELECTRONICS SA SGSTHOMSONMICROELECTRONIC
+    # 19:            SGS-THOMSON MICROELECTRONIC S.A. SGSTHOMSONMICROELECTRONIC
+    # 20:                SGS-THOMSON MICROELECTRONICS SGSTHOMSONMICROELECTRONIC
+    # 21:           SGS-THOMSON MICROELECTRONICS GMBH SGSTHOMSONMICROELECTRONIC
+    # 22:           SGS-THOMSON MICROELECTRONICS INC. SGSTHOMSONMICROELECTRONIC
+    # 23:        SGS-THOMSON MICROELECTRONICS LIMITED SGSTHOMSONMICROELECTRONIC
+    # 24:           SGS-THOMSON MICROELECTRONICS LTD. SGSTHOMSONMICROELECTRONIC
+    # 25:        SGS-THOMSON MICROELECTRONICS PTE LTD SGSTHOMSONMICROELECTRONIC
+    # 26:       SGS-THOMSON MICROELECTRONICS PTE LTD. SGSTHOMSONMICROELECTRONIC
+    # 27:   SGS-THOMSON MICROELECTRONICS PTE. LIMITED SGSTHOMSONMICROELECTRONIC
+    # 28:      SGS-THOMSON MICROELECTRONICS PTE. LTD. SGSTHOMSONMICROELECTRONIC
+    # 29:       SGS-THOMSON MICROELECTRONICS S. R. L. SGSTHOMSONMICROELECTRONIC
+    # 30:            SGS-THOMSON MICROELECTRONICS S.A SGSTHOMSONMICROELECTRONIC
+    # 31:           SGS-THOMSON MICROELECTRONICS S.A. SGSTHOMSONMICROELECTRONIC
+    # 32:         SGS-THOMSON MICROELECTRONICS S.P.A. SGSTHOMSONMICROELECTRONIC
+    # 33:        SGS-THOMSON MICROELECTRONICS S.R. L. SGSTHOMSONMICROELECTRONIC
+    # 34:          SGS-THOMSON MICROELECTRONICS S.R.L SGSTHOMSONMICROELECTRONIC
+    # 35:         SGS-THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC
+    # 36:        SGS--THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC
+    # 37:             SGS-THOMSON MICROELECTRONICS SA SGSTHOMSONMICROELECTRONIC
+    # 38:            SGS-THOMSON MICROELECTRONICS SPA SGSTHOMSONMICROELECTRONIC
+    # 39:            SGS-THOMSON MICROELECTRONICS SRL SGSTHOMSONMICROELECTRONIC
+    # 40:           SGS-THOMSON MICROELECTRONICS SRL. SGSTHOMSONMICROELECTRONIC
+    # 41:          SGS-THOMSON MICROELECTRONICS, GMBH SGSTHOMSONMICROELECTRONIC
+    # 42:           SGS-THOMSON MICROELECTRONICS, INC SGSTHOMSONMICROELECTRONIC
+    # 43:          SGS-THOMSON MICROELECTRONICS, INC. SGSTHOMSONMICROELECTRONIC
+    # 44:          SGS-THOMSON MICROELECTRONICS, LTD. SGSTHOMSONMICROELECTRONIC
+    # 45:      SGS-THOMSON MICROELECTRONICS, PTE LTD. SGSTHOMSONMICROELECTRONIC
+    # 46:          SGS-THOMSON MICROELECTRONICS, S.A. SGSTHOMSONMICROELECTRONIC
+    # 47:        SGS-THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC
+    # 48:          SGS-THOMSON MICROELECTRONICS, S.RL SGSTHOMSONMICROELECTRONIC
+    # 49:            SGS-THOMSON MICROELECTRONICS, SA SGSTHOMSONMICROELECTRONIC
+    # 50:           SGS-THOMSON MICROELECTRONICS, SA. SGSTHOMSONMICROELECTRONIC
+    # 51:           SGS-THOMSON MICROELECTRONICS, SRL SGSTHOMSONMICROELECTRONIC
+    # 52:         SGS-THOMSON MICROELECTRONICS,S.R.L. SGSTHOMSONMICROELECTRONIC
+    #                                               x                     std_x
 
 
 # References

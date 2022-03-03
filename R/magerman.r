@@ -729,8 +729,7 @@ harmonize_magerman <- function(x
                              , detect_legal_form = FALSE
                              , append_output_copy_before_common_words_removal = FALSE
                              , ...) {
-    magerman_procedures <-
-        harmonize_make_procedures_list(magerman_procedures_table)
+    magerman_procedures <- magerman_procedures_list
     ## do some tweaks on magerman_procedures
     if (!detect_legal_form) {
         is_magerman_detect_legal_form <- 

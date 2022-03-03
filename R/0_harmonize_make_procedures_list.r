@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*harmonize_make_procedures_list][harmonize_make_procedures_list:1]]
+## -------->>  [[file:../harmonizer.src.org::harmonize_make_procedures_list][harmonize_make_procedures_list]]
 ##' Makes list of procedures calls from table.
 ##'
 ##' Table should have at least two columns - messages and fuctions
@@ -29,7 +29,7 @@ harmonize_make_procedures_list <- function(procedures_table
                                          , remove_comments = TRUE
                                          , sort_by_no_field = TRUE
                                          , comments = c("#", "-", "")) {
-    procedures_table <- defactor(procedures_table)
+    ## procedures_table <- defactor(procedures_table)
     if(remove_comments) {
         procedures_table <- 
             procedures_table[
@@ -53,6 +53,6 @@ harmonize_make_procedures_list <- function(procedures_table
     names(procedures) <- procedures_table[[message_field]]
     return(procedures)
 }
-## --------<<  harmonize_make_procedures_list:1 ends here
+## --------<<  harmonize_make_procedures_list ends here
 
 
