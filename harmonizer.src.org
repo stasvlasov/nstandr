@@ -238,8 +238,7 @@ For this package development I use Emacs' org-mode that allows literate programm
   (require 'org-goto)
   (save-excursion
     (org-goto--local-search-headings "Frontpage" nil t)
-    ;; (org-pandoc-export-to-markdown nil 'subtreep)
-    (org-md-export-to-markdown nil 'subtreep))
+    (org-pandoc-export-to-markdown nil 'subtreep))
 #+end_src
 ** Set up tinytest
 #+BEGIN_SRC R
@@ -751,7 +750,6 @@ Adjust "ensure_version" verstions manually:
 :PROPERTIES:
 :ID:       org:6lik3kf0kcj0
 :END:
-
 #+name: inject-get-dots
 #+BEGIN_SRC emacs-lisp :tangle no
   (save-window-excursion
