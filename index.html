@@ -64,18 +64,21 @@
       </header><div class="row">
   <div class="contents col-md-9">
 
+<div class="section level1">
+<div class="page-header"><h1 id="nstandr-">nstandr <img src="img/logo.png" align="right" alt="" width="120"><a class="anchor" aria-label="anchor" href="#nstandr-"></a>
+</h1></div>
 
 <p>The R package <code class="verbatim">nstandr</code> makes standardized organizational names using procedures described by Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi &amp; Flaaen (2015).</p>
 <p>This is work in progress. Please, file an issue or a suggestion if you have any.</p>
-<div class="section level1">
-<div class="page-header"><h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h1></div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <div class="sourceCode" id="cb1" org-language="R"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"stasvlasov/nstandr"</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
-</h1>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
 <p>The package provides its main function <code class="verbatim">standardize</code>. The function expect character vector of organization names as input and returns its standardized version.</p>
 <p>For the standardization methods described in Magerman et al. (2006) and Cockburn et al. (2009) you can use <code class="verbatim">standardize_magerman</code> and <code class="verbatim">standardize_cockburn</code> respectively. These functions are similar to <code class="verbatim">standardize(x, procedures=nstandr:::magerman_procedures_list))</code> and <code class="verbatim">standardize(x, procedures=nstandr:::cockburn_procedures_list))</code> but with additional options for tweaking original procedures and with more documentation.</p>
 <p>Here is an example of <code class="verbatim">standardize_magerman</code> usage</p>
@@ -165,6 +168,7 @@
 <span class="co"># 51:           SGS-THOMSON MICROELECTRONICS, SRL SGSTHOMSONMICROELECTRONIC</span>
 <span class="co"># 52:         SGS-THOMSON MICROELECTRONICS,S.R.L. SGSTHOMSONMICROELECTRONIC</span>
 <span class="co">#                                               x                     std_x</span></code></pre></div>
+</div>
 </div>
 <div class="section level1">
 <h1 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
