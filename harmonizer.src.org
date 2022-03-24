@@ -760,7 +760,7 @@ Adjust "ensure_version" verstions manually:
            (r-pkg-path (file-name-directory (buffer-file-name)))
            (tangle-to-file (concat r-pkg-path "R/0_get_dots.r"))
            ;; this is used as condition in 'bind-get-dots' call in dots.src.org
-           tangling-from-harmonizer-R-package
+           tangling-from-nstandr-R-package
            ;; turn off babel prompts
            org-confirm-babel-evaluate)
       (with-current-buffer (find-file dots-r-pkg-path)

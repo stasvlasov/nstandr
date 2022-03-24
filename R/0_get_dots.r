@@ -14,7 +14,7 @@
 ##' @param return_unlisted_if_single_arg Toggle wether unlist when returning a single argument. Default is TRUE
 ##' @examples
 ##' # Make get_dots available for following examples
-##' get_dots <- harmonizer:::get_dots
+##' get_dots <- nstandr:::get_dots
 ##' # Basic usage
 ##' util <- function(foo = 0, bar = 0) {
 ##'     # get dots and bind updated arguments into environment
