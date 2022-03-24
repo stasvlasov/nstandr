@@ -9,6 +9,8 @@
 :END:
 
 #+begin_export markdown
+# nstandr <img src="img/logo.png" align="right" alt="" width="120"/>
+
 [![R-CMD-check](https://github.com/stasvlasov/nstandr/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/nstandr/actions)
 [![codecov](https://codecov.io/gh/stasvlasov/nstandr/branch/master/graph/badge.svg?token=OQVJ7NRXO5)](https://codecov.io/gh/stasvlasov/nstandr)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/nstandr)
@@ -18,13 +20,13 @@ The R package =nstandr= makes standardized organizational names using procedures
 
 This is work in progress. Please, file an issue or a suggestion if you have any.
 
-** Installation
+*** Installation
 
 #+BEGIN_SRC R
   devtools::install_github("stasvlasov/nstandr")
 #+END_SRC
 
-** Usage
+*** Usage
 The package provides its main function =standardize=. The function expect character vector of organization names as input and returns its standardized version.
 
 For the standardization methods described in Magerman et al. (2006) and Cockburn et al. (2009) you can use =standardize_magerman= and =standardize_cockburn= respectively. These functions are similar to =standardize(x, procedures=nstandr:::magerman_procedures_list))= and =standardize(x, procedures=nstandr:::cockburn_procedures_list))= but with additional options for tweaking original procedures and with more documentation.

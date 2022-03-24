@@ -1,3 +1,5 @@
+# nstandr <img src="img/logo.png" align="right" alt="" width="120"/>
+
 [![R-CMD-check](https://github.com/stasvlasov/nstandr/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/nstandr/actions)
 [![codecov](https://codecov.io/gh/stasvlasov/nstandr/branch/master/graph/badge.svg?token=OQVJ7NRXO5)](https://codecov.io/gh/stasvlasov/nstandr)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/nstandr)
@@ -9,13 +11,13 @@ names using procedures described by Thoma et al. (2010), Magerman et al.
 This is work in progress. Please, file an issue or a suggestion if you
 have any.
 
-# Installation
+## Installation
 
 ``` {.r org-language="R"}
 devtools::install_github("stasvlasov/nstandr")
 ```
 
-# Usage
+## Usage
 
 The package provides its main function `standardize`{.verbatim}. The
 function expect character vector of organization names as input and
