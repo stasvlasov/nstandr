@@ -45,7 +45,7 @@ replace_regex_by_mode <- function(x
 ##' Optionally matches only at the beginning or at the end of the
 ##' string.
 ##' 
-##' @param x Vector or table to harmonize.
+##' @param x Vector or table to standardize.
 ##' @param patterns Accepts both vector or table. If patterns is a
 ##'     table can also include replacements column.
 ##' @param patterns_col If patterns is not a vector which column to
@@ -69,10 +69,10 @@ replace_regex_by_mode <- function(x
 ##'     replacements. Default is 2.
 ##' @param replacements If patterns does not have column with
 ##'     replacements provide it here.
-##' @inheritDotParams harmonize_options
+##' @inheritDotParams standardize_options
 ##'
 ##' @return If nothing was indicated to cbind to results then it
-##'     returns harmonized vector. If something is needs to be cbind
+##'     returns standardized vector. If something is needs to be cbind
 ##'     then it returns data.table
 ##' @export
 replace_patterns <- function(x

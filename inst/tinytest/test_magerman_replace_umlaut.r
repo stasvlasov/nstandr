@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Umlaut Harmonization][Umlaut Harmonization:2]]
+## -------->>  [[file:../../harmonizer.src.org::*Umlaut Standardization][Umlaut Standardization:2]]
 expect_equal(
     c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
              , "MSLab Co."
@@ -99,6 +99,6 @@ expect_equal(data.frame(
                                                                                       "MSLAEB COE.", "MSLAB CO.", "MSLAEB COMP.", "MSLAB COMP.", "AEAEAEAECEEIIIÐNOEOEØUEYY"
                                                                                       ), umlaut = c(TRUE, TRUE, FALSE, TRUE, FALSE, TRUE)), row.names = c(NA, 
                                                                                                                                                           -6L), class = c("data.table", "data.frame")))
-## --------<<  Umlaut Harmonization:2 ends here
+## --------<<  Umlaut Standardization:2 ends here
 
 

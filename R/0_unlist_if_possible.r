@@ -2,7 +2,7 @@
 ##' If column in the `x` table is list unlist it if possible
 ##' @param x object
 ##' @param replace_zero_length_with Default is replace NULLs with NA_character_ because vector of just NA is a logical class
-##' @param remove_empty_values remove NA, "", etc. from list elements.  (see [harmonize_omit_empty()])
+##' @param remove_empty_values remove NA, "", etc. from list elements.  (see [standardize_omit_empty()])
 ##' @return updated object
 ##' @export
 unlist_if_possible <- function(x
@@ -10,7 +10,7 @@ unlist_if_possible <- function(x
                              , remove_empty_values = TRUE) {
     if(is.list(x)) {
         if(remove_empty_values) {
-            x <- lapply(x, harmonize_omit_empty)
+            x <- lapply(x, standardize_omit_empty)
         }
         len <- sapply(x, length)
         if(all(len == 1)) {

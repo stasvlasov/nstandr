@@ -1,14 +1,14 @@
 Package: harmonizer
-Title: Harmonization of Organizational Names
+Title: Standardization of Organizational Names
 Version: 0.0.0.9000
-Date: 2022-03-03
+Date: 2022-03-24
 Authors@R: 
     person("Stanislav", "Vlasov", , "s.vlasov@uvt.nl", role = c("aut", "cre"))
-Description: Harmonizes organizational names using steps described in
+Description: Standardizes organizational names using steps described in
     Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more.
 License: MIT + file LICENSE
-URL: https://stasvlasov.github.io/harmonizer/
-BugReports: https://github.com/stasvlasov/harmonizer/issues
+URL: https://stasvlasov.github.io/nstandr/
+BugReports: https://github.com/stasvlasov/nstandr/issues
 Depends: 
     R (>= 3.5.0)
 Imports: 
@@ -22,7 +22,7 @@ Suggests:
 Encoding: UTF-8
 References: Magerman, T., Looy, V., Bart, & Song, X. (2006). Data
     Production Methods for Harmonized Patent Statistics: Patentee Name
-    Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY:
+    Harmonizarion (SSRN Scholarly Paper No. ID 944470). Rochester, NY:
     Social Science Research Network. Retrieved from
     http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S.,
     Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010).

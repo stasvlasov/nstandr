@@ -37,7 +37,7 @@ or_rows <- function(rows_1, rows_2, x) {
 #' @param return_only_codes If toggled on then just return codes vector.
 #' @param return_only_first_detected_code If TRUE then return only codes for the first detected pattern. If FALSE return list of all matched codes. Default is TRUE. (Currently does affect performance)
 #' @param return_merge_codes_description Return description of choices for `merge_existing_codes` paramenter.
-#' @inheritDotParams harmonize_options
+#' @inheritDotParams standardize_options
 #' 
 #' @return The updated `x` table with codes column or just codes if `return_only_codes` is set.
 #'
@@ -81,7 +81,7 @@ detect_patterns <- function(x
                          , output_col_name = output_codes_col_name
                          , output_placement = "append_to_x"
                          , return_null_for_new_col = TRUE) |>
-            harmonize_is_data_empty() |>
+            standardize_is_data_empty() |>
             and_rows(rows, x)
     }
     ## --------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ detect_patterns <- function(x
              , SIMPLIFY = FALSE
              , USE.NAMES = FALSE) |>
         transpose_list_of_vectors() |>
-        lapply(harmonize_omit_empty)
+        lapply(standardize_omit_empty)
     ## code unmached records if needed
     if(!is.null(no_match_code)) {
         x_inset_vector <- 

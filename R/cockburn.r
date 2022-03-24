@@ -3,8 +3,8 @@
 ##'
 ##' @param x Object (table or vector)
 ##' @param wrap_in_spaces Whether to wrap strings in spaces before processing because the algorithm assumes assumes that each string begins and ends with space. Default is TRUE.
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' 
 ##' @md 
 ##' @export 
@@ -45,8 +45,8 @@ cockburn_combabbrev <- function(x
 ##'     (2009), The NBER Patent Citations Datafile Update. It differs
 ##'     from original dervert standartization
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -65,8 +65,8 @@ attr(cockburn_replace_derwent, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*Compustat][Compustat:1]]
 ##' @eval attr(cockburn_replace_compustat, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -82,8 +82,8 @@ attr(cockburn_replace_compustat, "@title") <-
 
 ##' @eval attr(cockburn_replace_compustat_names, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -104,8 +104,8 @@ attr(cockburn_replace_compustat_names, "@title") <-
 ##'
 ##' @param x vector or table
 ##' @param verbose For debuging. If set will message which procedures were done.
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' 
 ##' @md 
 ##' @export 
@@ -134,7 +134,7 @@ cockburn_detect_type <- function(x
 ##'
 ##' @param x vector or table
 ##' @inheritDotParams replace_patterns
-##' @return Harmonized table
+##' @return standardized names table
 ##' 
 ##' @md 
 ##' @export 
@@ -151,8 +151,8 @@ cockburn_replace_type <- function(x, ...) {
 ##' @eval attr(cockburn_detect_corp, "@title")
 ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -176,8 +176,8 @@ attr(cockburn_detect_corp, "@title") <-
 ##' @description From non_corporates.do file. Source -
 ##'     https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -200,8 +200,8 @@ attr(cockburn_detect_indiv, "@title") <-
 ##' @eval attr(cockburn_detect_govt, "@title")
 ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -223,8 +223,8 @@ attr(cockburn_detect_govt, "@title") <-
 ##' @eval attr(cockburn_replace_govt, "@title")
 ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -243,8 +243,8 @@ attr(cockburn_replace_govt, "@title") <-
 ##' @eval attr(cockburn_detect_univ, "@title")
 ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -269,8 +269,8 @@ attr(cockburn_detect_univ, "@title") <-
 ##' @eval attr(cockburn_replace_univ, "@title")
 ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -289,8 +289,8 @@ attr(cockburn_replace_univ, "@title") <-
 ##' @eval attr(cockburn_detect_inst, "@title")
 ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -313,8 +313,8 @@ attr(cockburn_detect_inst, "@title") <-
 ##' @eval attr(cockburn_detect_inst_conds_1, "@title")
 ##' @description STATA equivalent: replace asstype = "inst" if strpos(standard_name," COUNCIL OF ")>0 & strpos(standard_name," RES ")>0
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -343,8 +343,8 @@ attr(cockburn_detect_inst_conds_1, "@title") <-
 ##' @param x table. Expected that x has a column with codes for universities
 ##' @param output_codes_col_name column with codes for universities ("univ"). Default is last column of x
 ##' @param merge_existing_codes same as in [detect_patterns()]
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' 
 ##' @md
 ##' @export
@@ -377,8 +377,8 @@ cockburn_detect_inst_conds_2 <- function(x
 ##' @param x table. Expected that x has a column with codes for universities
 ##' @param merge_existing_codes same as in [detect_patterns()]
 ##' @param output_codes_col_name column with codes for universities ("univ"). Default is last column of x
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' 
 ##' @md
 ##' @export
@@ -402,8 +402,8 @@ cockburn_detect_inst_conds <- function(x
 ##' @param x table
 ##' @param output_codes_col_name same as in [detect_patterns()]
 ##' @param merge_existing_codes same as in [detect_patterns()]
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' 
 ##' @md 
 ##' @export 
@@ -442,8 +442,8 @@ attr(cockburn_detect_inst_german, "@title") <- "Detects German Non-profit instit
 ##' @eval attr(cockburn_detect_hosp, "@title")
 ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -466,8 +466,8 @@ attr(cockburn_detect_hosp, "@title") <-
 ##' Removes punctuation and standardise some symbols. 
 ##'
 ##' @param x object
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' 
 ##' @md
 ##' @export 
@@ -491,7 +491,7 @@ cockburn_replace_punctuation <- function(x
 ##'
 ##' @param x object
 ##' @inheritDotParams replace_patterns
-##' @return Harmonized table
+##' @return standardized names table
 ##' 
 ##' @md
 ##' @export 
@@ -509,8 +509,8 @@ cockburn_replace_standard_names <- function(x
 ## -------->>  [[file:../harmonizer.src.org::*Stem Name][Stem Name:1]]
 ##' @eval attr(cockburn_remove_standard_names, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -529,8 +529,8 @@ attr(cockburn_remove_standard_names, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*USPTO special][USPTO special:1]]
 ##' @eval attr(cockburn_remove_uspto, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -547,8 +547,8 @@ attr(cockburn_remove_uspto, "@title") <-
 
 ##' @eval attr(cockburn_detect_uspto, "@title")
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -567,25 +567,25 @@ attr(cockburn_detect_uspto, "@title") <-
 
 
 ## -------->>  [[file:../harmonizer.src.org::*Combined Cockburn Procedures][Combined Cockburn Procedures:1]]
-##' Harmonizes strings using exact procedures described in Cockburn, et al. (2009)
+##' Standardizes strings using exact procedures described in Cockburn, et al. (2009)
 ##' @param x table or vector
-##' @param cockburn_procedures list of procedures to pass to `harmonize` function. Default is `cockburn_procedures.list`
+##' @param cockburn_procedures list of procedures to pass to `standardize` function. Default is `cockburn_procedures.list`
 ##' @param detect_legal_form Whether to detect legal forms. Default is FALSE
-##' @param return_x_before_common_words_removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
-##' @inheritDotParams harmonize
-##' @return Harmonized table
+##' @param return_x_before_common_words_removal Whether to save standardized column before `common.words.removal` procedure. Default is FALSE
+##' @inheritDotParams standardize
+##' @return standardized names table
 ##'
 ##' @references Cockburn, et al. (2009)
 ##' 
 ##' @md 
 ##' @export 
-harmonize_cockburn <- function(x
+standardize_cockburn <- function(x
                              , cockburn_procedures = cockburn_procedures_table
                              , detect_legal_form = FALSE
                              , return_x_before_common_words_removal = FALSE
                              , ... ) {
     if(is.data.frame(cockburn_procedures)) {
-        cockburn_procedures <- harmonize_make_procedures_list(cockburn_procedures)
+        cockburn_procedures <- standardize_make_procedures_list(cockburn_procedures)
     }
   ## do some tweaks on cockburn_procedures
   if(!detect_legal_form) {
@@ -601,7 +601,7 @@ harmonize_cockburn <- function(x
           which(sapply(cockburn_procedures, `[[` , 1) %in% "cockburn_combabbrev")
       ]] <- list("cockburn_combabbrev", append_output_copy = TRUE)
   }
-  harmonize(x, cockburn_procedures, ...)
+  standardize(x, cockburn_procedures, ...)
 }
 ## --------<<  Combined Cockburn Procedures:1 ends here
 

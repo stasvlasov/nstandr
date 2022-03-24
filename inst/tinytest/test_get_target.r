@@ -1,7 +1,7 @@
 ## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:7]]
 require("data.table")
 
-get_target <- harmonizer:::get_target
+get_target <- nstandr:::get_target
 
 expect_equal(
     data.table(x.pro.30 = list(c(1,2,3,4), 2,3,4)
@@ -38,7 +38,7 @@ expect_equal(
 
 
 expect_equal(
-data.frame(x_harmonized = c(1,2,3,4)
+data.frame(x_standardized = c(1,2,3,4)
              , x = c("7","8","9","a")) |>
     get_target(col = 1
              , rows = c(T,T,F,T)

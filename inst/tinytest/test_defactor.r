@@ -1,5 +1,5 @@
 ## -------->>  [[file:../../harmonizer.src.org::*defactor][defactor:2]]
-defactor_vector <- harmonizer:::defactor_vector
+defactor_vector <- nstandr:::defactor_vector
 
 
 

@@ -1,8 +1,8 @@
 ## -------->>  [[file:../harmonizer.src.org::*Characters][Characters:1]]
 ##' @eval attr(magerman_detect_characters, "@title")
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -29,8 +29,8 @@ attr(magerman_detect_characters, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*magerman.remove.html.codes][magerman.remove.html.codes:1]]
 ##' @eval attr(magerman_remove_html_codes, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -50,8 +50,8 @@ attr(magerman_remove_html_codes, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*magerman.replace.sgml.characters][magerman.replace.sgml.characters:1]]
 ##' @eval attr(magerman_replace_sgml_characters, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -69,8 +69,8 @@ attr(magerman_replace_sgml_characters, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*magerman.replace.proprietary.characters][magerman.replace.proprietary.characters:1]]
 ##' @eval attr(magerman_replace_proprietary_characters, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -88,8 +88,8 @@ attr(magerman_replace_proprietary_characters, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*magerman.replace.accented.characters][magerman.replace.accented.characters:1]]
 ##' @eval attr(magerman_replace_accented_characters, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -109,8 +109,8 @@ attr(magerman_replace_accented_characters, "@title") <-
 ##' @description Removes everything that is not: A-Z; 0-9; “-“; “+”; “’”; “””; “#”;
 ##' “*”;“@”; “!”; “?”; “/”; “&”; “(“; “)”; “:”; “;”; “,”; “.”; “ “
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -129,8 +129,8 @@ attr(magerman_remove_special_characters, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.spaces][magerman.remove.double.spaces:1]]
 ##' @eval attr(magerman_remove_double_spaces, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -150,8 +150,8 @@ attr(magerman_remove_double_spaces, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:1]]
 ##' @eval attr(magerman_remove_double_quotation_marks_irregularities, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -171,8 +171,8 @@ attr(magerman_remove_double_quotation_marks_irregularities, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:3]]
 ##' @eval attr(magerman_remove_double_quotation_marks_beginning_end, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -192,8 +192,8 @@ attr(magerman_remove_double_quotation_marks_beginning_end, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*magerman.remove.non.alphanumeric.*][magerman.remove.non.alphanumeric.*:1]]
 ##' @eval attr(magerman_remove_non_alphanumeric_at_the_beginning, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -209,8 +209,8 @@ attr(magerman_remove_non_alphanumeric_at_the_beginning, "@title") <-
 
 ##' @eval attr(magerman_remove_non_alphanumeric_at_the_end, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -229,8 +229,8 @@ attr(magerman_remove_non_alphanumeric_at_the_end, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:1]]
 ##' @eval attr(magerman_detect_comma_period_irregularities, "@title")
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -252,8 +252,8 @@ attr(magerman_detect_comma_period_irregularities, "@title") <-
 
 ##' @eval attr(magerman_replace_comma_period_irregularities_all, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -276,8 +276,8 @@ attr(magerman_replace_comma_period_irregularities_all, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:3]]
 ##' @eval attr(magerman_replace_comma_period_irregularities, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -299,8 +299,8 @@ attr(magerman_replace_comma_period_irregularities, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*Detect and replace legal forms][Detect and replace legal forms:1]]
 ##' @eval attr(magerman_detect_legal_form_end, "@title")
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -327,8 +327,8 @@ attr(magerman_detect_legal_form_end, "@title") <-
 
 ##' @eval attr(magerman_replace_legal_form_end, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -348,8 +348,8 @@ attr(magerman_replace_legal_form_end, "@title") <-
 
 ##' @eval attr(magerman_detect_legal_form_beginning, "@title")
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -374,8 +374,8 @@ attr(magerman_detect_legal_form_beginning, "@title") <-
 
 ##' @eval attr(magerman_replace_legal_form_beginning, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -396,8 +396,8 @@ attr(magerman_replace_legal_form_beginning, "@title") <-
 
 ##' @eval attr(magerman_detect_legal_form_middle, "@title")
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -419,8 +419,8 @@ attr(magerman_detect_legal_form_middle, "@title") <-
 
 ##' @eval attr(magerman_replace_legal_form_middle, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -437,8 +437,8 @@ attr(magerman_replace_legal_form_middle, "@title") <-
 
 ##' @eval attr(magerman_detect_legal_form, "@title")
 ##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##'
 ##' @export
 magerman_detect_legal_form <- function(x, ...) {
@@ -454,8 +454,8 @@ attr(magerman_detect_legal_form, "@title") <-
 
 ##' @eval attr(magerman_remove_legal_form, "@title")
 ##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##'
 ##' @export
 magerman_remove_legal_form <- function(x, ...) {
@@ -477,8 +477,8 @@ attr(magerman_remove_legal_form, "@title") <- "Removes legal form"
 
 ##' @eval attr(magerman_remove_legal_form_and_clean, "@title")
 ##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' 
 ##' @export
 magerman_remove_legal_form_and_clean <- function(x, ...) {
@@ -498,8 +498,8 @@ attr(magerman_remove_legal_form_and_clean, "@title") <- "Removes legal form"
 ## -------->>  [[file:../harmonizer.src.org::*Common Words][Common Words:1]]
 ##' @eval attr(magerman_remove_common_words_at_the_end, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -516,8 +516,8 @@ attr(magerman_remove_common_words_at_the_end, "@title") <-
 
 ##' @eval attr(magerman_remove_common_words_at_the_beginning, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -535,8 +535,8 @@ attr(magerman_remove_common_words_at_the_beginning, "@title") <-
 
 ##' @eval attr(magerman_remove_common_words_anywhere, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -552,8 +552,8 @@ attr(magerman_remove_common_words_anywhere, "@title") <-
 
 ##' @eval attr(magerman_remove_common_words, "@title")
 ##' @param x table
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##'
 ##' @md
 ##' @export
@@ -572,8 +572,8 @@ attr(magerman_remove_common_words, "@title") <- "Removes common words"
 ## -------->>  [[file:../harmonizer.src.org::*Spelling Variation][Spelling Variation:1]]
 ##' @eval attr(magerman_replace_spelling_variation, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -591,8 +591,8 @@ attr(magerman_replace_spelling_variation, "@title") <-
 ## -------->>  [[file:../harmonizer.src.org::*Condensing][Condensing:1]]
 ##' @eval attr(magerman_condense, "@title")
 ##' @inherit replace_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso replace_patterns
 ##'
@@ -608,11 +608,11 @@ attr(magerman_condense, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Umlaut Harmonization][Umlaut Harmonization:1]]
+## -------->>  [[file:../harmonizer.src.org::*Umlaut Standardization][Umlaut Standardization:1]]
 ##' @eval attr(magerman_detect_umlaut, "@title")
 ##' @inherit detect_patterns params return
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##' @family magerman
 ##' @seealso detect_patterns
 ##'
@@ -636,8 +636,8 @@ attr(magerman_detect_umlaut, "@title") <-
 ##' @param has_umlaut_col Column with logical values indicating weather a corresponding string has an umlaut. Default is NULL so it detects is automatically first
 ##' @param drop_has_umlaut_col Whether to drop `has_umlaut_col`. Default is FALSE
 ##' @param replace_accented_characters Whether to replace accented characters first. Default is FALSE
-##' @inheritDotParams harmonize_options
-##' @return Harmonized table
+##' @inheritDotParams standardize_options
+##' @return standardized names table
 ##'
 ##' @md
 ##' @export
@@ -665,7 +665,7 @@ magerman_replace_umlaut <- function(x
             do.call(magerman_detect_umlaut
                   , c(list(x_vector)
                     , list(return_only_codes = TRUE)
-                    , formals("harmonize_options"))) |>
+                    , formals("standardize_options"))) |>
             as.logical()
     }
     ## replace accented characters
@@ -673,59 +673,59 @@ magerman_replace_umlaut <- function(x
         ## do magerman_replace_accented_characters with defauls
         x_vector <-
             do.call(magerman_replace_accented_characters
-                  , c(list(x_vector), formals("harmonize_options")))
+                  , c(list(x_vector), formals("standardize_options")))
     }
     ## check if there are at least some umlauts
     if (any(has_umlaut)) {
         ## transform umlaut
         ## first "AE", "OE", "UE" -> "A", "O", "U"
-        x_harmonized <- 
+        x_standardized <- 
             do.call(replace_patterns
                   , c(list(x_vector)
-                    , formals("harmonize_options")
+                    , formals("standardize_options")
                     , list(patterns = magerman_patterns_umlaut
                          , patterns_col = 3
                          , patterns_replacements_col = 2)))
         ## then "A", "O", "U" -> "AE", "OE", "UE"
-        x_harmonized <- 
+        x_standardized <- 
             do.call(replace_patterns
-                  , c(list(x_harmonized)
-                    , formals("harmonize_options")
+                  , c(list(x_standardized)
+                    , formals("standardize_options")
                     , list(patterns = magerman_patterns_umlaut
                           , patterns_col = 2
                          , patterns_replacements_col = 3)))
         ## check which one match original umlaut
-        x_harmonized_keep <-
-            x_harmonized %in%
-            x_harmonized[sapply(has_umlaut, isTRUE)]
+        x_standardized_keep <-
+            x_standardized %in%
+            x_standardized[sapply(has_umlaut, isTRUE)]
         ## if does not match umlaut replace with original
-        x_harmonized[!x_harmonized_keep] <-
-            x_vector[!x_harmonized_keep]
+        x_standardized[!x_standardized_keep] <-
+            x_vector[!x_standardized_keep]
         ## return table
-        return(inset_target(x_harmonized, x))
+        return(inset_target(x_standardized, x))
     } else {
         return(inset_target(x_vector, x))
     }
 }
 
 attr(magerman_replace_umlaut, "@title") <- "Replaces Umlauts"
-## --------<<  Umlaut Harmonization:1 ends here
+## --------<<  Umlaut Standardization:1 ends here
 
 
 
 ## -------->>  [[file:../harmonizer.src.org::*Combined Magerman Procedures][Combined Magerman Procedures:1]]
-##' Harmonizes strings using exact procedures described in Magerman et al. 2009.
+##' Standardizes strings using exact procedures described in Magerman et al. 2009.
 ##' @param x table or vector
 ##' @param detect_legal_form Whether to detect legal forms. Default is FALSE
-##' @param append_output_copy_before_common_words_removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
-##' @inheritDotParams harmonize
-##' @return Harmonized table
+##' @param append_output_copy_before_common_words_removal Whether to save standardized column before `common.words.removal` procedure. Default is FALSE
+##' @inheritDotParams standardize
+##' @return standardized names table
 ##'
-##' @references Magerman et al., 2006 - Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization
+##' @references Magerman et al., 2006 - Data Production Methods for Harmonized Patent Statistics: Patentee Name Standardization
 ##'
 ##' @md
 ##' @export
-harmonize_magerman <- function(x
+standardize_magerman <- function(x
                              , detect_legal_form = FALSE
                              , append_output_copy_before_common_words_removal = FALSE
                              , ...) {
@@ -748,7 +748,7 @@ harmonize_magerman <- function(x
             , list(append_output_copy = TRUE
                  , output_copy_col_name = "{col_name_}before_common_words_removal"))
     }
-    harmonize(x, magerman_procedures, ...)
+    standardize(x, magerman_procedures, ...)
 }
 ## --------<<  Combined Magerman Procedures:1 ends here
 

@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*harmonize_escape_regex][harmonize_escape_regex:1]]
+## -------->>  [[file:../harmonizer.src.org::*standardize_escape_regex][standardize_escape_regex:1]]
 ##' Escapes special for regex characters
 ##' @param string character vector
 ##' @return character vector with all special to regex characters escaped
@@ -107,6 +107,6 @@ escape_regex_for_types <- function(patterns, types, escape_fixed = FALSE) {
              , SIMPLIFY = TRUE)
     }
 }
-## --------<<  harmonize_escape_regex:1 ends here
+## --------<<  standardize_escape_regex:1 ends here
 
 

@@ -1,7 +1,7 @@
 ## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:8]]
 require("data.table")
 
-inset_target <- harmonizer:::inset_target
+inset_target <- nstandr:::inset_target
 
 
 ## test vectors

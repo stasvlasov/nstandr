@@ -1,4 +1,4 @@
-# - Reference from [[associate-id:org:29i4s7t0y5i0][Harmonizer R package]] on [2021-06-05 Sat 22:51]
+# - Reference from [[associate-id:org:29i4s7t0y5i0][nstandr R package]] on [2021-06-05 Sat 22:51]
 #+PROPERTY: header-args:R  :comments link :session :mkdirp yes :padline yes
 * Frontpage
 :PROPERTIES:
@@ -9,27 +9,27 @@
 :END:
 
 #+begin_export markdown
-[![R-CMD-check](https://github.com/stasvlasov/harmonizer/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/harmonizer/actions)
-[![codecov](https://codecov.io/gh/stasvlasov/harmonizer/branch/master/graph/badge.svg?token=OQVJ7NRXO5)](https://codecov.io/gh/stasvlasov/harmonizer)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/harmonizer)
+[![R-CMD-check](https://github.com/stasvlasov/nstandr/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/nstandr/actions)
+[![codecov](https://codecov.io/gh/stasvlasov/nstandr/branch/master/graph/badge.svg?token=OQVJ7NRXO5)](https://codecov.io/gh/stasvlasov/nstandr)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/nstandr)
 #+end_export
 
-The R package =harmonizer= makes standardized organizational names using procedures described by Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015).
+The R package =nstandr= makes standardized organizational names using procedures described by Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015).
 
 This is work in progress. Please, file an issue or a suggestion if you have any.
 
 ** Installation
 
 #+BEGIN_SRC R
-  devtools::install_github("stasvlasov/harmonizer")
+  devtools::install_github("stasvlasov/nstandr")
 #+END_SRC
 
 ** Usage
-The package provides its main function =harmonize=. The function expect character vector of organization names as input and returns its harmonized version.
+The package provides its main function =standardize=. The function expect character vector of organization names as input and returns its standardized version.
 
-For the standardization methods described in Magerman et al. (2006) and Cockburn et al. (2009) you can use =harmonize_magerman= and =harmonize_cockburn= respectively. These functions are similar to =harmonize(x, procedures=harmonizer:::magerman_procedures_list))= and =harmonize(x, procedures=harmonizer:::cockburn_procedures_list))= but with additional options for tweaking original procedures and with more documentation.
+For the standardization methods described in Magerman et al. (2006) and Cockburn et al. (2009) you can use =standardize_magerman= and =standardize_cockburn= respectively. These functions are similar to =standardize(x, procedures=nstandr:::magerman_procedures_list))= and =standardize(x, procedures=nstandr:::cockburn_procedures_list))= but with additional options for tweaking original procedures and with more documentation.
 
-Here is an example of =harmonize_magerman= usage
+Here is an example of =standardize_magerman= usage
 #+BEGIN_SRC R
   textConnection("SGS-THOMSON MICROELECTRONICS
   S.G.S. THOMSON MICROELECTRONICS S.R.L.
@@ -84,10 +84,10 @@ Here is an example of =harmonize_magerman= usage
   SGS-THOMSON MICROELECTRONICS, SRL
   SGS-THOMSON MICROELECTRONICS,S.R.L.") |>
       readLines() |>
-      harmonize_magerman(output_placement = "append_to_x")
+      standardize_magerman(output_placement = "append_to_x")
 
   # 
-  # Applying harmonization procedures:
+  # Applying standardization procedures:
   # -----------------------------------------------------------------
   # 
   # * Upper casing                                               DONE
@@ -111,7 +111,7 @@ Here is an example of =harmonize_magerman= usage
   # * Fixing umlaut variations                                   DONE
   # 
   # -----------------------------------------------------------------
-  # Harmonization is done!
+  # Standardization is done!
   # 
   #                                               x                     std_x
   #  1:                SGS-THOMSON MICROELECTRONICS SGSTHOMSONMICROELECTRONIC
@@ -171,7 +171,7 @@ Here is an example of =harmonize_magerman= usage
 
 ** References
 
-Magerman, T., Looy, V., Bart, & Song, X. (2006). /Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization/ (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470
+Magerman, T., Looy, V., Bart, & Song, X. (2006). /Data Production Methods for Harmonized Patent Statistics: Patentee Name Standardization/ (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470
 
 Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. /National Bureau of Economic Research Working Paper Series/, (15851). Retrieved from http://www.nber.org/papers/w15851 http://www.nber.org/papers/w15851.pdf
 
@@ -184,11 +184,11 @@ Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linkin
 #+begin_src latex
 @misc{Vlasov2022,
   author = {Vlasov, Stanislav A.},
-  title = {harmonizer - an R package that makes standardized organizational names.},
+  title = {nstandr - an R package that makes standardized organizational names.},
   year = {2020},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{https://github.com/stasvlasov/harmonizer}},
+  howpublished = {\url{https://github.com/stasvlasov/nstandr}},
   commit = {10293d9d5f0687b5b7dc784d8a75942b7175f4a1}
 }
 #+end_src
@@ -196,18 +196,18 @@ Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linkin
 * Development
 
 For this package development I use Emacs' org-mode that allows literate programming. Literate programming in this case provides ways to do the following:
-- Use tables of internal data for harmonization in human readable format and convert it to .rda when deploying package
+- Use tables of internal data for standardization in human readable format and convert it to .rda when deploying package
 - Write function definition and tests next to other but tangle it from .org file to different directories and .r files on deployment
 
 
 ** Naming Convention
 - All functions should have a verb
 - Variables should not have a verb
-- Everything that is available to user should start with either harmonizer (data) or harmonize (functions)
+- Everything that is available to user should start with either nstandr (data) or standardize (functions)
 - Internal functions and variables does not have to have this prefix
-- Second part of the name is a source if the function or a data is taken from this source (e.g. harmonize.magerman.remove.common.words)
+- Second part of the name is a source if the function or a data is taken from this source (e.g. standardize.magerman.remove.common.words)
 - The rest is the name of the function or a variable as precise and informative as possible
-- Data for string substitutions, removals or pattern recognition should be named as "patterns" (e.g., harmonizer.magerman.patterns.special.characters)
+- Data for string substitutions, removals or pattern recognition should be named as "patterns" (e.g., nstandr.magerman.patterns.special.characters)
 
 
 * Deploy
@@ -265,7 +265,7 @@ https://github.com/r-lib/actions/blob/v1/examples/README.md
 :ID:       org:id2dzmx01ei0
 :END:
 
-There packages are used for building ~harmonizer~
+There packages are used for building ~nstandr~
 #+name: packages
 | names          | link                                                                 |
 |----------------+----------------------------------------------------------------------|
@@ -357,13 +357,13 @@ Note: If =install.packages= is tangled to =.Rprofile= it might cause a recursive
 :ID:       org:g5wa69d1ffi0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/nstandr.r
   #' @details
-  #' Harmonizer package standardizes (harmonizes) organizational names
+  #' nstandr package standardizes organizational names
   #'     mainly using procedures described in Thoma et al. (2010) and
   #'     Magerman, Looy, Bart, & Song (2006) but not only.  This is work
   #'     in progress. Please, file an issues or suggestion if you have
-  #'     any.  The main function is [harmonize()].
+  #'     any.  The main function is [standardize()].
   #' @keywords internal
   "_PACKAGE"
 #+END_SRC
@@ -446,7 +446,7 @@ To call all calls
   ## just in case if there is not directory
   dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
 
-  <<harmonize_make_procedures_list>>
+  <<standardize_make_procedures_list>>
 
   ## make a path for saving .rda
   rda.path  <-
@@ -492,7 +492,7 @@ To call all calls
           ## work around | character in the strings
           lapply(stri_replace_all_fixed, "\\vert", "|") |>
           as.data.table() |>
-          harmonize_make_procedures_list()
+          standardize_make_procedures_list()
 
       ## save data to .rda (filename is the same as var name)
       saveRDS(data, data.path)
@@ -536,25 +536,25 @@ To call all calls
   require("stringi")
   require("data.table")
   require("romRDS")
-  
+
   ## just in case if there is not directory
   dir.create(data.dir, recursive = TRUE, showWarnings = FALSE)
-  
+
   ## make a path for saving .rds
   data.path  <-
       data.name %>% 
       paste0(".rds") %>%
       file.path(data.dir, .)
-  
+
   ## just in case if there is not directory
   dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
-  
+
   ## make a path for saving .rda
   rda.path  <-
       rda.filename %>% 
       paste0(".rda") %>%
       file.path(rda.dir, .)
-  
+
   if(length(data) == 1) {
       data %<>%
           extract2(1) %>%
@@ -593,9 +593,9 @@ To call all calls
       ## save data to .rda (filename is the same as var name)
       saveRDS(data, data.path)
   }
-  
+
   message(data.name, " is saved!")
-  
+
   ## add all .rds to R/sysdata.rda
   ## (variable names are the same as .rds files)
   if(!is.null(add.to.rda)) {
@@ -608,9 +608,9 @@ To call all calls
                , obj_name_has_extention = TRUE) %>%
           save(list = ., file = rda.path)
   }
-  
+
   message(".rda is updated!")
-  
+
 #+end_src
 
 #+name: make-rda
@@ -680,19 +680,19 @@ Adjust "ensure_version" verstions manually:
 #+BEGIN_SRC R :tangle no :session
   ## Generate package description
   ## --------------------------------------------------------------------------------
-  list(Title  = "Harmonization of Organizational Names"
+  list(Title  = "Standardization of Organizational Names"
      , Date = Sys.Date()
      , "Authors@R" = 'as.person("Stanislav Vlasov <s.vlasov@uvt.nl> [aut, cre]")'
      , Version = "0.0.0.9000"
-     , URL = "https://stasvlasov.github.io/harmonizer/"
-     , BugReports = "https://github.com/stasvlasov/harmonizer/issues"
+     , URL = "https://stasvlasov.github.io/nstandr/"
+     , BugReports = "https://github.com/stasvlasov/nstandr/issues"
      , Imports = paste(
            paste0(dependencies$packages, " (>= ", dependencies$ensure_version, ")")
          , collapse = ", ")
      , Depends = "R (>= 3.5.0)"
      , Suggests = paste(suggests$packages, collapse = ", ")
-     , Description = "Harmonizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more."
-     , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851.pdf, Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. The Stata Journal, 15(3), 672-697. https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf") |>
+     , Description = "Standardizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, & Song (2006) and more."
+     , References = "Magerman, T., Looy, V., Bart, & Song, X. (2006). Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonizarion (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from http://papers.ssrn.com/abstract=944470, Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. National Bureau of Economic Research Working Paper Series, (15851). Retrieved from http://www.nber.org/papers/w15851.pdf, Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. The Stata Journal, 15(3), 672-697. https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf") |>
       usethis::use_description(check_name = TRUE
                              , roxygen = TRUE)
   usethis::use_mit_license()
@@ -706,8 +706,8 @@ Adjust "ensure_version" verstions manually:
 #+BEGIN_SRC R :tangle no
   ## Unload and uninstall package
   ## --------------------------------------------------------------------------------
-  detach(package:harmonizer, unload = TRUE)
-  remove.packages("harmonizer")
+  detach(package:nstandr, unload = TRUE)
+  remove.packages("nstandr")
   
   ## Install package
   ## --------------------------------------------------------------------------------
@@ -720,11 +720,11 @@ Adjust "ensure_version" verstions manually:
   
   ## Deploy from web
   ## --------------------------------------------------------------------------------
-  install_github("stasvlasov/harmonizer")
+  install_github("stasvlasov/nstandr")
   
   
   ## Load main functions
-  source("R/harmonizer.r")
+  source("R/nstandr.r")
   
   ## Load data used in funcitons
   load("R/sysdata.rda")
@@ -736,11 +736,11 @@ Adjust "ensure_version" verstions manually:
   
   ## Test
   ## --------------------------------------------------------------------------------
-  library("harmonizer")
+  library("nstandr")
   
-  harmonize(c("Lala Ltd.", "bla-bla Ltd."))
+  standardize(c("Lala Ltd.", "bla-bla Ltd."))
   
-  harmonize_magerman(c("Lala Ltd.", "bla-bla Ltd."))
+  standardize_magerman(c("Lala Ltd.", "bla-bla Ltd."))
   
 #+END_SRC
 
@@ -753,7 +753,7 @@ Adjust "ensure_version" verstions manually:
 #+name: inject-get-dots
 #+BEGIN_SRC emacs-lisp :tangle no
   (save-window-excursion
-    (let* (tangling-from-harmonizer-R-package
+    (let* (tangling-from-nstandr-R-package
            (dots-get-dots-block-name "get_dots")
            (dots-r-pkg-path "~/org/research/dots/dots.src.org")
            ;; assume running in target pkg dir
@@ -772,31 +772,31 @@ Adjust "ensure_version" verstions manually:
 
 ** basic procedures
 
-*** harmonize_toupper
+*** standardize_toupper
 :PROPERTIES:
 :ID:       org:xys0f8s0lei0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
-  ##' @eval attr(harmonize_toupper, "description")
+#+BEGIN_SRC R :tangle R/nstandr.r
+  ##' @eval attr(standardize_toupper, "description")
   ##' 
   ##' @param x data
   ##' 
-  ##' @inheritDotParams harmonize_options
+  ##' @inheritDotParams standardize_options
   ##'
   ##' @return updated data (as data.table)
   ##' @export
-  harmonize_toupper <- function(x, ...) {
+  standardize_toupper <- function(x, ...) {
       get_target(x) |>
           toupper() |>
           inset_target(x)
   }
 
-  attr(harmonize_toupper, "description") <- 
+  attr(standardize_toupper, "description") <- 
   "Uppercases vector of interest in the object (table)"
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_toupper.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_standardize_toupper.r
 
   expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                  , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
@@ -805,7 +805,7 @@ Adjust "ensure_version" verstions manually:
                                  , "MSLab Comp."
                                  , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ")
                         , foo = "lalala" ) |>
-               harmonize_toupper(col = 2, name = "bar")
+               standardize_toupper(col = 2, name = "bar")
              , structure(list(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
                                        "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ"
                                        ), foo = c("LALALA", "LALALA", "LALALA", "LALALA", "LALALA", 
@@ -814,61 +814,61 @@ Adjust "ensure_version" verstions manually:
 
 #+END_SRC
 
-*** harmonize_remove_brackets
+*** standardize_remove_brackets
 :PROPERTIES:
 :ID:       org:9ew0f8s0lei0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
-  ##' @eval attr(harmonize_remove_brackets, "@title")
+#+BEGIN_SRC R :tangle R/nstandr.r
+  ##' @eval attr(standardize_remove_brackets, "@title")
   ##' @param x object (table)
-  ##' @inheritDotParams harmonize_options
+  ##' @inheritDotParams standardize_options
   ##' @return updated object
   ##' 
   ##' @export
-  harmonize_remove_brackets  <- function(x, ...) {
+  standardize_remove_brackets  <- function(x, ...) {
       get_target(x) |>
           stringi::stri_replace_all_regex("<[^<>]*>|\\([^()]*\\)|\\{[^{}]*\\}|\\[[^\\[\\]]*\\]", "") |>
           inset_target(x)
   }
 
-  attr(harmonize_remove_brackets, "@title") <- "Removes brackets and content in brackets"
+  attr(standardize_remove_brackets, "@title") <- "Removes brackets and content in brackets"
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_remove_brackets.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_standardize_remove_brackets.r
   ## remove.brackets breaks the encoding (so it is better to apply decoding first)
-  expect_equal(harmonize_remove_brackets("fa\xE7ile (lalala) lkj (sdfs) AAA [sdf]")
+  expect_equal(standardize_remove_brackets("fa\xE7ile (lalala) lkj (sdfs) AAA [sdf]")
              , "fa�ile  lkj  AAA ")
 
-  expect_equal(harmonize_remove_brackets("fa7ile (lalala) lkj (sdfs) AAA [sdf]")
+  expect_equal(standardize_remove_brackets("fa7ile (lalala) lkj (sdfs) AAA [sdf]")
              , "fa7ile  lkj  AAA ")
 
 #+END_SRC
 
-*** harmonize_remove_quotes
+*** standardize_remove_quotes
 :PROPERTIES:
 :ID:       org:4vz0f8s0lei0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/nstandr.r
   ##' Removes double quotes
   ##' 
   ##' @param x an object
-  ##' @inheritDotParams harmonize_options
+  ##' @inheritDotParams standardize_options
   ##' @return updated object
   ##' @export
-  harmonize_remove_quotes <- function(x, ...) {
+  standardize_remove_quotes <- function(x, ...) {
           get_target(x) |>
             stringi::stri_replace_all_regex("\"", "") |>
             inset_target(x)
   }
 #+END_SRC
-*** harmonize_dehtmlize
+*** standardize_dehtmlize
 :PROPERTIES:
 :ID:       org:4tffib50bci0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/nstandr.r
   #' Converts HTML characters to UTF-8
   #'
   #' The method is about 1/3 faster than htmlParse but it is still quite slow
@@ -876,12 +876,12 @@ Adjust "ensure_version" verstions manually:
   #' @param as_single_string If set then collapse characters in the main column of the `x` (i.e., `x.col`) as to a single string. It will increase performance (at least for relatively short tables). Default is FALSE
   #' @param as_single_string_sep delimiter for collapsed strings to uncollapse it later. Default is "#_|".
   #' @param use_read_xml If set the it will parse XML. Default is FALSE which means it parses HTML
-  #' @inheritDotParams harmonize_options
+  #' @inheritDotParams standardize_options
   #' @return updated object
   #' @references http://stackoverflow.com/questions/5060076
   #'
   #' @export
-  harmonize_dehtmlize <- function(x
+  standardize_dehtmlize <- function(x
                                 , as_single_string = FALSE
                                 , as_single_string_sep = "#_|"
                                 , use_read_xml = FALSE
@@ -911,31 +911,31 @@ Adjust "ensure_version" verstions manually:
 
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_dehtmlize.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_standardize_dehtmlize.r
 
   expect_equal(c("abcd", "&amp; &apos; &gt;", "&amp;", "&euro; &lt;") |>
-               harmonize_dehtmlize()
+               standardize_dehtmlize()
   , c("abcd", "& ' >", "&", "€ <"))
 
 
 #+END_SRC
 
-*** harmonize_detect_enc
+*** standardize_detect_enc
 :PROPERTIES:
 :ID:       org:e2bfib50bci0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/nstandr.r
   #' Detects string encoding
   #' @param x object
   #' @param output_codes_col_name Same as in [detect_patterns()]
   #' @param return_only_codes Same as in [detect_patterns()]
   #' @param ... 
-  #' @inheritDotParams harmonize_options
+  #' @inheritDotParams standardize_options
   #' @return updated object
   #'
   #' @export
-  harmonize_detect_enc <- function(x
+  standardize_detect_enc <- function(x
                                  , output_codes_col_name = "{col_name_}encoding"
                                  , return_only_codes = FALSE
                                  , ...) {
@@ -961,13 +961,13 @@ Adjust "ensure_version" verstions manually:
 #+END_SRC
 
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_detect_enc.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_standardize_detect_enc.r
   
   expect_equal(data.table(data = c("FAÇILE"
                                  , "fa\xE7ile"
                                  , "c\u00b5c\u00b5ber")
                         , coffee = "Yes, please!") |>
-               harmonize_detect_enc(return_only_codes = TRUE)
+               standardize_detect_enc(return_only_codes = TRUE)
              , c("UTF-8", "ISO-8859-9", "UTF-8"))
 
 
@@ -976,7 +976,7 @@ Adjust "ensure_version" verstions manually:
   expect_equal(c("FAÇILE"
                , "fa\xE7ile"
                , "c\u00b5c\u00b5ber") |>
-               harmonize_detect_enc()
+               standardize_detect_enc()
              , structure(list(x = c("FAÇILE", "fa\xe7ile", "cµcµber"), x_encoding = c("UTF-8", 
                                                                                       "ISO-8859-9", "UTF-8")), row.names = c(NA, -3L), class = c("data.table", 
                                                                                                                                                  "data.frame")))
@@ -987,7 +987,7 @@ Adjust "ensure_version" verstions manually:
                                  , "fa\xE7ile"
                                  , "c\u00b5c\u00b5ber")
                         , coffee = "Yes, please!") |>
-               harmonize_detect_enc(output_codes_col_name = "{col_name}_lala")
+               standardize_detect_enc(output_codes_col_name = "{col_name}_lala")
              , structure(list(data = c("FAÇILE", "fa\xe7ile", "cµcµber"), 
                               coffee = c("Yes, please!", "Yes, please!", "Yes, please!"
                                          ), data_lala = c("UTF-8", "ISO-8859-9", "UTF-8")), row.names = c(NA, 
@@ -995,30 +995,30 @@ Adjust "ensure_version" verstions manually:
 
 
 #+END_SRC
-*** harmonize_toascii
+*** standardize_toascii
 :PROPERTIES:
 :ID:       org:mzn0tpb0wei0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/nstandr.r
   #' Translates non-ascii symbols to its ascii equivalent
   #' 
   #' @param x String to translate
   #' @param detect_encoding Detect encoding of individual elements (slower). Allows to work with mixed encodings.
-  #' @inheritDotParams harmonize_options
+  #' @inheritDotParams standardize_options
   #' 
   #' @export
-  harmonize_toascii <- function(x
+  standardize_toascii <- function(x
                               , detect_encoding = FALSE
                               , ...) {
     str <- get_target(x)
-    utf <- harmonizer_patterns_ascii$utf |> paste(collapse = "")
-    ascii <- harmonizer_patterns_ascii$ascii |> paste(collapse = "")
+    utf <- nstandr_patterns_ascii$utf |> paste(collapse = "")
+    ascii <- nstandr_patterns_ascii$ascii |> paste(collapse = "")
     (if(detect_encoding) {
          mapply(
              \(name, enc) chartr(utf, ascii, iconv(name, from = enc, to = "UTF-8", sub = ""))
            , str
-           , harmonize_detect_enc(str, return_only_codes = TRUE)
+           , standardize_detect_enc(str, return_only_codes = TRUE)
            , SIMPLIFY = FALSE, USE.NAMES = FALSE) |>
              unlist() |>
              iconv(to = "ASCII", sub = "")
@@ -1029,12 +1029,12 @@ Adjust "ensure_version" verstions manually:
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_toascii.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_standardize_toascii.r
   expect_equal( c("FAÇILE"
                 , "fa\xE7ile"
                 , "c\u00b5c\u00b5ber") |>
                 data.table("coffee") |>
-                harmonize_toascii(detect_encoding = TRUE)
+                standardize_toascii(detect_encoding = TRUE)
              , structure(list(V1 = c("FACILE", "facile", "cucuber"), V2 = c("coffee", 
                                                                             "coffee", "coffee")), row.names = c(NA, -3L), class = c("data.table", 
                                                                                                                                     "data.frame")))
@@ -1043,7 +1043,7 @@ Adjust "ensure_version" verstions manually:
                 , "fa\xE7ile"
                 , "c\u00b5c\u00b5ber") |>
                 data.table("coffee") |>
-                harmonize_toascii()
+                standardize_toascii()
               , structure(list(V1 = c("FACILE", "fa<e7>ile", "cucuber"), V2 = c("coffee", 
                                                                                 "coffee", "coffee")), row.names = c(NA, -3L), class = c("data.table", 
                                                                                                                                         "data.frame")))
@@ -1055,7 +1055,7 @@ Adjust "ensure_version" verstions manually:
 
 A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ~ string to ~SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy~
 
-#+NAME: harmonizer_patterns_ascii
+#+NAME: nstandr_patterns_ascii
 | utf | ascii |
 |-----+-------|
 | Š   | S     |
@@ -1128,23 +1128,23 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 | ý   | y     |
 | ÿ   | y     |
 
-#+call: make-rds-patterns-table(data = harmonizer_patterns_ascii, data.name = "harmonizer_patterns_ascii")
-*** harmonize_squish_spaces
+#+call: make-rds-patterns-table(data = nstandr_patterns_ascii, data.name = "nstandr_patterns_ascii")
+*** standardize_squish_spaces
 :PROPERTIES:
 :ID:       org:dlp0f8s0lei0
 :END:
 
-  #+BEGIN_SRC R :tangle R/harmonize_squish_spaces.r
+  #+BEGIN_SRC R :tangle R/standardize_squish_spaces.r
     #' Removes redundant whitespases
     #' @param x table or vector
     #'
     #' @param wrap_in_spaces If set then adds leaing and ending spaces. Default is FALSE.
     #'
-    #' @inheritDotParams harmonize_options
+    #' @inheritDotParams standardize_options
     #'
     #' @return updated table or vector
     #' @export
-    harmonize_squish_spaces <- function(x, wrap_in_spaces = FALSE, ...) {
+    standardize_squish_spaces <- function(x, wrap_in_spaces = FALSE, ...) {
         get_target(x) |>
             stringi::stri_replace_all_regex("\\s+", " ") |>
             stringi::stri_trim_both() |> (
@@ -1154,28 +1154,28 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
     }
     #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_squish_spaces.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_standardize_squish_spaces.r
 
-  expect_equal(harmonize_squish_spaces("  String with trailing,  middle, and leading white space\t"
+  expect_equal(standardize_squish_spaces("  String with trailing,  middle, and leading white space\t"
                                      , wrap_in_spaces = TRUE)
              , " String with trailing, middle, and leading white space ")
 
 
 
 
-  expect_equal(harmonize_squish_spaces("\n\nString with excess,  trailing and leading white   space\n\n"
+  expect_equal(standardize_squish_spaces("\n\nString with excess,  trailing and leading white   space\n\n"
                                      , wrap_in_spaces = FALSE)
              , "String with excess, trailing and leading white space")
 
 #+END_SRC
 ** utils
-*** harmonize_make_procedures_list
+*** standardize_make_procedures_list
 :PROPERTIES:
 :ID:       org:i762gum0fqi0
 :END:
 
-#+name: harmonize_make_procedures_list
-#+BEGIN_SRC R :tangle R/0_harmonize_make_procedures_list.r
+#+name: standardize_make_procedures_list
+#+BEGIN_SRC R :tangle R/0_standardize_make_procedures_list.r
   ##' Makes list of procedures calls from table.
   ##'
   ##' Table should have at least two columns - messages and fuctions
@@ -1187,7 +1187,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##' @param message_field name of the column with messages that will be
   ##'     displayed when each call is executed
   ##' @param function_call_field name of the column where function
-  ##'     (harmonization procedures) calls are listed.
+  ##'     (standardization procedures) calls are listed.
   ##' @param no_field name of the column where the number of procedure
   ##'     is specified. Also this field indicates if the row in the
   ##'     table is just a comment in which case it will be removed if
@@ -1199,7 +1199,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##'     makes entire row as commented out
   ##' @return List of named function calls. Names are messages.
   ##' 
-  harmonize_make_procedures_list <- function(procedures_table
+  standardize_make_procedures_list <- function(procedures_table
                                            , message_field = "message"
                                            , function_call_field = "function.call"
                                            , no_field = "no"
@@ -1233,20 +1233,20 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 #+END_SRC
 
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_make_procedures_list.r
-  harmonize_make_procedures_list <- harmonizer:::harmonize_make_procedures_list
+#+BEGIN_SRC R :tangle inst/tinytest/test_standardize_make_procedures_list.r
+  standardize_make_procedures_list <- nstandr:::standardize_make_procedures_list
 
   expect_equal(data.frame(no = c(3,2,"-", "")
                         , message = c("hello", "world", "man", "dfsdf")
                         , function.call = c("'c', 1, b=3", "'sum', 8,8,9", "'version'", "")) |>
-               harmonize_make_procedures_list()
+               standardize_make_procedures_list()
              , list(world = list("sum", 8, 8, 9), hello = list("c", 1, b = 3)))
 
 
 
-  expect_equal(harmonize_make_procedures_list(harmonizer:::magerman_procedures_table)
-             , list(`Upper casing` = "harmonize_toupper", `Cleaning spaces` = "harmonize_squish_spaces", 
-                    `Removing HTML codes` = "magerman_remove_html_codes", `Cleaning spaces (2)` = "harmonize_squish_spaces", 
+  expect_equal(standardize_make_procedures_list(nstandr:::magerman_procedures_table)
+             , list(`Upper casing` = "standardize_toupper", `Cleaning spaces` = "standardize_squish_spaces", 
+                    `Removing HTML codes` = "magerman_remove_html_codes", `Cleaning spaces (2)` = "standardize_squish_spaces", 
                     `Replacing SGML coded characters` = "magerman_replace_sgml_characters", 
                     `Replacing proprietary characters` = "magerman_replace_proprietary_characters", 
                     `Detecting Umlauts` = list("magerman_detect_umlaut", output_codes_col_name = "magerman_umlaut"), 
@@ -1269,12 +1269,12 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 #+END_SRC
 
 
-*** harmonize_x_split
+*** standardize_x_split
 :PROPERTIES:
 :ID:       org:ije1f8s0lei0
 :END:
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
+#+BEGIN_SRC R :tangle R/nstandr.r
   ##' Splits the object (table) in chunks by rows
   ##'
   ##' Convenient to apply some function to the table in chunks, e.g., if you want to add display of progress.
@@ -1284,7 +1284,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##' @param len length of the table (nrow). If it is NULL then use x_length(x)
   ##' 
   ##' @return List of (sub)tables
-  harmonize_x_split <- function(x, by, len = NULL) {
+  standardize_x_split <- function(x, by, len = NULL) {
       if(is.null(len)) len <- x_length(x)
       split(x, rep(seq(1, len %/% by +1)
                  , each = by
@@ -1292,8 +1292,8 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_x_split.r
-  harmonize_x_split <- harmonizer:::harmonize_x_split
+#+BEGIN_SRC R :tangle inst/tinytest/test_standardize_x_split.r
+  standardize_x_split <- nstandr:::standardize_x_split
 
 
   expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
@@ -1304,7 +1304,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
                                  , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
                               rep(50)
                         , foo = "lalala" ) |>
-               harmonize_x_split(10) |>
+               standardize_x_split(10) |>
                sapply(class)
              , structure(c("data.table", "data.frame", "data.table", "data.frame", 
                            "data.table", "data.frame", "data.table", "data.frame", "data.table", 
@@ -1332,7 +1332,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
                , "MSLab Comp."
                , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
                rep(50) |>
-               harmonize_x_split(10)
+               standardize_x_split(10)
   , list(`1` = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
   "MSLab Co.", "MSLaeb Comp.", "MSLab Comp.", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ", 
   "MÄKARÖNI ETÖ FKÜSNÖ Ltd", "MSLab CÖ. <a href=lsdldf> <br> <\\a>", 
@@ -1444,7 +1444,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##' If column in the `x` table is list unlist it if possible
   ##' @param x object
   ##' @param replace_zero_length_with Default is replace NULLs with NA_character_ because vector of just NA is a logical class
-  ##' @param remove_empty_values remove NA, "", etc. from list elements.  (see [harmonize_omit_empty()])
+  ##' @param remove_empty_values remove NA, "", etc. from list elements.  (see [standardize_omit_empty()])
   ##' @return updated object
   ##' @export
   unlist_if_possible <- function(x
@@ -1452,7 +1452,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
                                , remove_empty_values = TRUE) {
       if(is.list(x)) {
           if(remove_empty_values) {
-              x <- lapply(x, harmonize_omit_empty)
+              x <- lapply(x, standardize_omit_empty)
           }
           len <- sapply(x, length)
           if(all(len == 1)) {
@@ -1539,7 +1539,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   }
 #+END_SRC
 
-*** harmonize_empty
+*** standardize_empty
 :PROPERTIES:
 :ID:       org:3971f8s0lei0
 :END:
@@ -1548,7 +1548,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##' @param x input data to check each vector
   ##' @param return_as_true_if_x_zero_length how to interpret zero lenth input. If TRUE then it returns TRUE. Otherwise NULL.
   ##' @return logical vector of the same length
-  harmonize_is_data_empty <- function(x
+  standardize_is_data_empty <- function(x
                                     , return_as_true_if_x_zero_length = FALSE) {
       if(length(x) == 0) {
           if(return_as_true_if_x_zero_length) {
@@ -1569,45 +1569,45 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##' @param x vector
   ##' @return updated vector with empty elements removed
   ##' @export
-  harmonize_omit_empty <- function(x) {
+  standardize_omit_empty <- function(x) {
       if(length(x) == 0) return(x)
-      x[!sapply(harmonize_is_data_empty(x), isTRUE)]
+      x[!sapply(standardize_is_data_empty(x), isTRUE)]
   }
 
 
 
   ## eval things if x empty otherwise return x
-  harmonize_eval_if_empty <- function(x, ..., env = parent.frame()) {
-    if(harmonize_is_data_empty(x))
+  standardize_eval_if_empty <- function(x, ..., env = parent.frame()) {
+    if(standardize_is_data_empty(x))
       eval(..., envir = env)
     else x
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_eval_if_empty.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_standardize_eval_if_empty.r
 
-  harmonize_is_data_empty <- harmonizer:::harmonize_is_data_empty
-  harmonize_omit_empty <- harmonizer:::harmonize_omit_empty
-  harmonize_eval_if_empty <- harmonizer:::harmonize_eval_if_empty
+  standardize_is_data_empty <- nstandr:::standardize_is_data_empty
+  standardize_omit_empty <- nstandr:::standardize_omit_empty
+  standardize_eval_if_empty <- nstandr:::standardize_eval_if_empty
 
-  expect_equal(list("INCORPORATED", NULL, NULL, NULL, NULL) |> harmonize_is_data_empty()
+  expect_equal(list("INCORPORATED", NULL, NULL, NULL, NULL) |> standardize_is_data_empty()
              , c(FALSE, TRUE, TRUE, TRUE, TRUE))
 
-  expect_equal(c(NA, "", 3,4, "wsd", NULL) |> harmonize_is_data_empty()
+  expect_equal(c(NA, "", 3,4, "wsd", NULL) |> standardize_is_data_empty()
              , c(TRUE, TRUE, FALSE, FALSE, FALSE))
 
-  expect_equal(list("INCORPORATED", NULL, NULL, NULL, NULL) |> harmonize_omit_empty()
+  expect_equal(list("INCORPORATED", NULL, NULL, NULL, NULL) |> standardize_omit_empty()
              , list("INCORPORATED"))
 
   expect_equal((function() {
       a <- 5
-      harmonize_eval_if_empty("", a)
+      standardize_eval_if_empty("", a)
   })()
   , 5)
 
   expect_equal((function() {
       a <- 5
-      harmonize_eval_if_empty("not_empty", a)
+      standardize_eval_if_empty("not_empty", a)
   })()
   , "not_empty")
 
@@ -1690,7 +1690,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_defactor.r
-  defactor_vector <- harmonizer:::defactor_vector
+  defactor_vector <- nstandr:::defactor_vector
 
 
 
@@ -1763,31 +1763,31 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 
 #+END_SRC
 
-*** harmonize_options
+*** standardize_options
 :PROPERTIES:
 :ID:       org:p323mg11m9j0
 :END:
 
-#+BEGIN_SRC R :tangle R/0_harmonize_options.r
-  ##' Does nothing but stores (as its own default arguments) options that control vector handeling through harmonization process. These options are available in most harmonizer functions that accept `...` parameter.
+#+BEGIN_SRC R :tangle R/0_standardize_options.r
+  ##' Does nothing but stores (as its own default arguments) options that control vector handeling through standardization process. These options are available in most nstandr functions that accept `...` parameter.
   ##' 
-  ##' @param col Column of interest (the one we need to harmonize) in the `x` object (if it is data.frame like).
+  ##' @param col Column of interest (the one we need to standardize) in the `x` object (if it is data.frame like).
   ##' @param rows Logical vector to filter records of interest. Default is NULL which means do not filter records.
   ##' @param omitted_rows_value If `rows` parameter is set then merge `omitted_rows_value` with the results (filtered by `rows`). Either single string or a character vector of length `nrow(x)`. If NULL (the default) then original values of `col` are merged with results.
-  ##' @param output_placement Where to inset retults (harmonized vector) in the `x` object. Default options is 'replace_col' which overwrides the `col` in `x` with results. Other options:
+  ##' @param output_placement Where to inset retults (standardized vector) in the `x` object. Default options is 'replace_col' which overwrides the `col` in `x` with results. Other options:
   ##' - 'omit' :: do not write results back to table (usually used when `append_output_copy` is set for temporary values)
   ##' - 'prepend_to_col' :: prepend to `col`
   ##' - 'append_to_col' :: append to `col`
   ##' - 'prepend_to_x' :: prepend to `x` data.frame like object
   ##' - 'append_to_x' :: append to `x` data.frame like object
   ##' @param x_atomic_name If `x` is vector use this name for original column if it is in results. Default is "x". If `x` is table the name of `col` will be used.
-  ##' @param output_col_name Use this name for the column with results (harmonized values). Parts in curly brakeds are substitute strings. Options for substitutions are:
+  ##' @param output_col_name Use this name for the column with results (standardized values). Parts in curly brakeds are substitute strings. Options for substitutions are:
   ##' @eval format_col_name(return_docs = TRUE)
   ##' @param append_output_copy Whether to append a copy of result vector to `x` object
   ##' @param output_copy_col_name How the append copy wiil be named
   ##' 
   ##' @return It does nothing. Returns NULL silently.
-  harmonize_options <- function(col = 1
+  standardize_options <- function(col = 1
                               , rows = NULL
                               , omitted_rows_value = NULL
                               , output_placement = "replace_col"
@@ -1800,19 +1800,19 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
     }
 #+END_SRC
 
-*** check_harmonize_options
+*** check_standardize_options
 :PROPERTIES:
 :ID:       org:5aj0v1y0lbj0
 :END:
 
-#+BEGIN_SRC R :tangle R/0_check_harmonize_options.r
+#+BEGIN_SRC R :tangle R/0_check_standardize_options.r
   report_arg_checks <- function (collection
                                , which_call_to_report = -2L
                                , call_to_report = NULL) {
       checkmate::assertClass(collection, "AssertCollection")
       if (!collection$isEmpty()) {
           msgs <- paste("-", collection$getMessages())
-          context <- "Harmonizer :: %i argument checks failed in '%s' call:"
+          context <- "nstandr :: %i argument checks failed in '%s' call:"
           if(is.call(try(
               call <- sys.call(which_call_to_report)
             , silent = TRUE))) {
@@ -1870,7 +1870,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 
   ##' Assumes that rows (if logical) are same length as x
   ##' @param rows either numeric of logical vector
-  ##' @param x The object to harmonize
+  ##' @param x The object to standardize
   ##' @param null_ok Whether NULL is valid value
   ##' @param na_ok Whether NA is valid value
   ##' @param which_call_to_report When reporting issues which function call to indicate for reference
@@ -1906,14 +1906,14 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   }
 
 
-  check_harmonize_options <- function(dots
+  check_standardize_options <- function(dots
                                     , x
                                     , which_call_to_report = -1L
                                     , check_name_duplicates = FALSE) {
       ## check own arguments
       checkmate::assert_int(which_call_to_report)
       checkmate::assert_flag(check_name_duplicates)
-      ## check harmonize_options
+      ## check standardize_options
       assertion_fails <- checkmate::makeAssertCollection()
       with(dots, {
           ## check x
@@ -1999,20 +1999,20 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   }
   #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_check_harmonize_options.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_check_standardize_options.r
   require("data.table")
 
-  check_harmonize_options <- harmonizer:::check_harmonize_options
-  get_dots <- harmonizer:::get_dots
-  harmonize_options <- harmonizer:::harmonize_options
+  check_standardize_options <- nstandr:::check_standardize_options
+  get_dots <- nstandr:::get_dots
+  standardize_options <- nstandr:::standardize_options
 
 
   testing_check_arguments <- function(x, ...) {
-      dots <- get_dots(harmonize_options
+      dots <- get_dots(standardize_options
                      , search_calls_with_formals = c("x", "...")
                      , search_depth = 5L
-                     , search_up_to_call = c("harmonize", "harmonizer::harmonize"))
-      check_harmonize_options(dots, x)
+                     , search_up_to_call = c("standardize", "nstandr::standardize"))
+      check_standardize_options(dots, x)
       return(TRUE)
   }
 
@@ -2022,11 +2022,11 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 
 
   testing_check_arguments <- function(x, ...) {
-      dots <- get_dots(harmonize_options
+      dots <- get_dots(standardize_options
                      , search_calls_with_formals = c("x", "...")
                      , search_depth = 5L
-                     , search_up_to_call = c("harmonize", "harmonizer::harmonize"))
-      check_harmonize_options(dots, x
+                     , search_up_to_call = c("standardize", "nstandr::standardize"))
+      check_standardize_options(dots, x
                             , check_name_duplicates = TRUE)
       return(TRUE)
   }
@@ -2035,14 +2035,14 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ## taken name
   expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), output_col_name = "b"))
   ## testing append copy prefix (taken name)
-  expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b"), a_harmonized = TRUE)))
+  expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b"), a_standardized = TRUE)))
   ## test rows
   expect_error(testing_check_arguments(data.table(a = c(1,2), b = c("a", "b")), rows = c(1,1)))
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_check_utils.r
   ## test col checks
-  check_col <- harmonizer:::check_col
+  check_col <- nstandr:::check_col
 
   fun <- function(col, x) {
       check_col(col, x)
@@ -2060,7 +2060,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   expect_equal(fun(2, data.frame(a = 1, b = 2)), 2)
 
   ## test rows check
-  check_rows <- harmonizer:::check_rows
+  check_rows <- nstandr:::check_rows
 
   fun <- function(rows, x) {
       check_rows(rows, x)
@@ -2081,7 +2081,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 
 
   ## test x checks
-  check_x <- harmonizer:::check_x
+  check_x <- nstandr:::check_x
 
   expect_error(check_x(list(1,2,3)))
   expect_error(check_x(1))
@@ -2090,93 +2090,93 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 
   ## ## test
   ## test.col <- 2
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+  ## standardize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
   ## test.col <- 4
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+  ## standardize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
   ## test.col <- "drink"
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+  ## standardize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
   ## test.col <- "food"
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+  ## standardize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
   ## test.col <- NA
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+  ## standardize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
   ## test.col <- NULL
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
+  ## standardize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)))
   ## test.col <- NULL
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
+  ## standardize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
   ## test.col <- c("nu", "coffee")
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
+  ## standardize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
   ## test.col <- c(1,2)
-  ## harmonize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
+  ## standardize.is.ok.col(test.col, data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE)
   ## test.col <- c(1,3,0)
-  ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE)
-  ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE, several.ok = FALSE)
+  ## standardize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE)
+  ## standardize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE, several.ok = FALSE)
   ## test.col <- -c(1,2)
   ## test.col <- c(1,-2)
-  ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE)
+  ## standardize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE)
 
   ## test.col <- c(1,3)
-  ## harmonize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE, ban.values = c(3,4,5))
+  ## standardize.is.ok.col(test.col,  data.frame(nu = 1:5, NA, drink = rep("coffee", 5)), required = TRUE, allow.negative = TRUE, allow.zero = TRUE, ban.values = c(3,4,5))
 
 
 
 
   ## test
   ## test.arg <- FALSE
-  ## harmonize.is.ok.type(test.arg)
+  ## standardize.is.ok.type(test.arg)
   ## test.arg <- c(1,2,3,4,NA)
-  ## harmonize.is.ok.type(test.arg)
+  ## standardize.is.ok.type(test.arg)
   ## test.arg <- c(1,2,3,4,NA)
-  ## harmonize.is.ok.type(test.arg, type = "numeric")
+  ## standardize.is.ok.type(test.arg, type = "numeric")
   ## test.arg <- c(T,T,F,T,NA)
-  ## harmonize.is.ok.type(test.arg)
+  ## standardize.is.ok.type(test.arg)
   ## test.arg <- c(NA, NA)
-  ## harmonize.is.ok.type(test.arg, type = "numeric")
+  ## standardize.is.ok.type(test.arg, type = "numeric")
   ## test.arg <- NULL
-  ## harmonize.is.ok.type(test.arg, type = "numeric")
+  ## standardize.is.ok.type(test.arg, type = "numeric")
   ## test.arg <- NA
-  ## harmonize.is.ok.type(test.arg)
+  ## standardize.is.ok.type(test.arg)
   ## test.arg <- list(1,2,3,NULL)
-  ## harmonize.is.ok.type(test.arg, type = "list")
+  ## standardize.is.ok.type(test.arg, type = "list")
   ## test.arg <- list(1,2,3,NULL)
-  ## harmonize.is.ok.type(test.arg, type = c("list", "numeric"))
+  ## standardize.is.ok.type(test.arg, type = c("list", "numeric"))
 
 
 
 
   ## ## test
-  ## harmonize.is.ok.dots(names(list(x.col = 4, x.col.update = FALSE))
-  ##                      , names(formals("harmonize.x"))[-c(1:2)] )
+  ## standardize.is.ok.dots(names(list(x.col = 4, x.col.update = FALSE))
+  ##                      , names(formals("standardize.x"))[-c(1:2)] )
 
-  ## harmonize.is.ok.dots(names(list())
-  ##                      , names(formals("harmonize.x"))[-c(1:2)] )
+  ## standardize.is.ok.dots(names(list())
+  ##                      , names(formals("standardize.x"))[-c(1:2)] )
 
-  ## harmonize.is.ok.dots(c(NA, NA, 1)
-  ##                      , names(formals("harmonize.x"))[-c(1:2)] )
+  ## standardize.is.ok.dots(c(NA, NA, 1)
+  ##                      , names(formals("standardize.x"))[-c(1:2)] )
 
-  ## harmonize.is.ok.dots(NULL
-  ##                      , names(formals("harmonize.x"))[-c(1:2)] )
+  ## standardize.is.ok.dots(NULL
+  ##                      , names(formals("standardize.x"))[-c(1:2)] )
 #+END_SRC
 
-*** get_harmonize_options
+*** get_standardize_options
 :PROPERTIES:
 :ID:       org:y3obsm80daj0
 :END:
 
-#+BEGIN_SRC R :tangle R/0_get_harmonize_options.r
-  ##' Gets `harmonize_options` at point with consistent updates up through calling stack.
+#+BEGIN_SRC R :tangle R/0_get_standardize_options.r
+  ##' Gets `standardize_options` at point with consistent updates up through calling stack.
   ##'
-  ##' Limited to max stack of 3 calls and calls that include at least `data` and `...` formals (`harmonizer` functions specific) up to `.GlobalEnv` or `harmonize` call.
+  ##' Limited to max stack of 3 calls and calls that include at least `data` and `...` formals (`nstandr` functions specific) up to `.GlobalEnv` or `standardize` call.
   ##' 
-  ##' @return Returns list of updated arguments specified in `harmonize_options` function
+  ##' @return Returns list of updated arguments specified in `standardize_options` function
   ##' 
   ##' 
   ##' @md 
-  get_harmonize_options <- function() {
+  get_standardize_options <- function() {
       evalq({
-          get_dots(harmonize_options
+          get_dots(standardize_options
                  , search_calls_with_formals = c("x", "...")
                  , search_depth = 500L
-                 ## , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                 ## , search_up_to_call = c("standardize", "nstandr::standardize")
                  , skip_checks_for_parent_call = FALSE)
       }, envir = parent.frame())
   }
@@ -2184,107 +2184,107 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 
   get_col_and_rows <- function() {
       evalq({
-          get_dots(harmonize_options
+          get_dots(standardize_options
                  , select_args = c("col", "rows")
                  , search_calls_with_formals = c("x", "...")
                  , search_depth = 500L
-                 ## , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                 ## , search_up_to_call = c("standardize", "nstandr::standardize")
                  , skip_checks_for_parent_call = FALSE)
       }, envir = parent.frame())
   }
 
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_get_harmonize_options.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_get_standardize_options.r
   ## hack to make functions available in the environment
-  harmonize_options <- harmonizer:::harmonize_options
-  ## I do not test get_harmonize_options directly (and I will not use it in general) because it referes to the parent environment where internal functions are unknown
+  standardize_options <- nstandr:::standardize_options
+  ## I do not test get_standardize_options directly (and I will not use it in general) because it referes to the parent environment where internal functions are unknown
 
-  expect_equal(harmonizer:::get_dots(harmonize_options
+  expect_equal(nstandr:::get_dots(standardize_options
                                    , search_calls_with_formals = c("x", "...")
                                    , search_depth = 5L
-                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , search_up_to_call = c("standardize", "nstandr::standardize")
                                    , skip_checks_for_parent_call = FALSE)
-             , as.list(formals("harmonize_options")))
+             , as.list(formals("standardize_options")))
 
-  harmonize_test <- function (x, ...) harmonizer:::get_dots(harmonize_options
+  standardize_test <- function (x, ...) nstandr:::get_dots(standardize_options
                                                           , search_calls_with_formals = c("x", "...")
                                                           , search_depth = 5L
-                                                          , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                                          , search_up_to_call = c("standardize", "nstandr::standardize")
                                                           , skip_checks_for_parent_call = FALSE)
 
   ## should update defauls
-  expect_equal(harmonize_test()$col, 1)
-  expect_equal(harmonize_test(col = 2)$col, 2)
+  expect_equal(standardize_test()$col, 1)
+  expect_equal(standardize_test(col = 2)$col, 2)
 
-  harmonize_test <- \(x, col = 2, ...) harmonizer:::get_dots(harmonize_options
+  standardize_test <- \(x, col = 2, ...) nstandr:::get_dots(standardize_options
                                    , search_calls_with_formals = c("x", "...")
                                    , search_depth = 5L
-                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , search_up_to_call = c("standardize", "nstandr::standardize")
                                    , skip_checks_for_parent_call = FALSE)
 
-  expect_equal(harmonize_test()$col, 2)
-  expect_equal(harmonize_test(col = 3)$col, 3)
+  expect_equal(standardize_test()$col, 2)
+  expect_equal(standardize_test(col = 3)$col, 3)
 
   ## Condkitioning on checking arguments (formals) in calls 
 
   ## should not update defauls (with skip_checks_for_parent_call = TRUE)
-  harmonize_test_1 <- \() harmonizer:::get_dots(harmonize_options
+  standardize_test_1 <- \() nstandr:::get_dots(standardize_options
                                    , search_calls_with_formals = c("x", "...")
                                    , search_depth = 5L
-                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , search_up_to_call = c("standardize", "nstandr::standardize")
                                    , skip_checks_for_parent_call = FALSE)
-  harmonize_test_2 <- \(x, col = 123) harmonize_test_1()
-  expect_equal(harmonize_test_2()$col, 1)
+  standardize_test_2 <- \(x, col = 123) standardize_test_1()
+  expect_equal(standardize_test_2()$col, 1)
 
-  harmonize_test_1 <- \() harmonizer:::get_dots(harmonize_options
+  standardize_test_1 <- \() nstandr:::get_dots(standardize_options
                                    , search_calls_with_formals = c("x", "...")
                                    , search_depth = 5L
-                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , search_up_to_call = c("standardize", "nstandr::standardize")
                                    , skip_checks_for_parent_call = FALSE)
-  harmonize_test_2 <- \(col = 123, ...) harmonize_test_1()
-  expect_equal(harmonize_test_2()$col, 1)
+  standardize_test_2 <- \(col = 123, ...) standardize_test_1()
+  expect_equal(standardize_test_2()$col, 1)
 
 
   ## should not update defauls (with skip_checks_for_parent_call = FALSE)
-  harmonize_test <- \(x, col = 123) harmonizer:::get_dots(harmonize_options
+  standardize_test <- \(x, col = 123) nstandr:::get_dots(standardize_options
                                    , search_calls_with_formals = c("x", "...")
                                    , search_depth = 5L
-                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , search_up_to_call = c("standardize", "nstandr::standardize")
                                    , skip_checks_for_parent_call = FALSE)
-  expect_equal(harmonize_test()$col, 1)
+  expect_equal(standardize_test()$col, 1)
 
-  harmonize_test <- \(col = 123, ...) harmonizer:::get_dots(harmonize_options
+  standardize_test <- \(col = 123, ...) nstandr:::get_dots(standardize_options
                                    , search_calls_with_formals = c("x", "...")
                                    , search_depth = 5L
-                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , search_up_to_call = c("standardize", "nstandr::standardize")
                                    , skip_checks_for_parent_call = FALSE)
-  expect_equal(harmonize_test()$col, 1)
+  expect_equal(standardize_test()$col, 1)
 
 
 
 
   ## should update defauls
-  harmonize_test <- \(x, col = 123, ...) {
-      harmonize_ <- \(x, ...) harmonizer:::get_dots(harmonize_options
+  standardize_test <- \(x, col = 123, ...) {
+      standardize_ <- \(x, ...) nstandr:::get_dots(standardize_options
                                    , search_calls_with_formals = c("x", "...")
                                    , search_depth = 5L
-                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , search_up_to_call = c("standardize", "nstandr::standardize")
                                    , skip_checks_for_parent_call = FALSE)
-      harmonize_() 
+      standardize_() 
   }
-  expect_equal(harmonize_test()$col, 123)
+  expect_equal(standardize_test()$col, 123)
 
   ## should not update defauls
-  harmonize_test <- \(x, col = 123, ...) {
-      harmonize <- \(x, ...) harmonizer:::get_dots(harmonize_options
+  standardize_test <- \(x, col = 123, ...) {
+      standardize <- \(x, ...) nstandr:::get_dots(standardize_options
                                    , search_calls_with_formals = c("x", "...")
                                    , search_depth = 5L
-                                   , search_up_to_call = c("harmonize", "harmonizer::harmonize")
+                                   , search_up_to_call = c("standardize", "nstandr::standardize")
                                    , skip_checks_for_parent_call = FALSE)
-      harmonize() 
+      standardize() 
   }
-  expect_equal(harmonize_test()$col, 1)
+  expect_equal(standardize_test()$col, 1)
 #+END_SRC
 
 *** get_vector
@@ -2390,7 +2390,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_get_vector.r
-  get_vector <- harmonizer:::get_vector
+  get_vector <- nstandr:::get_vector
 
   ## missing col
   expect_error(get_vector(c("a", "b", "c")))
@@ -2512,8 +2512,8 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
                             , x_names = NULL
                             , return_docs = FALSE) {
       checkmate::assert_flag(return_docs)
-      procedure_index <- get0("harmonizer_harmonize_procedure_index", envir = parent.frame())
-      procedure_name <- get0("harmonizer_harmonize_procedure_name", envir = parent.frame())
+      procedure_index <- get0("nstandr_standardize_procedure_index", envir = parent.frame())
+      procedure_name <- get0("nstandr_standardize_procedure_name", envir = parent.frame())
       replacements_list <- list(
           "procedure_index" = list(
               doc = "replace '{procedure_index}' with a number of current standardization procedure is in the list of procedures"
@@ -2691,17 +2691,17 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 #+END_SRC
 
 #+BEGIN_SRC R :tangle R/0_handel_target.r
-  ##' Gets a target vector to harmonize.
+  ##' Gets a target vector to standardize.
   ##'
   ##' @param x  Input data. Can be vector, data.frame or a data.table
   ##' @param return_null_for_new_col Return NULL if target in not yet created (inset)
   ##' @return A vector. Factors in imput `data` are converted to string.
-  ##' @inheritDotParams harmonize_options
+  ##' @inheritDotParams standardize_options
   get_target <- function(x, return_null_for_new_col = FALSE, ...) {
       if(is.null(x)) return(NULL)
-      with(dots <- get_harmonize_options(), {
+      with(dots <- get_standardize_options(), {
           ## check arguments
-          check_harmonize_options(dots, x)
+          check_standardize_options(dots, x)
           x_names <- if (is.atomic(x)) x_atomic_name else names(x)
           col <- infer_moving_target_from_names(x_names
                                               , col
@@ -2719,7 +2719,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##' Insets target vector back to input object (`x`)
   ##' 
   ##' @param vector Character vector to inset into the `x` object
-  ##' @param x Data to harmonize. Character vector or data.frame or
+  ##' @param x Data to standardize. Character vector or data.frame or
   ##'     data.table
   ##' @param omitted_rows_value_for_new_col Alternative value
   ##'     `omitted_rows_value` to use in case we create new column in
@@ -2732,7 +2732,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##' @param return_only_target_col If toggled to TRUE then only return
   ##'     the vector to be inset (output_placement argument is ignored)
   ##' @return Data.table or character vector
-  ##' @inheritDotParams harmonize_options
+  ##' @inheritDotParams standardize_options
   inset_target <- function(vector, x
                          , omitted_rows_value_for_new_col = NULL
                          , allow_na_in_vector = TRUE
@@ -2742,9 +2742,9 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
       checkmate::assert_flag(allow_na_in_vector)
       checkmate::assert_flag(return_only_target_col)
       vector <- defactor_vector(vector)
-      with(dots <- get_harmonize_options(), {
-          ## check harmonize_options
-          check_harmonize_options(dots, x)
+      with(dots <- get_standardize_options(), {
+          ## check standardize_options
+          check_standardize_options(dots, x)
           assertion_fails <- checkmate::makeAssertCollection()
           ## -----
           ## inset omitted_rows_value if needed
@@ -2856,7 +2856,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 
 Tests:
 #+BEGIN_SRC R :tangle inst/tinytest/test_replace_fixed_if_string.r
-  replace_fixed_if_string <- harmonizer:::replace_fixed_if_string
+  replace_fixed_if_string <- nstandr:::replace_fixed_if_string
 
   a <- NA
   expect_equal(replace_fixed_if_string(a, "df_a_sd"), "")
@@ -2868,7 +2868,7 @@ Tests:
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_make_indexed_col_name.r
-  make_indexed_col_name <- harmonizer:::make_indexed_col_name
+  make_indexed_col_name <- nstandr:::make_indexed_col_name
 
   expect_equal(make_indexed_col_name("a"), "a")
 
@@ -2884,7 +2884,7 @@ Tests:
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_format_col_name.r
-  format_col_name <- harmonizer:::format_col_name
+  format_col_name <- nstandr:::format_col_name
 
   ## format_col_name(return_docs = TRUE)
 
@@ -2910,8 +2910,8 @@ Tests:
              , "lala_a_42")
 
   expect_equal({
-      harmonizer_harmonize_procedure_index <- 6
-      harmonizer_harmonize_procedure_name <- "nber_replacement"
+      nstandr_standardize_procedure_index <- 6
+      nstandr_standardize_procedure_name <- "nber_replacement"
       "{col_name_}harmonizing{_procedure_index}" |>
           paste0("{_procedure_name}") |>
           format_col_name("col")
@@ -2921,7 +2921,7 @@ Tests:
  #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_infer_moving_target_from_names.r
-  infer_moving_target_from_names <- harmonizer:::infer_moving_target_from_names
+  infer_moving_target_from_names <- nstandr:::infer_moving_target_from_names
 
   expect_equal(infer_moving_target_from_names(x_names = c("x", "std_x")
                                             , col = 1
@@ -2949,7 +2949,7 @@ Tests:
 #+BEGIN_SRC R :tangle inst/tinytest/test_get_target.r
   require("data.table")
 
-  get_target <- harmonizer:::get_target
+  get_target <- nstandr:::get_target
 
   expect_equal(
       data.table(x.pro.30 = list(c(1,2,3,4), 2,3,4)
@@ -2986,7 +2986,7 @@ Tests:
 
 
   expect_equal(
-  data.frame(x_harmonized = c(1,2,3,4)
+  data.frame(x_standardized = c(1,2,3,4)
                , x = c("7","8","9","a")) |>
       get_target(col = 1
                , rows = c(T,T,F,T)
@@ -3034,7 +3034,7 @@ Tests:
 #+BEGIN_SRC R :tangle inst/tinytest/test_inset_target.r
   require("data.table")
 
-  inset_target <- harmonizer:::inset_target
+  inset_target <- nstandr:::inset_target
 
 
   ## test vectors
@@ -3239,7 +3239,7 @@ Tests:
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_inset_formals.r
-  inset_formals <- harmonizer:::inset_formals
+  inset_formals <- nstandr:::inset_formals
 
   expect_equal(inset_formals(formals(mean), alist(x = something_unevaluated))
              , alist(x = something_unevaluated, ... = ))
@@ -3247,7 +3247,7 @@ Tests:
 
 
 ** replace and detect functions
-*** harmonize_escape_regex
+*** standardize_escape_regex
 :PROPERTIES:
 :ID:       org:uj31f8s0lei0
 :END:
@@ -3364,7 +3364,7 @@ Tests:
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_escape_regex_for_types.r
-  escape_regex_for_types <- harmonizer:::escape_regex_for_types
+  escape_regex_for_types <- nstandr:::escape_regex_for_types
 
   expect_equal(
       c("MSlab$", "TriloBit.?", "(^0-3)", "Ltd.", "lalala") |>
@@ -3442,7 +3442,7 @@ Tests:
   ##' Optionally matches only at the beginning or at the end of the
   ##' string.
   ##' 
-  ##' @param x Vector or table to harmonize.
+  ##' @param x Vector or table to standardize.
   ##' @param patterns Accepts both vector or table. If patterns is a
   ##'     table can also include replacements column.
   ##' @param patterns_col If patterns is not a vector which column to
@@ -3466,10 +3466,10 @@ Tests:
   ##'     replacements. Default is 2.
   ##' @param replacements If patterns does not have column with
   ##'     replacements provide it here.
-  ##' @inheritDotParams harmonize_options
+  ##' @inheritDotParams standardize_options
   ##'
   ##' @return If nothing was indicated to cbind to results then it
-  ##'     returns harmonized vector. If something is needs to be cbind
+  ##'     returns standardized vector. If something is needs to be cbind
   ##'     then it returns data.table
   ##' @export
   replace_patterns <- function(x
@@ -3694,7 +3694,7 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
   #' @param return_only_codes If toggled on then just return codes vector.
   #' @param return_only_first_detected_code If TRUE then return only codes for the first detected pattern. If FALSE return list of all matched codes. Default is TRUE. (Currently does affect performance)
   #' @param return_merge_codes_description Return description of choices for `merge_existing_codes` paramenter.
-  #' @inheritDotParams harmonize_options
+  #' @inheritDotParams standardize_options
   #' 
   #' @return The updated `x` table with codes column or just codes if `return_only_codes` is set.
   #'
@@ -3738,7 +3738,7 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
                            , output_col_name = output_codes_col_name
                            , output_placement = "append_to_x"
                            , return_null_for_new_col = TRUE) |>
-              harmonize_is_data_empty() |>
+              standardize_is_data_empty() |>
               and_rows(rows, x)
       }
       ## --------------------------------------------------------------------------------
@@ -3776,7 +3776,7 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
                , SIMPLIFY = FALSE
                , USE.NAMES = FALSE) |>
           transpose_list_of_vectors() |>
-          lapply(harmonize_omit_empty)
+          lapply(standardize_omit_empty)
       ## code unmached records if needed
       if(!is.null(no_match_code)) {
           x_inset_vector <- 
@@ -4173,38 +4173,38 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
 
 #+END_SRC
 
-** harmonize
+** standardize
 
 :PROPERTIES:
 :ID:       org:ifb5ac70uai0
 :END:
 
-The default harmonization procedures are the following (for now):
+The default standardization procedures are the following (for now):
 
-#+NAME: harmonizer_default_procedures_table
+#+NAME: nstandr_default_procedures_table
 | no | message                            | function.call                                    |
 |----+------------------------------------+--------------------------------------------------|
 |    | *Prepossessing*                    |                                                  |
-|  1 | Cleaning spaces                    | 'harmonize_squish_spaces', wrap_in_spaces = TRUE |
+|  1 | Cleaning spaces                    | 'standardize_squish_spaces', wrap_in_spaces = TRUE |
 |    |                                    |                                                  |
 |    | *Characters*                       |                                                  |
-|  2 | Removing HTML codes                | 'harmonize_dehtmlize'                            |
-|  3 | Translating non-ASCII to ASCII     | 'harmonize_toascii'                              |
-|  4 | Upper casing                       | 'harmonize_toupper'                              |
+|  2 | Removing HTML codes                | 'standardize_dehtmlize'                          |
+|  3 | Translating non-ASCII to ASCII     | 'standardize_toascii'                            |
+|  4 | Upper casing                       | 'standardize_toupper'                            |
 |    |                                    |                                                  |
 |    | *Cleaning*                         |                                                  |
 |  5 | Standardizing organizational names | 'cockburn_replace_punctuation'                   |
-|  6 | Removing brackets                  | 'harmonize_remove_brackets'                      |
-|  7 | Cleaning spaces                    | 'harmonize_squish_spaces'                        |
+|  6 | Removing brackets                  | 'standardize_remove_brackets'                    |
+|  7 | Cleaning spaces                    | 'standardize_squish_spaces'                      |
 
-#+call: make-rds-patterns-table(data = harmonizer_default_procedures_table, data.name = "harmonizer_default_procedures_table", remove.single.quotes = "FALSE", data.dir = "data", add.to.rda = "R/sysdata.rda")
+#+call: make-rds-patterns-table(data = nstandr_default_procedures_table, data.name = "nstandr_default_procedures_table", remove.single.quotes = "FALSE", data.dir = "data", add.to.rda = "R/sysdata.rda")
 
 
-#+BEGIN_SRC R :tangle R/harmonizer.r
-  ##' Harmonizes organizational names. Takes either vector or column in the table.
+#+BEGIN_SRC R :tangle R/nstandr.r
+  ##' Standardizes organizational names. Takes either vector or column in the table.
   ##' 
   ##' @param x object (table)
-  ##' @param procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `harmonize_make_procedures_list` (see its help for the correct format of data.frame with procedures). Default is `harmonizer_default_procedures_table`
+  ##' @param procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `standardize_make_procedures_list` (see its help for the correct format of data.frame with procedures). Default is `nstandr_default_procedures_table`
   ##' @param show_progress Whether to report progress percentage. Default is TRUE
   ##' @param nrows_min_to_show_progress The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5
   ##' @param progress_step_nrows If set it will divide the x into chunk of this amount of rows. Default is NULL.
@@ -4212,13 +4212,13 @@ The default harmonization procedures are the following (for now):
   ##' @param progress_message_use_names Should we use names from `procedures` list to report progress. Default is TRUE.
   ##' @param quite Suppress all messages. Default is FALSE.
   ##' @param save_intermediate_x_to_var For debuging of standartization procedures. Saves intermediate results to this variable. If procedures finish without errors then the variable will be removed.
-  ##' @inheritDotParams harmonize_options
+  ##' @inheritDotParams standardize_options
   ##' 
-  ##' @return harmonized data
+  ##' @return standardized data
   ##'
   ##' @export
-  harmonize <- function(x
-                      , procedures = harmonizer_default_procedures_table
+  standardize <- function(x
+                      , procedures = nstandr_default_procedures_table
                       , show_progress = TRUE
                       , nrows_min_to_show_progress = 10^5
                       , progress_step_nrows = NULL
@@ -4233,15 +4233,15 @@ The default harmonization procedures are the following (for now):
       checkmate::assert_flag(progress_message_use_names)
       checkmate::assert_multi_class(procedures, classes = c("list", "data.frame"))
       if(is.data.frame(procedures)) {
-          procedures <- harmonize_make_procedures_list(procedures)
+          procedures <- standardize_make_procedures_list(procedures)
       }
       ## make format of the massages for procedures
       message_delimiter <- paste(c("\n", rep("-", 65), "\n"), collapse = "")
-      message_init <- paste0("\nApplying harmonization procedures:", message_delimiter)
+      message_init <- paste0("\nApplying standardization procedures:", message_delimiter)
       message_done  <- "\b\b\b\bDONE"
       progress_format <- "\b\b\b\b%3.0f%%"
       message_format <- "* %-60.60s...."
-      message_fin <- paste0(message_delimiter, "Harmonization is done!\n")
+      message_fin <- paste0(message_delimiter, "Standardization is done!\n")
       ## ensure that x is either vector or data.table
       if(missing(x)) return(NULL)
       checkmate::assert_multi_class(x
@@ -4280,7 +4280,7 @@ The default harmonization procedures are the following (for now):
           ]
           ## get procedure names
           procedure_name <- 
-              if(harmonize_is_data_empty(names(procedures)[p]) | !progress_message_use_names) {
+              if(standardize_is_data_empty(names(procedures)[p]) | !progress_message_use_names) {
                   procedure_fun
               } else {
                   names(procedures)[p]
@@ -4295,7 +4295,7 @@ The default harmonization procedures are the following (for now):
              !isFALSE(procedures[[p]]["show_progress"][[TRUE]])) {
               ## check if we need to split..
               if(!isTRUE(class(x) == "list")) {
-                  x <- harmonize_x_split(x, progress_step_nrows)
+                  x <- standardize_x_split(x, progress_step_nrows)
               }
               ## set progress counter
               i <- 0; env <- environment()
@@ -4348,7 +4348,7 @@ The default harmonization procedures are the following (for now):
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_standardize.r
   dummy <- function(x, n) {
       for(i in 1:n) x <- sqrt(x)^2
       return(x)
@@ -4357,7 +4357,7 @@ The default harmonization procedures are the following (for now):
   ## note that do.call is not able to find functions by name so one need to pass it as a lambda
 
   expect_equal(
-      harmonize(as.numeric(1:10^2)
+      standardize(as.numeric(1:10^2)
               , procedures =
                     list("Squaring stuff" = "sqrt"
                         ,list("abs", show_progress = FALSE)
@@ -4423,7 +4423,7 @@ The default harmonization procedures are the following (for now):
                , "Lhasa Limited"
                , "rose plastic USA, LLLP"
                , "a;sdkfjsdlkfj;laswee\'\" asdf Co.") |>
-               harmonize(quite = TRUE)
+               standardize(quite = TRUE)
              , c("ZYONG AACEIA U OU INT LTD & CO", "THE & COMP COMPANY IOTTA", 
                  "TEMPSHIELD CRYO PROTECTION", "ABCDEACOAUU", "POLGEN SP Z OO SP K", 
                  "POLGEN SP Z OO SP K", "JEROME", "CONTROLLED ENVIRONMENTS MAGAZINE", 
@@ -4439,11 +4439,11 @@ The default harmonization procedures are the following (for now):
 
 #+END_SRC
 
-* Magerman, et al. (2006) - Harmonization Procedure
+* Magerman, et al. (2006) - Standardization Procedure
 
 Notes:
 [[id:org:zy6j0m20vai0][Magerman, Van Looy & Song, 2006 - Name harmonisation]]
-# Pdf: [[zotero://select/items/1_IT9A958K][Magerman et al., 2006 - Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization]]
+# Pdf: [[zotero://select/items/1_IT9A958K][Magerman et al., 2006 - Data Production Methods for Harmonized Patent Statistics: Patentee Name Standardization]]
 
 direct link:
 [[file:C:\Users\svlasov\Zotero\storage\PHAJ4WAB\Magerman et al. - 2006 - Data Production Methods for Harmonized Patent Stat.pdf]]
@@ -4471,8 +4471,8 @@ The function below can be used to detect candidates for characters that need to 
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_detect_characters, "@title")
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -4515,8 +4515,8 @@ The function below can be used to detect candidates for characters that need to 
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_remove_html_codes, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -4560,8 +4560,8 @@ Table 7: SGML codes and their ASCII/ANSI equivalent
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_replace_sgml_characters, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -4629,8 +4629,8 @@ Table 8: Proprietary character codes and their ASCII/ANSI equivalent
 
   ##' @eval attr(magerman_replace_proprietary_characters, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -4691,8 +4691,8 @@ Table 9: Accented characters and their unaccented equivalent
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_replace_accented_characters, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -4728,8 +4728,8 @@ Here one probably need to add smart quotes as well...
   ##' @description Removes everything that is not: A-Z; 0-9; “-“; “+”; “’”; “””; “#”;
   ##' “*”;“@”; “!”; “?”; “/”; “&”; “(“; “)”; “:”; “;”; “,”; “.”; “ “
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -4762,8 +4762,8 @@ Here one probably need to add smart quotes as well...
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_remove_double_spaces, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -4791,8 +4791,8 @@ Here one probably need to add smart quotes as well...
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_remove_double_quotation_marks_irregularities, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -4819,8 +4819,8 @@ Here one probably need to add smart quotes as well...
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_remove_double_quotation_marks_beginning_end, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -4851,8 +4851,8 @@ Here one probably need to add smart quotes as well...
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_remove_non_alphanumeric_at_the_beginning, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -4868,8 +4868,8 @@ Here one probably need to add smart quotes as well...
 
   ##' @eval attr(magerman_remove_non_alphanumeric_at_the_end, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -4919,8 +4919,8 @@ The function below is the generalization for replacement of the above punctuatio
 
   ##' @eval attr(magerman_detect_comma_period_irregularities, "@title")
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -4942,8 +4942,8 @@ The function below is the generalization for replacement of the above punctuatio
 
   ##' @eval attr(magerman_replace_comma_period_irregularities_all, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -5037,8 +5037,8 @@ Table 12: Patterns with period not preceded by a letter or digit
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_replace_comma_period_irregularities, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -6209,7 +6209,7 @@ Appendix 2: All search and replace statements for all legal forms to be removed 
 
 "In a group, all search and replace statements are executed in a singular and not a cumulative approach.
 
-If a name contains a legal form indication at the beginning and the end of a name, or anywhere in the name, only the legal form indication occurring at the end of the name is harmonized and moved to a different field.
+If a name contains a legal form indication at the beginning and the end of a name, or anywhere in the name, only the legal form indication occurring at the end of the name is standardized and moved to a different field.
 
 As the replacements and removals in the search and replace statements can lead to names ending with irregular punctuation characters, all occurrences of “-”; “;“; “:”; “,” and “&” are removed at the end of a name by executing an update query on the data.
 
@@ -6218,8 +6218,8 @@ plus trim..."
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_detect_legal_form_end, "@title")
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -6246,8 +6246,8 @@ plus trim..."
 
   ##' @eval attr(magerman_replace_legal_form_end, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -6267,8 +6267,8 @@ plus trim..."
 
   ##' @eval attr(magerman_detect_legal_form_beginning, "@title")
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -6293,8 +6293,8 @@ plus trim..."
 
   ##' @eval attr(magerman_replace_legal_form_beginning, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -6315,8 +6315,8 @@ plus trim..."
 
   ##' @eval attr(magerman_detect_legal_form_middle, "@title")
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -6338,8 +6338,8 @@ plus trim..."
 
   ##' @eval attr(magerman_replace_legal_form_middle, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -6356,8 +6356,8 @@ plus trim..."
 
   ##' @eval attr(magerman_detect_legal_form, "@title")
   ##' @param x table
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##'
   ##' @export
   magerman_detect_legal_form <- function(x, ...) {
@@ -6373,8 +6373,8 @@ plus trim..."
 
   ##' @eval attr(magerman_remove_legal_form, "@title")
   ##' @param x table
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##'
   ##' @export
   magerman_remove_legal_form <- function(x, ...) {
@@ -6396,8 +6396,8 @@ plus trim..."
 
   ##' @eval attr(magerman_remove_legal_form_and_clean, "@title")
   ##' @param x table
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' 
   ##' @export
   magerman_remove_legal_form_and_clean <- function(x, ...) {
@@ -6638,8 +6638,8 @@ Table 21: Common company words to be removed anywhere in a name
 
   ##' @eval attr(magerman_remove_common_words_at_the_end, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -6656,8 +6656,8 @@ Table 21: Common company words to be removed anywhere in a name
 
   ##' @eval attr(magerman_remove_common_words_at_the_beginning, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -6675,8 +6675,8 @@ Table 21: Common company words to be removed anywhere in a name
 
   ##' @eval attr(magerman_remove_common_words_anywhere, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -6692,8 +6692,8 @@ Table 21: Common company words to be removed anywhere in a name
 
   ##' @eval attr(magerman_remove_common_words, "@title")
   ##' @param x table
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##'
   ##' @md
   ##' @export
@@ -6725,7 +6725,7 @@ Table 21: Common company words to be removed anywhere in a name
 :ID:       org:dcijzmx01ei0
 :END:
 
-Table 22: Spelling variations and their harmonized equivalent
+Table 22: Spelling variations and their standardized equivalent
 #+NAME: magerman_patterns_spelling_variation
 | KEYWORD          | REMARKS         |
 |------------------+-----------------|
@@ -6761,8 +6761,8 @@ Table 22: Spelling variations and their harmonized equivalent
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_replace_spelling_variation, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -6792,8 +6792,8 @@ Table 22: Spelling variations and their harmonized equivalent
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_condense, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -6819,7 +6819,7 @@ Table 22: Spelling variations and their harmonized equivalent
 
 
 
-** Umlaut Harmonization
+** Umlaut Standardization
 :PROPERTIES:
 :ID:       org:6lo7ug60gei0
 :END:
@@ -6832,9 +6832,9 @@ Next, all occurrences of “A”, “O” and “U” are ag ain replaced with �
 
 Next, all names originally containing an umlaut are marked by executing an update query on the data.
 
-Next, all names having a preliminary umlaut harmonized name (first removing “E” and next adding “E” from and to “A”, “O” and “U”) that is equal to a preliminary umlaut harmonized name marked in the previous step as a name originally containing an umlaut are also marked by executing an update query on the data.
+Next, all names having a preliminary umlaut standardized name (first removing “E” and next adding “E” from and to “A”, “O” and “U”) that is equal to a preliminary umlaut standardized name marked in the previous step as a name originally containing an umlaut are also marked by executing an update query on the data.
 
-Finally, all preliminary umlaut harmonized names not marked in the previous two steps are reverted to the previous cleaned name after condensing by executing an update query on the data.
+Finally, all preliminary umlaut standardized names not marked in the previous two steps are reverted to the previous cleaned name after condensing by executing an update query on the data.
 
 p. 44
 
@@ -6859,8 +6859,8 @@ p. 44
 
   ##' @eval attr(magerman_detect_umlaut, "@title")
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -6884,8 +6884,8 @@ p. 44
   ##' @param has_umlaut_col Column with logical values indicating weather a corresponding string has an umlaut. Default is NULL so it detects is automatically first
   ##' @param drop_has_umlaut_col Whether to drop `has_umlaut_col`. Default is FALSE
   ##' @param replace_accented_characters Whether to replace accented characters first. Default is FALSE
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##'
   ##' @md
   ##' @export
@@ -6913,7 +6913,7 @@ p. 44
               do.call(magerman_detect_umlaut
                     , c(list(x_vector)
                       , list(return_only_codes = TRUE)
-                      , formals("harmonize_options"))) |>
+                      , formals("standardize_options"))) |>
               as.logical()
       }
       ## replace accented characters
@@ -6921,36 +6921,36 @@ p. 44
           ## do magerman_replace_accented_characters with defauls
           x_vector <-
               do.call(magerman_replace_accented_characters
-                    , c(list(x_vector), formals("harmonize_options")))
+                    , c(list(x_vector), formals("standardize_options")))
       }
       ## check if there are at least some umlauts
       if (any(has_umlaut)) {
           ## transform umlaut
           ## first "AE", "OE", "UE" -> "A", "O", "U"
-          x_harmonized <- 
+          x_standardized <- 
               do.call(replace_patterns
                     , c(list(x_vector)
-                      , formals("harmonize_options")
+                      , formals("standardize_options")
                       , list(patterns = magerman_patterns_umlaut
                            , patterns_col = 3
                            , patterns_replacements_col = 2)))
           ## then "A", "O", "U" -> "AE", "OE", "UE"
-          x_harmonized <- 
+          x_standardized <- 
               do.call(replace_patterns
-                    , c(list(x_harmonized)
-                      , formals("harmonize_options")
+                    , c(list(x_standardized)
+                      , formals("standardize_options")
                       , list(patterns = magerman_patterns_umlaut
                             , patterns_col = 2
                            , patterns_replacements_col = 3)))
           ## check which one match original umlaut
-          x_harmonized_keep <-
-              x_harmonized %in%
-              x_harmonized[sapply(has_umlaut, isTRUE)]
+          x_standardized_keep <-
+              x_standardized %in%
+              x_standardized[sapply(has_umlaut, isTRUE)]
           ## if does not match umlaut replace with original
-          x_harmonized[!x_harmonized_keep] <-
-              x_vector[!x_harmonized_keep]
+          x_standardized[!x_standardized_keep] <-
+              x_vector[!x_standardized_keep]
           ## return table
-          return(inset_target(x_harmonized, x))
+          return(inset_target(x_standardized, x))
       } else {
           return(inset_target(x_vector, x))
       }
@@ -7075,16 +7075,16 @@ p. 44
 |----+------------------------------------------+---------------------------------------------------------------------------------|
 |    |                                          |                                                                                 |
 |    | *Prepossessing*                          |                                                                                 |
-|  1 | Upper casing                             | 'harmonize_toupper'                                                             |
-|  2 | Cleaning spaces                          | 'harmonize_squish_spaces'                                                       |
+|  1 | Upper casing                             | 'standardize_toupper'                                                           |
+|  2 | Cleaning spaces                          | 'standardize_squish_spaces'                                                     |
 |    |                                          |                                                                                 |
 |    | *Characters*                             |                                                                                 |
 |  3 | Removing HTML codes                      | 'magerman_remove_html_codes'                                                    |
-|  4 | Cleaning spaces (2)                      | 'harmonize_squish_spaces'                                                       |
+|  4 | Cleaning spaces (2)                      | 'standardize_squish_spaces'                                                     |
 |  5 | Replacing SGML coded characters          | 'magerman_replace_sgml_characters'                                              |
 |  6 | Replacing proprietary characters         | 'magerman_replace_proprietary_characters'                                       |
 |  7 | Detecting Umlauts                        | 'magerman_detect_umlaut', output_codes_col_name = 'magerman_umlaut'                    |
-|    |                                          | /The above sets code names with umlaut for umlaut harmonization later/          |
+|    |                                          | /The above sets code names with umlaut for umlaut standardization later/        |
 |  8 | Replacing accented characters            | 'magerman_replace_accented_characters'                                          |
 |    |                                          |                                                                                 |
 |    | *Punctuation*                            |                                                                                 |
@@ -7104,7 +7104,7 @@ p. 44
 | 18 | Fixing spelling variations               | 'magerman_replace_spelling_variation'                                           |
 | 19 | Condensing                               | 'magerman_condense'                                                             |
 |    |                                          |                                                                                 |
-|    | *Umlaut harmonization*                   |                                                                                 |
+|    | *Umlaut standardization*                 |                                                                                 |
 | 20 | Fixing umlaut variations                 | 'magerman_replace_umlaut', has_umlaut_col = 'magerman_umlaut', progress = FALSE |
 |    |                                          | /the above procedure wont work properly for batches/                            |
 |    |                                          | /because it need to look up matches in the whole corpus/                        |
@@ -7116,18 +7116,18 @@ p. 44
 
 
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' Harmonizes strings using exact procedures described in Magerman et al. 2009.
+  ##' Standardizes strings using exact procedures described in Magerman et al. 2009.
   ##' @param x table or vector
   ##' @param detect_legal_form Whether to detect legal forms. Default is FALSE
-  ##' @param append_output_copy_before_common_words_removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
-  ##' @inheritDotParams harmonize
-  ##' @return Harmonized table
+  ##' @param append_output_copy_before_common_words_removal Whether to save standardized column before `common.words.removal` procedure. Default is FALSE
+  ##' @inheritDotParams standardize
+  ##' @return standardized names table
   ##'
-  ##' @references Magerman et al., 2006 - Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization
+  ##' @references Magerman et al., 2006 - Data Production Methods for Harmonized Patent Statistics: Patentee Name Standardization
   ##'
   ##' @md
   ##' @export
-  harmonize_magerman <- function(x
+  standardize_magerman <- function(x
                                , detect_legal_form = FALSE
                                , append_output_copy_before_common_words_removal = FALSE
                                , ...) {
@@ -7150,14 +7150,14 @@ p. 44
               , list(append_output_copy = TRUE
                    , output_copy_col_name = "{col_name_}before_common_words_removal"))
       }
-      harmonize(x, magerman_procedures, ...)
+      standardize(x, magerman_procedures, ...)
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_magerman.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_standardize_magerman.r
 
-  ## Test with return magerman_procedures in harmonize_magerman
-  harmonize_magerman()
+  ## Test with return magerman_procedures in standardize_magerman
+  standardize_magerman()
 
 
   ## Test
@@ -7170,7 +7170,7 @@ p. 44
                               rep(20) |>
                               toupper()
                         , foo = "I love coffee" ) |>
-               harmonize_magerman(nrows_min_to_show_progress = 50
+               standardize_magerman(nrows_min_to_show_progress = 50
                                 , show_progress = TRUE
                                 , detect_legal_form = FALSE
                                 , quite = TRUE)
@@ -7193,7 +7193,7 @@ p. 44
                               rep(10) |>
                               toupper()
                         , foo = "I love coffee" ) |>
-               harmonize_magerman(nrows_min_to_show_progress = 50
+               standardize_magerman(nrows_min_to_show_progress = 50
                                 , show_progress = TRUE
                                 , append_output_copy_before_common_words_removal = TRUE
                                 , detect_legal_form = FALSE
@@ -7224,7 +7224,7 @@ p. 44
                                  , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |>
                               rep(10) |>
                               toupper()) |>
-               harmonize_magerman(col = 2
+               standardize_magerman(col = 2
                                 , nrows_min_to_show_progress = 50
                                 , show_progress = TRUE
                                 , detect_legal_form = FALSE
@@ -7249,7 +7249,7 @@ p. 44
                               rep(10) |>
                               toupper()
                         , foo = "I love coffee" ) |>
-               harmonize_magerman(nrows_min_to_show_progress = 50
+               standardize_magerman(nrows_min_to_show_progress = 50
                                 , show_progress = TRUE
                                 , detect_legal_form = TRUE
                                 , quite = TRUE)
@@ -7318,7 +7318,7 @@ p. 44
                , "SGS-THOMSON MICROELECTRONICS, SA."
                , "SGS-THOMSON MICROELECTRONICS, SRL"
                , "SGS-THOMSON MICROELECTRONICS,S.R.L.") |>
-               harmonize_magerman(quite = TRUE)
+               standardize_magerman(quite = TRUE)
              , rep("SGSTHOMSONMICROELECTRONIC", 52))
 
 
@@ -7374,7 +7374,7 @@ p. 44
                , "E.I.DU PONT DE NEMOURS AND COMPANY"
                , "EI DU PONT DE NEMOURS AND COMPANY"
                , "EI DUPONT DE NEMOURS AND COMPANY") |>
-               harmonize_magerman(quite = TRUE)
+               standardize_magerman(quite = TRUE)
              , rep("EIDUPONTDENEMOURS", 51))
 
   expect_equal(c("Chip &AMP; Dayle (lala) [0x2345] {abs} ops html <br>"
@@ -7390,7 +7390,7 @@ p. 44
                , "MSlab ,INC. ,LTD"
                , "CHEMICALS SYSTEMEN MSlab Ltd."
                , "MSLab CÖ.") |>
-               harmonize_magerman(quite = TRUE)
+               standardize_magerman(quite = TRUE)
              , c("CHIPDAYLELALA0X2345ABSOPSHTML", "O02937LKJFASLDJFUSDLFKJHHHHLASKDJF", 
                  "OESDLFKJHHHHLASKDJF", "YAEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYAEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY", 
                  "LKDF092834", "ASTRINGWITHMANYDOUPLESPACES", "MERRYCRISTMASLOVE", 
@@ -7400,7 +7400,7 @@ p. 44
 #+END_SRC
 
 
-* Cockburn, et al. (2009) - Harmonization Procedure
+* Cockburn, et al. (2009) - Standardization Procedure
 ** Utils
 *** cockburn_combabbrev
 :PROPERTIES:
@@ -7412,8 +7412,8 @@ p. 44
   ##'
   ##' @param x Object (table or vector)
   ##' @param wrap_in_spaces Whether to wrap strings in spaces before processing because the algorithm assumes assumes that each string begins and ends with space. Default is TRUE.
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' 
   ##' @md 
   ##' @export 
@@ -7517,8 +7517,8 @@ Implementation of derwent_standardisation_BHH.do from https://sites.google.com/s
   ##'     (2009), The NBER Patent Citations Datafile Update. It differs
   ##'     from original dervert standartization
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -8276,8 +8276,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 #+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_replace_compustat, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -8293,8 +8293,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 
   ##' @eval attr(cockburn_replace_compustat_names, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -8319,7 +8319,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 #+END_SRC
 
 **** Table: Compustat Standartization
-- pattern type :: fixed (see doc for harmonize.replace)
+- pattern type :: fixed (see doc for standardize.replace)
 
 #+call: make-rds-patterns-table(data = cockburn_patterns_compustat, data.name = "cockburn_patterns_compustat")
 #+NAME: cockburn_patterns_compustat
@@ -8569,7 +8569,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 | ' WTR '                                        | ' WATER '              |
 
 **** Table: Compustat Standartization Names
-- pattern type :: trim.exact (see doc for harmonize.replace)
+- pattern type :: trim.exact (see doc for standardize.replace)
 
 #+call: make-rds-patterns-table(data = cockburn_patterns_compustat_names, data.name = "cockburn_patterns_compustat_names")
 #+name: cockburn_patterns_compustat_names
@@ -8606,8 +8606,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##'
   ##' @param x vector or table
   ##' @param verbose For debuging. If set will message which procedures were done.
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' 
   ##' @md 
   ##' @export 
@@ -8636,7 +8636,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##'
   ##' @param x vector or table
   ##' @inheritDotParams replace_patterns
-  ##' @return Harmonized table
+  ##' @return standardized names table
   ##' 
   ##' @md 
   ##' @export 
@@ -8754,8 +8754,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @eval attr(cockburn_detect_corp, "@title")
   ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -9666,8 +9666,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @description From non_corporates.do file. Source -
   ##'     https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -9777,8 +9777,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @eval attr(cockburn_detect_govt, "@title")
   ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -9800,8 +9800,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @eval attr(cockburn_replace_govt, "@title")
   ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -9948,8 +9948,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @eval attr(cockburn_detect_univ, "@title")
   ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -9974,8 +9974,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @eval attr(cockburn_replace_univ, "@title")
   ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -10100,8 +10100,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @eval attr(cockburn_detect_inst, "@title")
   ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -10198,8 +10198,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @eval attr(cockburn_detect_inst_conds_1, "@title")
   ##' @description STATA equivalent: replace asstype = "inst" if strpos(standard_name," COUNCIL OF ")>0 & strpos(standard_name," RES ")>0
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -10228,8 +10228,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @param x table. Expected that x has a column with codes for universities
   ##' @param output_codes_col_name column with codes for universities ("univ"). Default is last column of x
   ##' @param merge_existing_codes same as in [detect_patterns()]
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' 
   ##' @md
   ##' @export
@@ -10262,8 +10262,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @param x table. Expected that x has a column with codes for universities
   ##' @param merge_existing_codes same as in [detect_patterns()]
   ##' @param output_codes_col_name column with codes for universities ("univ"). Default is last column of x
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' 
   ##' @md
   ##' @export
@@ -10353,8 +10353,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @param x table
   ##' @param output_codes_col_name same as in [detect_patterns()]
   ##' @param merge_existing_codes same as in [detect_patterns()]
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' 
   ##' @md 
   ##' @export 
@@ -10410,8 +10410,8 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
   ##' @eval attr(cockburn_detect_hosp, "@title")
   ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
   ##' @inherit detect_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso detect_patterns
   ##'
@@ -10514,8 +10514,8 @@ Following funciton removes punctuation and standardise some symbols. Implementat
   ##' Removes punctuation and standardise some symbols. 
   ##'
   ##' @param x object
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' 
   ##' @md
   ##' @export 
@@ -10727,7 +10727,7 @@ ISO8859-1 (AMADEUS)
   ##'
   ##' @param x object
   ##' @inheritDotParams replace_patterns
-  ##' @return Harmonized table
+  ##' @return standardized names table
   ##' 
   ##' @md
   ##' @export 
@@ -10886,8 +10886,8 @@ ISO8859-1 (AMADEUS)
 #+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_remove_standard_names, "@title")
   ##' @inherit replace_patterns params return
-  ##' @inheritDotParams harmonize_options
-  ##' @return Harmonized table
+  ##' @inheritDotParams standardize_options
+  ##' @return standardized names table
   ##' @family magerman
   ##' @seealso replace_patterns
   ##'
@@ -11070,8 +11070,8 @@ creates a name with all legal entity identifiers removed
 #+BEGIN_SRC R :tangle R/cockburn.r
     ##' @eval attr(cockburn_remove_uspto, "@title")
     ##' @inherit replace_patterns params return
-    ##' @inheritDotParams harmonize_options
-    ##' @return Harmonized table
+    ##' @inheritDotParams standardize_options
+    ##' @return standardized names table
     ##' @family magerman
     ##' @seealso replace_patterns
     ##'
@@ -11088,8 +11088,8 @@ creates a name with all legal entity identifiers removed
 
     ##' @eval attr(cockburn_detect_uspto, "@title")
     ##' @inherit detect_patterns params return
-    ##' @inheritDotParams harmonize_options
-    ##' @return Harmonized table
+    ##' @inheritDotParams standardize_options
+    ##' @return standardized names table
     ##' @family magerman
     ##' @seealso detect_patterns
     ##'
@@ -11147,8 +11147,8 @@ basically reproduces the 'main_coname2.do' stata file
 | no | message                                                     | function.call                                    |
 |----+-------------------------------------------------------------+--------------------------------------------------|
 |    | *Prepossessing*                                             |                                                  |
-|  1 | Cleaning spaces                                             | 'harmonize_squish_spaces', wrap_in_spaces = TRUE |
-|  2 | Upper casing                                                | 'harmonize_toupper'                              |
+|  1 | Cleaning spaces                                             | 'standardize_squish_spaces', wrap_in_spaces = TRUE |
+|  2 | Upper casing                                                | 'standardize_toupper'                            |
 |    |                                                             |                                                  |
 |    | *Standartization*                                           |                                                  |
 |  3 | Special removals and recoding for USPTO names               | 'cockburn_detect_uspto'                          |
@@ -11158,32 +11158,32 @@ basically reproduces the 'main_coname2.do' stata file
 |  7 | Cleaning organization type                                  | 'cockburn_replace_type'                          |
 |  8 | Combining single char sequences                             | 'cockburn_combabbrev'                            |
 |  9 | Removal of legal entity identifiers                         | 'cockburn_remove_standard_names'                 |
-| 10 | Cleaning spaces                                             | 'harmonize_squish_spaces'                        |
+| 10 | Cleaning spaces                                             | 'standardize_squish_spaces'                      |
 
 #+call: make-rds-patterns-table(data = cockburn_procedures_table, data.name = "cockburn_procedures_table", remove.single.quotes = "FALSE")
 
 #+call: make-rds-procedures-list(data = cockburn_procedures_table, data.name = "cockburn_procedures_list", remove.single.quotes = "FALSE")
 
 #+BEGIN_SRC R :tangle R/cockburn.r
-  ##' Harmonizes strings using exact procedures described in Cockburn, et al. (2009)
+  ##' Standardizes strings using exact procedures described in Cockburn, et al. (2009)
   ##' @param x table or vector
-  ##' @param cockburn_procedures list of procedures to pass to `harmonize` function. Default is `cockburn_procedures.list`
+  ##' @param cockburn_procedures list of procedures to pass to `standardize` function. Default is `cockburn_procedures.list`
   ##' @param detect_legal_form Whether to detect legal forms. Default is FALSE
-  ##' @param return_x_before_common_words_removal Whether to save harmonized column before `common.words.removal` procedure. Default is FALSE
-  ##' @inheritDotParams harmonize
-  ##' @return Harmonized table
+  ##' @param return_x_before_common_words_removal Whether to save standardized column before `common.words.removal` procedure. Default is FALSE
+  ##' @inheritDotParams standardize
+  ##' @return standardized names table
   ##'
   ##' @references Cockburn, et al. (2009)
   ##' 
   ##' @md 
   ##' @export 
-  harmonize_cockburn <- function(x
+  standardize_cockburn <- function(x
                                , cockburn_procedures = cockburn_procedures_table
                                , detect_legal_form = FALSE
                                , return_x_before_common_words_removal = FALSE
                                , ... ) {
       if(is.data.frame(cockburn_procedures)) {
-          cockburn_procedures <- harmonize_make_procedures_list(cockburn_procedures)
+          cockburn_procedures <- standardize_make_procedures_list(cockburn_procedures)
       }
     ## do some tweaks on cockburn_procedures
     if(!detect_legal_form) {
@@ -11199,11 +11199,11 @@ basically reproduces the 'main_coname2.do' stata file
             which(sapply(cockburn_procedures, `[[` , 1) %in% "cockburn_combabbrev")
         ]] <- list("cockburn_combabbrev", append_output_copy = TRUE)
     }
-    harmonize(x, cockburn_procedures, ...)
+    standardize(x, cockburn_procedures, ...)
   }
 #+END_SRC
 
-#+BEGIN_SRC R :tangle inst/tinytest/test_harmonize_cockburn.r
+#+BEGIN_SRC R :tangle inst/tinytest/test_standardize_cockburn.r
 
   expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                  , "M S Lab CÖ. <a href=lsdldf> <br> <\\a>"
@@ -11212,7 +11212,7 @@ basically reproduces the 'main_coname2.do' stata file
                                  , "MSLab Comp. Ltd."
                                  , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |> rep(20)
                         , foo = "Coffee" ) |>
-               harmonize_cockburn(quite = TRUE)
+               standardize_cockburn(quite = TRUE)
              , structure(list(name = c("MAEKAROENI ETOE FKUESNOE", "MS LAB COE A HREF=LSDLDF BR A", 
                                        "MSLAB", "MSLAEB COMP", "MSLAB COMP", "AAAAAEAAECEEEEIIIIDNOOOOOEOUUUUEYŸ") |> rep(20)
                             , foo = "Coffee" |> rep(120)), row.names = c(NA, -120L), class = c("data.table", 
@@ -11230,7 +11230,7 @@ basically reproduces the 'main_coname2.do' stata file
                                  , "MSLab Comp. Ltd."
                                  , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |> rep(20)
                         , foo = "Coffee" ) |>
-               harmonize_cockburn(detect_legal_form = TRUE, quite = TRUE)
+               standardize_cockburn(detect_legal_form = TRUE, quite = TRUE)
              , structure(list(name = c("MAEKAROENI ETOE FKUESNOE", "MS LAB COE A HREF=LSDLDF BR A", 
                                        "MSLAB", "MSLAEB COMP", "MSLAB COMP", "AAAAAEAAECEEEEIIIIDNOOOOOEOUUUUEYŸ") |> rep(20)
                             , foo = "Coffee" |> rep(120)
@@ -11249,7 +11249,7 @@ basically reproduces the 'main_coname2.do' stata file
                                  , "MSLab Comp. Ltd."
                                  , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |> rep(20)
                         , foo = "Coffee" ) |>
-               harmonize_cockburn(return_x_before_common_words_removal = TRUE
+               standardize_cockburn(return_x_before_common_words_removal = TRUE
                                 , quite = TRUE)
              , structure(list(name = c("MAEKAROENI ETOE FKUESNOE", "MS LAB COE A HREF=LSDLDF BR A", 
                                        "MSLAB", "MSLAEB COMP", "MSLAB COMP", "AAAAAEAAECEEEEIIIIDNOOOOOEOUUUUEYŸ") |> rep(20)
@@ -11274,7 +11274,7 @@ basically reproduces the 'main_coname2.do' stata file
                                  , "MSLab Comp. Ltd."
                                  , "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝŸ") |> rep(20)
                         , foo = "Coffee" ) |>
-               harmonize_cockburn(nrows_min_to_show_progress = 100
+               standardize_cockburn(nrows_min_to_show_progress = 100
                                 , detect_legal_form = TRUE
                                 , quite = TRUE)
              , structure(list(name = c("MAEKAROENI ETOE FKUESNOE", "MS LAB COE A HREF=LSDLDF BR A", 
@@ -11287,7 +11287,7 @@ basically reproduces the 'main_coname2.do' stata file
 
 #+END_SRC
 
-* Wasi & Flaaen (2015) - Harmonization Procedure
+* Wasi & Flaaen (2015) - Standardization Procedure
 
 Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. The Stata Journal, 15(3), 672-697.
 

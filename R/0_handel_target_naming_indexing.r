@@ -45,8 +45,8 @@ format_col_name <- function(col_name_format
                           , x_names = NULL
                           , return_docs = FALSE) {
     checkmate::assert_flag(return_docs)
-    procedure_index <- get0("harmonizer_harmonize_procedure_index", envir = parent.frame())
-    procedure_name <- get0("harmonizer_harmonize_procedure_name", envir = parent.frame())
+    procedure_index <- get0("nstandr_standardize_procedure_index", envir = parent.frame())
+    procedure_name <- get0("nstandr_standardize_procedure_name", envir = parent.frame())
     replacements_list <- list(
         "procedure_index" = list(
             doc = "replace '{procedure_index}' with a number of current standardization procedure is in the list of procedures"

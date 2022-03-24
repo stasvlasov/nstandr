@@ -1,8 +1,8 @@
-[![R-CMD-check](https://github.com/stasvlasov/harmonizer/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/harmonizer/actions)
-[![codecov](https://codecov.io/gh/stasvlasov/harmonizer/branch/master/graph/badge.svg?token=OQVJ7NRXO5)](https://codecov.io/gh/stasvlasov/harmonizer)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/harmonizer)
+[![R-CMD-check](https://github.com/stasvlasov/nstandr/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/nstandr/actions)
+[![codecov](https://codecov.io/gh/stasvlasov/nstandr/branch/master/graph/badge.svg?token=OQVJ7NRXO5)](https://codecov.io/gh/stasvlasov/nstandr)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/nstandr)
 
-The R package `harmonizer`{.verbatim} makes standardized organizational
+The R package `nstandr`{.verbatim} makes standardized organizational
 names using procedures described by Thoma et al. (2010), Magerman et al.
 (2006), Cockburn et al. (2009), Wasi & Flaaen (2015).
 
@@ -12,26 +12,26 @@ have any.
 # Installation
 
 ``` {.r org-language="R"}
-devtools::install_github("stasvlasov/harmonizer")
+devtools::install_github("stasvlasov/nstandr")
 ```
 
 # Usage
 
-The package provides its main function `harmonize`{.verbatim}. The
+The package provides its main function `standardize`{.verbatim}. The
 function expect character vector of organization names as input and
-returns its harmonized version.
+returns its standardized version.
 
 For the standardization methods described in Magerman et al. (2006) and
-Cockburn et al. (2009) you can use `harmonize_magerman`{.verbatim} and
-`harmonize_cockburn`{.verbatim} respectively. These functions are
+Cockburn et al. (2009) you can use `standardize_magerman`{.verbatim} and
+`standardize_cockburn`{.verbatim} respectively. These functions are
 similar to
-`harmonize(x, procedures=harmonizer:::magerman_procedures_list))`{.verbatim}
+`standardize(x, procedures=nstandr:::magerman_procedures_list))`{.verbatim}
 and
-`harmonize(x, procedures=harmonizer:::cockburn_procedures_list))`{.verbatim}
+`standardize(x, procedures=nstandr:::cockburn_procedures_list))`{.verbatim}
 but with additional options for tweaking original procedures and with
 more documentation.
 
-Here is an example of `harmonize_magerman`{.verbatim} usage
+Here is an example of `standardize_magerman`{.verbatim} usage
 
 ``` {.r org-language="R"}
 textConnection("SGS-THOMSON MICROELECTRONICS
@@ -87,10 +87,10 @@ SGS-THOMSON MICROELECTRONICS, SA.
 SGS-THOMSON MICROELECTRONICS, SRL
 SGS-THOMSON MICROELECTRONICS,S.R.L.") |>
     readLines() |>
-    harmonize_magerman(output_placement = "append_to_x")
+    standardize_magerman(output_placement = "append_to_x")
 
 # 
-# Applying harmonization procedures:
+# Applying standardization procedures:
 # -----------------------------------------------------------------
 # 
 # * Upper casing                                               DONE
@@ -114,7 +114,7 @@ SGS-THOMSON MICROELECTRONICS,S.R.L.") |>
 # * Fixing umlaut variations                                   DONE
 # 
 # -----------------------------------------------------------------
-# Harmonization is done!
+# Standardization is done!
 # 
 #                                               x                     std_x
 #  1:                SGS-THOMSON MICROELECTRONICS SGSTHOMSONMICROELECTRONIC
@@ -175,7 +175,7 @@ SGS-THOMSON MICROELECTRONICS,S.R.L.") |>
 # References
 
 Magerman, T., Looy, V., Bart, & Song, X. (2006). *Data Production
-Methods for Harmonized Patent Statistics: Patentee Name Harmonization*
+Methods for Harmonized Patent Statistics: Patentee Name Standardization*
 (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science
 Research Network. Retrieved from
 <http://papers.ssrn.com/abstract=944470>

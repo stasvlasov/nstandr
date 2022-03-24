@@ -1,15 +1,15 @@
 ## -------->>  [[file:../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:2]]
-##' Gets a target vector to harmonize.
+##' Gets a target vector to standardize.
 ##'
 ##' @param x  Input data. Can be vector, data.frame or a data.table
 ##' @param return_null_for_new_col Return NULL if target in not yet created (inset)
 ##' @return A vector. Factors in imput `data` are converted to string.
-##' @inheritDotParams harmonize_options
+##' @inheritDotParams standardize_options
 get_target <- function(x, return_null_for_new_col = FALSE, ...) {
     if(is.null(x)) return(NULL)
-    with(dots <- get_harmonize_options(), {
+    with(dots <- get_standardize_options(), {
         ## check arguments
-        check_harmonize_options(dots, x)
+        check_standardize_options(dots, x)
         x_names <- if (is.atomic(x)) x_atomic_name else names(x)
         col <- infer_moving_target_from_names(x_names
                                             , col
@@ -27,7 +27,7 @@ get_target <- function(x, return_null_for_new_col = FALSE, ...) {
 ##' Insets target vector back to input object (`x`)
 ##' 
 ##' @param vector Character vector to inset into the `x` object
-##' @param x Data to harmonize. Character vector or data.frame or
+##' @param x Data to standardize. Character vector or data.frame or
 ##'     data.table
 ##' @param omitted_rows_value_for_new_col Alternative value
 ##'     `omitted_rows_value` to use in case we create new column in
@@ -40,7 +40,7 @@ get_target <- function(x, return_null_for_new_col = FALSE, ...) {
 ##' @param return_only_target_col If toggled to TRUE then only return
 ##'     the vector to be inset (output_placement argument is ignored)
 ##' @return Data.table or character vector
-##' @inheritDotParams harmonize_options
+##' @inheritDotParams standardize_options
 inset_target <- function(vector, x
                        , omitted_rows_value_for_new_col = NULL
                        , allow_na_in_vector = TRUE
@@ -50,9 +50,9 @@ inset_target <- function(vector, x
     checkmate::assert_flag(allow_na_in_vector)
     checkmate::assert_flag(return_only_target_col)
     vector <- defactor_vector(vector)
-    with(dots <- get_harmonize_options(), {
-        ## check harmonize_options
-        check_harmonize_options(dots, x)
+    with(dots <- get_standardize_options(), {
+        ## check standardize_options
+        check_standardize_options(dots, x)
         assertion_fails <- checkmate::makeAssertCollection()
         ## -----
         ## inset omitted_rows_value if needed
