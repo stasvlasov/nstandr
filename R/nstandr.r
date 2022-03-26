@@ -199,22 +199,22 @@ standardize_x_split <- function(x, by, len = NULL) {
 
 
 ## -------->>  [[file:../nstandr.src.org::*standardize][standardize:1]]
-##' Standardizes organizational names. Takes either vector or column in the table.
-##' 
-##' @param x object (table)
-##' @param procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `standardize_make_procedures_list` (see its help for the correct format of data.frame with procedures). Default is `nstandr_default_procedures_table`
-##' @param show_progress Whether to report progress percentage. Default is TRUE
-##' @param nrows_min_to_show_progress The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5
-##' @param progress_step_nrows If set it will divide the x into chunk of this amount of rows. Default is NULL.
-##' @param progress_step_in_percent Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.
-##' @param progress_message_use_names Should we use names from `procedures` list to report progress. Default is TRUE.
-##' @param quite Suppress all messages. Default is FALSE.
-##' @param save_intermediate_x_to_var For debuging of standartization procedures. Saves intermediate results to this variable. If procedures finish without errors then the variable will be removed.
-##' @inheritDotParams standardize_options
-##' 
-##' @return standardized data
-##'
-##' @export
+#' Standardizes organizational names. Takes either vector or column in the table.
+#' 
+#' @param x object (table)
+#' @param procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `standardize_make_procedures_list` (see its help for the correct format of data.frame with procedures). Default is `nstandr_default_procedures_table`
+#' @param show_progress Whether to report progress percentage. Default is TRUE
+#' @param nrows_min_to_show_progress The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5
+#' @param progress_step_nrows If set it will divide the x into chunk of this amount of rows. Default is NULL.
+#' @param progress_step_in_percent Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.
+#' @param progress_message_use_names Should we use names from `procedures` list to report progress. Default is TRUE.
+#' @param quite Suppress all messages. Default is FALSE.
+#' @param save_intermediate_x_to_var For debuging of standartization procedures. Saves intermediate results to this variable. If procedures finish without errors then the variable will be removed.
+#' @inheritDotParams standardize_options
+#' 
+#' @return standardized data
+#'
+#' @export
 standardize <- function(x
                     , procedures = nstandr_default_procedures_table
                     , show_progress = TRUE
@@ -346,19 +346,15 @@ standardize <- function(x
 }
 
 
+## Alias
 
-#' @title Makes standard names. Takes either vector or column in the table.
-#'
-#' @inherit standardize
+#' @rdname standardize
 #' @export
-#' @aliases standardize
 make_std_names <- standardize
 
-#' @title Makes standard names. Takes either vector or column in the table.
-#'
-#' @inherit standardize
+
+#' @rdname standardize
 #' @export
-#' @aliases standardize
 make_standard_names <- standardize
 ## --------<<  standardize:1 ends here
 

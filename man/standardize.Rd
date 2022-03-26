@@ -2,9 +2,37 @@
 % Please edit documentation in R/nstandr.r
 \name{standardize}
 \alias{standardize}
+\alias{make_std_names}
+\alias{make_standard_names}
 \title{Standardizes organizational names. Takes either vector or column in the table.}
 \usage{
 standardize(
+  x,
+  procedures = nstandr_default_procedures_table,
+  show_progress = TRUE,
+  nrows_min_to_show_progress = 10^5,
+  progress_step_nrows = NULL,
+  progress_step_in_percent = 1,
+  progress_message_use_names = TRUE,
+  quite = FALSE,
+  save_intermediate_x_to_var = NULL,
+  ...
+)
+
+make_std_names(
+  x,
+  procedures = nstandr_default_procedures_table,
+  show_progress = TRUE,
+  nrows_min_to_show_progress = 10^5,
+  progress_step_nrows = NULL,
+  progress_step_in_percent = 1,
+  progress_message_use_names = TRUE,
+  quite = FALSE,
+  save_intermediate_x_to_var = NULL,
+  ...
+)
+
+make_standard_names(
   x,
   procedures = nstandr_default_procedures_table,
   show_progress = TRUE,
