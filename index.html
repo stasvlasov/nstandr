@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Harmonization of Organizational Names • harmonizer</title>
+<title>Standardization of Organizational Names • nstandr</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Harmonization of Organizational Names">
-<meta property="og:description" content="Harmonizes organizational names using steps described in
+<script src="pkgdown.js"></script><meta property="og:title" content="Standardization of Organizational Names">
+<meta property="og:description" content="Standardizes organizational names using steps described in
     Thoma et al. (2010) and Magerman, Looy, Bart, &amp; Song (2006) and more.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -33,7 +33,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">harmonizer</a>
+        <a class="navbar-link" href="index.html">nstandr</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9000</span>
       </span>
     </div>
@@ -46,7 +46,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/stasvlasov/harmonizer/" class="external-link">
+  <a href="https://github.com/stasvlasov/nstandr/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -64,28 +64,31 @@
       </header><div class="row">
   <div class="contents col-md-9">
 
-
-<p>The R package <code class="verbatim">harmonizer</code> makes standardized organizational names using procedures described by Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi &amp; Flaaen (2015).</p>
-<p>This is work in progress. Please, file an issue or a suggestion if you have any.</p>
 <div class="section level1">
-<div class="page-header"><h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<div class="page-header"><h1 id="nstandr-">nstandr <img src="img/logo.png" align="right" alt="" width="120"><a class="anchor" aria-label="anchor" href="#nstandr-"></a>
 </h1></div>
+
+<p>The R package <code class="verbatim">nstandr</code> makes standardized organizational names using procedures described by Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi &amp; Flaaen (2015).</p>
+<p>This is work in progress. Please, file an issue or a suggestion if you have any.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <div class="sourceCode" id="cb1" org-language="R"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"stasvlasov/harmonizer"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"stasvlasov/nstandr"</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
-</h1>
-<p>The package provides its main function <code class="verbatim">harmonize</code>. The function expect character vector of organization names as input and returns its harmonized version.</p>
-<p>For the standardization methods described in Magerman et al. (2006) and Cockburn et al. (2009) you can use <code class="verbatim">harmonize_magerman</code> and <code class="verbatim">harmonize_cockburn</code> respectively. These functions are similar to <code class="verbatim">harmonize(x, procedures=harmonizer:::magerman_procedures_list))</code> and <code class="verbatim">harmonize(x, procedures=harmonizer:::cockburn_procedures_list))</code> but with additional options for tweaking original procedures and with more documentation.</p>
-<p>Here is an example of <code class="verbatim">harmonize_magerman</code> usage</p>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
+<p>The package provides its main function <code class="verbatim">standardize</code>. The function expect character vector of organization names as input and returns its standardized version.</p>
+<p>For the standardization methods described in Magerman et al. (2006) and Cockburn et al. (2009) you can use <code class="verbatim">standardize_magerman</code> and <code class="verbatim">standardize_cockburn</code> respectively. These functions are similar to <code class="verbatim">standardize(x, procedures=nstandr:::magerman_procedures_list))</code> and <code class="verbatim">standardize(x, procedures=nstandr:::cockburn_procedures_list))</code> but with additional options for tweaking original procedures and with more documentation.</p>
+<p>Here is an example of <code class="verbatim">standardize_magerman</code> usage</p>
 <div class="sourceCode" id="cb2" org-language="R"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/textconnections.html" class="external-link">textConnection</a></span><span class="op">(</span><span class="st">[1847 chars quoted with '"']</span><span class="op">)</span> |&gt;
     <span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="op">)</span> |&gt;
-    <span class="fu"><a href="reference/harmonize_magerman.html">harmonize_magerman</a></span><span class="op">(</span>output_placement <span class="op">=</span> <span class="st">"append_to_x"</span><span class="op">)</span>
+    <span class="fu"><a href="reference/standardize_magerman.html">standardize_magerman</a></span><span class="op">(</span>output_placement <span class="op">=</span> <span class="st">"append_to_x"</span><span class="op">)</span>
 
 <span class="co"># </span>
-<span class="co"># Applying harmonization procedures:</span>
+<span class="co"># Applying standardization procedures:</span>
 <span class="co"># -----------------------------------------------------------------</span>
 <span class="co"># </span>
 <span class="co"># * Upper casing                                               DONE</span>
@@ -109,7 +112,7 @@
 <span class="co"># * Fixing umlaut variations                                   DONE</span>
 <span class="co"># </span>
 <span class="co"># -----------------------------------------------------------------</span>
-<span class="co"># Harmonization is done!</span>
+<span class="co"># Standardization is done!</span>
 <span class="co"># </span>
 <span class="co">#                                               x                     std_x</span>
 <span class="co">#  1:                SGS-THOMSON MICROELECTRONICS SGSTHOMSONMICROELECTRONIC</span>
@@ -166,10 +169,11 @@
 <span class="co"># 52:         SGS-THOMSON MICROELECTRONICS,S.R.L. SGSTHOMSONMICROELECTRONIC</span>
 <span class="co">#                                               x                     std_x</span></code></pre></div>
 </div>
+</div>
 <div class="section level1">
 <h1 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h1>
-<p>Magerman, T., Looy, V., Bart, &amp; Song, X. (2006). <em>Data Production Methods for Harmonized Patent Statistics: Patentee Name Harmonization</em> (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from <a href="http://papers.ssrn.com/abstract=944470" class="external-link uri">http://papers.ssrn.com/abstract=944470</a></p>
+<p>Magerman, T., Looy, V., Bart, &amp; Song, X. (2006). <em>Data Production Methods for Harmonized Patent Statistics: Patentee Name Standardization</em> (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from <a href="http://papers.ssrn.com/abstract=944470" class="external-link uri">http://papers.ssrn.com/abstract=944470</a></p>
 <p>Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., &amp; Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. <em>National Bureau of Economic Research Working Paper Series</em>, (15851). Retrieved from <a href="http://www.nber.org/papers/w15851" class="external-link uri">http://www.nber.org/papers/w15851</a> <a href="http://www.nber.org/papers/w15851.pdf" class="external-link uri">http://www.nber.org/papers/w15851.pdf</a></p>
 <p>Wasi, N., &amp; Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. The Stata Journal, 15(3), 672-697. Retrieved from <a href="https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf" class="external-link uri">https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf</a></p>
 </div>
@@ -180,9 +184,8 @@
     <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://cloud.r-project.org/package=harmonizer" class="external-link">View on CRAN</a></li>
-<li><a href="https://github.com/stasvlasov/harmonizer/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/stasvlasov/harmonizer/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/stasvlasov/nstandr/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/stasvlasov/nstandr/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -198,7 +201,7 @@
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing harmonizer</a></li>
+<li><a href="authors.html#citation">Citing nstandr</a></li>
 </ul>
 </div>
 
@@ -212,8 +215,8 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/stasvlasov/harmonizer/actions" class="external-link"><img src="https://github.com/stasvlasov/harmonizer/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://codecov.io/gh/stasvlasov/harmonizer" class="external-link"><img src="https://codecov.io/gh/stasvlasov/harmonizer/branch/master/graph/badge.svg?token=OQVJ7NRXO5" alt="codecov"></a></li>
+<li><a href="https://github.com/stasvlasov/nstandr/actions" class="external-link"><img src="https://github.com/stasvlasov/nstandr/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/stasvlasov/nstandr" class="external-link"><img src="https://codecov.io/gh/stasvlasov/nstandr/branch/master/graph/badge.svg?token=OQVJ7NRXO5" alt="codecov"></a></li>
 </ul>
 </div>
 

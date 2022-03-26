@@ -109,61 +109,13 @@
     <loc>/reference/get_dots.html</loc>
   </url>
   <url>
-    <loc>/reference/get_harmonize_options.html</loc>
+    <loc>/reference/get_standardize_options.html</loc>
   </url>
   <url>
     <loc>/reference/get_target.html</loc>
   </url>
   <url>
     <loc>/reference/get_vector.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_cockburn.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_dehtmlize.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_detect_enc.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_is_data_empty.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_magerman.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_make_procedures_list.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_omit_empty.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_options.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_remove_brackets.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_remove_quotes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_squish_spaces.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_toascii.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_toupper.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonize_x_split.html</loc>
-  </url>
-  <url>
-    <loc>/reference/harmonizer-package.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
@@ -265,7 +217,55 @@
     <loc>/reference/magerman_replace_umlaut.html</loc>
   </url>
   <url>
+    <loc>/reference/nstandr-package.html</loc>
+  </url>
+  <url>
     <loc>/reference/replace_patterns.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_cockburn.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_dehtmlize.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_detect_enc.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_is_data_empty.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_magerman.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_make_procedures_list.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_omit_empty.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_options.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_remove_brackets.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_remove_quotes.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_squish_spaces.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_toascii.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_toupper.html</loc>
+  </url>
+  <url>
+    <loc>/reference/standardize_x_split.html</loc>
   </url>
   <url>
     <loc>/reference/unlist_if_possible.html</loc>
