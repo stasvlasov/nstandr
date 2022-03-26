@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*German Non-profit institutes][German Non-profit institutes:2]]
+## -------->>  [[file:../../nstandr.src.org::*German Non-profit institutes][German Non-profit institutes:2]]
 expect_equal(c(" EINGETRAGENER VEREIN UNIV "
              , " BERLIN EINGETRAGENER VEREIN "
              , " STIFTUNG ") |>

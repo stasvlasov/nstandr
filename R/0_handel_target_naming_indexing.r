@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:1]]
+## -------->>  [[file:../nstandr.src.org::*get_target & inset_target][get_target & inset_target:1]]
 ## naming col
 make_indexed_col_name <- function(col_name
                                 , x_names = NULL

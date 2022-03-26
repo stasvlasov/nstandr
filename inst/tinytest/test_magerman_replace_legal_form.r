@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Detect and replace legal forms][Detect and replace legal forms:2]]
+## -------->>  [[file:../../nstandr.src.org::*Detect and replace legal forms][Detect and replace legal forms:2]]
 expect_equal(
     magerman_detect_legal_form_end(c("lksdjf MFG. CO, INC"
                                    , "MSlab Co."

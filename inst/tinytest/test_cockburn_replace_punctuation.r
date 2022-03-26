@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Punctuation][Punctuation:2]]
+## -------->>  [[file:../../nstandr.src.org::*Punctuation][Punctuation:2]]
 expect_equal(c("WESTINGHOUSE, |.?^&*@ ELEC  "
              , "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©"
              , "GRACE (W/R) & CO Ltd.") |> 

@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*inset_formals][inset_formals:1]]
+## -------->>  [[file:../nstandr.src.org::*inset_formals][inset_formals:1]]
 inset_formals <- function(formals_args, new_args) {
     checkmate::assert_subset(names(new_args)
                            , choices = names(formals_args)

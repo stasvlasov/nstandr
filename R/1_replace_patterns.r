@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*replace_patterns][replace_patterns:1]]
+## -------->>  [[file:../nstandr.src.org::*replace_patterns][replace_patterns:1]]
 replace_exact <- function(x
                         , patterns
                         , replacements) {

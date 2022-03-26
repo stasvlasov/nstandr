@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:6]]
+## -------->>  [[file:../../nstandr.src.org::*get_target & inset_target][get_target & inset_target:6]]
 infer_moving_target_from_names <- nstandr:::infer_moving_target_from_names
 
 expect_equal(infer_moving_target_from_names(x_names = c("x", "std_x")

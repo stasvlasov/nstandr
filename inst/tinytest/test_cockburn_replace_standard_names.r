@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Standard Name][Standard Name:2]]
+## -------->>  [[file:../../nstandr.src.org::*Standard Name][Standard Name:2]]
 expect_equal(c("WESTINGHOUSE, |.?^&*@ ELEC  "
              , "GRACE (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
              , "GRACE (W/R) & CO LTD ") |>

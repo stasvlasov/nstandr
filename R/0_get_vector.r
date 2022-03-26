@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*get_vector][get_vector:1]]
+## -------->>  [[file:../nstandr.src.org::*get_vector][get_vector:1]]
 ##' Gets vector by column and defactor if needed. Optionaly one can
 ##' provide a fallback_value which will be returned if col is not
 ##' specified.

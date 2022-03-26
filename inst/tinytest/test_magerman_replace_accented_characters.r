@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*magerman.replace.accented.characters][magerman.replace.accented.characters:2]]
+## -------->>  [[file:../../nstandr.src.org::*magerman.replace.accented.characters][magerman.replace.accented.characters:2]]
 expect_equal("ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ" |>
              magerman_replace_accented_characters()
            , "ŠŒŽšœžY¥µAAAAAAAECEEEEIIIIÐNOOOOOØUUUUYßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ")

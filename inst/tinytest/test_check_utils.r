@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*check_standardize_options][check_standardize_options:3]]
+## -------->>  [[file:../../nstandr.src.org::*check_standardize_options][check_standardize_options:3]]
 ## test col checks
 check_col <- nstandr:::check_col
 

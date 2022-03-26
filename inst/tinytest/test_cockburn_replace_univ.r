@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Universities][Universities:2]]
+## -------->>  [[file:../../nstandr.src.org::*Universities][Universities:2]]
 expect_equal(c(" TILBURG UNIVERSTIY "
              , " VU UNIVERSTITAET "
              , "LEGALY REPRESENTED BY STAS") |>

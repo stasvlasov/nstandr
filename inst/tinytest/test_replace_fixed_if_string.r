@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:3]]
+## -------->>  [[file:../../nstandr.src.org::*get_target & inset_target][get_target & inset_target:3]]
 replace_fixed_if_string <- nstandr:::replace_fixed_if_string
 
 a <- NA

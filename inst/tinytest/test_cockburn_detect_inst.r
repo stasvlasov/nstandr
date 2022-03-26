@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Non-profit institutes][Non-profit institutes:2]]
+## -------->>  [[file:../../nstandr.src.org::*Non-profit institutes][Non-profit institutes:2]]
 expect_equal(c(" DR VLASOV "
              , " S.VLASOV PHD "
              , " FUNDATION LEGALY REPRESENTED BY STAS") |>

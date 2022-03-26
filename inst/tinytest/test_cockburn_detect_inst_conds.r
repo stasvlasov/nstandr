@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Complex conditions][Complex conditions:2]]
+## -------->>  [[file:../../nstandr.src.org::*Complex conditions][Complex conditions:2]]
 expect_equal(data.table(org = c(" EVIL FOUND OF BIG CORP "
                               , " EVIL FOUND OF BIG CORP "
                               , " INT INST OF MAGIC"

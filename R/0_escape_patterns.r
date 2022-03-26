@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*standardize_escape_regex][standardize_escape_regex:1]]
+## -------->>  [[file:../nstandr.src.org::*standardize_escape_regex][standardize_escape_regex:1]]
 ##' Escapes special for regex characters
 ##' @param string character vector
 ##' @return character vector with all special to regex characters escaped

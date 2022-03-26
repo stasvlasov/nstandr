@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*get_standardize_options][get_standardize_options:2]]
+## -------->>  [[file:../../nstandr.src.org::*get_standardize_options][get_standardize_options:2]]
 ## hack to make functions available in the environment
 standardize_options <- nstandr:::standardize_options
 ## I do not test get_standardize_options directly (and I will not use it in general) because it referes to the parent environment where internal functions are unknown

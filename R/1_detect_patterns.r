@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*detect_patterns][detect_patterns:1]]
+## -------->>  [[file:../nstandr.src.org::*detect_patterns][detect_patterns:1]]
 transpose_list_of_vectors <- function(l) {
     do.call(mapply, c(FUN = list(c), l, list(USE.NAMES = FALSE, SIMPLIFY = FALSE)))
 }

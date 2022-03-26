@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*standardize_squish_spaces][standardize_squish_spaces:1]]
+## -------->>  [[file:../nstandr.src.org::*standardize_squish_spaces][standardize_squish_spaces:1]]
 #' Removes redundant whitespases
 #' @param x table or vector
 #'

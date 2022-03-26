@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*check_standardize_options][check_standardize_options:2]]
+## -------->>  [[file:../../nstandr.src.org::*check_standardize_options][check_standardize_options:2]]
 require("data.table")
 
 check_standardize_options <- nstandr:::check_standardize_options

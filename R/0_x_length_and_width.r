@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*x_length and x_width][x_length and x_width:1]]
+## -------->>  [[file:../nstandr.src.org::*x_length and x_width][x_length and x_width:1]]
 ##' Gets lengths of the object
 ##'
 ##' @param x input data (table)

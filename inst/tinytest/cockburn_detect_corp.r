@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Firms (Corporates)][Firms (Corporates):2]]
+## -------->>  [[file:../../nstandr.src.org::*Firms (Corporates)][Firms (Corporates):2]]
 expect_equal(c(" DR VLASOV & BROTHER "
           ,  "MSlab & C"
           , " S.VLASOV PHD "

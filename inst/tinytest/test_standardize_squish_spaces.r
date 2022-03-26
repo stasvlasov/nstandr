@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*standardize_squish_spaces][standardize_squish_spaces:2]]
+## -------->>  [[file:../../nstandr.src.org::*standardize_squish_spaces][standardize_squish_spaces:2]]
 expect_equal(standardize_squish_spaces("  String with trailing,  middle, and leading white space\t"
                                    , wrap_in_spaces = TRUE)
            , " String with trailing, middle, and leading white space ")

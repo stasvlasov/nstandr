@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*standardize_make_procedures_list][standardize_make_procedures_list:2]]
+## -------->>  [[file:../../nstandr.src.org::*standardize_make_procedures_list][standardize_make_procedures_list:2]]
 standardize_make_procedures_list <- nstandr:::standardize_make_procedures_list
 
 expect_equal(data.frame(no = c(3,2,"-", "")

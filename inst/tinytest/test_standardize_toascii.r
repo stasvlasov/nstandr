@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*standardize_toascii][standardize_toascii:2]]
+## -------->>  [[file:../../nstandr.src.org::*standardize_toascii][standardize_toascii:2]]
 expect_equal( c("FAÇILE"
               , "fa\xE7ile"
               , "c\u00b5c\u00b5ber") |>

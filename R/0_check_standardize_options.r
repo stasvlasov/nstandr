@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*check_standardize_options][check_standardize_options:1]]
+## -------->>  [[file:../nstandr.src.org::*check_standardize_options][check_standardize_options:1]]
 report_arg_checks <- function (collection
                              , which_call_to_report = -2L
                              , call_to_report = NULL) {

@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:4]]
+## -------->>  [[file:../../nstandr.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:4]]
 expect_equal(c("\"\"Merry  \"Cristmas\" Love\"\"" # delete quotes here
              , "\"\"Merry \"\"Cristmas\"\" Love\"\""  # do not delete here
                ) |>

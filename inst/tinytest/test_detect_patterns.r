@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*detect_patterns][detect_patterns:2]]
+## -------->>  [[file:../../nstandr.src.org::*detect_patterns][detect_patterns:2]]
 ## Tests for detect_patterns
 library("data.table")
 

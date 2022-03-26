@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*replace_patterns][replace_patterns:2]]
+## -------->>  [[file:../../nstandr.src.org::*replace_patterns][replace_patterns:2]]
 require(data.table)
 ## Test replace_patterns
 

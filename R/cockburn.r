@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*cockburn_combabbrev][cockburn_combabbrev:1]]
+## -------->>  [[file:../nstandr.src.org::*cockburn_combabbrev][cockburn_combabbrev:1]]
 ##' Collapses single character sequences
 ##'
 ##' @param x Object (table or vector)
@@ -38,7 +38,7 @@ cockburn_combabbrev <- function(x
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Derwent][Derwent:1]]
+## -------->>  [[file:../nstandr.src.org::*Derwent][Derwent:1]]
 ##' @eval attr(cockburn_replace_derwent, "@title")
 ##' @description It is a version from Cockburn, I. M., A. Agrawal,
 ##'     J. Bessen, J. H. S. Graham, B. H. Hall, and M. MacGarvie
@@ -62,7 +62,7 @@ attr(cockburn_replace_derwent, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Compustat][Compustat:1]]
+## -------->>  [[file:../nstandr.src.org::*Compustat][Compustat:1]]
 ##' @eval attr(cockburn_replace_compustat, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -99,7 +99,7 @@ attr(cockburn_replace_compustat_names, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Identify Entity Type][Identify Entity Type:1]]
+## -------->>  [[file:../nstandr.src.org::*Identify Entity Type][Identify Entity Type:1]]
 ##' Identifies Entity Type
 ##'
 ##' @param x vector or table
@@ -147,7 +147,7 @@ cockburn_replace_type <- function(x, ...) {
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Firms (Corporates)][Firms (Corporates):1]]
+## -------->>  [[file:../nstandr.src.org::*Firms (Corporates)][Firms (Corporates):1]]
 ##' @eval attr(cockburn_detect_corp, "@title")
 ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit detect_patterns params return
@@ -171,7 +171,7 @@ attr(cockburn_detect_corp, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Individuals][Individuals:1]]
+## -------->>  [[file:../nstandr.src.org::*Individuals][Individuals:1]]
 ##' @eval attr(cockburn_detect_indiv, "@title")
 ##' @description From non_corporates.do file. Source -
 ##'     https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
@@ -196,7 +196,7 @@ attr(cockburn_detect_indiv, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Government][Government:1]]
+## -------->>  [[file:../nstandr.src.org::*Government][Government:1]]
 ##' @eval attr(cockburn_detect_govt, "@title")
 ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit detect_patterns params return
@@ -239,7 +239,7 @@ attr(cockburn_replace_govt, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Universities][Universities:1]]
+## -------->>  [[file:../nstandr.src.org::*Universities][Universities:1]]
 ##' @eval attr(cockburn_detect_univ, "@title")
 ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit detect_patterns params return
@@ -285,7 +285,7 @@ attr(cockburn_replace_univ, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Non-profit institutes][Non-profit institutes:1]]
+## -------->>  [[file:../nstandr.src.org::*Non-profit institutes][Non-profit institutes:1]]
 ##' @eval attr(cockburn_detect_inst, "@title")
 ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit detect_patterns params return
@@ -309,7 +309,7 @@ attr(cockburn_detect_inst, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Complex conditions][Complex conditions:1]]
+## -------->>  [[file:../nstandr.src.org::*Complex conditions][Complex conditions:1]]
 ##' @eval attr(cockburn_detect_inst_conds_1, "@title")
 ##' @description STATA equivalent: replace asstype = "inst" if strpos(standard_name," COUNCIL OF ")>0 & strpos(standard_name," RES ")>0
 ##' @inherit detect_patterns params return
@@ -396,7 +396,7 @@ cockburn_detect_inst_conds <- function(x
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*German Non-profit institutes][German Non-profit institutes:1]]
+## -------->>  [[file:../nstandr.src.org::*German Non-profit institutes][German Non-profit institutes:1]]
 ##' @eval attr(cockburn_detect_inst_german, "@title")
 ##' @description "EINGETRAGENER VEREIN. NON PROFIT SOCIETY/ASSOCIATION."
 ##' @param x table
@@ -438,7 +438,7 @@ attr(cockburn_detect_inst_german, "@title") <- "Detects German Non-profit instit
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Hospitals][Hospitals:1]]
+## -------->>  [[file:../nstandr.src.org::*Hospitals][Hospitals:1]]
 ##' @eval attr(cockburn_detect_hosp, "@title")
 ##' @description From non_corporates.do file. Source - https://sites.google.com/site/patentdataproject/Home/posts/namestandardizationroutinesuploaded
 ##' @inherit detect_patterns params return
@@ -462,7 +462,7 @@ attr(cockburn_detect_hosp, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Punctuation][Punctuation:1]]
+## -------->>  [[file:../nstandr.src.org::*Punctuation][Punctuation:1]]
 ##' Removes punctuation and standardise some symbols. 
 ##'
 ##' @param x object
@@ -486,7 +486,7 @@ cockburn_replace_punctuation <- function(x
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Standard Name][Standard Name:1]]
+## -------->>  [[file:../nstandr.src.org::*Standard Name][Standard Name:1]]
 ##' Create standard name
 ##'
 ##' @param x object
@@ -506,7 +506,7 @@ cockburn_replace_standard_names <- function(x
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Stem Name][Stem Name:1]]
+## -------->>  [[file:../nstandr.src.org::*Stem Name][Stem Name:1]]
 ##' @eval attr(cockburn_remove_standard_names, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -526,7 +526,7 @@ attr(cockburn_remove_standard_names, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*USPTO special][USPTO special:1]]
+## -------->>  [[file:../nstandr.src.org::*USPTO special][USPTO special:1]]
 ##' @eval attr(cockburn_remove_uspto, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -566,7 +566,7 @@ attr(cockburn_detect_uspto, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Combined Cockburn Procedures][Combined Cockburn Procedures:1]]
+## -------->>  [[file:../nstandr.src.org::*Combined Cockburn Procedures][Combined Cockburn Procedures:1]]
 ##' Standardizes strings using exact procedures described in Cockburn, et al. (2009)
 ##' @param x table or vector
 ##' @param cockburn_procedures list of procedures to pass to `standardize` function. Default is `cockburn_procedures.list`

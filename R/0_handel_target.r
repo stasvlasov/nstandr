@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:2]]
+## -------->>  [[file:../nstandr.src.org::*get_target & inset_target][get_target & inset_target:2]]
 ##' Gets a target vector to standardize.
 ##'
 ##' @param x  Input data. Can be vector, data.frame or a data.table

@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*standardize_x_split][standardize_x_split:2]]
+## -------->>  [[file:../../nstandr.src.org::*standardize_x_split][standardize_x_split:2]]
 standardize_x_split <- nstandr:::standardize_x_split
 
 

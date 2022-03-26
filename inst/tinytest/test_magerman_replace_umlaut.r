@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Umlaut Standardization][Umlaut Standardization:2]]
+## -------->>  [[file:../../nstandr.src.org::*Umlaut Standardization][Umlaut Standardization:2]]
 expect_equal(
     c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
              , "MSLab Co."

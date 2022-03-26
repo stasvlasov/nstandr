@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:5]]
+## -------->>  [[file:../../nstandr.src.org::*get_target & inset_target][get_target & inset_target:5]]
 format_col_name <- nstandr:::format_col_name
 
 ## format_col_name(return_docs = TRUE)

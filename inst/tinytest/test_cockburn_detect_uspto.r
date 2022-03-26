@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*USPTO special][USPTO special:2]]
+## -------->>  [[file:../../nstandr.src.org::*USPTO special][USPTO special:2]]
 expect_equal(c("WESTINGHOUSE, |.?^&*@ ELEC-CONN.  "
              , "GRACE-CONN. (W EN R) & CO - Ã²Ã¢ÃªÃ®Ã©  PUBLIC LIMITED "
              , "Bechara;John") |> 

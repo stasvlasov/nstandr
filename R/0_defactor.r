@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*defactor][defactor:1]]
+## -------->>  [[file:../nstandr.src.org::*defactor][defactor:1]]
 ##' Converts factor to character
 ##' @param x a vector
 ##' @param check.numeric check if vector is numeric. Default is TRUE. Takes longer with this check but avoids type conversion (numeric to character).

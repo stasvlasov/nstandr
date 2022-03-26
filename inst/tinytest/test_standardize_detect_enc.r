@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*standardize_detect_enc][standardize_detect_enc:2]]
+## -------->>  [[file:../../nstandr.src.org::*standardize_detect_enc][standardize_detect_enc:2]]
 expect_equal(data.table(data = c("FAÇILE"
                                , "fa\xE7ile"
                                , "c\u00b5c\u00b5ber")

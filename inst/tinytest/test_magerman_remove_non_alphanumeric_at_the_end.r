@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*magerman.remove.non.alphanumeric.*][magerman.remove.non.alphanumeric.*:2]]
+## -------->>  [[file:../../nstandr.src.org::*magerman.remove.non.alphanumeric.*][magerman.remove.non.alphanumeric.*:2]]
 expect_equal(c("MSLab Co. :"
              , "MSLab Co.++"
              , "MSLab Co.*&^") |>

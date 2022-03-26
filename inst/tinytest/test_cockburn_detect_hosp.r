@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Hospitals][Hospitals:2]]
+## -------->>  [[file:../../nstandr.src.org::*Hospitals][Hospitals:2]]
 expect_equal(c(" DR VLASOV "
              , " S.VLASOV PHD "
              , " STANICA LEGALY REPRESENTED BY STAS") |>

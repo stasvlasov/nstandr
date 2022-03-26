@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Individuals][Individuals:2]]
+## -------->>  [[file:../../nstandr.src.org::*Individuals][Individuals:2]]
 expect_equal(c(" DR VLASOV "
              , " S.VLASOV PHD "
              , "LEGALY REPRESENTED BY STAS") |>

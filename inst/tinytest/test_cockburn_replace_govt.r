@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Government][Government:2]]
+## -------->>  [[file:../../nstandr.src.org::*Government][Government:2]]
 expect_equal(c(" DR VLASOV "
              , " S.VLASOV PHD "
              , " REPUBLIC LEGALY REPRESENTED BY STAS") |>

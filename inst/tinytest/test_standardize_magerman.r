@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Combined Magerman Procedures][Combined Magerman Procedures:2]]
+## -------->>  [[file:../../nstandr.src.org::*Combined Magerman Procedures][Combined Magerman Procedures:2]]
 ## Test with return magerman_procedures in standardize_magerman
 standardize_magerman()
 

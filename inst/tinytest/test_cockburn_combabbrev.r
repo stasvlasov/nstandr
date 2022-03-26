@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*cockburn_combabbrev][cockburn_combabbrev:2]]
+## -------->>  [[file:../../nstandr.src.org::*cockburn_combabbrev][cockburn_combabbrev:2]]
 expect_equal(c(" A B Comp"
              , " A  B Comp a"
              , " I B M "

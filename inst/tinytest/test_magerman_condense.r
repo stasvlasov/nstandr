@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Condensing][Condensing:2]]
+## -------->>  [[file:../../nstandr.src.org::*Condensing][Condensing:2]]
 expect_equal(c("lksdjf MFG. GMBH CO,; INC"
              , "MSlab Co."
              , "IBM Corp."

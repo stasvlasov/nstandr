@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*Package documentation][Package documentation:1]]
+## -------->>  [[file:../nstandr.src.org::*Package documentation][Package documentation:1]]
 #' @details
 #' nstandr package standardizes organizational names
 #'     mainly using procedures described in Thoma et al. (2010) and
@@ -11,7 +11,7 @@
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*standardize_toupper][standardize_toupper:1]]
+## -------->>  [[file:../nstandr.src.org::*standardize_toupper][standardize_toupper:1]]
 ##' @eval attr(standardize_toupper, "description")
 ##' 
 ##' @param x data
@@ -32,7 +32,7 @@ attr(standardize_toupper, "description") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*standardize_remove_brackets][standardize_remove_brackets:1]]
+## -------->>  [[file:../nstandr.src.org::*standardize_remove_brackets][standardize_remove_brackets:1]]
 ##' @eval attr(standardize_remove_brackets, "@title")
 ##' @param x object (table)
 ##' @inheritDotParams standardize_options
@@ -50,7 +50,7 @@ attr(standardize_remove_brackets, "@title") <- "Removes brackets and content in 
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*standardize_remove_quotes][standardize_remove_quotes:1]]
+## -------->>  [[file:../nstandr.src.org::*standardize_remove_quotes][standardize_remove_quotes:1]]
 ##' Removes double quotes
 ##' 
 ##' @param x an object
@@ -66,7 +66,7 @@ standardize_remove_quotes <- function(x, ...) {
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*standardize_dehtmlize][standardize_dehtmlize:1]]
+## -------->>  [[file:../nstandr.src.org::*standardize_dehtmlize][standardize_dehtmlize:1]]
 #' Converts HTML characters to UTF-8
 #'
 #' The method is about 1/3 faster than htmlParse but it is still quite slow
@@ -110,7 +110,7 @@ standardize_dehtmlize <- function(x
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*standardize_detect_enc][standardize_detect_enc:1]]
+## -------->>  [[file:../nstandr.src.org::*standardize_detect_enc][standardize_detect_enc:1]]
 #' Detects string encoding
 #' @param x object
 #' @param output_codes_col_name Same as in [detect_patterns()]
@@ -147,7 +147,7 @@ standardize_detect_enc <- function(x
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*standardize_toascii][standardize_toascii:1]]
+## -------->>  [[file:../nstandr.src.org::*standardize_toascii][standardize_toascii:1]]
 #' Translates non-ascii symbols to its ascii equivalent
 #' 
 #' @param x String to translate
@@ -178,7 +178,7 @@ standardize_toascii <- function(x
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*standardize_x_split][standardize_x_split:1]]
+## -------->>  [[file:../nstandr.src.org::*standardize_x_split][standardize_x_split:1]]
 ##' Splits the object (table) in chunks by rows
 ##'
 ##' Convenient to apply some function to the table in chunks, e.g., if you want to add display of progress.
@@ -198,7 +198,7 @@ standardize_x_split <- function(x, by, len = NULL) {
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*standardize][standardize:1]]
+## -------->>  [[file:../nstandr.src.org::*standardize][standardize:1]]
 ##' Standardizes organizational names. Takes either vector or column in the table.
 ##' 
 ##' @param x object (table)
@@ -344,6 +344,22 @@ standardize <- function(x
         rm(list = save_intermediate_x_to_var, pos = 1)
     return(x)
 }
+
+
+
+#' @title Makes standard names. Takes either vector or column in the table.
+#'
+#' @inherit standardize
+#' @export
+#' @aliases standardize
+make_std_names <- standardize
+
+#' @title Makes standard names. Takes either vector or column in the table.
+#'
+#' @inherit standardize
+#' @export
+#' @aliases standardize
+make_standard_names <- standardize
 ## --------<<  standardize:1 ends here
 
 

@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*standardize_escape_regex][standardize_escape_regex:2]]
+## -------->>  [[file:../../nstandr.src.org::*standardize_escape_regex][standardize_escape_regex:2]]
 escape_regex_for_types <- nstandr:::escape_regex_for_types
 
 expect_equal(

@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*magerman.replace.sgml.characters][magerman.replace.sgml.characters:2]]
+## -------->>  [[file:../../nstandr.src.org::*magerman.replace.sgml.characters][magerman.replace.sgml.characters:2]]
 test.df <-
 data.frame( a = 
 c("&AMP;&OACUTE;&SECT; 02937lkjfas;ldjf  &UACUTE;&#8902;&BULL; sdlfkjhhhh ;laskdjf&EXCL;"

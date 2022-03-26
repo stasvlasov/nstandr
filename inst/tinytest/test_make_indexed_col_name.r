@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:4]]
+## -------->>  [[file:../../nstandr.src.org::*get_target & inset_target][get_target & inset_target:4]]
 make_indexed_col_name <- nstandr:::make_indexed_col_name
 
 expect_equal(make_indexed_col_name("a"), "a")

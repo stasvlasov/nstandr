@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*Characters][Characters:1]]
+## -------->>  [[file:../nstandr.src.org::*Characters][Characters:1]]
 ##' @eval attr(magerman_detect_characters, "@title")
 ##' @inherit detect_patterns params return
 ##' @inheritDotParams standardize_options
@@ -26,7 +26,7 @@ attr(magerman_detect_characters, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*magerman.remove.html.codes][magerman.remove.html.codes:1]]
+## -------->>  [[file:../nstandr.src.org::*magerman.remove.html.codes][magerman.remove.html.codes:1]]
 ##' @eval attr(magerman_remove_html_codes, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -47,7 +47,7 @@ attr(magerman_remove_html_codes, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*magerman.replace.sgml.characters][magerman.replace.sgml.characters:1]]
+## -------->>  [[file:../nstandr.src.org::*magerman.replace.sgml.characters][magerman.replace.sgml.characters:1]]
 ##' @eval attr(magerman_replace_sgml_characters, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -66,7 +66,7 @@ attr(magerman_replace_sgml_characters, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*magerman.replace.proprietary.characters][magerman.replace.proprietary.characters:1]]
+## -------->>  [[file:../nstandr.src.org::*magerman.replace.proprietary.characters][magerman.replace.proprietary.characters:1]]
 ##' @eval attr(magerman_replace_proprietary_characters, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -85,7 +85,7 @@ attr(magerman_replace_proprietary_characters, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*magerman.replace.accented.characters][magerman.replace.accented.characters:1]]
+## -------->>  [[file:../nstandr.src.org::*magerman.replace.accented.characters][magerman.replace.accented.characters:1]]
 ##' @eval attr(magerman_replace_accented_characters, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -104,7 +104,7 @@ attr(magerman_replace_accented_characters, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*magerman.remove.special.characters][magerman.remove.special.characters:1]]
+## -------->>  [[file:../nstandr.src.org::*magerman.remove.special.characters][magerman.remove.special.characters:1]]
 ##' @eval attr(magerman_remove_special_characters, "@title")
 ##' @description Removes everything that is not: A-Z; 0-9; “-“; “+”; “’”; “””; “#”;
 ##' “*”;“@”; “!”; “?”; “/”; “&”; “(“; “)”; “:”; “;”; “,”; “.”; “ “
@@ -126,7 +126,7 @@ attr(magerman_remove_special_characters, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.spaces][magerman.remove.double.spaces:1]]
+## -------->>  [[file:../nstandr.src.org::*magerman.remove.double.spaces][magerman.remove.double.spaces:1]]
 ##' @eval attr(magerman_remove_double_spaces, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -147,7 +147,7 @@ attr(magerman_remove_double_spaces, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:1]]
+## -------->>  [[file:../nstandr.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:1]]
 ##' @eval attr(magerman_remove_double_quotation_marks_irregularities, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -168,7 +168,7 @@ attr(magerman_remove_double_quotation_marks_irregularities, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:3]]
+## -------->>  [[file:../nstandr.src.org::*magerman.remove.double.quotation.marks.*][magerman.remove.double.quotation.marks.*:3]]
 ##' @eval attr(magerman_remove_double_quotation_marks_beginning_end, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -189,7 +189,7 @@ attr(magerman_remove_double_quotation_marks_beginning_end, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*magerman.remove.non.alphanumeric.*][magerman.remove.non.alphanumeric.*:1]]
+## -------->>  [[file:../nstandr.src.org::*magerman.remove.non.alphanumeric.*][magerman.remove.non.alphanumeric.*:1]]
 ##' @eval attr(magerman_remove_non_alphanumeric_at_the_beginning, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -226,7 +226,7 @@ attr(magerman_remove_non_alphanumeric_at_the_end, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:1]]
+## -------->>  [[file:../nstandr.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:1]]
 ##' @eval attr(magerman_detect_comma_period_irregularities, "@title")
 ##' @inherit detect_patterns params return
 ##' @inheritDotParams standardize_options
@@ -273,7 +273,7 @@ attr(magerman_replace_comma_period_irregularities_all, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:3]]
+## -------->>  [[file:../nstandr.src.org::*magerman.replace.comma.period.irregularities.*][magerman.replace.comma.period.irregularities.*:3]]
 ##' @eval attr(magerman_replace_comma_period_irregularities, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -296,7 +296,7 @@ attr(magerman_replace_comma_period_irregularities, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Detect and replace legal forms][Detect and replace legal forms:1]]
+## -------->>  [[file:../nstandr.src.org::*Detect and replace legal forms][Detect and replace legal forms:1]]
 ##' @eval attr(magerman_detect_legal_form_end, "@title")
 ##' @inherit detect_patterns params return
 ##' @inheritDotParams standardize_options
@@ -495,7 +495,7 @@ attr(magerman_remove_legal_form_and_clean, "@title") <- "Removes legal form"
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Common Words][Common Words:1]]
+## -------->>  [[file:../nstandr.src.org::*Common Words][Common Words:1]]
 ##' @eval attr(magerman_remove_common_words_at_the_end, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -569,7 +569,7 @@ attr(magerman_remove_common_words, "@title") <- "Removes common words"
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Spelling Variation][Spelling Variation:1]]
+## -------->>  [[file:../nstandr.src.org::*Spelling Variation][Spelling Variation:1]]
 ##' @eval attr(magerman_replace_spelling_variation, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -588,7 +588,7 @@ attr(magerman_replace_spelling_variation, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Condensing][Condensing:1]]
+## -------->>  [[file:../nstandr.src.org::*Condensing][Condensing:1]]
 ##' @eval attr(magerman_condense, "@title")
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
@@ -608,7 +608,7 @@ attr(magerman_condense, "@title") <-
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Umlaut Standardization][Umlaut Standardization:1]]
+## -------->>  [[file:../nstandr.src.org::*Umlaut Standardization][Umlaut Standardization:1]]
 ##' @eval attr(magerman_detect_umlaut, "@title")
 ##' @inherit detect_patterns params return
 ##' @inheritDotParams standardize_options
@@ -713,7 +713,7 @@ attr(magerman_replace_umlaut, "@title") <- "Replaces Umlauts"
 
 
 
-## -------->>  [[file:../harmonizer.src.org::*Combined Magerman Procedures][Combined Magerman Procedures:1]]
+## -------->>  [[file:../nstandr.src.org::*Combined Magerman Procedures][Combined Magerman Procedures:1]]
 ##' Standardizes strings using exact procedures described in Magerman et al. 2009.
 ##' @param x table or vector
 ##' @param detect_legal_form Whether to detect legal forms. Default is FALSE

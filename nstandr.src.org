@@ -201,7 +201,6 @@ For this package development I use Emacs' org-mode that allows literate programm
 - Use tables of internal data for standardization in human readable format and convert it to .rda when deploying package
 - Write function definition and tests next to other but tangle it from .org file to different directories and .r files on deployment
 
-
 ** Naming Convention
 - All functions should have a verb
 - Variables should not have a verb
@@ -4348,6 +4347,23 @@ The default standardization procedures are the following (for now):
           rm(list = save_intermediate_x_to_var, pos = 1)
       return(x)
   }
+
+
+
+  #' @title Makes standard names. Takes either vector or column in the table.
+  #'
+  #' @inherit standardize
+  #' @export
+  #' @aliases standardize
+  make_std_names <- standardize
+
+  #' @title Makes standard names. Takes either vector or column in the table.
+  #'
+  #' @inherit standardize
+  #' @export
+  #' @aliases standardize
+  make_standard_names <- standardize
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_standardize.r

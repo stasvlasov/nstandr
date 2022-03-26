@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*get_target & inset_target][get_target & inset_target:7]]
+## -------->>  [[file:../../nstandr.src.org::*get_target & inset_target][get_target & inset_target:7]]
 require("data.table")
 
 get_target <- nstandr:::get_target

@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*get_vector][get_vector:2]]
+## -------->>  [[file:../../nstandr.src.org::*get_vector][get_vector:2]]
 get_vector <- nstandr:::get_vector
 
 ## missing col

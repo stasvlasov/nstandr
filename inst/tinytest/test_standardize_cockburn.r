@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Combined Cockburn Procedures][Combined Cockburn Procedures:2]]
+## -------->>  [[file:../../nstandr.src.org::*Combined Cockburn Procedures][Combined Cockburn Procedures:2]]
 expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                , "M S Lab CÖ. <a href=lsdldf> <br> <\\a>"
                                , "MSLab Co."

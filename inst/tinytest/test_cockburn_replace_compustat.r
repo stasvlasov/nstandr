@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*Compustat][Compustat:2]]
+## -------->>  [[file:../../nstandr.src.org::*Compustat][Compustat:2]]
 expect_equal(c("WESTINGHOUSE ELEC  "
            , "GRACE (W R) & CO"
            , "GRACE (W R) & CO Ltd.") |>

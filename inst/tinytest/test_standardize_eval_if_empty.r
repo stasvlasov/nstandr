@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*standardize_empty][standardize_empty:2]]
+## -------->>  [[file:../../nstandr.src.org::*standardize_empty][standardize_empty:2]]
 standardize_is_data_empty <- nstandr:::standardize_is_data_empty
 standardize_omit_empty <- nstandr:::standardize_omit_empty
 standardize_eval_if_empty <- nstandr:::standardize_eval_if_empty

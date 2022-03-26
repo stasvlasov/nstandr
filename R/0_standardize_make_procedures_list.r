@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::standardize_make_procedures_list][standardize_make_procedures_list]]
+## -------->>  [[file:../nstandr.src.org::standardize_make_procedures_list][standardize_make_procedures_list]]
 ##' Makes list of procedures calls from table.
 ##'
 ##' Table should have at least two columns - messages and fuctions

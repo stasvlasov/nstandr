@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*standardize_empty][standardize_empty:1]]
+## -------->>  [[file:../nstandr.src.org::*standardize_empty][standardize_empty:1]]
 ##' Checks if all elements in vercor(s) are either "", NA, NULL or have zero length
 ##' @param x input data to check each vector
 ##' @param return_as_true_if_x_zero_length how to interpret zero lenth input. If TRUE then it returns TRUE. Otherwise NULL.

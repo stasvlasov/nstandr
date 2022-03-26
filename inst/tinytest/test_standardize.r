@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*standardize][standardize:2]]
+## -------->>  [[file:../../nstandr.src.org::*standardize][standardize:2]]
 dummy <- function(x, n) {
     for(i in 1:n) x <- sqrt(x)^2
     return(x)

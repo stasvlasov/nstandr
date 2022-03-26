@@ -1,4 +1,4 @@
-## -------->>  [[file:../../harmonizer.src.org::*standardize_toupper][standardize_toupper:2]]
+## -------->>  [[file:../../nstandr.src.org::*standardize_toupper][standardize_toupper:2]]
 expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
                                , "MSLab Co."

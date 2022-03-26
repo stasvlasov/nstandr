@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*get_standardize_options][get_standardize_options:1]]
+## -------->>  [[file:../nstandr.src.org::*get_standardize_options][get_standardize_options:1]]
 ##' Gets `standardize_options` at point with consistent updates up through calling stack.
 ##'
 ##' Limited to max stack of 3 calls and calls that include at least `data` and `...` formals (`nstandr` functions specific) up to `.GlobalEnv` or `standardize` call.

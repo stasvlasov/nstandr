@@ -1,4 +1,4 @@
-## -------->>  [[file:../harmonizer.src.org::*standardize_options][standardize_options:1]]
+## -------->>  [[file:../nstandr.src.org::*standardize_options][standardize_options:1]]
 ##' Does nothing but stores (as its own default arguments) options that control vector handeling through standardization process. These options are available in most nstandr functions that accept `...` parameter.
 ##' 
 ##' @param col Column of interest (the one we need to standardize) in the `x` object (if it is data.frame like).
