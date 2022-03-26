@@ -2,8 +2,8 @@
 % Please edit documentation in R/nstandr.r
 \name{standardize}
 \alias{standardize}
-\alias{make_std_names}
 \alias{make_standard_names}
+\alias{make_std_names}
 \title{Standardizes organizational names. Takes either vector or column in the table.}
 \usage{
 standardize(

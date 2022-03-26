@@ -211,6 +211,8 @@ standardize_x_split <- function(x, by, len = NULL) {
 #' @param quite Suppress all messages. Default is FALSE.
 #' @param save_intermediate_x_to_var For debuging of standartization procedures. Saves intermediate results to this variable. If procedures finish without errors then the variable will be removed.
 #' @inheritDotParams standardize_options
+#'
+#' @aliases make_standard_names make_std_names
 #' 
 #' @return standardized data
 #'
