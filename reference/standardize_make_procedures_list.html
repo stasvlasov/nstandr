@@ -56,44 +56,59 @@ arguments for <code>do.call</code> function).</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">standardize_make_procedures_list</span><span class="op">(</span>
-  <span class="va">procedures_table</span>,
-  message_field <span class="op">=</span> <span class="st">"message"</span>,
-  function_call_field <span class="op">=</span> <span class="st">"function.call"</span>,
-  no_field <span class="op">=</span> <span class="st">"no"</span>,
-  remove_comments <span class="op">=</span> <span class="cn">TRUE</span>,
-  sort_by_no_field <span class="op">=</span> <span class="cn">TRUE</span>,
-  comments <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#"</span>, <span class="st">"-"</span>, <span class="st">""</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">standardize_make_procedures_list</span><span class="op">(</span></span>
+<span>  <span class="va">procedures_table</span>,</span>
+<span>  message_field <span class="op">=</span> <span class="st">"message"</span>,</span>
+<span>  function_call_field <span class="op">=</span> <span class="st">"function.call"</span>,</span>
+<span>  no_field <span class="op">=</span> <span class="st">"no"</span>,</span>
+<span>  remove_comments <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  sort_by_no_field <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  comments <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#"</span>, <span class="st">"-"</span>, <span class="st">""</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>procedures_table</dt>
 <dd><p>Table to use</p></dd>
+
+
 <dt>message_field</dt>
 <dd><p>name of the column with messages that will be
 displayed when each call is executed</p></dd>
+
+
 <dt>function_call_field</dt>
 <dd><p>name of the column where function
 (standardization procedures) calls are listed.</p></dd>
+
+
 <dt>no_field</dt>
 <dd><p>name of the column where the number of procedure
 is specified. Also this field indicates if the row in the
 table is just a comment in which case it will be removed if
 <code>remove_comments</code> is set (which is set by default)</p></dd>
+
+
 <dt>remove_comments</dt>
 <dd><p>Whether to remove comments.</p></dd>
+
+
 <dt>sort_by_no_field</dt>
 <dd><p>Whether to sort the list by col named
 <code>no_field</code></p></dd>
+
+
 <dt>comments</dt>
 <dd><p>Values (character string) in the first col that
 makes entire row as commented out</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>List of named function calls. Names are messages.</p>
+    
+
+<p>List of named function calls. Names are messages.</p>
     </div>
 
   </div>
@@ -108,7 +123,7 @@ makes entire row as commented out</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

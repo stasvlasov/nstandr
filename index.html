@@ -74,7 +74,7 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1" org-language="R"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"stasvlasov/nstandr"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"stasvlasov/nstandr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -83,91 +83,142 @@
 <p>For the standardization methods described in Magerman et al. (2006) and Cockburn et al. (2009) you can use <code class="verbatim">standardize_magerman</code> and <code class="verbatim">standardize_cockburn</code> respectively. These functions are similar to <code class="verbatim">standardize(x, procedures=nstandr:::magerman_procedures_list))</code> and <code class="verbatim">standardize(x, procedures=nstandr:::cockburn_procedures_list))</code> but with additional options for tweaking original procedures and with more documentation.</p>
 <p>Here is an example of <code class="verbatim">standardize_magerman</code> usage</p>
 <div class="sourceCode" id="cb2" org-language="R"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/textconnections.html" class="external-link">textConnection</a></span><span class="op">(</span><span class="st">[1847 chars quoted with '"']</span><span class="op">)</span> |&gt;
-    <span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="op">)</span> |&gt;
-    <span class="fu"><a href="reference/standardize_magerman.html">standardize_magerman</a></span><span class="op">(</span>output_placement <span class="op">=</span> <span class="st">"append_to_x"</span><span class="op">)</span>
-
-<span class="co"># </span>
-<span class="co"># Applying standardization procedures:</span>
-<span class="co"># -----------------------------------------------------------------</span>
-<span class="co"># </span>
-<span class="co"># * Upper casing                                               DONE</span>
-<span class="co"># * Cleaning spaces                                            DONE</span>
-<span class="co"># * Removing HTML codes                                        DONE</span>
-<span class="co"># * Cleaning spaces (2)                                        DONE</span>
-<span class="co"># * Replacing SGML coded characters                            DONE</span>
-<span class="co"># * Replacing proprietary characters                           DONE</span>
-<span class="co"># * Detecting Umlauts                                          DONE</span>
-<span class="co"># * Replacing accented characters                              DONE</span>
-<span class="co"># * Removing special characters                                DONE</span>
-<span class="co"># * Fixing quotation irregularities                            DONE</span>
-<span class="co"># * Removing double quotations                                 DONE</span>
-<span class="co"># * Removing non alphanumeric characters (1)                   DONE</span>
-<span class="co"># * Removing non alphanumeric characters (2)                   DONE</span>
-<span class="co"># * Fixing comma and period irregularities                     DONE</span>
-<span class="co"># * Removing legal form                                        DONE</span>
-<span class="co"># * Removing common words                                      DONE</span>
-<span class="co"># * Fixing spelling variations                                 DONE</span>
-<span class="co"># * Condensing                                                 DONE</span>
-<span class="co"># * Fixing umlaut variations                                   DONE</span>
-<span class="co"># </span>
-<span class="co"># -----------------------------------------------------------------</span>
-<span class="co"># Standardization is done!</span>
-<span class="co"># </span>
-<span class="co">#                                               x                     std_x</span>
-<span class="co">#  1:                SGS-THOMSON MICROELECTRONICS SGSTHOMSONMICROELECTRONIC</span>
-<span class="co">#  2:      S.G.S. THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co">#  3:     S.G.S. THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co">#  4:      S.G.S.-THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co">#  5:         SGS - THOMSON MICROELECTRONICS S.A. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co">#  6:       SGS - THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co">#  7:        SGS - THOMSON MICROELECTRONICS, INC. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co">#  8:      SGS - THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co">#  9:           SGS THOMSON MICROELECTRONICS S.A. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 10:         SGS THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 11:             SGS THOMSON MICROELECTRONICS SA SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 12:            SGS THOMSON MICROELECTRONICS SRL SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 13:          SGS THOMSON MICROELECTRONICS, INC. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 14:          SGS THOMSON MICROELECTRONICS, S.A. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 15:         SGS- THOMSON MICROELECTRONICS, S.A. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 16:        SGS THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 17: SGS- THOMSON MICROELECTRONICS&lt;BR&gt;(PTE) LTD. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 18:             SGS THOMSON-MICROELECTRONICS SA SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 19:            SGS-THOMSON MICROELECTRONIC S.A. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 20:                SGS-THOMSON MICROELECTRONICS SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 21:           SGS-THOMSON MICROELECTRONICS GMBH SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 22:           SGS-THOMSON MICROELECTRONICS INC. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 23:        SGS-THOMSON MICROELECTRONICS LIMITED SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 24:           SGS-THOMSON MICROELECTRONICS LTD. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 25:        SGS-THOMSON MICROELECTRONICS PTE LTD SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 26:       SGS-THOMSON MICROELECTRONICS PTE LTD. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 27:   SGS-THOMSON MICROELECTRONICS PTE. LIMITED SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 28:      SGS-THOMSON MICROELECTRONICS PTE. LTD. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 29:       SGS-THOMSON MICROELECTRONICS S. R. L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 30:            SGS-THOMSON MICROELECTRONICS S.A SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 31:           SGS-THOMSON MICROELECTRONICS S.A. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 32:         SGS-THOMSON MICROELECTRONICS S.P.A. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 33:        SGS-THOMSON MICROELECTRONICS S.R. L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 34:          SGS-THOMSON MICROELECTRONICS S.R.L SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 35:         SGS-THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 36:        SGS--THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 37:             SGS-THOMSON MICROELECTRONICS SA SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 38:            SGS-THOMSON MICROELECTRONICS SPA SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 39:            SGS-THOMSON MICROELECTRONICS SRL SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 40:           SGS-THOMSON MICROELECTRONICS SRL. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 41:          SGS-THOMSON MICROELECTRONICS, GMBH SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 42:           SGS-THOMSON MICROELECTRONICS, INC SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 43:          SGS-THOMSON MICROELECTRONICS, INC. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 44:          SGS-THOMSON MICROELECTRONICS, LTD. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 45:      SGS-THOMSON MICROELECTRONICS, PTE LTD. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 46:          SGS-THOMSON MICROELECTRONICS, S.A. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 47:        SGS-THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 48:          SGS-THOMSON MICROELECTRONICS, S.RL SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 49:            SGS-THOMSON MICROELECTRONICS, SA SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 50:           SGS-THOMSON MICROELECTRONICS, SA. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 51:           SGS-THOMSON MICROELECTRONICS, SRL SGSTHOMSONMICROELECTRONIC</span>
-<span class="co"># 52:         SGS-THOMSON MICROELECTRONICS,S.R.L. SGSTHOMSONMICROELECTRONIC</span>
-<span class="co">#                                               x                     std_x</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/textconnections.html" class="external-link">textConnection</a></span><span class="op">(</span><span class="st">"SGS-THOMSON MICROELECTRONICS</span></span>
+<span><span class="st">S.G.S. THOMSON MICROELECTRONICS S.R.L.</span></span>
+<span><span class="st">S.G.S. THOMSON MICROELECTRONICS, S.R.L.</span></span>
+<span><span class="st">S.G.S.-THOMSON MICROELECTRONICS S.R.L.</span></span>
+<span><span class="st">SGS - THOMSON MICROELECTRONICS S.A.</span></span>
+<span><span class="st">SGS - THOMSON MICROELECTRONICS S.R.L.</span></span>
+<span><span class="st">SGS - THOMSON MICROELECTRONICS, INC.</span></span>
+<span><span class="st">SGS - THOMSON MICROELECTRONICS, S.R.L.</span></span>
+<span><span class="st">SGS THOMSON MICROELECTRONICS S.A.</span></span>
+<span><span class="st">SGS THOMSON MICROELECTRONICS S.R.L.</span></span>
+<span><span class="st">SGS THOMSON MICROELECTRONICS SA</span></span>
+<span><span class="st">SGS THOMSON MICROELECTRONICS SRL</span></span>
+<span><span class="st">SGS THOMSON MICROELECTRONICS, INC.</span></span>
+<span><span class="st">SGS THOMSON MICROELECTRONICS, S.A.</span></span>
+<span><span class="st">SGS- THOMSON MICROELECTRONICS, S.A.</span></span>
+<span><span class="st">SGS THOMSON MICROELECTRONICS, S.R.L.</span></span>
+<span><span class="st">SGS- THOMSON MICROELECTRONICS&lt;BR&gt;(PTE) LTD.</span></span>
+<span><span class="st">SGS THOMSON-MICROELECTRONICS SA</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONIC S.A.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS GMBH</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS INC.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS LIMITED</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS LTD.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS PTE LTD</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS PTE LTD.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS PTE. LIMITED</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS PTE. LTD.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS S. R. L.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS S.A</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS S.A.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS S.P.A.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS S.R. L.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS S.R.L</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS S.R.L.</span></span>
+<span><span class="st">SGS--THOMSON MICROELECTRONICS S.R.L.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS SA</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS SPA</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS SRL</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS SRL.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS, GMBH</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS, INC</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS, INC.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS, LTD.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS, PTE LTD.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS, S.A.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS, S.R.L.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS, S.RL</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS, SA</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS, SA.</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS, SRL</span></span>
+<span><span class="st">SGS-THOMSON MICROELECTRONICS,S.R.L."</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="reference/standardize_magerman.html">standardize_magerman</a></span><span class="op">(</span>output_placement <span class="op">=</span> <span class="st">"append_to_x"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Applying standardization procedures:</span></span>
+<span><span class="co"># -----------------------------------------------------------------</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># * Upper casing                                               DONE</span></span>
+<span><span class="co"># * Cleaning spaces                                            DONE</span></span>
+<span><span class="co"># * Removing HTML codes                                        DONE</span></span>
+<span><span class="co"># * Cleaning spaces (2)                                        DONE</span></span>
+<span><span class="co"># * Replacing SGML coded characters                            DONE</span></span>
+<span><span class="co"># * Replacing proprietary characters                           DONE</span></span>
+<span><span class="co"># * Detecting Umlauts                                          DONE</span></span>
+<span><span class="co"># * Replacing accented characters                              DONE</span></span>
+<span><span class="co"># * Removing special characters                                DONE</span></span>
+<span><span class="co"># * Fixing quotation irregularities                            DONE</span></span>
+<span><span class="co"># * Removing double quotations                                 DONE</span></span>
+<span><span class="co"># * Removing non alphanumeric characters (1)                   DONE</span></span>
+<span><span class="co"># * Removing non alphanumeric characters (2)                   DONE</span></span>
+<span><span class="co"># * Fixing comma and period irregularities                     DONE</span></span>
+<span><span class="co"># * Removing legal form                                        DONE</span></span>
+<span><span class="co"># * Removing common words                                      DONE</span></span>
+<span><span class="co"># * Fixing spelling variations                                 DONE</span></span>
+<span><span class="co"># * Condensing                                                 DONE</span></span>
+<span><span class="co"># * Fixing umlaut variations                                   DONE</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># -----------------------------------------------------------------</span></span>
+<span><span class="co"># Standardization is done!</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co">#                                               x                     std_x</span></span>
+<span><span class="co">#  1:                SGS-THOMSON MICROELECTRONICS SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co">#  2:      S.G.S. THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co">#  3:     S.G.S. THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co">#  4:      S.G.S.-THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co">#  5:         SGS - THOMSON MICROELECTRONICS S.A. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co">#  6:       SGS - THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co">#  7:        SGS - THOMSON MICROELECTRONICS, INC. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co">#  8:      SGS - THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co">#  9:           SGS THOMSON MICROELECTRONICS S.A. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 10:         SGS THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 11:             SGS THOMSON MICROELECTRONICS SA SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 12:            SGS THOMSON MICROELECTRONICS SRL SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 13:          SGS THOMSON MICROELECTRONICS, INC. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 14:          SGS THOMSON MICROELECTRONICS, S.A. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 15:         SGS- THOMSON MICROELECTRONICS, S.A. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 16:        SGS THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 17: SGS- THOMSON MICROELECTRONICS&lt;BR&gt;(PTE) LTD. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 18:             SGS THOMSON-MICROELECTRONICS SA SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 19:            SGS-THOMSON MICROELECTRONIC S.A. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 20:                SGS-THOMSON MICROELECTRONICS SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 21:           SGS-THOMSON MICROELECTRONICS GMBH SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 22:           SGS-THOMSON MICROELECTRONICS INC. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 23:        SGS-THOMSON MICROELECTRONICS LIMITED SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 24:           SGS-THOMSON MICROELECTRONICS LTD. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 25:        SGS-THOMSON MICROELECTRONICS PTE LTD SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 26:       SGS-THOMSON MICROELECTRONICS PTE LTD. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 27:   SGS-THOMSON MICROELECTRONICS PTE. LIMITED SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 28:      SGS-THOMSON MICROELECTRONICS PTE. LTD. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 29:       SGS-THOMSON MICROELECTRONICS S. R. L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 30:            SGS-THOMSON MICROELECTRONICS S.A SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 31:           SGS-THOMSON MICROELECTRONICS S.A. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 32:         SGS-THOMSON MICROELECTRONICS S.P.A. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 33:        SGS-THOMSON MICROELECTRONICS S.R. L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 34:          SGS-THOMSON MICROELECTRONICS S.R.L SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 35:         SGS-THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 36:        SGS--THOMSON MICROELECTRONICS S.R.L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 37:             SGS-THOMSON MICROELECTRONICS SA SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 38:            SGS-THOMSON MICROELECTRONICS SPA SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 39:            SGS-THOMSON MICROELECTRONICS SRL SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 40:           SGS-THOMSON MICROELECTRONICS SRL. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 41:          SGS-THOMSON MICROELECTRONICS, GMBH SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 42:           SGS-THOMSON MICROELECTRONICS, INC SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 43:          SGS-THOMSON MICROELECTRONICS, INC. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 44:          SGS-THOMSON MICROELECTRONICS, LTD. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 45:      SGS-THOMSON MICROELECTRONICS, PTE LTD. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 46:          SGS-THOMSON MICROELECTRONICS, S.A. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 47:        SGS-THOMSON MICROELECTRONICS, S.R.L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 48:          SGS-THOMSON MICROELECTRONICS, S.RL SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 49:            SGS-THOMSON MICROELECTRONICS, SA SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 50:           SGS-THOMSON MICROELECTRONICS, SA. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 51:           SGS-THOMSON MICROELECTRONICS, SRL SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co"># 52:         SGS-THOMSON MICROELECTRONICS,S.R.L. SGSTHOMSONMICROELECTRONIC</span></span>
+<span><span class="co">#                                               x                     std_x</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level1">
@@ -231,7 +282,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

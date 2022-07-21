@@ -50,38 +50,50 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">inset_target</span><span class="op">(</span>
-  <span class="va">vector</span>,
-  <span class="va">x</span>,
-  omitted_rows_value_for_new_col <span class="op">=</span> <span class="cn">NULL</span>,
-  allow_na_in_vector <span class="op">=</span> <span class="cn">TRUE</span>,
-  which_call_to_report <span class="op">=</span> <span class="op">-</span><span class="fl">5L</span>,
-  return_only_target_col <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">inset_target</span><span class="op">(</span></span>
+<span>  <span class="va">vector</span>,</span>
+<span>  <span class="va">x</span>,</span>
+<span>  omitted_rows_value_for_new_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  allow_na_in_vector <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  which_call_to_report <span class="op">=</span> <span class="op">-</span><span class="fl">5L</span>,</span>
+<span>  return_only_target_col <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>vector</dt>
 <dd><p>Character vector to inset into the <code>x</code> object</p></dd>
+
+
 <dt>x</dt>
 <dd><p>Data to standardize. Character vector or data.frame or
 data.table</p></dd>
+
+
 <dt>omitted_rows_value_for_new_col</dt>
 <dd><p>Alternative value
 <code>omitted_rows_value</code> to use in case we create new column in
 x. For example, it is use in insetting codes to avoid the
 default <code>omitted_rows_value</code> use initial <code>col</code> in which case
 codes will be mixed with input values</p></dd>
+
+
 <dt>allow_na_in_vector</dt>
 <dd><p>Whether to allow NA in inset vector</p></dd>
+
+
 <dt>which_call_to_report</dt>
 <dd><p>System call number (e.g., -2L) to
 include in report if arguments checks fails</p></dd>
+
+
 <dt>return_only_target_col</dt>
 <dd><p>If toggled to TRUE then only return
 the vector to be inset (output_placement argument is ignored)</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="standardize_options.html">standardize_options</a></code></p><dl><dt><code>col</code></dt>
 <dd><p>Column of interest (the one we need to standardize) in the <code>x</code> object (if it is data.frame like).</p></dd>
@@ -114,10 +126,13 @@ the vector to be inset (output_placement argument is ignored)</p></dd>
 
   
 </dl></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Data.table or character vector</p>
+    
+
+<p>Data.table or character vector</p>
     </div>
 
   </div>
@@ -132,7 +147,7 @@ the vector to be inset (output_placement argument is ignored)</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

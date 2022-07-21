@@ -50,58 +50,86 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">magerman_detect_characters</span><span class="op">(</span>
-  <span class="va">x</span>,
-  patterns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"\\{.+\\}"</span>, <span class="st">"propriety coded characters {xxx}"</span>,
-    <span class="st">"\\[0.+\\]"</span>, <span class="st">"propriety coded characters [0xxx]"</span>, <span class="st">"\\(.+\\)"</span>,
-    <span class="st">"propriety coded characters (xxx)"</span>, <span class="st">"&amp;.+;"</span>, <span class="st">"sgml coded characters"</span>, <span class="st">"&lt;.+&gt;"</span>,
-    <span class="st">"html coded characters"</span><span class="op">)</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,
-  patterns_col <span class="op">=</span> <span class="fl">1</span>,
-  patterns_codes_col <span class="op">=</span> <span class="fl">2</span>,
-  patterns_type <span class="op">=</span> <span class="st">"regex"</span>,
-  patterns_type_col <span class="op">=</span> <span class="cn">NULL</span>,
-  patterns_codes <span class="op">=</span> <span class="cn">NULL</span>,
-  output_codes_col_name <span class="op">=</span> <span class="st">"characters_cleaning_candidates"</span>,
-  codes_omitted_rows_value <span class="op">=</span> <span class="cn">NULL</span>,
-  no_match_code <span class="op">=</span> <span class="cn">NULL</span>,
-  merge_existing_codes <span class="op">=</span> <span class="st">"replace_all"</span>,
-  return_only_codes <span class="op">=</span> <span class="cn">FALSE</span>,
-  return_only_first_detected_code <span class="op">=</span> <span class="cn">FALSE</span>,
-  return_merge_codes_description <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">magerman_detect_characters</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  patterns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"\\{.+\\}"</span>, <span class="st">"propriety coded characters {xxx}"</span>,</span>
+<span>    <span class="st">"\\[0.+\\]"</span>, <span class="st">"propriety coded characters [0xxx]"</span>, <span class="st">"\\(.+\\)"</span>,</span>
+<span>    <span class="st">"propriety coded characters (xxx)"</span>, <span class="st">"&amp;.+;"</span>, <span class="st">"sgml coded characters"</span>, <span class="st">"&lt;.+&gt;"</span>,</span>
+<span>    <span class="st">"html coded characters"</span><span class="op">)</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  patterns_col <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  patterns_codes_col <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  patterns_type <span class="op">=</span> <span class="st">"regex"</span>,</span>
+<span>  patterns_type_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  patterns_codes <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  output_codes_col_name <span class="op">=</span> <span class="st">"characters_cleaning_candidates"</span>,</span>
+<span>  codes_omitted_rows_value <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  no_match_code <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  merge_existing_codes <span class="op">=</span> <span class="st">"replace_all"</span>,</span>
+<span>  return_only_codes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  return_only_first_detected_code <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  return_merge_codes_description <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>Vector or table to detect in.</p></dd>
+
+
 <dt>patterns</dt>
 <dd><p>Accepts both vector or table. If patterns it is table can also include replacements column.</p></dd>
+
+
 <dt>patterns_col</dt>
 <dd><p>If patterns is a table this specifies which column to use. Default is 1.</p></dd>
+
+
 <dt>patterns_codes_col</dt>
 <dd><p>If patterns is table which column to use as codes column. Default is 2.</p></dd>
+
+
 <dt>patterns_type</dt>
 <dd><p>Specifies kind(s) of patterns. Default is "fixed" (calling code<a href="https://rdrr.io/pkg/stringi/man/stri_replace.html" class="external-link">stri_replace_all_fixed</a>). Other options are:</p></dd>
+
+
 <dt>patterns_type_col</dt>
 <dd><p>Column in patterns table where you can specify types of patterns for each pattern. If set then <code>patterns.type</code> is ignored. Default is NULL.</p></dd>
+
+
 <dt>patterns_codes</dt>
 <dd><p>If provided use it as codes. Should be the same length as patterns. Default is NULL.</p></dd>
+
+
 <dt>output_codes_col_name</dt>
 <dd><p>If provided use it as a name for codes column (new if it does not exist or the one to update) in results.</p></dd>
+
+
 <dt>codes_omitted_rows_value</dt>
 <dd><p>If <code>rows</code> is set. Use this value to fill the omitted rows. When we update existing codes column Default is NULL which means that we use initial codes values for omitted rows. If there is no codes col to update omited rows will be filled with NA.</p></dd>
+
+
 <dt>no_match_code</dt>
 <dd><p>If provided code records that did not get any match with it.</p></dd>
+
+
 <dt>merge_existing_codes</dt>
 <dd><p>Whether to merge newly detected codes with existing. Options are:</p></dd>
+
+
 <dt>return_only_codes</dt>
 <dd><p>If toggled on then just return codes vector.</p></dd>
+
+
 <dt>return_only_first_detected_code</dt>
 <dd><p>If TRUE then return only codes for the first detected pattern. If FALSE return list of all matched codes. Default is TRUE. (Currently does affect performance)</p></dd>
+
+
 <dt>return_merge_codes_description</dt>
 <dd><p>Return description of choices for <code>merge_existing_codes</code> paramenter.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="standardize_options.html">standardize_options</a></code></p><dl><dt><code>col</code></dt>
 <dd><p>Column of interest (the one we need to standardize) in the <code>x</code> object (if it is data.frame like).</p></dd>
@@ -134,10 +162,13 @@
 
   
 </dl></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>standardized names table</p>
+    
+
+<p>standardized names table</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -197,7 +228,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -50,25 +50,32 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">unlist_if_possible</span><span class="op">(</span>
-  <span class="va">x</span>,
-  replace_zero_length_with <span class="op">=</span> <span class="cn">NA_character_</span>,
-  remove_empty_values <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">unlist_if_possible</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  replace_zero_length_with <span class="op">=</span> <span class="cn">NA_character_</span>,</span>
+<span>  remove_empty_values <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>object</p></dd>
+
+
 <dt>replace_zero_length_with</dt>
 <dd><p>Default is replace NULLs with NA_character_ because vector of just NA is a logical class</p></dd>
+
+
 <dt>remove_empty_values</dt>
 <dd><p>remove NA, "", etc. from list elements.  (see <code><a href="standardize_omit_empty.html">standardize_omit_empty()</a></code>)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>updated object</p>
+    
+
+<p>updated object</p>
     </div>
 
   </div>
@@ -83,7 +90,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

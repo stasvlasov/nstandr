@@ -50,110 +50,131 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_dots</span><span class="op">(</span>
-  function_or_arg_list <span class="op">=</span> <span class="cn">NULL</span>,
-  select_args <span class="op">=</span> <span class="cn">NULL</span>,
-  search_calls_with_formals <span class="op">=</span> <span class="st">"..."</span>,
-  search_calls_of_env <span class="op">=</span> <span class="cn">NULL</span>,
-  search_calls_regexp <span class="op">=</span> <span class="cn">NULL</span>,
-  search_depth <span class="op">=</span> <span class="fl">1L</span>,
-  search_up_to_call <span class="op">=</span> <span class="cn">NULL</span>,
-  skip_checks_for_parent_call <span class="op">=</span> <span class="cn">TRUE</span>,
-  eval_default_args <span class="op">=</span> <span class="cn">FALSE</span>,
-  return_unlisted_if_single_arg <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_dots</span><span class="op">(</span></span>
+<span>  function_or_arg_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  select_args <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  search_calls_with_formals <span class="op">=</span> <span class="st">"..."</span>,</span>
+<span>  search_calls_of_env <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  search_calls_regexp <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  search_depth <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  search_up_to_call <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  skip_checks_for_parent_call <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  eval_default_args <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  return_unlisted_if_single_arg <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>function_or_arg_list</dt>
 <dd><p>The end function that meant to accept dots arguments (default arguments accessed with <code>formals(function_or_arg_list)</code>) or just explicit list of default dots arguments that will be searched up in calling stack and updated if set explicitly in higher calls. If set to NULL then use formals of the parent call (assessed with <code>sys.function(-1L)</code>).</p></dd>
+
+
 <dt>select_args</dt>
 <dd><p>Which arguments to select from <code>function_or_arg_list</code>. Ether character or numeric vector.</p></dd>
+
+
 <dt>search_calls_with_formals</dt>
 <dd><p>Formals (parameters, arguments) that should be present in each upper call to continue looking up the call stack for updates in dots arguments.</p></dd>
+
+
 <dt>search_calls_of_env</dt>
 <dd><p>Environment/package name (character string) to which each function in upper calls to should belong to continue looking up the call stack for updates in dots arguments.</p></dd>
+
+
 <dt>search_calls_regexp</dt>
 <dd><p>Regular expression that each function name in upper calls to should matched to continue looking up the call stack for updates in dots arguments.</p></dd>
+
+
 <dt>search_depth</dt>
 <dd><p>Number of frames (aka environments) down in calling stack to look up arguments.</p></dd>
+
+
 <dt>search_up_to_call</dt>
 <dd><p>The name of the call before which to continue looking up the call stack for updates in dots arguments.</p></dd>
+
+
 <dt>skip_checks_for_parent_call</dt>
 <dd><p>Whether to skip checking <code>search_calls_with_formals</code> <code>search_calls_of_env</code> <code>search_calls_regexp</code></p></dd>
+
+
 <dt>eval_default_args</dt>
 <dd><p>Whether to evaluate default arguments. Default is do not evaluate (FALSE) assuming that all argument are simple values (i.e., evaluates to itself)</p></dd>
+
+
 <dt>return_unlisted_if_single_arg</dt>
 <dd><p>Toggle wether unlist when returning a single argument. Default is TRUE</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>List of updated dots arguments</p>
+    
+
+<p>List of updated dots arguments</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Make get_dots available for following examples</span></span>
-<span class="r-in"><span class="va">get_dots</span> <span class="op">&lt;-</span> <span class="fu">nstandr</span><span class="fu">:::</span><span class="va">get_dots</span></span>
-<span class="r-in"><span class="co"># Basic usage</span></span>
-<span class="r-in"><span class="va">util</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">foo</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">bar</span> <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="co"># get dots and bind updated arguments into environment</span></span>
-<span class="r-in">    <span class="va">dots</span> <span class="op">&lt;-</span> <span class="fu">get_dots</span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in">    <span class="kw">for</span> <span class="op">(</span><span class="va">v</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dots</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/assign.html" class="external-link">assign</a></span><span class="op">(</span><span class="va">v</span>, <span class="va">dots</span><span class="op">[[</span><span class="va">v</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span class="r-in">    <span class="co"># util just reports it arguments</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"foo: "</span>, <span class="va">foo</span>, <span class="st">", bar: "</span>, <span class="va">bar</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">util</span><span class="op">(</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Make get_dots available for following examples</span></span></span>
+<span class="r-in"><span><span class="va">get_dots</span> <span class="op">&lt;-</span> <span class="fu">nstandr</span><span class="fu">:::</span><span class="va">get_dots</span></span></span>
+<span class="r-in"><span><span class="co"># Basic usage</span></span></span>
+<span class="r-in"><span><span class="va">util</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">foo</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">bar</span> <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="co"># get dots and bind updated arguments into environment</span></span></span>
+<span class="r-in"><span>    <span class="va">dots</span> <span class="op">&lt;-</span> <span class="fu">get_dots</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="kw">for</span> <span class="op">(</span><span class="va">v</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dots</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/assign.html" class="external-link">assign</a></span><span class="op">(</span><span class="va">v</span>, <span class="va">dots</span><span class="op">[[</span><span class="va">v</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="co"># util just reports it arguments</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"foo: "</span>, <span class="va">foo</span>, <span class="st">", bar: "</span>, <span class="va">bar</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">util</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 0, bar: 0</span>
-<span class="r-in"><span class="co">#&gt; foo: 0, bar: 0</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">main</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="fu">util</span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu">util</span><span class="op">(</span>foo <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> </span>
-<span class="r-in">    <span class="fu">util</span><span class="op">(</span>bar <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">main</span><span class="op">(</span>foo <span class="op">=</span> <span class="fl">2</span>, bar <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co">#&gt; foo: 0, bar: 0</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">main</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu">util</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu">util</span><span class="op">(</span>foo <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> </span></span>
+<span class="r-in"><span>    <span class="fu">util</span><span class="op">(</span>bar <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">main</span><span class="op">(</span>foo <span class="op">=</span> <span class="fl">2</span>, bar <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 2, bar: 2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 1, bar: 2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 2, bar: 1</span>
-<span class="r-in"><span class="co">#&gt; foo: 2, bar: 2</span></span>
-<span class="r-in"><span class="co">#&gt; foo: 1, bar: 2  # THIS WORKS NOW!</span></span>
-<span class="r-in"><span class="co">#&gt; foo: 2, bar: 1  # THIS WORKS NOW!</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Usage in nested calls</span></span>
-<span class="r-in"><span class="va">util</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">foo</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">bar</span> <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="co"># get dots and bind updated arguments into environment</span></span>
-<span class="r-in">    <span class="va">dots</span> <span class="op">&lt;-</span> <span class="fu">get_dots</span><span class="op">(</span>search_depth <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span>
-<span class="r-in">    <span class="kw">for</span> <span class="op">(</span><span class="va">v</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dots</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/assign.html" class="external-link">assign</a></span><span class="op">(</span><span class="va">v</span>, <span class="va">dots</span><span class="op">[[</span><span class="va">v</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span class="r-in">    <span class="co"># util just reports it arguments</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"foo: "</span>, <span class="va">foo</span>, <span class="st">", bar: "</span>, <span class="va">bar</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">main</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="fu">util</span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu">sub_main</span><span class="op">(</span>foo <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">sub_main</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="fu">util</span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in">    <span class="fu">sub_sub_main</span><span class="op">(</span>bar <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">sub_sub_main</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="fu">util</span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">main</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co">#&gt; foo: 2, bar: 2</span></span></span>
+<span class="r-in"><span><span class="co">#&gt; foo: 1, bar: 2  # THIS WORKS NOW!</span></span></span>
+<span class="r-in"><span><span class="co">#&gt; foo: 2, bar: 1  # THIS WORKS NOW!</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Usage in nested calls</span></span></span>
+<span class="r-in"><span><span class="va">util</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">foo</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">bar</span> <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="co"># get dots and bind updated arguments into environment</span></span></span>
+<span class="r-in"><span>    <span class="va">dots</span> <span class="op">&lt;-</span> <span class="fu">get_dots</span><span class="op">(</span>search_depth <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="kw">for</span> <span class="op">(</span><span class="va">v</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dots</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/assign.html" class="external-link">assign</a></span><span class="op">(</span><span class="va">v</span>, <span class="va">dots</span><span class="op">[[</span><span class="va">v</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="co"># util just reports it arguments</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"foo: "</span>, <span class="va">foo</span>, <span class="st">", bar: "</span>, <span class="va">bar</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">main</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu">util</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu">sub_main</span><span class="op">(</span>foo <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">sub_main</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu">util</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu">sub_sub_main</span><span class="op">(</span>bar <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">sub_sub_main</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu">util</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">main</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 0, bar: 0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 1, bar: 0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 1, bar: 2</span>
-<span class="r-in"><span class="co">#&gt; foo: 0, bar: 0</span></span>
-<span class="r-in"><span class="co">#&gt; foo: 1, bar: 0</span></span>
-<span class="r-in"><span class="co">#&gt; foo: 0, bar: 2</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span><span class="co">#&gt; foo: 0, bar: 0</span></span></span>
+<span class="r-in"><span><span class="co">#&gt; foo: 1, bar: 0</span></span></span>
+<span class="r-in"><span><span class="co">#&gt; foo: 0, bar: 2</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -168,7 +189,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

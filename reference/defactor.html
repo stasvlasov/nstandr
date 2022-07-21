@@ -50,32 +50,41 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">defactor</span><span class="op">(</span>
-  <span class="va">x</span>,
-  conv2dt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"only.tables"</span>, <span class="st">"all.but.atomic"</span>, <span class="st">"all.but.lists"</span>, <span class="st">"all"</span>, <span class="st">"none"</span><span class="op">)</span>,
-  x_atomic_name <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">defactor</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  conv2dt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"only.tables"</span>, <span class="st">"all.but.atomic"</span>, <span class="st">"all.but.lists"</span>, <span class="st">"all"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
+<span>  x_atomic_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>an object</p></dd>
+
+
 <dt>conv2dt</dt>
 <dd><p>What to convert to data.table</p></dd>
+
+
 <dt>x_atomic_name</dt>
 <dd><p>Name to use as a col name if x is atomic</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="defactor_vector.html">defactor_vector</a></code></p><dl><dt><code>check.numeric</code></dt>
 <dd><p>check if vector is numeric. Default is TRUE. Takes longer with this check but avoids type conversion (numeric to character).</p></dd>
 
   
 </dl></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>object of the same type without factors</p>
+    
+
+<p>object of the same type without factors</p>
     </div>
 
   </div>
@@ -90,7 +99,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

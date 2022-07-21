@@ -69,26 +69,32 @@ _index_suffix - Adds unique suffix (increment index) if the column name already 
 </ul></div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">standardize_options</span><span class="op">(</span>
-  col <span class="op">=</span> <span class="fl">1</span>,
-  rows <span class="op">=</span> <span class="cn">NULL</span>,
-  omitted_rows_value <span class="op">=</span> <span class="cn">NULL</span>,
-  output_placement <span class="op">=</span> <span class="st">"replace_col"</span>,
-  x_atomic_name <span class="op">=</span> <span class="st">"x"</span>,
-  output_col_name <span class="op">=</span> <span class="st">"std{_col_name}"</span>,
-  append_output_copy <span class="op">=</span> <span class="cn">FALSE</span>,
-  output_copy_col_name <span class="op">=</span> <span class="st">"std{_col_name}_copy{_procedure_index}{_procedure_name}"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">standardize_options</span><span class="op">(</span></span>
+<span>  col <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  rows <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  omitted_rows_value <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  output_placement <span class="op">=</span> <span class="st">"replace_col"</span>,</span>
+<span>  x_atomic_name <span class="op">=</span> <span class="st">"x"</span>,</span>
+<span>  output_col_name <span class="op">=</span> <span class="st">"std{_col_name}"</span>,</span>
+<span>  append_output_copy <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  output_copy_col_name <span class="op">=</span> <span class="st">"std{_col_name}_copy{_procedure_index}{_procedure_name}"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>col</dt>
 <dd><p>Column of interest (the one we need to standardize) in the <code>x</code> object (if it is data.frame like).</p></dd>
+
+
 <dt>rows</dt>
 <dd><p>Logical vector to filter records of interest. Default is NULL which means do not filter records.</p></dd>
+
+
 <dt>omitted_rows_value</dt>
 <dd><p>If <code>rows</code> parameter is set then merge <code>omitted_rows_value</code> with the results (filtered by <code>rows</code>). Either single string or a character vector of length <code>nrow(x)</code>. If NULL (the default) then original values of <code>col</code> are merged with results.</p></dd>
+
+
 <dt>output_placement</dt>
 <dd><p>Where to inset retults (standardized vector) in the <code>x</code> object. Default options is 'replace_col' which overwrides the <code>col</code> in <code>x</code> with results. Other options:</p><ul><li><p>'omit' :: do not write results back to table (usually used when <code>append_output_copy</code> is set for temporary values)</p></li>
 <li><p>'prepend_to_col' :: prepend to <code>col</code></p></li>
@@ -96,18 +102,29 @@ _index_suffix - Adds unique suffix (increment index) if the column name already 
 <li><p>'prepend_to_x' :: prepend to <code>x</code> data.frame like object</p></li>
 <li><p>'append_to_x' :: append to <code>x</code> data.frame like object</p></li>
 </ul></dd>
+
+
 <dt>x_atomic_name</dt>
 <dd><p>If <code>x</code> is vector use this name for original column if it is in results. Default is "x". If <code>x</code> is table the name of <code>col</code> will be used.</p></dd>
+
+
 <dt>output_col_name</dt>
 <dd><p>Use this name for the column with results (standardized values). Parts in curly brakeds are substitute strings. Options for substitutions are:</p></dd>
+
+
 <dt>append_output_copy</dt>
 <dd><p>Whether to append a copy of result vector to <code>x</code> object</p></dd>
+
+
 <dt>output_copy_col_name</dt>
 <dd><p>How the append copy wiil be named</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>It does nothing. Returns NULL silently.</p>
+    
+
+<p>It does nothing. Returns NULL silently.</p>
     </div>
 
   </div>
@@ -122,7 +139,7 @@ _index_suffix - Adds unique suffix (increment index) if the column name already 
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -50,25 +50,33 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">standardize_dehtmlize</span><span class="op">(</span>
-  <span class="va">x</span>,
-  as_single_string <span class="op">=</span> <span class="cn">FALSE</span>,
-  as_single_string_sep <span class="op">=</span> <span class="st">"#_|"</span>,
-  use_read_xml <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">standardize_dehtmlize</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  as_single_string <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  as_single_string_sep <span class="op">=</span> <span class="st">"#_|"</span>,</span>
+<span>  use_read_xml <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>object (table)</p></dd>
+
+
 <dt>as_single_string</dt>
 <dd><p>If set then collapse characters in the main column of the <code>x</code> (i.e., <code>x.col</code>) as to a single string. It will increase performance (at least for relatively short tables). Default is FALSE</p></dd>
+
+
 <dt>as_single_string_sep</dt>
 <dd><p>delimiter for collapsed strings to uncollapse it later. Default is "#_|".</p></dd>
+
+
 <dt>use_read_xml</dt>
 <dd><p>If set the it will parse XML. Default is FALSE which means it parses HTML</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="standardize_options.html">standardize_options</a></code></p><dl><dt><code>col</code></dt>
 <dd><p>Column of interest (the one we need to standardize) in the <code>x</code> object (if it is data.frame like).</p></dd>
@@ -101,10 +109,13 @@
 
   
 </dl></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>updated object</p>
+    
+
+<p>updated object</p>
     </div>
     <div id="references">
     <h2>References</h2>
@@ -123,7 +134,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -60,58 +60,79 @@ specified.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get_vector</span><span class="op">(</span>
-  <span class="va">x</span>,
-  <span class="va">col</span>,
-  rows <span class="op">=</span> <span class="cn">NULL</span>,
-  choices <span class="op">=</span> <span class="cn">NULL</span>,
-  fallback_value <span class="op">=</span> <span class="cn">NULL</span>,
-  fallback_value_supersedes <span class="op">=</span> <span class="cn">FALSE</span>,
-  fallback_value_any_missing <span class="op">=</span> <span class="cn">TRUE</span>,
-  fallback_value_ensure_length <span class="op">=</span> <span class="cn">TRUE</span>,
-  check_x_col_rows <span class="op">=</span> <span class="cn">TRUE</span>,
-  which_call_to_report <span class="op">=</span> <span class="op">-</span><span class="fl">1L</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_vector</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">col</span>,</span>
+<span>  rows <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  choices <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  fallback_value <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  fallback_value_supersedes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  fallback_value_any_missing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  fallback_value_ensure_length <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  check_x_col_rows <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  which_call_to_report <span class="op">=</span> <span class="op">-</span><span class="fl">1L</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>Input data. Can be vector, data.frame or a data.table</p></dd>
+
+
 <dt>col</dt>
 <dd><p>Column of interest in the input data <code>x</code>. The vector we
 would like to work with. Ignored if input <code>x</code> is a atomic
 vector.</p></dd>
+
+
 <dt>rows</dt>
 <dd><p>Rows of interest</p></dd>
+
+
 <dt>choices</dt>
 <dd><p>Optional set of choices that return value should be
 subset of. Do no check if it is NULL.</p></dd>
+
+
 <dt>fallback_value</dt>
 <dd><p>If col is NULL then return this value (but
 see <code>fallback_value_supersedes</code> argument). Also check if it is
 a character vector and same lenght as x. If it is of length 1
 then replicate it to match x's length.</p></dd>
+
+
 <dt>fallback_value_supersedes</dt>
 <dd><p>A bolean toggle. When set col is
 ignored when fallback_value is provided. Otherwise (the
 default) if col is provided then fallback_value is ignored.</p></dd>
+
+
 <dt>fallback_value_any_missing</dt>
 <dd><p>Toggle check if missing values
 are allowed in fallback_value</p></dd>
+
+
 <dt>fallback_value_ensure_length</dt>
 <dd><p>Toggle if fallback_value
 should we make it same length as <code>x</code></p></dd>
+
+
 <dt>check_x_col_rows</dt>
 <dd><p>Toggle wheather to use check_x, check_col,
 check_rows?</p></dd>
+
+
 <dt>which_call_to_report</dt>
 <dd><p>Which call to report if argument
 checks fail.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A vector. Factors in imput <code>data</code> are converted to string.</p>
+    
+
+<p>A vector. Factors in imput <code>data</code> are converted to string.</p>
     </div>
 
   </div>
@@ -126,7 +147,7 @@ checks fail.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -50,66 +50,84 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">standardize</span><span class="op">(</span>
-  <span class="va">x</span>,
-  procedures <span class="op">=</span> <span class="va">nstandr_default_procedures_table</span>,
-  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,
-  nrows_min_to_show_progress <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>,
-  progress_step_nrows <span class="op">=</span> <span class="cn">NULL</span>,
-  progress_step_in_percent <span class="op">=</span> <span class="fl">1</span>,
-  progress_message_use_names <span class="op">=</span> <span class="cn">TRUE</span>,
-  quite <span class="op">=</span> <span class="cn">FALSE</span>,
-  save_intermediate_x_to_var <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="fu">make_std_names</span><span class="op">(</span>
-  <span class="va">x</span>,
-  procedures <span class="op">=</span> <span class="va">nstandr_default_procedures_table</span>,
-  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,
-  nrows_min_to_show_progress <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>,
-  progress_step_nrows <span class="op">=</span> <span class="cn">NULL</span>,
-  progress_step_in_percent <span class="op">=</span> <span class="fl">1</span>,
-  progress_message_use_names <span class="op">=</span> <span class="cn">TRUE</span>,
-  quite <span class="op">=</span> <span class="cn">FALSE</span>,
-  save_intermediate_x_to_var <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="fu">make_standard_names</span><span class="op">(</span>
-  <span class="va">x</span>,
-  procedures <span class="op">=</span> <span class="va">nstandr_default_procedures_table</span>,
-  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,
-  nrows_min_to_show_progress <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>,
-  progress_step_nrows <span class="op">=</span> <span class="cn">NULL</span>,
-  progress_step_in_percent <span class="op">=</span> <span class="fl">1</span>,
-  progress_message_use_names <span class="op">=</span> <span class="cn">TRUE</span>,
-  quite <span class="op">=</span> <span class="cn">FALSE</span>,
-  save_intermediate_x_to_var <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">standardize</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  procedures <span class="op">=</span> <span class="va">nstandr_default_procedures_table</span>,</span>
+<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  nrows_min_to_show_progress <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>,</span>
+<span>  progress_step_nrows <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  progress_step_in_percent <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  progress_message_use_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  quite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  save_intermediate_x_to_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">make_std_names</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  procedures <span class="op">=</span> <span class="va">nstandr_default_procedures_table</span>,</span>
+<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  nrows_min_to_show_progress <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>,</span>
+<span>  progress_step_nrows <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  progress_step_in_percent <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  progress_message_use_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  quite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  save_intermediate_x_to_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">make_standard_names</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  procedures <span class="op">=</span> <span class="va">nstandr_default_procedures_table</span>,</span>
+<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  nrows_min_to_show_progress <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>,</span>
+<span>  progress_step_nrows <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  progress_step_in_percent <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  progress_message_use_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  quite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  save_intermediate_x_to_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>object (table)</p></dd>
+
+
 <dt>procedures</dt>
 <dd><p>Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with <code>standardize_make_procedures_list</code> (see its help for the correct format of data.frame with procedures). Default is <code>nstandr_default_procedures_table</code></p></dd>
+
+
 <dt>show_progress</dt>
 <dd><p>Whether to report progress percentage. Default is TRUE</p></dd>
+
+
 <dt>nrows_min_to_show_progress</dt>
 <dd><p>The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5</p></dd>
+
+
 <dt>progress_step_nrows</dt>
 <dd><p>If set it will divide the x into chunk of this amount of rows. Default is NULL.</p></dd>
+
+
 <dt>progress_step_in_percent</dt>
 <dd><p>Number of percents that represent one step in progress. Value should be between 0.1 and 50. Default is 1 which means it will try to chunk the x into 100 pieces.</p></dd>
+
+
 <dt>progress_message_use_names</dt>
 <dd><p>Should we use names from <code>procedures</code> list to report progress. Default is TRUE.</p></dd>
+
+
 <dt>quite</dt>
 <dd><p>Suppress all messages. Default is FALSE.</p></dd>
+
+
 <dt>save_intermediate_x_to_var</dt>
 <dd><p>For debuging of standartization procedures. Saves intermediate results to this variable. If procedures finish without errors then the variable will be removed.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="standardize_options.html">standardize_options</a></code></p><dl><dt><code>col</code></dt>
 <dd><p>Column of interest (the one we need to standardize) in the <code>x</code> object (if it is data.frame like).</p></dd>
@@ -142,10 +160,13 @@
 
   
 </dl></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>standardized data</p>
+    
+
+<p>standardized data</p>
     </div>
 
   </div>
@@ -160,7 +181,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
