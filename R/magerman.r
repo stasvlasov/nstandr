@@ -718,6 +718,7 @@ attr(magerman_replace_umlaut, "@title") <- "Replaces Umlauts"
 ##' @param x table or vector
 ##' @param detect_legal_form Whether to detect legal forms. Default is FALSE
 ##' @param append_output_copy_before_common_words_removal Whether to save standardized column before `common.words.removal` procedure. Default is FALSE
+##' @param condense_words Whether to remove all spaces in standard names
 ##' @inheritDotParams standardize
 ##' @return standardized names table
 ##'
@@ -728,6 +729,7 @@ attr(magerman_replace_umlaut, "@title") <- "Replaces Umlauts"
 standardize_magerman <- function(x
                              , detect_legal_form = FALSE
                              , append_output_copy_before_common_words_removal = FALSE
+                             , condense_words = TRUE
                              , ...) {
     magerman_procedures <- magerman_procedures_list
     ## do some tweaks on magerman_procedures
@@ -737,6 +739,13 @@ standardize_magerman <- function(x
                  , \(p) p[[1]] == "magerman_detect_legal_form")
         magerman_procedures <-
             magerman_procedures[!is_magerman_detect_legal_form]
+    }
+    if (!condense_words) {
+        is_magerman_condense <- 
+            sapply(magerman_procedures
+                 , \(p) p[[1]] == "magerman_condense")
+        magerman_procedures <-
+            magerman_procedures[!is_magerman_condense]
     }
     if (append_output_copy_before_common_words_removal) {
         which_is_magerman_remove_legal_form_and_clean <-

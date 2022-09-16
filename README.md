@@ -1,9 +1,15 @@
 # nstandr <img src="img/logo.png" align="right" alt="" width="120"/>
 
+```{=org}
+#+begin: md-badges :codecov-token OQVJ7NRXO5
+```
 [![R-CMD-check](https://github.com/stasvlasov/nstandr/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/nstandr/actions)
 [![codecov](https://codecov.io/gh/stasvlasov/nstandr/branch/master/graph/badge.svg?token=OQVJ7NRXO5)](https://codecov.io/gh/stasvlasov/nstandr)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/nstandr)
 
+```{=org}
+#+end:
+```
 The R package `nstandr`{.verbatim} makes standardized organizational
 names using procedures described by Thoma et al. (2010), Magerman et al.
 (2006), Cockburn et al. (2009), Wasi & Flaaen (2015).

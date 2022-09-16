@@ -8,6 +8,7 @@ standardize_magerman(
   x,
   detect_legal_form = FALSE,
   append_output_copy_before_common_words_removal = FALSE,
+  condense_words = TRUE,
   ...
 )
 }
@@ -17,6 +18,8 @@ standardize_magerman(
 \item{detect_legal_form}{Whether to detect legal forms. Default is FALSE}
 
 \item{append_output_copy_before_common_words_removal}{Whether to save standardized column before \code{common.words.removal} procedure. Default is FALSE}
+
+\item{condense_words}{Whether to remove all spaces in standard names}
 
 \item{...}{
   Arguments passed on to \code{\link[=standardize]{standardize}}

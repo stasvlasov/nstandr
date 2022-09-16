@@ -53,9 +53,12 @@ check_col <- function(col, x
 
 
 
-check_x <- function(x, which_call_to_report = -1L) {
+check_x <- function(x, which_call_to_report = -1L, null_ok = FALSE) {
     assertion_fails <- checkmate::makeAssertCollection()
-    checkmate::assert_multi_class(x, c("character", "data.frame", "data.table"), add = assertion_fails)
+    checkmate::assert_multi_class(x
+                                , c("character", "data.frame", "data.table")
+                                , add = assertion_fails
+                                , null.ok = null_ok)
     report_arg_checks(assertion_fails
                     , which_call_to_report)
 }

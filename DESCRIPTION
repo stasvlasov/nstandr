@@ -1,7 +1,7 @@
 Package: nstandr
 Title: Standardization of Organizational Names
 Version: 0.0.0.9000
-Date: 2022-03-26
+Date: 2022-09-16
 Authors@R: 
     person("Stanislav", "Vlasov", , "s.vlasov@uvt.nl", role = c("aut", "cre"))
 Description: Standardizes organizational names using steps described in
@@ -34,4 +34,4 @@ References: Magerman, T., Looy, V., Bart, & Song, X. (2006). Data
     utilities. The Stata Journal, 15(3), 672-697.
     https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1

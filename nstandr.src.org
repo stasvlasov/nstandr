@@ -235,7 +235,8 @@ For this package development I use Emacs' org-mode that allows literate programm
            (save-excursion
              (org-babel-goto-named-src-block name)
              (call-interactively 'org-babel-execute-maybe))))
-       calls)))
+       calls))
+    (message "nstandr deployment is done!"))
 #+end_src
 
 ** README.md
@@ -428,7 +429,7 @@ To call all calls
 #+header: :var data = "default.data.table"
 #+header: :var data.name = "default.data.name"
 #+header: :var data.names = "first.row"
-#+header: :var data.dir = "./data"
+#+header: :var data.dir = "data"
 #+header: :var remove.single.quotes = "TRUE"
 #+header: :var add.to.rda = "TRUE"
 #+header: :var rda.filename = "sysdata"
@@ -511,17 +512,18 @@ To call all calls
   ## add all .rds to R/sysdata.rda
   ## (variable names are the same as .rds files)
   if(!is.null(add.to.rda)) {
-      dir(data.dir) %>% 
-          sapply(romRDS
-               , dir = data.dir
-               , quietly = TRUE
-               , return_obj_name = TRUE
+      var_list <- 
+          dir(data.dir) |>
+          sapply(romRDS::rom_rds
+               , NULL
+               , rds_dir = data.dir
+               , return_name = TRUE
                , do_not_make = TRUE
-               , obj_name_has_extention = TRUE) %>%
-          save(list = ., file = rda.path)
+               , name_has_extention = TRUE
+               , assign_to_name = TRUE)
+      save(list = var_list, file = rda.path)
+      message(".rda is updated!")
   }
-
-  message(".rda is updated!")
 
 #+end_src
 
@@ -531,128 +533,129 @@ To call all calls
 #+header: :var data = "default.data.table"
 #+header: :var data.name = "default.data.name"
 #+header: :var data.names = "first.row"
-#+header: :var data.dir = "./data"
+#+header: :var data.dir = "data"
 #+header: :var remove.single.quotes = "TRUE"
 #+header: :var add.to.rda = "TRUE"
 #+header: :var rda.filename = "sysdata"
 #+header: :var rda.dir = "./R"
 #+begin_src R :tangle no
-  require("magrittr")
-  require("stringr")
-  require("stringi")
-  require("data.table")
-  require("romRDS")
+    require("magrittr")
+    require("stringr")
+    require("stringi")
+    require("data.table")
+    require("romRDS")
 
-  ## just in case if there is not directory
-  dir.create(data.dir, recursive = TRUE, showWarnings = FALSE)
+    ## just in case if there is not directory
+    dir.create(data.dir, recursive = TRUE, showWarnings = FALSE)
 
-  ## make a path for saving .rds
-  data.path  <-
-      data.name %>% 
-      paste0(".rds") %>%
-      file.path(data.dir, .)
+    ## make a path for saving .rds
+    data.path  <-
+        data.name %>% 
+        paste0(".rds") %>%
+        file.path(data.dir, .)
 
-  ## just in case if there is not directory
-  dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
+    ## just in case if there is not directory
+    dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
 
-  ## make a path for saving .rda
-  rda.path  <-
-      rda.filename %>% 
-      paste0(".rda") %>%
-      file.path(rda.dir, .)
+    ## make a path for saving .rda
+    rda.path  <-
+        rda.filename %>% 
+        paste0(".rda") %>%
+        file.path(rda.dir, .)
 
-  if(length(data) == 1) {
-      data %<>%
-          extract2(1) %>%
-          ## small fix for the stings trimming problem
-          {if(as.logical(remove.single.quotes))
-               str_replace(.,"^'(.*)'$", "\\1")
-           else .} %>%
-          ## work around | character in the strings
-          stri_replace_all_fixed("\\vert", "|")
-      ## save data to .rda (filename is the same as var name)
-      saveRDS(data, data.path)
-  } else {  
-      ## fix for column names
-      if(data.names == "first.row") {
-          ## only works when option :colnames no
-          data.names <- 
-              data %>%
-              extract(1,) %>%
-              unlist %>% 
-              tolower %>%
-              make.names
-          data %<>% 
-              extract(-1,) %>%
-              set_names(data.names)
-      }
-      ## small fix for the stings trimming problem
-      ## only remove quotes when they is on the both sides of the string
-      ## it will then convert everything into strings
-      data %<>% 
-          {if(as.logical(remove.single.quotes))
-               lapply(.,str_replace, "^'(.*)'$", "\\1")
-           else .} %>%
-          ## work around | character in the strings
-          lapply(stri_replace_all_fixed, "\\vert", "|") %>% 
-          as.data.table
-      ## save data to .rda (filename is the same as var name)
-      saveRDS(data, data.path)
-  }
+    if(length(data) == 1) {
+        data %<>%
+            extract2(1) %>%
+            ## small fix for the stings trimming problem
+            {if(as.logical(remove.single.quotes))
+                 str_replace(.,"^'(.*)'$", "\\1")
+             else .} %>%
+            ## work around | character in the strings
+            stri_replace_all_fixed("\\vert", "|")
+        ## save data to .rda (filename is the same as var name)
+        saveRDS(data, data.path)
+    } else {  
+        ## fix for column names
+        if(data.names == "first.row") {
+            ## only works when option :colnames no
+            data.names <- 
+                data %>%
+                extract(1,) %>%
+                unlist %>% 
+                tolower %>%
+                make.names
+            data %<>% 
+                extract(-1,) %>%
+                set_names(data.names)
+        }
+        ## small fix for the stings trimming problem
+        ## only remove quotes when they is on the both sides of the string
+        ## it will then convert everything into strings
+        data %<>% 
+            {if(as.logical(remove.single.quotes))
+                 lapply(.,str_replace, "^'(.*)'$", "\\1")
+             else .} %>%
+            ## work around | character in the strings
+            lapply(stri_replace_all_fixed, "\\vert", "|") %>% 
+            as.data.table
+        ## save data to .rda (filename is the same as var name)
+        saveRDS(data, data.path)
+    }
 
-  message(data.name, " is saved!")
+    message(data.name, " is saved!")
 
-  ## add all .rds to R/sysdata.rda
-  ## (variable names are the same as .rds files)
-  if(!is.null(add.to.rda)) {
-      dir(data.dir) %>% 
-          sapply(romRDS
-               , dir = data.dir
-               , quietly = TRUE
-               , return_obj_name = TRUE
-               , do_not_make = TRUE
-               , obj_name_has_extention = TRUE) %>%
-          save(list = ., file = rda.path)
-  }
-
-  message(".rda is updated!")
+    ## add all .rds to R/sysdata.rda
+    ## (variable names are the same as .rds files)
+    if(!is.null(add.to.rda)) {
+        var_list <- 
+            dir(data.dir) |>
+            sapply(romRDS::rom_rds
+                 , NULL
+                 , rds_dir = data.dir
+                 , quietly = TRUE
+                 , return_name = TRUE
+                 , do_not_make = TRUE
+                 , name_has_extention = TRUE
+                 , assign_to_name = TRUE)
+            save(list = var_list, file = rda.path)
+        message(".rda is updated!")
+    }
 
 #+end_src
 
 #+name: make-rda
-#+header: :var data.dir = "./data"
+#+header: :var data.dir = "data"
 #+header: :var add.to.rda = "TRUE"
 #+header: :var rda.filename = "sysdata"
 #+header: :var rda.dir = "./R"
 #+BEGIN_SRC R
-  require("romRDS")
-  require("magrittr")
-  
   ## just in case if there is not directory
   dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
-  
+
   ## make a path for saving .rda
   rda.path  <-
-      rda.filename %>% 
-      paste0(".rda") %>%
-      file.path(rda.dir, .)
-  
-  
+      file.path(rda.dir
+              , rda.filename |>
+                paste0(".rda"))
+
+
   ## add all .rds to R/sysdata.rda
   ## (variable names are the same as .rds files)
   if(!is.null(add.to.rda)) {
-      dir(data.dir) %>% 
-          sapply(romRDS
-               , dir = data.dir
-               , quietly = TRUE
-               , return.obj.name = TRUE
-               , do.not.make = TRUE
-               , obj.name.has.extention = TRUE) %>%
-          save(list = ., file = rda.path)
+      var_list <- 
+          dir(data.dir) |>
+          sapply(romRDS::rom_rds
+               , NULL
+               , rds_dir = data.dir
+               , return_name = TRUE
+               , do_not_make = TRUE
+               , name_has_extention = TRUE
+               , assign_to_name = TRUE)
+
+      save(list = var_list, file = rda.path)
+      message(".rda is updated!")
   }
-  
-  message(".rda is updated!")
-  
+
 #+END_SRC
 
 ** Generate package description
@@ -1866,9 +1869,12 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 
 
 
-  check_x <- function(x, which_call_to_report = -1L) {
+  check_x <- function(x, which_call_to_report = -1L, null_ok = FALSE) {
       assertion_fails <- checkmate::makeAssertCollection()
-      checkmate::assert_multi_class(x, c("character", "data.frame", "data.table"), add = assertion_fails)
+      checkmate::assert_multi_class(x
+                                  , c("character", "data.frame", "data.table")
+                                  , add = assertion_fails
+                                  , null.ok = null_ok)
       report_arg_checks(assertion_fails
                       , which_call_to_report)
   }
@@ -7141,6 +7147,7 @@ p. 44
   ##' @param x table or vector
   ##' @param detect_legal_form Whether to detect legal forms. Default is FALSE
   ##' @param append_output_copy_before_common_words_removal Whether to save standardized column before `common.words.removal` procedure. Default is FALSE
+  ##' @param condense_words Whether to remove all spaces in standard names
   ##' @inheritDotParams standardize
   ##' @return standardized names table
   ##'
@@ -7151,6 +7158,7 @@ p. 44
   standardize_magerman <- function(x
                                , detect_legal_form = FALSE
                                , append_output_copy_before_common_words_removal = FALSE
+                               , condense_words = TRUE
                                , ...) {
       magerman_procedures <- magerman_procedures_list
       ## do some tweaks on magerman_procedures
@@ -7160,6 +7168,13 @@ p. 44
                    , \(p) p[[1]] == "magerman_detect_legal_form")
           magerman_procedures <-
               magerman_procedures[!is_magerman_detect_legal_form]
+      }
+      if (!condense_words) {
+          is_magerman_condense <- 
+              sapply(magerman_procedures
+                   , \(p) p[[1]] == "magerman_condense")
+          magerman_procedures <-
+              magerman_procedures[!is_magerman_condense]
       }
       if (append_output_copy_before_common_words_removal) {
           which_is_magerman_remove_legal_form_and_clean <-
