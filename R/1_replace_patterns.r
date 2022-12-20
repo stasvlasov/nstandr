@@ -72,7 +72,7 @@ replace_regex_by_mode <- function(x
 ##' @inheritDotParams standardize_options
 ##'
 ##' @return If nothing was indicated to cbind to results then it
-##'     returns standardized vector. If something is needs to be cbind
+##'     returns standardized vector. If something needs to be cbind
 ##'     then it returns data.table
 ##' @export
 replace_patterns <- function(x

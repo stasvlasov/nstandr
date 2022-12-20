@@ -1,5 +1,5 @@
 ## -------->>  [[file:../nstandr.src.org::*Characters][Characters:1]]
-##' @eval attr(magerman_detect_characters, "@title")
+##' @eval make_roxy_tags(magerman_detect_characters)
 ##' @inherit detect_patterns params return
 ##' @inheritDotParams standardize_options
 ##' @return standardized names table
@@ -9,25 +9,26 @@
 ##' @md
 ##' @export
 magerman_detect_characters <- make_alias(detect_patterns
-                                       , patterns =
-                                             c("\\{.+\\}", "propriety coded characters {xxx}"
-                                             , "\\[0.+\\]", "propriety coded characters [0xxx]"
-                                             , "\\(.+\\)", "propriety coded characters (xxx)"
-                                             , "&.+;", "sgml coded characters"
-                                             , "<.+>", "html coded characters") |>
-                                             matrix(byrow = TRUE, ncol = 2) |>
-                                             data.frame()
+                                       , patterns = magerman_patterns_detect_characters
                                        , patterns_type = "regex"
-                                       , output_codes_col_name = "characters_cleaning_candidates")
-
-attr(magerman_detect_characters, "@title") <-
-    "Detect candidates for characters that need to be cleaned"
+                                       , output_codes_col_name = "characters_cleaning_candidates"
+                                       , .title = "Detect candidates for characters that need to be cleaned"
+                                       , .description = "The function below can be used to detect candidates for characters that need to be cleaned based on the patterns (see table in the details)."
+                                       , .example = ""
+                                       , .tables = list(
+                                             list("magerman_patterns_detect_characters"
+                                                , title = "Patterns used to identify classes of characters to clean."
+                                                , pp = "23-25")
+                                         )
+                                       , .pp = "23-25"
+                                       , .ref = "magerman2006")
 ## --------<<  Characters:1 ends here
 
 
 
 ## -------->>  [[file:../nstandr.src.org::*magerman.remove.html.codes][magerman.remove.html.codes:1]]
 ##' @eval attr(magerman_remove_html_codes, "@title")
+##' 
 ##' @inherit replace_patterns params return
 ##' @inheritDotParams standardize_options
 ##' @return standardized names table
@@ -40,9 +41,14 @@ magerman_remove_html_codes <- make_alias(replace_patterns
                                        , patterns = "<BR>"
                                        , replacements = " ")
 
-
 attr(magerman_remove_html_codes, "@title") <-
     "Removes html codes"
+
+attr(magerman_remove_html_codes, "@description") <-
+    "Original authors did search for all html tags but only found the <BR> (p.23). So in general all html tags should be considered. This procedure is for reproducibility only."
+
+attr(magerman_remove_html_codes, "@example") <-
+    "<BR> -> ' '"
 ## --------<<  magerman.remove.html.codes:1 ends here
 
 

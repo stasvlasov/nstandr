@@ -707,7 +707,7 @@ Adjust "ensure_version" verstions manually:
   usethis::use_mit_license()
 
   ## Update name spaces and documentation for functions
-  roxygenise()
+  roxygen2::roxygenise()
 #+END_SRC
 
 ** Install package
@@ -968,7 +968,6 @@ Adjust "ensure_version" verstions manually:
       }
   }
 #+END_SRC
-
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_standardize_detect_enc.r
   
@@ -3220,7 +3219,7 @@ Tests:
   ## test omited
 #+END_SRC
 
-*** inset_formals
+*** make_alias
 :PROPERTIES:
 :ID:       org:vdg1zja1ucj0
 :END:
@@ -3237,18 +3236,139 @@ Tests:
   }
 
 
-  make_alias <- function(fun, ...) {
-      .fun <- fun
-      ## remove 1st and 2nd elemnts ('call' name and 'fun' arg)
+
+  add_attr <- function(fun
+                     , env = parent.frame()
+                     , attr_prefix = "nstandr_procedure_"
+                     , ...) {
+      .fun <- substitute(fun)
+      checkmate::assert_character(...names()
+                                , pattern = "^\\..+"
+                                , null.ok = TRUE)
+      mapply(
+          \(name, val) {
+              name <- sub("^\\.", attr_prefix, name)
+              eval(bquote(attr(.(.fun), .(name)) <- .(val)), envir = env)
+          }
+        , ...names()
+        , list(...))
+  }
+
+  make_alias <- function(f, ...) {
+      alias_name = deparse(substitute(f))
+      ## remove 1st and 2nd elements ('call' name and 'f' arg)
       args <- as.list(sys.call())[-(1:2)]
-      checkmate::assert_subset(names(args)
-                             , choices = names(formals(.fun))
+      args_attr_p <- grepl("^\\..+", names(args))
+      f_args <- args[!args_attr_p]
+      checkmate::assert_subset(names(f_args)
+                             , choices = names(formals(f))
                              , empty.ok = FALSE)
-      formals(.fun)[names(args)] <- args
-      return(.fun)
+      ## formals resets attributes so it comes first
+      formals(f)[names(f_args)] <- f_args
+      eval(bquote(add_attr(f
+                         , ..(args[args_attr_p])
+                         , .alias = alias_name)
+                , splice = TRUE))
+      return(f)
+  }
+
+  #' title
+  #' tables (with reference, pp, table no. and title)
+  #' example
+  #' description (very short and just ref to pp)
+  #' reference (url, doi, authors, can I use noweb with papis call to ref to extract all that?)
+
+  make_roxy_tags <- function(f) {
+      get_attr <- function(a) {
+          attr(f, paste0("nstandr_procedure_", a))
+      }
+      get_roxy_tag <- function(tag, name = NULL) {
+          val <- get_attr(tag)
+          if(is.null(val)) {
+              return(NULL)
+          } else {
+              tag <- if(is.null(name)) tag else name
+              return(paste0("@", tag, " ",val))
+          }
+      }
+      description <-
+          c(if(!is.null(get_attr("description"))) {
+                c(stringi::stri_wrap(get_attr("description")), "")
+            }
+          , if(!is.null(get_attr("example"))) {
+                c("A simple illustration of what this procedure does:", ""
+                , paste0("    ", get_attr("example")))
+            })
+      description <- if(!is.null(description)) {
+                         c("@description", description)
+                     }
+      c(get_roxy_tag("title")
+      , description
+        ## details
+        ## Put name of the alias function to @seealso
+      , get_roxy_tag("alias", "seealso"))
   }
 
 #+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_get_roxy_tag.r
+  make_roxy_tags <- nstandr:::make_roxy_tags
+  add_attr <- nstandr:::add_attr
+
+  a <- function() {}
+
+  add_attr(a
+         , .title = "hello"
+         , .example = "1 + 2 -> 3"
+         , .description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Proin nibh augue, suscipit a, scelerisque sed, lacinia in, mi. Cras vel lorem. Etiam pellentesque aliquet tellus.")
+
+  expect_equal(
+      make_roxy_tags(a)
+    , c("@title hello", "@description", "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Proin nibh", 
+        "augue, suscipit a, scelerisque sed, lacinia in, mi. Cras vel lorem.", 
+        "Etiam pellentesque aliquet tellus.", "", "A simple illustration of what this procedure does:", 
+        "", "    1 + 2 -> 3"))
+
+
+  #+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_add_attr.r
+  add_attr <- nstandr:::add_attr
+
+  a <- function(x = 1, y = 1) {
+      return(x + y)
+  }
+
+  add_attr(a
+         , .title = "lala"
+         , .description = "lala")
+
+  expect_equal(a
+             , structure(function (x = 1, y = 1) 
+             {
+                 return(x + y)
+             }, nstandr_procedure_title = "lala", nstandr_procedure_description = "lala"))
+  #+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_make_alias.r
+  make_alias <- nstandr:::make_alias
+
+  a <- function(x = 1, y = 1) {
+      return(x + y)
+  }
+
+  b <- make_alias(a
+                , x = 9
+                , .title = "hello world")
+
+  expect_equal(b
+             , structure(function (x = 9, y = 1) 
+             {
+                 return(x + y)
+             }
+           , nstandr_procedure_title = "hello world"
+           , nstandr_procedure_alias = "a"))
+  #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_inset_formals.r
   inset_formals <- nstandr:::inset_formals
@@ -3256,6 +3376,9 @@ Tests:
   expect_equal(inset_formals(formals(mean), alist(x = something_unevaluated))
              , alist(x = something_unevaluated, ... = ))
 #+END_SRC
+
+
+
 
 
 ** replace and detect functions
@@ -3481,7 +3604,7 @@ Tests:
   ##' @inheritDotParams standardize_options
   ##'
   ##' @return If nothing was indicated to cbind to results then it
-  ##'     returns standardized vector. If something is needs to be cbind
+  ##'     returns standardized vector. If something needs to be cbind
   ##'     then it returns data.table
   ##' @export
   replace_patterns <- function(x
@@ -4194,20 +4317,20 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
 The default standardization procedures are the following (for now):
 
 #+NAME: nstandr_default_procedures_table
-| no | message                            | function.call                                    |
-|----+------------------------------------+--------------------------------------------------|
-|    | *Prepossessing*                    |                                                  |
+| no | message                            | function.call                                      |
+|----+------------------------------------+----------------------------------------------------|
+|    | *Prepossessing*                    |                                                    |
 |  1 | Cleaning spaces                    | 'standardize_squish_spaces', wrap_in_spaces = TRUE |
-|    |                                    |                                                  |
-|    | *Characters*                       |                                                  |
-|  2 | Removing HTML codes                | 'standardize_dehtmlize'                          |
-|  3 | Translating non-ASCII to ASCII     | 'standardize_toascii'                            |
-|  4 | Upper casing                       | 'standardize_toupper'                            |
-|    |                                    |                                                  |
-|    | *Cleaning*                         |                                                  |
-|  5 | Standardizing organizational names | 'cockburn_replace_punctuation'                   |
-|  6 | Removing brackets                  | 'standardize_remove_brackets'                    |
-|  7 | Cleaning spaces                    | 'standardize_squish_spaces'                      |
+|    |                                    |                                                    |
+|    | *Characters*                       |                                                    |
+|  2 | Removing HTML codes                | 'standardize_dehtmlize'                            |
+|  3 | Translating non-ASCII to ASCII     | 'standardize_toascii'                              |
+|  4 | Upper casing                       | 'standardize_toupper'                              |
+|    |                                    |                                                    |
+|    | *Cleaning*                         |                                                    |
+|  5 | Standardizing organizational names | 'cockburn_replace_punctuation'                     |
+|  6 | Removing brackets                  | 'standardize_remove_brackets'                      |
+|  7 | Cleaning spaces                    | 'standardize_squish_spaces'                        |
 
 #+call: make-rds-patterns-table(data = nstandr_default_procedures_table, data.name = "nstandr_default_procedures_table", remove.single.quotes = "FALSE", data.dir = "data", add.to.rda = "R/sysdata.rda")
 
@@ -4484,19 +4607,20 @@ Full text: https://core.ac.uk/download/pdf/34432497.pdf
 :ID:       org:qwne4v20zai0
 :END:
 
-Patterns used to identify characters to clean
-| pattern | regex   | procedure                  |
-|---------+---------+----------------------------|
-| %{%}%   | {.+}    | propriety coded characters |
-| %[0%]%  | \[0.+\] | propriety coded characters |
-| %(%)%   | \(.+\)  | propriety coded characters |
-| %&%;%   | &.+;    | sgml coded characters      |
-| %<%>%   | <.+>    | html coded characters      |
+#+NAME: magerman_patterns_detect_characters
+| R regex     | code                              | original pattern |
+|-------------+-----------------------------------+------------------|
+| '\{.+\}'    | propriety coded characters {xxx}  | %{%}%            |
+| '\[0.+\]'   | propriety coded characters [0xxx] | %[0%]%           |
+| '\(.+\)'    | propriety coded characters (xxx)  | %(%)%            |
+| '&.+;'      | sgml coded characters             | %&%;%            |
+| '<.+>'      | html coded characters             | %<%>%            |
 
-The function below can be used to detect candidates for characters that need to be cleaned based on the table above.
+#+call: make-rds-patterns-table(data = magerman_patterns_detect_characters, data.name = "magerman_patterns_detect_characters")
+
 
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_detect_characters, "@title")
+  ##' @eval make_roxy_tags(magerman_detect_characters)
   ##' @inherit detect_patterns params return
   ##' @inheritDotParams standardize_options
   ##' @return standardized names table
@@ -4506,19 +4630,19 @@ The function below can be used to detect candidates for characters that need to 
   ##' @md
   ##' @export
   magerman_detect_characters <- make_alias(detect_patterns
-                                         , patterns =
-                                               c("\\{.+\\}", "propriety coded characters {xxx}"
-                                               , "\\[0.+\\]", "propriety coded characters [0xxx]"
-                                               , "\\(.+\\)", "propriety coded characters (xxx)"
-                                               , "&.+;", "sgml coded characters"
-                                               , "<.+>", "html coded characters") |>
-                                               matrix(byrow = TRUE, ncol = 2) |>
-                                               data.frame()
+                                         , patterns = magerman_patterns_detect_characters
                                          , patterns_type = "regex"
-                                         , output_codes_col_name = "characters_cleaning_candidates")
-
-  attr(magerman_detect_characters, "@title") <-
-      "Detect candidates for characters that need to be cleaned"
+                                         , output_codes_col_name = "characters_cleaning_candidates"
+                                         , .title = "Detect candidates for characters that need to be cleaned"
+                                         , .description = "The function below can be used to detect candidates for characters that need to be cleaned based on the patterns (see table in the details)."
+                                         , .example = ""
+                                         , .tables = list(
+                                               list("magerman_patterns_detect_characters"
+                                                  , title = "Patterns used to identify classes of characters to clean."
+                                                  , pp = "23-25")
+                                           )
+                                         , .pp = "23-25"
+                                         , .ref = "magerman2006")
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_detect_characters.r
@@ -4541,6 +4665,7 @@ The function below can be used to detect candidates for characters that need to 
 
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval attr(magerman_remove_html_codes, "@title")
+  ##' 
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
   ##' @return standardized names table
@@ -4553,9 +4678,14 @@ The function below can be used to detect candidates for characters that need to 
                                          , patterns = "<BR>"
                                          , replacements = " ")
 
-
   attr(magerman_remove_html_codes, "@title") <-
       "Removes html codes"
+
+  attr(magerman_remove_html_codes, "@description") <-
+      "Original authors did search for all html tags but only found the <BR> (p.23). So in general all html tags should be considered. This procedure is for reproducibility only."
+
+  attr(magerman_remove_html_codes, "@example") <-
+      "<BR> -> ' '"
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_html_codes.r
@@ -5095,7 +5225,7 @@ Table 12: Patterns with period not preceded by a letter or digit
 :END:
 "It has to be stressed that the objective is not to maximize the total number of matches (at the cost of introducing mismatches) but to minimize the number of mismatches given a reasonable number of matches."
 
-They assumed that the last word in organizational name more likely represents leagan form (see p. 33)
+They assumed that the last word in organizational name more likely represents legal form (see p. 33)
 
 As suggested by the authors all ending words in the dataset of organization names must be examened, especially those with hight occurence number.
 

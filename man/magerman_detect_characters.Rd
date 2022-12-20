@@ -6,10 +6,7 @@
 \usage{
 magerman_detect_characters(
   x,
-  patterns = data.frame(matrix(c("\\\\{.+\\\\}", "propriety coded characters {xxx}",
-    "\\\\[0.+\\\\]", "propriety coded characters [0xxx]", "\\\\(.+\\\\)",
-    "propriety coded characters (xxx)", "&.+;", "sgml coded characters", "<.+>",
-    "html coded characters"), byrow = TRUE, ncol = 2)),
+  patterns = magerman_patterns_detect_characters,
   patterns_col = 1,
   patterns_codes_col = 2,
   patterns_type = "regex",
@@ -78,9 +75,14 @@ magerman_detect_characters(
 standardized names table
 }
 \description{
-Detect candidates for characters that need to be cleaned
+The function below can be used to detect candidates for characters that
+need to be cleaned based on the patterns (see table in the details).
+
+A simple illustration of what this procedure does:
 }
 \seealso{
+detect_patterns
+
 detect_patterns
 
 Other magerman: 
