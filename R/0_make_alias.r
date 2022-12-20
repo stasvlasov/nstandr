@@ -46,12 +46,6 @@ make_alias <- function(f, ...) {
     return(f)
 }
 
-#' title
-#' tables (with reference, pp, table no. and title)
-#' example
-#' description (very short and just ref to pp)
-#' reference (url, doi, authors, can I use noweb with papis call to ref to extract all that?)
-
 make_roxy_tags <- function(f) {
     get_attr <- function(a) {
         attr(f, paste0("nstandr_procedure_", a))
