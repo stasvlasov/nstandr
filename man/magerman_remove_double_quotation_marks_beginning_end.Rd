@@ -71,10 +71,15 @@ replacements provide it here.}
   }}
 }
 \value{
-standardized names table
+If nothing was indicated to cbind to results then it
+returns standardized vector. If something needs to be cbind
+then it returns data.table
 }
 \description{
-Removes double quotation irregularities
+A simple illustration of what this procedure does:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{""IBM Co."" -> IBM Co.
+}\if{html}{\out{</div>}}
 }
 \seealso{
 replace_patterns

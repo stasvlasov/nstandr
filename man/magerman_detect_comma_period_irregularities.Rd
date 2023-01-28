@@ -6,16 +6,13 @@
 \usage{
 magerman_detect_comma_period_irregularities(
   x,
-  patterns = data.frame(matrix(c(",([^\\\\s])",
-    "Patterns with comma not followed by space", "\\\\s,",
-    "Patterns with comma preceded by space", "([^A-Za-z0-9])\\\\.",
-    "Patterns with period not preceded by a letter or digit"), byrow = TRUE, ncol = 2)),
+  patterns = magerman_patterns_detect_comma_and_period_irregularities,
   patterns_col = 1,
   patterns_codes_col = 2,
   patterns_type = "regex",
   patterns_type_col = NULL,
   patterns_codes = NULL,
-  output_codes_col_name = "comma.period.irregularities.candidates",
+  output_codes_col_name = "comma_period_irregularities_candidates",
   codes_omitted_rows_value = NULL,
   no_match_code = NULL,
   merge_existing_codes = "replace_all",
@@ -75,10 +72,11 @@ magerman_detect_comma_period_irregularities(
   }}
 }
 \value{
-standardized names table
+The updated \code{x} table with codes column or just codes if \code{return_only_codes} is set.
 }
 \description{
-Detects comma period irregularities
+This procedure applies the original method for detection of comma and
+period irregularities.
 }
 \seealso{
 detect_patterns

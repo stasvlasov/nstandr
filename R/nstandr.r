@@ -128,7 +128,7 @@ standardize_detect_enc <- function(x
     x_vector <- get_target(x) |>
         stringi::stri_enc_detect() |>
         lapply(function(enc) {
-            enc <- enc[["Encoding"]]
+            enc <- toupper(enc[["Encoding"]])
             first_ok_enc <- which(enc %in% available_enc_list)[1]
             if(length(first_ok_enc) == 0) ""
             else enc[[first_ok_enc]]

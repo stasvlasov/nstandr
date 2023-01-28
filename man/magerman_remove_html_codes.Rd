@@ -71,10 +71,19 @@ replacements provide it here.}
   }}
 }
 \value{
-standardized names table
+If nothing was indicated to cbind to results then it
+returns standardized vector. If something needs to be cbind
+then it returns data.table
 }
 \description{
-Removes html codes
+Original authors did search for all html tags but only found the \verb{<BR>}.
+So in general all html tags should be considered. This procedure is for
+reproducibility only.
+
+A simple illustration of what this procedure does:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{`<BR>` -> ' '
+}\if{html}{\out{</div>}}
 }
 \seealso{
 replace_patterns

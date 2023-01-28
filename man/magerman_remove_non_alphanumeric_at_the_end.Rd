@@ -2,11 +2,11 @@
 % Please edit documentation in R/magerman.r
 \name{magerman_remove_non_alphanumeric_at_the_end}
 \alias{magerman_remove_non_alphanumeric_at_the_end}
-\title{Removes non alphanumeric characters}
+\title{Removes non alphanumeric characters at the end of a name}
 \usage{
 magerman_remove_non_alphanumeric_at_the_end(
   x,
-  patterns = "[^A-Z0-9.'\\")]+$",
+  patterns = c(" DITE[:,]$", "DITE :$", "[^A-Z0-9.'\\")]+$"),
   patterns_col = 1,
   patterns_mode = "all",
   patterns_mode_col = NULL,
@@ -71,10 +71,15 @@ replacements provide it here.}
   }}
 }
 \value{
-standardized names table
+If nothing was indicated to cbind to results then it
+returns standardized vector. If something needs to be cbind
+then it returns data.table
 }
 \description{
-Removes non alphanumeric characters
+A simple illustration of what this procedure does:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{IBM Co., DITE : -> IBM Co.
+}\if{html}{\out{</div>}}
 }
 \seealso{
 replace_patterns

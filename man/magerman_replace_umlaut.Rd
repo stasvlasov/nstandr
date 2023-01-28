@@ -45,5 +45,8 @@ magerman_replace_umlaut(
 standardized names table
 }
 \description{
-Replaces Umlauts
+A simple illustration of what this procedure does:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{GLÜHLAMPEN -> GLUEHLAMPEN
+}\if{html}{\out{</div>}}
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/magerman.r
 \name{magerman_remove_common_words}
 \alias{magerman_remove_common_words}
-\title{Removes common words}
+\title{Remove common words}
 \usage{
 magerman_remove_common_words(x, ...)
 }
@@ -33,5 +33,8 @@ magerman_remove_common_words(x, ...)
 standardized names table
 }
 \description{
-Removes common words
+A simple illustration of what this procedure does:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{3COM CORPORATION -> 3COM
+}\if{html}{\out{</div>}}
 }

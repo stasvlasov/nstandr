@@ -2,7 +2,7 @@
 % Please edit documentation in R/magerman.r
 \name{magerman_condense}
 \alias{magerman_condense}
-\title{Condenses string}
+\title{Condensing names}
 \usage{
 magerman_condense(
   x,
@@ -71,10 +71,15 @@ replacements provide it here.}
   }}
 }
 \value{
-standardized names table
+If nothing was indicated to cbind to results then it
+returns standardized vector. If something needs to be cbind
+then it returns data.table
 }
 \description{
-Condenses string
+A simple illustration of what this procedure does:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{3 COM -> 3COM
+}\if{html}{\out{</div>}}
 }
 \seealso{
 replace_patterns

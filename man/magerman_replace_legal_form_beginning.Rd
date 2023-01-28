@@ -2,7 +2,7 @@
 % Please edit documentation in R/magerman.r
 \name{magerman_replace_legal_form_beginning}
 \alias{magerman_replace_legal_form_beginning}
-\title{Replaces legal form}
+\title{Replaces legal form at the beginning of a name}
 \usage{
 magerman_replace_legal_form_beginning(
   x,
@@ -74,9 +74,14 @@ replacements provide it here.}
 standardized names table
 }
 \description{
-Replaces legal form
+A simple illustration of what this procedure does:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{IBM KABUSHIKI KAISHA -> IBM
+}\if{html}{\out{</div>}}
 }
 \seealso{
+replace_patterns
+
 replace_patterns
 
 Other magerman: 

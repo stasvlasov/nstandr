@@ -33,5 +33,8 @@ magerman_remove_legal_form_and_clean(x, ...)
 standardized names table
 }
 \description{
-Removes legal form
+A simple illustration of what this procedure does:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{IBM INC. -> IBM
+}\if{html}{\out{</div>}}
 }

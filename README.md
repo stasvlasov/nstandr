@@ -1,3 +1,7 @@
+---
+date: 2023-01-07
+---
+
 # nstandr <img src="img/logo.png" align="right" alt="" width="120"/>
 
 ```{=org}

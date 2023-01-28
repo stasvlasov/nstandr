@@ -1,5 +1,16 @@
-# - Reference from [[associate-id:org:29i4s7t0y5i0][nstandr R package]] on [2021-06-05 Sat 22:51]
+-*- mode: org; eval: (org-babel-lob-ingest (file-name-concat (file-name-directory (locate-library "ob-r-pkg")) ob-r-pkg-src-file)) -*-
+#+title: nstandr - Name Standardization in R
+#+author: Stas Vlasov
+#+date: 2023-01-07
+#+r_package_version: 0.0.0.9000
+#+r_package_url: https://stasvlasov.github.io/nstandr/
+#+r_package_bug_reports: https://github.com/stasvlasov/nstandr/issues
+
 #+PROPERTY: header-args:R  :comments link :session :mkdirp yes :padline yes
+
+# - Reference from [[associate-id:org:29i4s7t0y5i0][nstandr R package]] on [2021-06-05 Sat 22:51]
+
+
 * Frontpage
 :PROPERTIES:
 :export_file_name: README.md
@@ -200,6 +211,25 @@ Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linkin
 }
 #+end_src
 
+
+#+BEGIN_SRC yaml :tangle info.yml :noweb yes
+  type: software
+  ref: nstandr
+  lang: R
+  title: <<get-org-file-key(key = "title")>>
+  author: <<get-org-file-key(key = "author")>>
+  date: <<get-org-file-key(key = "date")>>
+  version: <<get-org-file-key(key = "r_package_version")>>
+  url: <<get-org-file-key(key = "r_package_url")>>
+  publisher: GitHub
+  commit:
+  implements:
+    - ref: magerman2006_std_names
+    - ref: dm0082                 # stata package
+    - ref: nber_pdp_stdname
+#+END_SRC
+
+
 * Development
 
 For this package development I use Emacs' org-mode that allows literate programming. Literate programming in this case provides ways to do the following:
@@ -220,7 +250,8 @@ For this package development I use Emacs' org-mode that allows literate programm
 #+name: deploy
 #+begin_src emacs-lisp
   (save-excursion
-    (let ((calls '( "reset-working-directory"
+    (let ((calls '(
+                   "reset-working-directory"
                     "tangle-readme"
                     "tangle-buffer"
                     "inject-get-dots"
@@ -952,7 +983,7 @@ Adjust "ensure_version" verstions manually:
       x_vector <- get_target(x) |>
           stringi::stri_enc_detect() |>
           lapply(function(enc) {
-              enc <- enc[["Encoding"]]
+              enc <- toupper(enc[["Encoding"]])
               first_ok_enc <- which(enc %in% available_enc_list)[1]
               if(length(first_ok_enc) == 0) ""
               else enc[[first_ok_enc]]
@@ -4583,6 +4614,139 @@ The default standardization procedures are the following (for now):
 
 #+END_SRC
 
+** visualize
+:PROPERTIES:
+:ID:       org:l467cl40qoj0
+:END:
+
+#+BEGIN_SRC R :tangle no
+  make_dot_node <- function(procedure, node) {
+      obj <- get0(procedure, ifnotfound = NULL)
+      if(!is.null(obj)) {
+          for(tag in c("title"
+                     , "example"
+                     , "ref"
+                     , "pp")) {
+              assign(tag
+                   , attr(obj, paste0("nstandr_procedure_", tag)) |>
+                     htmltools::htmlEscape())
+          }
+      }
+      paste0("node_", node , " ["
+           , "label = " , if(!is.null(obj) && length(title) != 0 && title != "") {
+                              paste0(
+                                  "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">"
+                                , "<TR><TD BGCOLOR=\"lightblue\">", title, "</TD></TR>"
+                                , if(length(example) != 0 && example != "") {
+                                      paste0("<TR><TD>", example, "</TD></TR>")
+                                  }
+                                , "</TABLE>>")
+                          } else {
+                              paste0("\"", procedure,"\"")
+                          }
+           , "];")
+  }
+
+  ## make_dot_node(1, "magerman_replace_accented_characters")
+
+  make_dot_nodes <- function(procedures_list, node_prefix = NULL) {
+      procedures_names <- names(procedures_list)
+      if(is.null(procedures_names)) {
+          procedures_names <- rep(NA, length(procedures_list))
+      }
+      mapply(\(p, name, n) {
+          if(is.list(p) && !is.pairlist(p)) {
+              paste("subgraph cluster {"
+                   , "style=invisible;"
+                   , "subgraph cluster_", n," {"
+                   , if(!is.na(name)) paste0("label=\"", name, "\";")
+                   , "style=filled;"
+                   , "color=lightgrey;"
+                   , "node [color=white];"
+                   , make_dot_nodes(p, node_prefix = paste0(n, "_"))
+                   , "}", "}"
+                   , sep = "\n")
+          } else {
+              make_dot_node(p[[1]], node = paste0(node_prefix, n))
+          }
+      }
+    , p = procedures_list
+    , name = procedures_names
+    , n = seq_along(procedures_list)) |>
+        paste(collapse = "\n")
+  }
+
+  ## nstandr:::magerman_procedures_list |>
+  ##     make_dot_nodes()
+
+
+  ## nstandr:::magerman_procedures_list |>
+  ##     sapply(class)
+
+  ## c("a", b = "b") |>
+  ##     as.list()
+
+  ## list("a", "b", list("c", "e", "d")) |>
+  ##     make_dot_nodes() |>
+  ##     cat()
+
+  make_dot_edges <- function(procedures_list, prefix = NULL) {
+      mapply(
+          \(p, pp, n, nn) {
+              if(is.list(pp) && !is.pairlist(pp)) {
+                  paste(
+                      paste0("node_", n, " -> ", "node_", n, "_1"
+                           , " [lhead = cluster_", n,"];")
+                    , make_dot_edges(pp, prefix = paste0(n, "_"))  
+                    , paste0("node_", n, "_", length(pp), " -> ", "node_", nn
+                           , " [ltail = cluster_", n,"];")
+                      , sep = "\n")
+              } else {
+                  paste0("node_", n, " -> ", "node_", nn, ";")
+              }
+          }
+        , p = procedures_list[-length(procedures_list)]
+        , pp = procedures_list[-1]
+        , n = paste0(prefix, seq(length(procedures_list) - 1))
+        , nn = paste0(prefix, seq(2, length(procedures_list)))
+      ) |>
+      paste(collapse = "\n")
+  }
+
+  ## list("a", "b", list("c", "e")) |>
+      ## make_dot_edges() |>
+      ## cat()
+
+  make_dot_graph <- function(procedures_list) {
+      paste("digraph nstantr_procedures {" ,
+          , "node [shape = plain, fontname = Helvetica]",
+          , make_dot_nodes(procedures_list),
+          , make_dot_edges(procedures_list), 
+          , "}"
+          , sep = "\n\n")
+  }
+
+
+  browse_dot_graph <- function(procedures_list) {
+      procedures_list |>
+          make_dot_graph() |>
+          DiagrammeR::grViz()
+  }
+
+
+  nstandr:::magerman_procedures_list |>
+      browse_dot_graph()
+
+
+  nstandr:::magerman_procedures_list |>
+      make_dot_graph() |>
+      cat()
+
+
+
+
+#+END_SRC
+
 * Magerman, et al. (2006) - Standardization Procedure
 
 Notes:
@@ -4617,9 +4781,7 @@ Full text: https://core.ac.uk/download/pdf/34432497.pdf
   ##' @eval make_roxy_tags(magerman_detect_characters)
   ##' @inherit detect_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso detect_patterns
   ##'
   ##' @md
   ##' @export
@@ -4629,7 +4791,6 @@ Full text: https://core.ac.uk/download/pdf/34432497.pdf
                                          , output_codes_col_name = "characters_cleaning_candidates"
                                          , .title = "Detect candidates for characters that need to be cleaned"
                                          , .description = "The function below can be used to detect candidates for characters that need to be cleaned based on the patterns (see table in the details)."
-                                         , .example = ""
                                          , .tables = list(
                                                list("magerman_patterns_detect_characters"
                                                   , title = "Patterns used to identify classes of characters to clean."
@@ -4658,28 +4819,22 @@ Full text: https://core.ac.uk/download/pdf/34432497.pdf
 :END:
 
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_remove_html_codes, "@title")
-  ##' 
+  ##' @eval make_roxy_tags(magerman_remove_html_codes)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_remove_html_codes <- make_alias(replace_patterns
                                          , patterns = "<BR>"
-                                         , replacements = " ")
+                                         , replacements = " "
+                                         , .title = "Removes html codes"
+                                         , .description = "Original authors did search for all html tags but only found the `<BR>`. So in general all html tags should be considered. This procedure is for reproducibility only."
+                                         , .example = "`<BR>` -> ' '"
+                                         , .pp = "23"
+                                         , .ref = "magerman2006")
 
-  attr(magerman_remove_html_codes, "@title") <-
-      "Removes html codes"
-
-  attr(magerman_remove_html_codes, "@description") <-
-      "Original authors did search for all html tags but only found the <BR> (p.23). So in general all html tags should be considered. This procedure is for reproducibility only."
-
-  attr(magerman_remove_html_codes, "@example") <-
-      "<BR> -> ' '"
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_html_codes.r
@@ -4694,7 +4849,7 @@ Full text: https://core.ac.uk/download/pdf/34432497.pdf
 :ID:       org:xsagib50bci0
 :END:
 
-Table 7: SGML codes and their ASCII/ANSI equivalent
+Table: SGML codes and their ASCII/ANSI equivalent
 #+NAME: magerman_patterns_sgml_characters
 | sgml.code | replacement.character |
 |-----------+-----------------------|
@@ -4709,20 +4864,28 @@ Table 7: SGML codes and their ASCII/ANSI equivalent
 #+call: make-rds-patterns-table(data = magerman_patterns_sgml_characters, data.name = "magerman_patterns_sgml_characters")
 
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_replace_sgml_characters, "@title")
+  ##' @eval make_roxy_tags(magerman_replace_sgml_characters)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_replace_sgml_characters <- make_alias(replace_patterns
-                                               , patterns = magerman_patterns_sgml_characters)
+                                               , patterns = magerman_patterns_sgml_characters
+                                               , .title = "Replaces sgml characters"
+                                               , .description = "This is original procedure based on patterns identified with original PATSTAT data. I.e. it is intended for reproducibility purposes. Use `magerman_detect_characters` to identify similar patterns in your own data."
+                                               , .example = "&AMP;EXCL; -> !"
+                                               , .tables = list(
+                                                     list("magerman_patterns_sgml_characters"
+                                                        , title = "SGML codes and their ASCII/ANSI equivalent"
+                                                        , no = "7"
+                                                        , pp = "24")
+                                                 )
+                                               , .pp = "24"
+                                               , .ref = "magerman2006")
 
-  attr(magerman_replace_sgml_characters, "@title") <-
-      "Replaces sgml characters"
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_replace_sgml_characters.r
@@ -4744,7 +4907,7 @@ Table 7: SGML codes and their ASCII/ANSI equivalent
 :ID:       org:zvfgib50bci0
 :END:
 
-Table 8: Proprietary character codes and their ASCII/ANSI equivalent
+Table: Proprietary character codes and their ASCII/ANSI equivalent
 #+NAME: magerman_patterns_proprietary_characters
 | proprietary.coded.character | replacement.character |
 |-----------------------------+-----------------------|
@@ -4777,21 +4940,28 @@ Table 8: Proprietary character codes and their ASCII/ANSI equivalent
 
 
 #+BEGIN_SRC R :tangle R/magerman.r
-
-  ##' @eval attr(magerman_replace_proprietary_characters, "@title")
+  ##' @eval make_roxy_tags(magerman_replace_proprietary_characters)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_replace_proprietary_characters <- make_alias(replace_patterns
-                                                      , patterns = magerman_patterns_proprietary_characters)
+                                                      , patterns = magerman_patterns_proprietary_characters
+                                                      , .title = "Replaces proprietary characters"
+                                                      , .description = "This is original procedure based on patterns identified with original PATSTAT data. I.e. it is intended for reproducibility purposes. Use `magerman_detect_characters` to identify similar patterns in your own data."
+                                                      , .example = "{UMLAUT OVER (A)} -> Ä"
+                                                      , .tables = list(
+                                                            list("magerman_patterns_proprietary_characters"
+                                                               , title = "Proprietary character codes and their ASCII/ANSI equivalent"
+                                                               , no = "8"
+                                                               , pp = "25")
+                                                        )
+                                                      , .pp = "25"
+                                                      , .ref = "magerman2006")
 
-  attr(magerman_replace_proprietary_characters, "@title") <-
-      "Replaces proprietary characters"
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_replace_proprietary_characters.r
@@ -4804,7 +4974,7 @@ Table 8: Proprietary character codes and their ASCII/ANSI equivalent
 :ID:       org:u6lgib50bci0
 :END:
 
-Table 9: Accented characters and their unaccented equivalent
+Table: Accented characters and their unaccented equivalent
 #+NAME: magerman_patterns_accented_characters
 | character | unaccented.equivalent | code |
 |-----------+-----------------------+------|
@@ -4840,20 +5010,28 @@ Table 9: Accented characters and their unaccented equivalent
 #+call: make-rds-patterns-table(data = magerman_patterns_accented_characters, data.name = "magerman_patterns_accented_characters")
 
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_replace_accented_characters, "@title")
+  ##' @eval make_roxy_tags(magerman_replace_accented_characters)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_replace_accented_characters <- make_alias(replace_patterns
-                                                   , patterns = magerman_patterns_accented_characters)
+                                                   , patterns = magerman_patterns_accented_characters
+      , .title = "Replaces accented characters"
+      , .description = "This is original procedure based on patterns identified with original PATSTAT data. I.e. it is intended for reproducibility purposes. Use `magerman_detect_characters` to identify similar patterns in your own data."
+      , .example = "Æ -> AE"
+      , .tables = list(
+            list("magerman_patterns_accented_characters"
+               , title = "Accented characters and their unaccented equivalent"
+               , no = "9"
+               , pp = "26-27")
+        )
+      , .pp = "26-27"
+      , .ref = "magerman2006")
 
-  attr(magerman_replace_accented_characters, "@title") <-
-      "Replaces accented characters"
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_replace_accented_characters.r
@@ -4875,30 +5053,30 @@ Table 9: Accented characters and their unaccented equivalent
 Here one probably need to add smart quotes as well...
 
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_remove_special_characters, "@title")
-  ##' @description Removes everything that is not: A-Z; 0-9; “-“; “+”; “’”; “””; “#”;
-  ##' “*”;“@”; “!”; “?”; “/”; “&”; “(“; “)”; “:”; “;”; “,”; “.”; “ “
+  ##' @eval make_roxy_tags(magerman_remove_special_characters)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_remove_special_characters <- make_alias(replace_patterns
                                                  , patterns = "[^A-Z0-9\\-+'\"#*;@!?/&():;,. ]"
-                                                 , patterns_type = "regex")
+                                                 , patterns_type = "regex"
+                                                 , .title = "Removes special characters"
+                                                 , .description = "Removes everything that is not: A-Z; 0-9; “-“; “+”; “’”; “””; “#”; ##' “*”;“@”; “!”; “?”; “/”; “&”; “(“; “)”; “:”; “;”; “,”; “.”; “ “"
+                                                 , .example = "'©𝍎၍%^_' -> ' '"
+                                                 , .pp = "27"
+                                                 , .ref = "magerman2006")
 
-  attr(magerman_remove_special_characters, "@title") <-
-      "Removes special characters"
+
 #+END_SRC
 
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_special_characters.r
-  expect_equal("LK \tD©𝍎 ၍\tF:'\";092834!@#$%^&*()_+-\n\t" |>
+  expect_equal("\t©𝍎၍\t%^_\n\t" |>
                magerman_remove_special_characters()
-             , "LK D F:'\";092834!@#&*()+-")
+             , "")
 
 #+END_SRC
 
@@ -4911,22 +5089,23 @@ Here one probably need to add smart quotes as well...
 :ID:       org:7zm5vw215ei0
 :END:
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_remove_double_spaces, "@title")
+  ##' @eval make_roxy_tags(magerman_remove_double_spaces)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_remove_double_spaces <- make_alias(replace_patterns
                                             , patterns = "\\s+"
                                             , replacements = " "
-                                            , patterns_type = "regex")
+                                            , patterns_type = "regex"
+                                            , .title = "Removes double spaces"
+                                            , .example = "'  ' -> ' '"
+                                            , .pp = "27-28"
+                                            , .ref = "magerman2006")
 
-  attr(magerman_remove_double_spaces, "@title") <-
-      "Removes double spaces"
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_double_spaces.r
@@ -4940,24 +5119,24 @@ Here one probably need to add smart quotes as well...
 :ID:       org:4ir5vw215ei0
 :END:
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_remove_double_quotation_marks_irregularities, "@title")
+  ##' @eval make_roxy_tags(magerman_remove_double_quotation_marks_irregularities)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_remove_double_quotation_marks_irregularities <- make_alias(replace_patterns
                                                                     , patterns = c("^\"\"\\s(.*)\"$", "^\"(.*)\\s\"\"$")
                                                                     , replacements = c("\"\"$1\"", "\"$1\"\"")
-                                                                    , patterns_type = "regex")
+                                                                    , patterns_type = "regex"
+                                                                    , .title = "Removes double quotation irregularities"
+                                                                    , .example = "\"\"IBM\" -> \"IBM\""
+                                                                    , .pp = "28"
+                                                                    , .ref = "magerman2006")
 
-  attr(magerman_remove_double_quotation_marks_irregularities, "@title") <-
-      "Removes double quotation irregularities"
+
 #+END_SRC
-
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_double_quotation_marks_irregularities.r
     expect_equal(c("\"\" Merry  \"Cristmas\" Love\"\""
@@ -4968,22 +5147,24 @@ Here one probably need to add smart quotes as well...
 #+END_SRC
 
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_remove_double_quotation_marks_beginning_end, "@title")
+  ##' @eval make_roxy_tags(magerman_remove_double_quotation_marks_beginning_end)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_remove_double_quotation_marks_beginning_end <- make_alias(replace_patterns
                                                                    , patterns = "^\"\"((?:(?!\"\").)*)\"\"$"
                                                                    , replacements = "$1"
-                                                                   , patterns_type = "regex")
+                                                                   , patterns_type = "regex"
+                                                                   , .title = "Removes double quotation irregularities"
+                                                                   , .description = ""
+                                                                   , .example = "\"\"IBM Co.\"\" -> IBM Co."
+                                                                   , .pp = "28-29"
+                                                                   , .ref = "magerman2006")
 
-  attr(magerman_remove_double_quotation_marks_beginning_end, "@title") <-
-      "Removes double quotation irregularities"
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_double_quotation_marks_beginning_end.r
@@ -5000,38 +5181,40 @@ Here one probably need to add smart quotes as well...
 :ID:       org:2az5vw215ei0
 :END:
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_remove_non_alphanumeric_at_the_beginning, "@title")
+  ##' @eval make_roxy_tags(magerman_remove_non_alphanumeric_at_the_beginning)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_remove_non_alphanumeric_at_the_beginning <- make_alias(replace_patterns
                                                                 , patterns = "^[^A-Z0-9\"@('#!*/]+"
-                                                                , patterns_type = "regex")
+                                                                , patterns_type = "regex"
+                                                                , .title = "Removes non alphanumeric characters at the beginning of a name"
+                                                                , .description = ""
+                                                                , .example = ".IBM Co. -> IBM Co."
+                                                                , .pp = "29"
+                                                                , .ref = "magerman2006")
 
-  attr(magerman_remove_non_alphanumeric_at_the_beginning, "@title") <-
-      "Removes non alphanumeric characters"
-
-
-  ##' @eval attr(magerman_remove_non_alphanumeric_at_the_end, "@title")
+  ##' @eval make_roxy_tags(magerman_remove_non_alphanumeric_at_the_end)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_remove_non_alphanumeric_at_the_end <- make_alias(replace_patterns
-                                                          , patterns = "[^A-Z0-9.'\")]+$"
-                                                          , patterns_type = "regex")
+                                                          , patterns = c(" DITE[:,]$"
+                                                                        ,"DITE :$"
+                                                                        ,"[^A-Z0-9.'\")]+$")
+                                                          , patterns_type = "regex"
+                                                          , .title = "Removes non alphanumeric characters at the end of a name"
+                                                          , .description = ""
+                                                          , .example = "IBM Co., DITE : -> IBM Co."
+                                                          , .pp = "29-30"
+                                                          , .ref = "magerman2006")
 
-  attr(magerman_remove_non_alphanumeric_at_the_end, "@title") <-
-      "Removes non alphanumeric characters"
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_non_alphanumeric_at_the_end.r
@@ -5055,48 +5238,51 @@ Here one probably need to add smart quotes as well...
 :ID:       org:5khizmx01ei0
 :END:
 
-Patterns used to identify comma and period irregularities.
+Table: Patterns used to identify comma and period irregularities.
+#+name: magerman_patterns_detect_comma_and_period_irregularities
+| R regex          | type                                                   | pattern      | table |
+|------------------+--------------------------------------------------------+--------------+-------|
+| ,([^\s])         | Patterns with comma not followed by space              | %,[! ]%      |    10 |
+| \s,              | Patterns with comma preceded by space                  | % ,%         |    11 |
+| ([^A-Za-z0-9])\. | Patterns with period not preceded by a letter or digit | %[!A-Z0-9].% |    12 |
 
-| pattern      | table | procedure                                              |
-|--------------+-------+--------------------------------------------------------|
-| %,[! ]%      |    10 | Patterns with comma not followed by space              |
-| % ,%         |    11 | Patterns with comma preceded by space                  |
-| %[!A-Z0-9].% |    12 | Patterns with period not preceded by a letter or digit |
+                     
+#+call: make-rds-patterns-table(data = magerman_patterns_detect_comma_and_period_irregularities, data.name = "magerman_patterns_detect_comma_and_period_irregularities")
 
 
 The function below is the generalization for replacement of the above punctuation irregularities. This procedure is not a part of Margerman procedures.
 
 #+BEGIN_SRC R :tangle R/magerman.r
-
-  ##' @eval attr(magerman_detect_comma_period_irregularities, "@title")
+  ##' @eval make_roxy_tags(magerman_detect_comma_period_irregularities)
   ##' @inherit detect_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso detect_patterns
   ##'
   ##' @md
   ##' @export
-  magerman_detect_comma_period_irregularities <- make_alias(detect_patterns
-                                                          , patterns = c(",([^\\s])", "Patterns with comma not followed by space"
-                                                                       , "\\s,", "Patterns with comma preceded by space"
-                                                                       , "([^A-Za-z0-9])\\.", "Patterns with period not preceded by a letter or digit") |>
-                                                                matrix(byrow = TRUE, ncol = 2) |>
-                                                                data.frame()
-                                                          , patterns_type = "regex"
-                                                          , output_codes_col_name = "comma.period.irregularities.candidates")
+  magerman_detect_comma_period_irregularities <-
+      make_alias(detect_patterns
+               , patterns = magerman_patterns_detect_comma_and_period_irregularities
+               , patterns_type = "regex"
+               , output_codes_col_name = "comma_period_irregularities_candidates"
+               , .title = "Detects comma period irregularities"
+               , .description = "This procedure applies the original method for detection of comma and period irregularities."
+               , .tables = list(
+                     list("magerman_patterns_detect_comma_and_period_irregularities"
+                        , title = "Patterns used to identify comma and period irregularities."
+                        , pp = "30-32")
+                 )
+               , .pp = "30-32"
+               , .ref = "magerman2006")
 
-  attr(magerman_detect_comma_period_irregularities, "@title") <-
-      "Detects comma period irregularities"
 
 
 
-  ##' @eval attr(magerman_replace_comma_period_irregularities_all, "@title")
+
+  ##' @eval make_roxy_tags(magerman_replace_comma_period_irregularities_all)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
@@ -5106,10 +5292,14 @@ The function below is the generalization for replacement of the above punctuatio
                                                                             , "([^A-Za-z0-9])\\.", "$1") |>
                                                                      matrix(byrow = TRUE, ncol = 2) |>
                                                                      data.frame()
-                                                               , patterns_type = "regex")
+                                                               , patterns_type = "regex"
 
-  attr(magerman_replace_comma_period_irregularities_all, "@title") <-
-      "Replaces comma period irregularities"
+                                                               , .title = "Replaces comma and period irregularities"
+                                                               , .example = ",IBM , Co.. -> IBM, Co."
+                                                               , .pp = "30-32"
+                                                               , .ref = "magerman2006")
+
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_replace_comma_period_irregularities_all.r
@@ -5118,7 +5308,7 @@ The function below is the generalization for replacement of the above punctuatio
              , "A sentence with irregular punctuation, like commas, and periods ")
       #+END_SRC
 
-Table 10: Patterns with comma not followed by space
+Table: Patterns with comma not followed by space
 #+name: magerman_patterns_comma_followed_by_space
 | PATTERN      | REPLACE WITH | type  |
 |--------------+--------------+-------|
@@ -5146,7 +5336,7 @@ Table 10: Patterns with comma not followed by space
 #+call: make-rds-patterns-table(data = magerman_patterns_comma_followed_by_space, data.name = "magerman_patterns_comma_followed_by_space")
 
 
-Table 11: Patterns with comma preceded by space
+Table: Patterns with comma preceded by space
 #+name: magerman_patterns_comma_preceded_by_space
 | PATTERN     | REPLACE WITH | type  |
 |-------------+--------------+-------|
@@ -5160,7 +5350,7 @@ Table 11: Patterns with comma preceded by space
 #+call: make-rds-patterns-table(data = magerman_patterns_comma_preceded_by_space, data.name = "magerman_patterns_comma_preceded_by_space")
 
 
-Table 12: Patterns with period not preceded by a letter or digit
+Table: Patterns with period not preceded by a letter or digit
 #+name: magerman_patterns_periods
 | PATTERN              | REPLACE WITH        | type  |
 |----------------------+---------------------+-------|
@@ -5186,24 +5376,41 @@ Table 12: Patterns with period not preceded by a letter or digit
 
 
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_replace_comma_period_irregularities, "@title")
+  ##' @eval make_roxy_tags(magerman_replace_comma_period_irregularities)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
-  magerman_replace_comma_period_irregularities <- make_alias(replace_patterns
-                                                           , patterns = list(magerman_patterns_comma_followed_by_space
-                                                                           , magerman_patterns_comma_preceded_by_space
-                                                                           , magerman_patterns_periods) |>
-                                                                 data.table::rbindlist()
-                                                           , patterns_type_col = 3)
+  magerman_replace_comma_period_irregularities <-
+      make_alias(replace_patterns
+               , patterns = list(magerman_patterns_comma_followed_by_space
+                               , magerman_patterns_comma_preceded_by_space
+                               , magerman_patterns_periods) |>
+                     data.table::rbindlist()
+               , patterns_type_col = 3
+               , .title = "Replaces comma period irregularities"
+               , .description = ""
+               , .example = "' CO.,INC.' -> ' CO., INC.'"
+               , .tables = list(
+                     list("magerman_patterns_comma_followed_by_space"
+                        , title = "Patterns with comma not followed by space"
+                        , no = "10"
+                        , pp = "30-31")
+                    ,list("magerman_patterns_comma_preceded_by_space"
+                        , title = "Patterns with comma preceded by space"
+                        , no = "11"
+                        , pp = "31")
+                    ,list("magerman_patterns_periods"
+                        , title = "Patterns with period not preceded by a letter or digit"
+                        , no = "12"
+                        , pp = "32")
+                 )
+               , .pp = "30-32"
+               , .ref = "magerman2006")
 
-  attr(magerman_replace_comma_period_irregularities, "@title") <-
-      "Replaces comma period irregularities"
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_replace_comma_period_irregularities.r
@@ -5223,7 +5430,10 @@ They assumed that the last word in organizational name more likely represents le
 
 As suggested by the authors all ending words in the dataset of organization names must be examened, especially those with hight occurence number.
 
-Table 14: Last words identified as legal form indications
+Table: Last words identified as legal form indications
+#+call: make-rds-patterns-table(data = magerman_legal_forms_list, data.name = "magerman_legal_forms_list"))
+
+#+NAME: magerman_legal_forms_list
 | LAST WORD (CLEANED) | LEGAL FORM                                       |
 |---------------------+--------------------------------------------------|
 | INC                 | Incorporated                                     |
@@ -6367,12 +6577,10 @@ As the replacements and removals in the search and replace statements can lead t
 plus trim..."
 
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_detect_legal_form_end, "@title")
+  ##' @eval make_roxy_tags(magerman_detect_legal_form_end)
   ##' @inherit detect_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso detect_patterns
   ##'
   ##' @md
   ##' @export
@@ -6385,43 +6593,52 @@ plus trim..."
                                              , patterns_codes = NULL
                                              , no_match_code = NULL
                                              , merge_existing_codes = "replace_empty"
-                                             , output_codes_col_name = "{col_name_}legal_form")
+                                             , output_codes_col_name = "{col_name_}legal_form"
+                                             , .title = "Detects legal form at the end of a name"
+                                             , .tables = list(
+                                                   list("magerman_patterns_legal_form_end"
+                                                      , title = "All search and replace statements for all legal forms to be removed at the end of a name"
+                                                      , no = "Appendix 2"
+                                                      , pp = "56-73")
+                                               )
+                                             , .pp = "33-36"
+                                             , .ref = "magerman2006")
 
-  attr(magerman_detect_legal_form_end, "@title") <-
-      "Detects legal form"
 
 
 
 
 
 
-  ##' @eval attr(magerman_replace_legal_form_end, "@title")
+
+
+  ##' @eval make_roxy_tags(magerman_replace_legal_form_end)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_replace_legal_form_end <- make_alias(replace_patterns
                                               , patterns = magerman_patterns_legal_form_end
-                                              , patterns_type = "ends")
+                                              , patterns_type = "ends"
+                                              , .title = "Replaces legal form at the end of a name"
+                                              , .example = "IBM GMBH & CO., AG -> IBM & COMPANY"
+                                              , .tables = list(
+                                                    list("magerman_patterns_legal_form_end"
+                                                       , title = "All search and replace statements for all legal forms to be removed at the end of a name"
+                                                       , no = "Appendix 2"
+                                                       , pp = "56-73")
+                                                )
+                                              , .pp = "33-36"
+                                              , .ref = "magerman2006")
 
-  attr(magerman_replace_legal_form_end, "@title") <-
-      "Replaces legal form"
 
 
-
-
-
-
-  ##' @eval attr(magerman_detect_legal_form_beginning, "@title")
+  ##' @eval make_roxy_tags(magerman_detect_legal_form_beginning)
   ##' @inherit detect_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso detect_patterns
   ##'
   ##' @md
   ##' @export
@@ -6431,18 +6648,20 @@ plus trim..."
                                                    , patterns_type = "begins"
                                                    , merge_existing_codes = "replace_empty"
                                                    , return_only_first_detected_code = TRUE
-                                                   , output_codes_col_name = "{col_name_}legal_form")
-
-  attr(magerman_detect_legal_form_beginning, "@title") <-
-      "Detects legal form"
-
-
+                                                   , output_codes_col_name = "{col_name_}legal_form"
+                                                   , .title = "Detects legal form at the beginning of a name"
+                                                   , .pp = "38"
+                                                   , .ref = "magerman2006")
 
 
 
 
 
-  ##' @eval attr(magerman_replace_legal_form_beginning, "@title")
+
+
+
+
+  ##' @eval make_roxy_tags(magerman_replace_legal_form_beginning)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
   ##' @return standardized names table
@@ -6453,23 +6672,18 @@ plus trim..."
   ##' @export
   magerman_replace_legal_form_beginning <- make_alias(replace_patterns
                                                     , patterns = "KABUSHIKI KAISHA"
-                                                    , patterns_type = "begins")
-
-  attr(magerman_replace_legal_form_beginning, "@title") <-
-      "Replaces legal form"
-
-
-
+                                                    , patterns_type = "begins"
+                                                    , .title = "Replaces legal form at the beginning of a name"
+                                                    , .example = "IBM KABUSHIKI KAISHA -> IBM"
+                                                    , .pp = "38"
+                                                    , .ref = "magerman2006")
 
 
 
-
-  ##' @eval attr(magerman_detect_legal_form_middle, "@title")
+  ##' @eval make_roxy_tags(magerman_detect_legal_form_middle)
   ##' @inherit detect_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso detect_patterns
   ##'
   ##' @md
   ##' @export
@@ -6479,33 +6693,47 @@ plus trim..."
                                                 , patterns_type = "fixed"
                                                 , return_only_first_detected_code = TRUE
                                                 , merge_existing_codes = "replace_empty"
-                                                , output_codes_col_name = "{col_name_}legal_form")
+                                                , output_codes_col_name = "{col_name_}legal_form"
+                                                , .title = "Detects legal form in the middle of a name"
+                                                , .tables = list(
+                                                      list("magerman_patterns_legal_form_middle"
+                                                         , title = "Search and replace statements for legal form GMBH to be removed anywhere in name"
+                                                         , no = "18"
+                                                         , pp = "38-39")
+                                                  )
+                                                , .pp = "38-39"
+                                                , .ref = "magerman2006")
 
-  attr(magerman_detect_legal_form_middle, "@title") <-
-      "Detects legal form"
 
 
 
 
-  ##' @eval attr(magerman_replace_legal_form_middle, "@title")
+
+
+  ##' @eval make_roxy_tags(magerman_replace_legal_form_middle)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_replace_legal_form_middle <- make_alias(replace_patterns
                                                  , patterns = magerman_patterns_legal_form_middle
-                                                 , patterns_type = "fixed")
+                                                 , patterns_type = "fixed"
+                                                 , .title = "Replace legal form in the middle of a name"
+                                                 , .example = "IBM GMBH & CO.K.G. -> IBM & COMPANY"
+                                                 , .tables = list(
+                                                       list("magerman_patterns_legal_form_middle"
+                                                          , title = "Search and replace statements for legal form GMBH to be removed anywhere in name"
+                                                          , no = "18"
+                                                          , pp = "38-39")
+                                                   )
+                                                 , .pp = "38-39"
+                                                 , .ref = "magerman2006")
 
-  attr(magerman_replace_legal_form_middle, "@title") <-
-      "Replace legal form"
 
 
-
-  ##' @eval attr(magerman_detect_legal_form, "@title")
+  ##' @eval make_roxy_tags(magerman_detect_legal_form)
   ##' @param x table
   ##' @inheritDotParams standardize_options
   ##' @return standardized names table
@@ -6518,11 +6746,26 @@ plus trim..."
           magerman_detect_legal_form_middle()
   }
 
+  add_attr(magerman_detect_legal_form
+         , .title = "Detect legal form"
+         , .combined = c("magerman_detect_legal_form_end"
+                       , "magerman_detect_legal_form_beginning"
+                       , "magerman_detect_legal_form_middle")
+         , .tables = list(
+               list("magerman_patterns_legal_form_middle"
+                  , title = "Search and replace statements for legal form GMBH to be removed anywhere in name"
+                  , no = "18"
+                  , pp = "38-39")
+             , list("magerman_patterns_legal_form_end"
+                  , title = "All search and replace statements for all legal forms to be removed at the end of a name"
+                  , no = "Appendix 2"
+                  , pp = "56-73")
+           )
+         , .pp = "33-40"
+         , .ref = "magerman2006")
 
-  attr(magerman_detect_legal_form, "@title") <-
-      "Detect legal form"
 
-  ##' @eval attr(magerman_remove_legal_form, "@title")
+  ##' @eval make_roxy_tags(magerman_remove_legal_form)
   ##' @param x table
   ##' @inheritDotParams standardize_options
   ##' @return standardized names table
@@ -6541,11 +6784,23 @@ plus trim..."
           magerman_replace_legal_form_end()        
   }
 
-  attr(magerman_remove_legal_form, "@title") <- "Removes legal form"
+  add_attr(magerman_remove_legal_form
+         , .title = "Removes legal form"
+         , .example = "IBM INC. -> IBM"
+         , .tables = list(
+               list("magerman_patterns_legal_form_middle"
+                  , title = "Search and replace statements for legal form GMBH to be removed anywhere in name"
+                  , no = "18"
+                  , pp = "38-39")
+             , list("magerman_patterns_legal_form_end"
+                  , title = "All search and replace statements for all legal forms to be removed at the end of a name"
+                  , no = "Appendix 2"
+                  , pp = "56-73")
+           )
+         , .pp = "33-40"
+         , .ref = "magerman2006")
 
-
-
-  ##' @eval attr(magerman_remove_legal_form_and_clean, "@title")
+  ##' @eval make_roxy_tags(magerman_remove_legal_form_and_clean)
   ##' @param x table
   ##' @inheritDotParams standardize_options
   ##' @return standardized names table
@@ -6560,7 +6815,22 @@ plus trim..."
           )
   }
 
-  attr(magerman_remove_legal_form_and_clean, "@title") <- "Removes legal form"
+  add_attr(magerman_remove_legal_form_and_clean
+         , .title = "Removes legal form"
+         , .example = "IBM INC. -> IBM"
+         , .combined = c("magerman_remove_legal_form")
+         , .tables = list(
+               list("magerman_patterns_legal_form_middle"
+                  , title = "Search and replace statements for legal form GMBH to be removed anywhere in name"
+                  , no = "18"
+                  , pp = "38-39")
+             , list("magerman_patterns_legal_form_end"
+                  , title = "All search and replace statements for all legal forms to be removed at the end of a name"
+                  , no = "Appendix 2"
+                  , pp = "56-73")
+           )
+         , .pp = "33-40"
+         , .ref = "magerman2006")
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_replace_legal_form.r
@@ -6786,62 +7056,82 @@ Table 21: Common company words to be removed anywhere in a name
 
 
 #+BEGIN_SRC R :tangle R/magerman.r
-
-  ##' @eval attr(magerman_remove_common_words_at_the_end, "@title")
+  ##' @eval make_roxy_tags(magerman_remove_common_words_at_the_end)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
-  magerman_remove_common_words_at_the_end <- make_alias(replace_patterns
-                                                      , patterns = magerman_patterns_common_words_at_the_end
-                                                      , patterns_type = "ends")
+  magerman_remove_common_words_at_the_end <-
+      make_alias(replace_patterns
+               , patterns = magerman_patterns_common_words_at_the_end
+               , patterns_type = "ends"
+               , .title = "Removes common words at the end of a name"
+               , .example = "3COM CORPORATION -> 3COM"
+               , .tables = list(
+                     list("magerman_patterns_common_words_at_the_end"
+                        , title = "Common company words to be removed at the end of a name"
+                        , no = "19"
+                        , pp = "40-41")
+                 )
+               , .pp = "40"
+               , .ref = "magerman2006")
 
-  attr(magerman_remove_common_words_at_the_end, "@title") <-
-      "Removes common words"
 
 
 
-  ##' @eval attr(magerman_remove_common_words_at_the_beginning, "@title")
+
+  ##' @eval make_roxy_tags(magerman_remove_common_words_at_the_beginning)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
-  magerman_remove_common_words_at_the_beginning <- make_alias(replace_patterns
-                                                            , patterns = magerman_patterns_common_words_at_the_beginning
-                                                            , patterns_type = "begins")
+  magerman_remove_common_words_at_the_beginning <-
+      make_alias(replace_patterns
+               , patterns = magerman_patterns_common_words_at_the_beginning
+               , patterns_type = "begins"
+               , .title = "Removes common words at the beginning of a name"
+               , .example = "SOCIETE NOVATEC -> NOVATEC"
+               , .tables = list(
+                     list("magerman_patterns_common_words_at_the_beginning"
+                        , title = "Common company words to be removed at the beginning of a name"
+                        , no = "20"
+                        , pp = "41")
+                 )
+               , .pp = "41"
+               , .ref = "magerman2006")
 
-  attr(magerman_remove_common_words_at_the_beginning, "@title") <-
-      "Removes common words"
 
-
-
-
-  ##' @eval attr(magerman_remove_common_words_anywhere, "@title")
+  ##' @eval make_roxy_tags(magerman_remove_common_words_anywhere)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
-  magerman_remove_common_words_anywhere <- make_alias(replace_patterns
-                                                    , patterns = magerman_patterns_common_words_anywhere
-                                                    , patterns_type = "fixed")
+  magerman_remove_common_words_anywhere <-
+      make_alias(replace_patterns
+               , patterns = magerman_patterns_common_words_anywhere
+               , patterns_type = "fixed"
+  , .title = "Removes common words anywhere in a name"
+  , .example = "AMIC COMPANY -> AMIC"
+  , .tables = list(
+        list("magerman_patterns_common_words_anywhere"
+           , title = "Common company words to be removed anywhere in a name"
+           , no = "21"
+           , pp = "41")
+    )
+  , .pp = "41-42"
+  , .ref = "magerman2006")
 
-  attr(magerman_remove_common_words_anywhere, "@title") <-
-      "Removes common words"
 
 
-  ##' @eval attr(magerman_remove_common_words, "@title")
+
+
+  ##' @eval make_roxy_tags(magerman_remove_common_words)
   ##' @param x table
   ##' @inheritDotParams standardize_options
   ##' @return standardized names table
@@ -6855,7 +7145,30 @@ Table 21: Common company words to be removed anywhere in a name
           magerman_remove_common_words_anywhere()
   }
 
-  attr(magerman_remove_common_words, "@title") <- "Removes common words"
+  add_attr(magerman_remove_common_words
+         , .title = "Remove common words"
+         , .combined = c("magerman_remove_common_words_at_the_end"
+                        ,"magerman_remove_common_words_at_the_beginning"
+                        ,"magerman_remove_common_words_anywhere")
+         , .example = "3COM CORPORATION -> 3COM"
+         , .tables = list(
+               list("magerman_patterns_common_words_at_the_end"
+                  , title = "Common company words to be removed at the end of a name"
+                  , no = "19"
+                  , pp = "40-41")
+             , list("magerman_patterns_common_words_at_the_beginning"
+                  , title = "Common company words to be removed at the beginning of a name"
+                  , no = "20"
+                  , pp = "41")
+             , list("magerman_patterns_common_words_anywhere"
+                  , title = "Common company words to be removed anywhere in a name"
+                  , no = "21"
+                  , pp = "41")
+           )
+         , .pp = "40-42"
+         , .ref = "magerman2006")
+
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_common_words.r
@@ -6876,7 +7189,7 @@ Table 21: Common company words to be removed anywhere in a name
 :ID:       org:dcijzmx01ei0
 :END:
 
-Table 22: Spelling variations and their standardized equivalent
+Table: Spelling variations and their standardized equivalent
 #+NAME: magerman_patterns_spelling_variation
 | KEYWORD          | REMARKS         |
 |------------------+-----------------|
@@ -6910,20 +7223,27 @@ Table 22: Spelling variations and their standardized equivalent
 #+call: make-rds-patterns-table(data = magerman_patterns_spelling_variation, data.name = "magerman_patterns_spelling_variation")
 
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_replace_spelling_variation, "@title")
+  ##' @eval make_roxy_tags(magerman_replace_spelling_variation)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_replace_spelling_variation <- make_alias(replace_patterns
-                                                  , patterns = magerman_patterns_spelling_variation)
+                                                  , patterns = magerman_patterns_spelling_variation
+      , .title = "Replaces spelling variation"
+      , .example = "INTERNATIONALE -> INTERNATIONAL"
+      , .tables = list(
+            list("magerman_patterns_spelling_variation"
+               , title = "Spelling variations and their standardized equivalent"
+               , no = "22"
+               , pp = "42-43")
+        )
+      , .pp = "42-43"
+      , .ref = "magerman2006")
 
-  attr(magerman_replace_spelling_variation, "@title") <-
-      "Replaces spelling variation"
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_replace_spelling_variation.r
@@ -6941,21 +7261,22 @@ Table 22: Spelling variations and their standardized equivalent
 :ID:       org:rl10al703ei0
 :END:
 #+BEGIN_SRC R :tangle R/magerman.r
-  ##' @eval attr(magerman_condense, "@title")
+  ##' @eval make_roxy_tags(magerman_condense)
   ##' @inherit replace_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso replace_patterns
   ##'
   ##' @md
   ##' @export
   magerman_condense <- make_alias(replace_patterns
                                 , patterns = "[^a-zA-Z0-9]+"
-                                , patterns_type = "regex")
+                                , patterns_type = "regex"
+                                , .title = "Condensing names"
+                                , .example = "3 COM -> 3COM"
+                                , .pp = "43-44"
+                                , .ref = "magerman2006")
 
-  attr(magerman_condense, "@title") <-
-      "Condenses string"
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_condense.r
@@ -6987,8 +7308,7 @@ Next, all names having a preliminary umlaut standardized name (first removing �
 
 Finally, all preliminary umlaut standardized names not marked in the previous two steps are reverted to the previous cleaned name after condensing by executing an update query on the data.
 
-p. 44
-
+Table: Umlaut harmonization replacements
 #+NAME: magerman_patterns_umlaut
 | char | ascii | replacement |
 |------+-------+-------------|
@@ -7006,14 +7326,10 @@ p. 44
 :ID:       org:i680al703ei0
 :END:
 #+BEGIN_SRC R :tangle R/magerman.r
-
-
-  ##' @eval attr(magerman_detect_umlaut, "@title")
+  ##' @eval make_roxy_tags(magerman_detect_umlaut)
   ##' @inherit detect_patterns params return
   ##' @inheritDotParams standardize_options
-  ##' @return standardized names table
   ##' @family magerman
-  ##' @seealso detect_patterns
   ##'
   ##' @md
   ##' @export
@@ -7024,13 +7340,21 @@ p. 44
                                      , no_match_code = FALSE
                                      , output_codes_col_name = "{col_name_}has_umlaut"
                                      , return_only_first_detected_code = TRUE
-                                     , return_only_codes = FALSE)
+                                     , return_only_codes = FALSE
+                                     , .title = "Detect umlauts"
+                                     , .example = "GLÜHLAMPEN -> GLUEHLAMPEN"
+                                     , .tables = list(
+                                           list("magerman_patterns_umlaut"
+                                              , title = "Umlaut harmonization replacements"
+                                              , pp = "44-45")
+                                       )
+                                     , .pp = "44-45"
+                                     , .ref = "magerman2006")
 
-  attr(magerman_detect_umlaut, "@title") <-
-      "Detects umlauts"
 
 
-  ##' @eval attr(magerman_replace_umlaut, "@title")
+
+  ##' @eval make_roxy_tags(magerman_replace_umlaut)
   ##' @param x Data
   ##' @param has_umlaut_col Column with logical values indicating weather a corresponding string has an umlaut. Default is NULL so it detects is automatically first
   ##' @param drop_has_umlaut_col Whether to drop `has_umlaut_col`. Default is FALSE
@@ -7091,7 +7415,7 @@ p. 44
                     , c(list(x_standardized)
                       , formals("standardize_options")
                       , list(patterns = magerman_patterns_umlaut
-                            , patterns_col = 2
+                           , patterns_col = 2
                            , patterns_replacements_col = 3)))
           ## check which one match original umlaut
           x_standardized_keep <-
@@ -7107,7 +7431,16 @@ p. 44
       }
   }
 
-  attr(magerman_replace_umlaut, "@title") <- "Replaces Umlauts"
+  add_attr(magerman_replace_umlaut
+         , .title = "Replaces Umlauts"
+         , .example = "GLÜHLAMPEN -> GLUEHLAMPEN"
+         , .tables = list(
+               list("magerman_patterns_umlaut"
+                  , title = "Umlaut harmonization replacements"
+                  , pp = "44-45")
+           )
+         , .pp = "44-45"
+         , .ref = "magerman2006")
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_replace_umlaut.r
@@ -7607,7 +7940,6 @@ p. 44
 
 #+END_SRC
 
-
 #+BEGIN_SRC R :tangle inst/tinytest/test_cockburn_combabbrev.r
   expect_equal(c(" A B Comp"
                , " A  B Comp a"
@@ -7651,9 +7983,6 @@ p. 44
 
 #+END_SRC
 
-
-
-
 ** Standartization
 *** Derwent
 :PROPERTIES:
@@ -7668,7 +7997,6 @@ Implementation of derwent_standardisation_BHH.do from https://sites.google.com/s
 2) LIMITED -> LTD added by BHH
 3) various US changes by BHH
 4) space before and after added by BHH"
-
 
 #+BEGIN_SRC R :tangle R/cockburn.r
   ##' @eval attr(cockburn_replace_derwent, "@title")

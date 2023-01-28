@@ -2,7 +2,7 @@
 % Please edit documentation in R/magerman.r
 \name{magerman_detect_umlaut}
 \alias{magerman_detect_umlaut}
-\title{Detects umlauts}
+\title{Detect umlauts}
 \usage{
 magerman_detect_umlaut(
   x,
@@ -72,10 +72,13 @@ magerman_detect_umlaut(
   }}
 }
 \value{
-standardized names table
+The updated \code{x} table with codes column or just codes if \code{return_only_codes} is set.
 }
 \description{
-Detects umlauts
+A simple illustration of what this procedure does:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{GLÜHLAMPEN -> GLUEHLAMPEN
+}\if{html}{\out{</div>}}
 }
 \seealso{
 detect_patterns

@@ -1,4 +1,4 @@
-## -------->>  [[file:../../nstandr.src.org::*make_alias][make_alias:1]]
+## -------->>  [[file:../../nstandr.src.org::*make_alias][make_alias:2]]
 make_roxy_tags <- nstandr:::make_roxy_tags
 add_attr <- nstandr:::add_attr
 
@@ -15,6 +15,6 @@ expect_equal(
       "augue, suscipit a, scelerisque sed, lacinia in, mi. Cras vel lorem.", 
       "Etiam pellentesque aliquet tellus.", "", "A simple illustration of what this procedure does:", 
       "", "    1 + 2 -> 3"))
-## --------<<  make_alias:1 ends here
+## --------<<  make_alias:2 ends here
 
 

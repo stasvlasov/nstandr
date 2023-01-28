@@ -2,7 +2,7 @@
 % Please edit documentation in R/magerman.r
 \name{magerman_replace_comma_period_irregularities_all}
 \alias{magerman_replace_comma_period_irregularities_all}
-\title{Replaces comma period irregularities}
+\title{Replaces comma and period irregularities}
 \usage{
 magerman_replace_comma_period_irregularities_all(
   x,
@@ -72,10 +72,15 @@ replacements provide it here.}
   }}
 }
 \value{
-standardized names table
+If nothing was indicated to cbind to results then it
+returns standardized vector. If something needs to be cbind
+then it returns data.table
 }
 \description{
-Replaces comma period irregularities
+A simple illustration of what this procedure does:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{,IBM , Co.. -> IBM, Co.
+}\if{html}{\out{</div>}}
 }
 \seealso{
 replace_patterns

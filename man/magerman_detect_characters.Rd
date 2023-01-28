@@ -72,17 +72,13 @@ magerman_detect_characters(
   }}
 }
 \value{
-standardized names table
+The updated \code{x} table with codes column or just codes if \code{return_only_codes} is set.
 }
 \description{
 The function below can be used to detect candidates for characters that
 need to be cleaned based on the patterns (see table in the details).
-
-A simple illustration of what this procedure does:
 }
 \seealso{
-detect_patterns
-
 detect_patterns
 
 Other magerman: 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/magerman.r
 \name{magerman_remove_common_words_at_the_beginning}
 \alias{magerman_remove_common_words_at_the_beginning}
-\title{Removes common words}
+\title{Removes common words at the beginning of a name}
 \usage{
 magerman_remove_common_words_at_the_beginning(
   x,
@@ -71,10 +71,15 @@ replacements provide it here.}
   }}
 }
 \value{
-standardized names table
+If nothing was indicated to cbind to results then it
+returns standardized vector. If something needs to be cbind
+then it returns data.table
 }
 \description{
-Removes common words
+A simple illustration of what this procedure does:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{SOCIETE NOVATEC -> NOVATEC
+}\if{html}{\out{</div>}}
 }
 \seealso{
 replace_patterns

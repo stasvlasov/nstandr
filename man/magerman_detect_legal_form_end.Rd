@@ -2,7 +2,7 @@
 % Please edit documentation in R/magerman.r
 \name{magerman_detect_legal_form_end}
 \alias{magerman_detect_legal_form_end}
-\title{Detects legal form}
+\title{Detects legal form at the end of a name}
 \usage{
 magerman_detect_legal_form_end(
   x,
@@ -72,10 +72,10 @@ magerman_detect_legal_form_end(
   }}
 }
 \value{
-standardized names table
+The updated \code{x} table with codes column or just codes if \code{return_only_codes} is set.
 }
 \description{
-Detects legal form
+Detects legal form at the end of a name
 }
 \seealso{
 detect_patterns
