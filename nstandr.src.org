@@ -1,4 +1,3 @@
--*- mode: org; eval: (org-babel-lob-ingest (file-name-concat (file-name-directory (locate-library "ob-r-pkg")) ob-r-pkg-src-file)) -*-
 #+title: nstandr - Name Standardization in R
 #+author: Stas Vlasov
 #+date: 2023-01-07
@@ -7,9 +6,7 @@
 #+r_package_bug_reports: https://github.com/stasvlasov/nstandr/issues
 
 #+PROPERTY: header-args:R  :comments link :session :mkdirp yes :padline yes
-
 # - Reference from [[associate-id:org:29i4s7t0y5i0][nstandr R package]] on [2021-06-05 Sat 22:51]
-
 
 * Frontpage
 :PROPERTIES:
@@ -211,7 +208,6 @@ Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linkin
 }
 #+end_src
 
-
 #+BEGIN_SRC yaml :tangle info.yml :noweb yes
   type: software
   ref: nstandr
@@ -228,7 +224,6 @@ Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linkin
     - ref: dm0082                 # stata package
     - ref: nber_pdp_stdname
 #+END_SRC
-
 
 * Development
 
@@ -252,12 +247,12 @@ For this package development I use Emacs' org-mode that allows literate programm
   (save-excursion
     (let ((calls '(
                    "reset-working-directory"
-                    "tangle-readme"
-                    "tangle-buffer"
-                    "inject-get-dots"
-                    "call-all-calls"
-                    "generate-package-docs"
-                    ))
+                   "tangle-readme"
+                   "tangle-buffer"
+                   "inject-get-dots"
+                   "call-all-calls"
+                   "generate-package-docs"
+                   ))
            ;; turn off babel prompts
            org-confirm-babel-evaluate)
       (mapcar
@@ -418,7 +413,7 @@ Note: If =install.packages= is tangled to =.Rprofile= it might cause a recursive
 
   dirs_to_remove <-c(
       "man"
-    , "inst"
+    ## , "inst"
     , "data"
     , "R"
   )
@@ -430,7 +425,7 @@ Note: If =install.packages= is tangled to =.Rprofile= it might cause a recursive
        })
 
   ## remove files and empty dirs
-  sapply(c(files_to_remove, dirs_to_remove) , file.remove)
+  sapply(c(files_to_remove, dirs_to_remove), \(f) if(file.exists(f)) file.remove(f))
 
 #+END_SRC
 
@@ -558,6 +553,56 @@ To call all calls
 
 #+end_src
 
+
+
+#+name: save-rds-procedures-list
+#+begin_src R :tangle no :noweb yes
+  data.name <- ls()
+  data <- get(data.name)
+
+  data.dir <- "data"
+  rda.filename <- "sysdata"
+  rda.dir <- "./R"
+
+
+  ## just in case if there is not directory
+  dir.create(data.dir, recursive = TRUE, showWarnings = FALSE)
+
+  ## make a path for saving .rds
+  data.path <- file.path(data.dir, paste0(data.name, ".rds"))
+
+  ## just in case if there is not directory
+  dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
+
+  ## make a path for saving .rda
+  rda.path  <- file.path(rda.dir, paste0(rda.filename, ".rda"))
+
+  if(is.list(data)) {
+      saveRDS(data, data.path)
+      message(data.name, " is saved!")
+  } else {
+      print(data)
+      stop("\n\n", data.name, " is not list!")
+  }
+
+
+  ## add all .rds to R/sysdata.rda
+  ## (variable names are the same as .rds files)
+  var_list <- 
+      dir(data.dir) |>
+      sapply(romRDS::rom_rds
+           , NULL
+           , rds_dir = data.dir
+           , return_name = TRUE
+           , do_not_make = TRUE
+           , name_has_extention = TRUE
+           , assign_to_name = TRUE)
+  save(list = var_list, file = rda.path)
+  message(".rda is updated!")
+#+end_src
+
+
+
 #+label: Rename and save org tables to .rds files
 #+name: make-rds-patterns-table
 #+header: :colnames no
@@ -570,87 +615,87 @@ To call all calls
 #+header: :var rda.filename = "sysdata"
 #+header: :var rda.dir = "./R"
 #+begin_src R :tangle no
-    require("magrittr")
-    require("stringr")
-    require("stringi")
-    require("data.table")
-    require("romRDS")
+  require("magrittr")
+  require("stringr")
+  require("stringi")
+  require("data.table")
+  require("romRDS")
 
-    ## just in case if there is not directory
-    dir.create(data.dir, recursive = TRUE, showWarnings = FALSE)
+  ## just in case if there is not directory
+  dir.create(data.dir, recursive = TRUE, showWarnings = FALSE)
 
-    ## make a path for saving .rds
-    data.path  <-
-        data.name %>% 
-        paste0(".rds") %>%
-        file.path(data.dir, .)
+  ## make a path for saving .rds
+  data.path  <-
+      data.name %>% 
+      paste0(".rds") %>%
+      file.path(data.dir, .)
 
-    ## just in case if there is not directory
-    dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
+  ## just in case if there is not directory
+  dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
 
-    ## make a path for saving .rda
-    rda.path  <-
-        rda.filename %>% 
-        paste0(".rda") %>%
-        file.path(rda.dir, .)
+  ## make a path for saving .rda
+  rda.path  <-
+      rda.filename %>% 
+      paste0(".rda") %>%
+      file.path(rda.dir, .)
 
-    if(length(data) == 1) {
-        data %<>%
-            extract2(1) %>%
-            ## small fix for the stings trimming problem
-            {if(as.logical(remove.single.quotes))
-                 str_replace(.,"^'(.*)'$", "\\1")
-             else .} %>%
-            ## work around | character in the strings
-            stri_replace_all_fixed("\\vert", "|")
-        ## save data to .rda (filename is the same as var name)
-        saveRDS(data, data.path)
-    } else {  
-        ## fix for column names
-        if(data.names == "first.row") {
-            ## only works when option :colnames no
-            data.names <- 
-                data %>%
-                extract(1,) %>%
-                unlist %>% 
-                tolower %>%
-                make.names
-            data %<>% 
-                extract(-1,) %>%
-                set_names(data.names)
-        }
-        ## small fix for the stings trimming problem
-        ## only remove quotes when they is on the both sides of the string
-        ## it will then convert everything into strings
-        data %<>% 
-            {if(as.logical(remove.single.quotes))
-                 lapply(.,str_replace, "^'(.*)'$", "\\1")
-             else .} %>%
-            ## work around | character in the strings
-            lapply(stri_replace_all_fixed, "\\vert", "|") %>% 
-            as.data.table
-        ## save data to .rda (filename is the same as var name)
-        saveRDS(data, data.path)
-    }
+  if(length(data) == 1) {
+      data %<>%
+          extract2(1) %>%
+          ## small fix for the stings trimming problem
+          {if(as.logical(remove.single.quotes))
+               str_replace(.,"^'(.*)'$", "\\1")
+           else .} %>%
+          ## work around | character in the strings
+          stri_replace_all_fixed("\\vert", "|")
+      ## save data to .rda (filename is the same as var name)
+      saveRDS(data, data.path)
+  } else {  
+      ## fix for column names
+      if(data.names == "first.row") {
+          ## only works when option :colnames no
+          data.names <- 
+              data %>%
+              extract(1,) %>%
+              unlist %>% 
+              tolower %>%
+              make.names
+          data %<>% 
+              extract(-1,) %>%
+              set_names(data.names)
+      }
+      ## small fix for the stings trimming problem
+      ## only remove quotes when they is on the both sides of the string
+      ## it will then convert everything into strings
+      data %<>% 
+          {if(as.logical(remove.single.quotes))
+               lapply(.,str_replace, "^'(.*)'$", "\\1")
+           else .} %>%
+          ## work around | character in the strings
+          lapply(stri_replace_all_fixed, "\\vert", "|") %>% 
+          as.data.table
+      ## save data to .rda (filename is the same as var name)
+      saveRDS(data, data.path)
+  }
 
-    message(data.name, " is saved!")
+  message(data.name, " is saved!")
 
-    ## add all .rds to R/sysdata.rda
-    ## (variable names are the same as .rds files)
-    if(!is.null(add.to.rda)) {
-        var_list <- 
-            dir(data.dir) |>
-            sapply(romRDS::rom_rds
-                 , NULL
-                 , rds_dir = data.dir
-                 , quietly = TRUE
-                 , return_name = TRUE
-                 , do_not_make = TRUE
-                 , name_has_extention = TRUE
-                 , assign_to_name = TRUE)
-            save(list = var_list, file = rda.path)
-        message(".rda is updated!")
-    }
+  ## add all .rds to R/sysdata.rda
+  ## (variable names are the same as .rds files)
+  if(!is.null(add.to.rda)) {
+      var_list <- 
+          dir(data.dir) |>
+          sapply(romRDS::rom_rds
+               , NULL
+               , rds_dir = data.dir
+               , quietly = TRUE
+               , return_name = TRUE
+               , do_not_make = TRUE
+               , name_has_extention = TRUE
+               , assign_to_name = TRUE)
+          save(list = var_list, file = rda.path)
+      message(".rda is updated!")
+  }
 
 #+end_src
 
@@ -692,10 +737,13 @@ To call all calls
 ** Generate package description
 
 #+name: suggests
-| packages  | link                                                                |
-|-----------+---------------------------------------------------------------------|
-| tinytest  | https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md |
-| fastmatch | [[https://cran.r-project.org/web/packages/fastmatch/index.html][CRAN - Package fastmatch]]                                            |
+| packages   | note                                                                |
+|------------+---------------------------------------------------------------------|
+| tinytest   | https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md |
+| fastmatch  | [[https://cran.r-project.org/web/packages/fastmatch/index.html][CRAN - Package fastmatch]]                                            |
+| htmltools  | used for preformating procedures desctiption for in visualization   |
+| DiagrammeR | for visualizing procedures lists                                    |
+
 
 #+name: dependencies
 | packages   | current_version | ensure_version | link |
@@ -4357,14 +4405,33 @@ The default standardization procedures are the following (for now):
 |  6 | Removing brackets                  | 'standardize_remove_brackets'                      |
 |  7 | Cleaning spaces                    | 'standardize_squish_spaces'                        |
 
-#+call: make-rds-patterns-table(data = nstandr_default_procedures_table, data.name = "nstandr_default_procedures_table", remove.single.quotes = "FALSE", data.dir = "data", add.to.rda = "R/sysdata.rda")
+# Table is not used anymore the bellow now is the representation
+
+#+name: nstandr_default_procedures_list
+#+BEGIN_SRC R :tangle no :noweb yes :session *R-make-nstandr_default_procedures_list*
+  nstandr_default_procedures_list <-
+      list("Prepossessing" =
+               list("Cleaning spaces" = call('standardize_squish_spaces', wrap_in_spaces = TRUE ))
+         , "Fixing characters" =
+               list("Removing HTML codes" = 'standardize_dehtmlize'                            
+                  , "Translating non-ASCII to ASCII" = 'standardize_toascii'                              
+                  , "Upper casing" = 'standardize_toupper')
+         , "Cleaning names" =
+               list("Standardizing organizational names" = 'cockburn_replace_punctuation'                     
+                  , "Removing brackets" = 'standardize_remove_brackets'                      
+                  , "Cleaning spaces" = 'standardize_squish_spaces'))
+
+  <<save-rds-procedures-list>>
+#+END_SRC
+
+#+call: nstandr_default_procedures_list()
 
 
 #+BEGIN_SRC R :tangle R/nstandr.r
   #' Standardizes organizational names. Takes either vector or column in the table.
   #' 
   #' @param x object (table)
-  #' @param procedures Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with `standardize_make_procedures_list` (see its help for the correct format of data.frame with procedures). Default is `nstandr_default_procedures_table`
+  #' @param procedures The procedures that basically comprise the standardization algorithm are specified as a list of either (1) names of procedures function as character strings or as (2) calls where you can provide optional arguments or (3) nested lists that allow user to group procedures. Nesting lists of procedures has an effect on standardization progress reporting and on visualizing algorithms with `nstandr_plot`. Technically nested lists are equivalent to plain list of procedures as it should produce same results. Names of the list elements are used for progress messages. For unnamed elements the name of procedure's function will be used for standardization progress reporting. Default is `nstandr:::nstandr_default_procedures_list`.
   #' @param show_progress Whether to report progress percentage. Default is TRUE
   #' @param nrows_min_to_show_progress The minimum number of rows the x should have for automatic progress estimation. If x has less rows no progress will be shown. Default is 10^5
   #' @param progress_step_nrows If set it will divide the x into chunk of this amount of rows. Default is NULL.
@@ -4374,36 +4441,33 @@ The default standardization procedures are the following (for now):
   #' @param save_intermediate_x_to_var For debuging of standartization procedures. Saves intermediate results to this variable. If procedures finish without errors then the variable will be removed.
   #' @inheritDotParams standardize_options
   #'
-  #' @aliases make_standard_names make_std_names
+  #' @aliases make_standard_names make_std_names nstand
   #' 
   #' @return standardized data
   #'
   #' @export
   standardize <- function(x
-                      , procedures = nstandr_default_procedures_table
-                      , show_progress = TRUE
-                      , nrows_min_to_show_progress = 10^5
-                      , progress_step_nrows = NULL
-                      , progress_step_in_percent = 1
-                      , progress_message_use_names = TRUE
-                      , quite = FALSE
-                      , save_intermediate_x_to_var = NULL
-                      , ...) {
+                        , procedures = nstandr:::nstandr_default_procedures_list
+                        , show_progress = TRUE
+                        , nrows_min_to_show_progress = 10^5
+                        , progress_step_nrows = NULL
+                        , progress_step_in_percent = 1
+                        , progress_message_use_names = TRUE
+                        , quite = FALSE
+                        , save_intermediate_x_to_var = NULL
+                        , ...) {
       checkmate::assert_string(save_intermediate_x_to_var, null.ok = TRUE)
       checkmate::assert_flag(show_progress)
       checkmate::assert_flag(quite)
       checkmate::assert_flag(progress_message_use_names)
-      checkmate::assert_multi_class(procedures, classes = c("list", "data.frame"))
-      if(is.data.frame(procedures)) {
-          procedures <- standardize_make_procedures_list(procedures)
-      }
+      checkmate::assert_class(procedures, classes = c("list"))
       ## make format of the massages for procedures
-      message_delimiter <- paste(c("\n", rep("-", 65), "\n"), collapse = "")
-      message_init <- paste0("\nApplying standardization procedures:", message_delimiter)
+      message_delimiter <- paste(c("\n", rep("-", 65)), collapse = "")
+      message_init <- paste0("\n* Applying standardization procedures:", message_delimiter)
       message_done  <- "\b\b\b\bDONE"
       progress_format <- "\b\b\b\b%3.0f%%"
-      message_format <- "* %-60.60s...."
-      message_fin <- paste0(message_delimiter, "Standardization is done!\n")
+      message_format <- "  - %-70.70s...."
+      message_fin <- paste0("* Standardization is done!", message_delimiter)
       ## ensure that x is either vector or data.table
       if(missing(x)) return(NULL)
       checkmate::assert_multi_class(x
@@ -4432,67 +4496,82 @@ The default standardization procedures are the following (for now):
               }
           }
       ## Apply Procedures
-      if(!quite) message(message_init)
-      for(p in 1:length(procedures)) {
-          ## get procedure function
-          procedure_fun <- procedures[[p]][[1]]
-          ## get procedure arguments (remove show_progressarg if it is there)
-          procedure_args <- procedures[[p]][
-              -c(1, which(names(procedures[[p]]) == "show_progress"))
-          ]
-          ## get procedure names
-          procedure_name <- 
-              if(standardize_is_data_empty(names(procedures)[p]) | !progress_message_use_names) {
-                  procedure_fun
+      x_env <- environment()
+      for_procedures <- function(procedures) {
+          for(p in 1:length(procedures)) {
+              ## check if procedures[[p]] is nested
+              if(is.list(procedures[[p]])) {
+                  if(!quite) message("* Starting '", names(procedures)[p], "' group of procedures...")
+                  for_procedures(procedures[[p]])
+                  if(!quite) message("  - Finished '", names(procedures)[p], "' group of procedures.")
+                  next
+              }
+              ## assume that procedures[[p]] is not list but could be a call
+              ## get procedure function
+              procedure_fun <- procedures[[p]][[1]] |>
+                  as.character()
+              ## get procedure arguments (remove show_progressarg if it is there)
+              procedure_args <- as.list(procedures[[p]])[
+                  -c(1, which(names(procedures[[p]]) == "show_progress"))
+              ]
+              ## get procedure names
+              procedure_name <- 
+                  if(standardize_is_data_empty(names(procedures)[p], return_as_true_if_x_zero_length = TRUE) | !progress_message_use_names) {
+                      procedure_fun
+                  } else {
+                      names(procedures)[p]
+                  }
+              ## Anounce Procedure Name
+              if(!quite) packageStartupMessage(
+                             sprintf(message_format, procedure_name)
+                           , appendLF = FALSE)
+              ## Check if we need report progress:
+              ## progress is set & progress = FALSE is absent in the arguments
+              if(!is.null(progress_step_nrows) &
+                 !isFALSE(procedures[[p]]["show_progress"][[TRUE]])) {
+                  ## check if we need to split..
+                  if(!isTRUE(class(x) == "list")) {
+                      assign("x", value = standardize_x_split(x, progress_step_nrows), pos = x_env)
+                  }
+                  ## set progress counter
+                  i <- 0; i_env <- environment()
+                  ## Apply procedure to list!
+                  assign("x", value = 
+                                  lapply(x, \(x_by) {
+                                      if(!is.null(save_intermediate_x_to_var))
+                                          assign(save_intermediate_x_to_var, x, pos = 1)
+                                      ## apply procedure fun with args
+                                      x_by <- do.call(procedure_fun
+                                                    , c(list(x_by), procedure_args))
+                                      ## Increment progress counter
+                                      assign("i", i + 100 * progress_step_nrows / x_len, pos = i_env)
+                                      ## Anounce progress
+                                      packageStartupMessage(
+                                          sprintf(progress_format, i)
+                                        , appendLF = FALSE)
+                                      return(x_by)
+                                  })
+                       , pos = x_env)
               } else {
-                  names(procedures)[p]
-              }
-          ## Anounce Procedure Name
-          if(!quite) packageStartupMessage(
-                         sprintf(message_format, procedure_name)
-                       , appendLF = FALSE)
-          ## Check if we need report progress:
-          ## progress is set & progress = FALSE is absent in the arguments
-          if(!is.null(progress_step_nrows) &
-             !isFALSE(procedures[[p]]["show_progress"][[TRUE]])) {
-              ## check if we need to split..
-              if(!isTRUE(class(x) == "list")) {
-                  x <- standardize_x_split(x, progress_step_nrows)
-              }
-              ## set progress counter
-              i <- 0; env <- environment()
-              ## Apply procedure to list!
-              x <- lapply(x, \(x_by) {
+                  ## check if we need to rbindlist..
+                  if(isTRUE(class(x) == "list")) {
+                      if(is.atomic(x[[1]])) {
+                          assign("x", value = unlist(x, use.names = FALSE), pos = x_env)
+                      } else {
+                          assign("x", value = rbindlist(x), pos = x_env)
+                      }
+                  }
                   if(!is.null(save_intermediate_x_to_var))
                       assign(save_intermediate_x_to_var, x, pos = 1)
-                  ## apply procedure fun with args
-                  x_by <- do.call(procedure_fun
-                                , c(list(x_by), procedure_args))
-                  ## Increment progress counter
-                  assign("i", i + 100 * progress_step_nrows / x_len, envir = env)
-                  ## Anounce progress
-                  packageStartupMessage(
-                      sprintf(progress_format, i)
-                    , appendLF = FALSE)
-                  return(x_by)
-              })
-          } else {
-              ## check if we need to rbindlist..
-              if(isTRUE(class(x) == "list")) {
-                  if(is.atomic(x[[1]])) {
-                      x <- unlist(x, use.names = FALSE)
-                  } else {
-                      x <- rbindlist(x)
-                  }
+                  ## Apply procedure fun with args!
+                  assign("x", value = do.call(procedure_fun, c(list(x), procedure_args)), pos = x_env)
               }
-              if(!is.null(save_intermediate_x_to_var))
-                  assign(save_intermediate_x_to_var, x, pos = 1)
-              ## Apply procedure fun with args!
-              x <- do.call(procedure_fun, c(list(x), procedure_args))
+              ## Anounce DONE
+              if(!quite) packageStartupMessage(message_done)
           }
-          ## Anounce DONE
-          if(!quite) packageStartupMessage(message_done)
       }
+      if(!quite) message(message_init)
+      for_procedures(procedures)
       if(!quite) message(message_fin)
       ## return x
       if(isTRUE(class(x) == "list")) {
@@ -4503,7 +4582,6 @@ The default standardization procedures are the following (for now):
           }
       }
       ## remove intermediate saves if procedures finished without error
-      remove
       if(!is.null(save_intermediate_x_to_var))
           rm(list = save_intermediate_x_to_var, pos = 1)
       return(x)
@@ -4521,6 +4599,11 @@ The default standardization procedures are the following (for now):
   #' @export
   make_standard_names <- standardize
 
+
+  #' @rdname standardize
+  #' @export
+  nstand <- standardize
+
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_standardize.r
@@ -4530,18 +4613,20 @@ The default standardization procedures are the following (for now):
   }
 
   ## note that do.call is not able to find functions by name so one need to pass it as a lambda
+  ## TODO: I think that this is because I eveluate things in different environment
 
   expect_equal(
       standardize(as.numeric(1:10^2)
-              , procedures =
-                    list("Squaring stuff" = "sqrt"
-                        ,list("abs", show_progress = FALSE)
-                        ,list("log", base = 10)
-                       , "My function" = list(dummy, 10^6, show_progress = TRUE))
-              , nrows_min_to_show_progress = 1
-              , progress_step_nrows = NULL
-              , quite = TRUE)
-  , c(0, 0.150514997831991, 0.238560627359831, 0.301029995663981, 
+                , procedures =
+                      list("Squaring stuff" = "sqrt"
+                         , call("abs", show_progress = FALSE)
+                         , call("log", base = 10)
+                         , "My function" = call("dummy", 10^6, show_progress = TRUE)
+                           )
+                , nrows_min_to_show_progress = 1
+                , progress_step_nrows = NULL
+                , quite = TRUE)
+    , c(0, 0.150514997831991, 0.238560627359831, 0.301029995663981, 
         0.349485002168009, 0.389075625191822, 0.422549020007129, 0.451544993495972, 
         0.477121254719662, 0.5, 0.520696342579113, 0.539590623023813, 
         0.556971676153418, 0.573064017839119, 0.588045629527841, 0.602059991327962, 
@@ -4566,6 +4651,51 @@ The default standardization procedures are the following (for now):
         0.974695003322457, 0.977121254719662, 0.979520696160547, 0.981893913672778, 
         0.984241474276968, 0.986563926799849, 0.988861802644424, 0.991135616519784, 
         0.993385867133122, 0.995613037846247, 0.997817597298775, 1))
+
+
+
+
+
+
+  ## test nested procedures
+  expect_equal(standardize(as.numeric(1:10^2)
+                         , procedures =
+                               list("Squaring stuff" = "sqrt"
+                                  , "Cluster of procedures" = list(call("abs", show_progress = FALSE)
+                                                                 , "This is log" = call("log", base = 10)))
+                         , nrows_min_to_show_progress = 1
+                         , progress_step_nrows = NULL
+                         , quite = TRUE)
+             , c(0, 0.150514997831991, 0.238560627359831, 0.301029995663981, 
+                 0.349485002168009, 0.389075625191822, 0.422549020007128, 0.451544993495972, 
+                 0.477121254719662, 0.5, 0.520696342579112, 0.539590623023812, 
+                 0.556971676153418, 0.573064017839119, 0.588045629527841, 0.602059991327962, 
+                 0.615224460689137, 0.627636252551653, 0.639376800476415, 0.650514997831991, 
+                 0.66110964736696, 0.671211340411103, 0.680863918008796, 0.690105620855803, 
+                 0.698970004336019, 0.707486673985409, 0.715681882079494, 0.72357901567111, 
+                 0.731198998949478, 0.738560627359831, 0.745680846917136, 0.752574989159953, 
+                 0.759256969938944, 0.765739458521128, 0.772034022175138, 0.778151250383644, 
+                 0.784100862033497, 0.789891798308405, 0.79553230351325, 0.801029995663981, 
+                 0.806391928359868, 0.81162464519895, 0.816734227789793, 0.821726338243094, 
+                 0.826606256887672, 0.831378915840787, 0.836048928967859, 0.840620618687794, 
+                 0.845098040014257, 0.849485002168009, 0.853785088048968, 0.8580016718174, 
+                 0.862137934800395, 0.866196879911484, 0.870181344747122, 0.8740940135031, 
+                 0.877937427836246, 0.881713996781469, 0.885426005821072, 0.889075625191822, 
+                 0.892664917505384, 0.896195844749127, 0.899670274726791, 0.903089986991944, 
+                 0.906456678321428, 0.909771967770934, 0.913037401350413, 0.916254456353118, 
+                 0.919424545368628, 0.922549020007128, 0.925629174359538, 0.928666248215634, 
+                 0.931661430060228, 0.934615859865488, 0.93753063169585, 0.940406796140396, 
+                 0.943245362586241, 0.94604730134524, 0.948813545645221, 0.951544993495972, 
+                 0.954242509439325, 0.956906926191858, 0.959539046188037, 0.962139643030941, 
+                 0.964709462857146, 0.967249225621784, 0.969759626309309, 0.972241336075084, 
+                 0.974695003322456, 0.977121254719662, 0.979520696160547, 0.981893913672778, 
+                 0.984241474276968, 0.986563926799849, 0.988861802644424, 0.991135616519784, 
+                 0.993385867133122, 0.995613037846247, 0.997817597298775, 1))
+
+
+
+
+
 
 
 
@@ -4611,7 +4741,6 @@ The default standardization procedures are the following (for now):
                  "LHASA LIMITED", "ROSE PLASTIC USA LLLP", "ASDKFJSDLKFJLASWEE\" ASDF CO"
                  ))
 
-
 #+END_SRC
 
 ** visualize
@@ -4620,128 +4749,295 @@ The default standardization procedures are the following (for now):
 :END:
 
 #+BEGIN_SRC R :tangle no
-  make_dot_node <- function(procedure, node) {
-      obj <- get0(procedure, ifnotfound = NULL)
-      if(!is.null(obj)) {
-          for(tag in c("title"
-                     , "example"
-                     , "ref"
-                     , "pp")) {
-              assign(tag
-                   , attr(obj, paste0("nstandr_procedure_", tag)) |>
-                     htmltools::htmlEscape())
-          }
+  ##' Makes <TR><TD> record for dot node <TABLE>
+  ##' @param str content
+  ##' @param bg_color row's background color
+  ##' @param font row's font family
+  ##' @param b make it bold
+  ##' @param i make it intallic
+  ##' @return string
+  paste_dot_node_tr_td <- function(str, bg_color = NULL, font = NULL, b = FALSE, i = FALSE) {
+      if(length(str) != 0 && !is.na(str) && str != "") {
+          c('<TR><TD', if(!is.null(bg_color)) paste0(' BGCOLOR="', bg_color, '"'), '>'
+          , if(i) '<I>'
+          , if(b) '<B>'
+          , if(!is.null(font)) paste0('<FONT FACE="', font, '">')
+          , str
+          , if(!is.null(font)) '</FONT>'
+          , if(b) '</B>'
+          , if(i) '</I>'
+          , '</TD></TR>') |> paste(collapse = "")
       }
-      paste0("node_", node , " ["
-           , "label = " , if(!is.null(obj) && length(title) != 0 && title != "") {
-                              paste0(
-                                  "<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">"
-                                , "<TR><TD BGCOLOR=\"lightblue\">", title, "</TD></TR>"
-                                , if(length(example) != 0 && example != "") {
-                                      paste0("<TR><TD>", example, "</TD></TR>")
-                                  }
-                                , "</TABLE>>")
-                          } else {
-                              paste0("\"", procedure,"\"")
-                          }
+  }
+
+
+  ##' Makes a dot node (as html table) from procedure's attributes.
+  ##' 
+  ##' @param procedure Procedure's function either as charater string or as call (with optional arguments)
+  ##' @param procedure_title This will overwrites the node's title. By default the title is either from procedure's attribute 'title' (prefixed by `procedure_attr_prefix`) or just a name of procedure if there is no such attibute.
+  ##' @param id Node ID that is used for refering in edges (arrows) definition
+  ##' @param node_bg_color node's background color
+  ##' @param node_header_color node's header background color
+  ##' @param node_font main font family
+  ##' @param node_fix_width_font fixed with font family
+  ##' @param add_example wheather to add example from procedure's attribure 'example' (prefixed by `procedure_attr_prefix`)
+  ##' @param add_procedure_name wheather to add procedure's name
+  ##' @param add_procedure_args wheather to add optional procedure's arguments
+  ##' @param procedure_attr_prefix prefix used to specify procedures' attibutes
+  ##' @return dot node as string
+  paste_dot_node <- function(procedure, id
+                           , procedure_title = NULL
+                          , node_bg_color = "white"
+                          , node_header_color = "#bdc3c7"
+                          , node_font = "Helvetica"
+                          , node_fix_width_font = "Courier"
+                          , add_example = TRUE
+                          , add_procedure_name = FALSE
+                          , add_procedure_args = FALSE
+                          , procedure_attr_prefix = "nstandr_procedure_") {
+      procedure_name <- as.character(procedure[[1]])
+      obj <- get0(procedure_name, ifnotfound = NULL)
+      att <- list()
+      att_to_get <- c("title"
+                    , "example"
+                    , "ref"
+                    , "pp")
+      if(!is.null(obj)) {
+          ## bind procedure description attribures
+          within(att
+               , for(tag in att_to_get) {
+                     if(requireNamespace("htmltools", quietly=TRUE)) {
+                         assign(tag, attr(obj, paste0(procedure_attr_prefix, tag)) |> htmltools::htmlEscape())
+                     } else {
+                         assign(tag, attr(obj, paste0(procedure_attr_prefix, tag)))
+                     }
+                 })
+      }
+      paste0("node_", id, " [label = " , 
+             c('<<TABLE BGCOLOR="', node_bg_color, '" BORDER="0" CELLBORDER="1" CELLSPACING="0">'
+             , if(!is.null(procedure_title)) {
+                   paste_dot_node_tr_td(procedure_title, bg_color = node_header_color)
+               } else {
+                   paste_dot_node_tr_td(att$title, bg_color = node_header_color)
+               }
+             , ## add procedure_name (as title if there is no title yet)
+               if(is.null(att$title) && is.na(procedure_title)) {
+                   paste_dot_node_tr_td(procedure_name, bg_color = node_header_color, font = node_fix_width_font)
+               } else if(add_procedure_name) {
+                   paste_dot_node_tr_td(procedure_name, font = node_fix_width_font)
+               }
+             , if(add_procedure_args && is.call(procedure) && length(as.list(procedure)[-1]) != 0) {
+                   sub(procedure_name, "", deparse(procedure), fixed = TRUE) |>
+                       paste_dot_node_tr_td(font = node_fix_width_font)
+               }
+             , if(add_example) {
+                   paste_dot_node_tr_td(att$example, i = TRUE)
+               }
+             , "</TABLE>>") |> paste(collapse = "")
            , "];")
   }
 
-  ## make_dot_node(1, "magerman_replace_accented_characters")
 
-  make_dot_nodes <- function(procedures_list, node_prefix = NULL) {
+  ##' Generates description of dot graph nodes.
+  ##' 
+  ##' @param procedures_list List of procedures. See `sandardize` for how to specify of procedures list.
+  ##' @param node_prefix pefix for node IDs
+  ##' @param procedures_group_bg_color Background color for visuallizing groupped procedures (nested list of procedures)
+  ##' @param procedures_group_title_font Font family for group of procedures title
+  ##' @inheritDotParams paste_dot_node
+  ##' @return dot nodes as string
+  make_dot_nodes <- function(procedures_list, node_prefix = NULL, ...
+                            , procedures_group_bg_color = "#ecf0f1"
+                            , procedures_group_title_font = "Helvetica") {
       procedures_names <- names(procedures_list)
       if(is.null(procedures_names)) {
           procedures_names <- rep(NA, length(procedures_list))
       }
       mapply(\(p, name, n) {
-          if(is.list(p) && !is.pairlist(p)) {
-              paste("subgraph cluster {"
-                   , "style=invisible;"
-                   , "subgraph cluster_", n," {"
-                   , if(!is.na(name)) paste0("label=\"", name, "\";")
-                   , "style=filled;"
-                   , "color=lightgrey;"
-                   , "node [color=white];"
-                   , make_dot_nodes(p, node_prefix = paste0(n, "_"))
-                   , "}", "}"
-                   , sep = "\n")
+          if(is.list(p)) {
+              c(paste0("subgraph cluster_", n," {")
+              , if(!is.na(name)) paste0("    label=\"", name, "\";")
+              , paste0('    bgcolor="', procedures_group_bg_color, '";')
+              , paste0('    fontname="', procedures_group_title_font, '"')
+              , paste0("    ", make_dot_nodes(p, node_prefix = paste0(n, "_"), ...))
+              , "}")
           } else {
-              make_dot_node(p[[1]], node = paste0(node_prefix, n))
+              paste_dot_node(p, paste0(node_prefix, n), procedure_title = name, ...)
           }
       }
     , p = procedures_list
     , name = procedures_names
     , n = seq_along(procedures_list)) |>
-        paste(collapse = "\n")
+        unlist()
   }
 
-  ## nstandr:::magerman_procedures_list |>
-  ##     make_dot_nodes()
 
-
-  ## nstandr:::magerman_procedures_list |>
-  ##     sapply(class)
-
-  ## c("a", b = "b") |>
-  ##     as.list()
-
-  ## list("a", "b", list("c", "e", "d")) |>
-  ##     make_dot_nodes() |>
-  ##     cat()
-
+  ##' Makes dot graph edges for visualizing arrows between sequence of procedures. 
+  ##' 
+  ##' @param procedures_list List of procedures. See `sandardize` for how to specify of procedures list.
+  ##' @param prefix Prefix for edge IDs
+  ##' @return 
   make_dot_edges <- function(procedures_list, prefix = NULL) {
-      mapply(
-          \(p, pp, n, nn) {
-              if(is.list(pp) && !is.pairlist(pp)) {
-                  paste(
-                      paste0("node_", n, " -> ", "node_", n, "_1"
-                           , " [lhead = cluster_", n,"];")
-                    , make_dot_edges(pp, prefix = paste0(n, "_"))  
-                    , paste0("node_", n, "_", length(pp), " -> ", "node_", nn
-                           , " [ltail = cluster_", n,"];")
-                      , sep = "\n")
-              } else {
-                  paste0("node_", n, " -> ", "node_", nn, ";")
-              }
+      mapply(\(p, p_next, n, n_next) {
+          ## from
+          edge_from <- NULL
+          edge_from_pre <- NULL
+          if(is.list(p)) {
+              edge_from_pre <- c(paste0("// cluster_", n)
+                               , paste0("  ", make_dot_edges(p, prefix = paste0(n, "_"))))
+              edge_from <- paste0("node_", n, "_", length(p))
+          } else {
+              edge_from <- paste0("node_", n)
           }
-        , p = procedures_list[-length(procedures_list)]
-        , pp = procedures_list[-1]
-        , n = paste0(prefix, seq(length(procedures_list) - 1))
-        , nn = paste0(prefix, seq(2, length(procedures_list)))
-      ) |>
-      paste(collapse = "\n")
+          ## to
+          lhead <- NULL
+          edge_to <- NULL
+          edge_to_post <- NULL
+          if(is.list(p_next)) {
+              lhead <- paste0('lhead = "cluster_', n_next, '"')
+              edge_to <- paste0("node_", n_next, "_1")
+              ## add nested list here in case of last element
+              edge_to_post <- 
+                  if(n_next == length(procedures_list)) {
+                      c(paste0("// cluster_", n_next)
+                      , paste0("  ", make_dot_edges(p_next, prefix = paste0(n_next, "_"))))
+                  }
+          } else {
+              edge_to <- paste0("node_", n_next)
+          }
+          ## edge
+          c(edge_from_pre
+          , paste0(edge_from, " -> ", edge_to, " [", lhead, "];")
+          , edge_to_post)
+      }
+    , p = procedures_list[-length(procedures_list)]
+    , p_next = procedures_list[-1]
+    , n = paste0(prefix, seq(length(procedures_list) - 1))
+    , n_next = paste0(prefix, seq(2, length(procedures_list)))) |>
+        unlist()
   }
 
-  ## list("a", "b", list("c", "e")) |>
-      ## make_dot_edges() |>
-      ## cat()
 
-  make_dot_graph <- function(procedures_list) {
-      paste("digraph nstantr_procedures {" ,
-          , "node [shape = plain, fontname = Helvetica]",
-          , make_dot_nodes(procedures_list),
-          , make_dot_edges(procedures_list), 
+  ##' Generates graph description for visualizing list of procedures in dot format.
+  ##'
+  ##' The visualization itself requires some dependencies to be installed (e.g., `DiagrammeR` package). If you do not have those you can `cat()` the returned string to the R console and copy it to some web tool for dot visualization (e.g.http://magjac.com/graphviz-visual-editor)
+  ##' @param procedures_list List of procedures. See `sandardize` for how to specify of procedures list.
+  ##' @inheritDotParams make_dot_nodes
+  ##' @return dot graph as string
+  ##' @export 
+  make_dot_graph <- function(procedures_list, ...) {
+      paste("digraph nstantr_procedures {"
+          , "  compound=true;"
+          , "  node [shape = plain, fontname = Helvetica]"
+          , paste0("  ", make_dot_nodes(procedures_list, ...)) |> paste(collapse = "\n")
+          , paste0("  ", make_dot_edges(procedures_list)) |> paste(collapse = "\n")
           , "}"
-          , sep = "\n\n")
+          , collapse = "\n", sep = "\n")
   }
 
 
-  browse_dot_graph <- function(procedures_list) {
+  ##' Generates a temporary html file with visualization of given nstandr procedures and opens it in a browser (specified in `options('browser')`). This reqires `DiagrammeR` package to be installed. If you do not have those you can `cat()` the returned string from `nstandr:::make_dot_graph()' to the R console and copy it to some web tool for dot visualization (e.g.http://magjac.com/graphviz-visual-editor)
+  ##'
+  ##' @inheritParams make_dot_graph
+  ##' @param width width of the procedures graph in pixels
+  ##' @param height height of the procedures graph in pixels
+  ##' @inheritDotParams make_dot_graph
+  ##' @return An object of class ‘htmlwidget’ that can be used in Rmardown
+  ##' @export 
+  browse_dot_graph <- function(procedures_list
+                             , width = NULL
+                             , height = NULL
+                             , ...) {
+      if(requireNamespace("DiagrammeR", quietly=TRUE)) {
+          procedures_list |>
+              make_dot_graph(...) |>
+              DiagrammeR::grViz()
+      } else {
+          message("The procedures visualization reqires `DiagrammeR` package to be installed (you can install it with `install.packages('DiagrammeR')`). If you do not have it you can just `cat()` the returned string from `nstandr:::make_dot_graph()' to the R console and copy it to some web tool for dot visualization (e.g.http://magjac.com/graphviz-visual-editor)")
+      }
+  }
+
+
+  #' @rdname browse_dot_graph
+  #' @export
+  visualize <- browse_dot_graph
+
+#+END_SRC
+
+#+BEGIN_SRC R :tangle inst/tinytest/test_browse_dot_graph.r
+  paste_dot_node_tr_td <- nstandr:::paste_dot_node_tr_td
+
+  expect_equal(paste_dot_node_tr_td(NULL)
+             , NULL)
+
+  expect_equal(paste_dot_node_tr_td("")
+             , NULL)
+
+  expect_equal(
+      paste_dot_node_tr_td("Hello", i = TRUE, b = TRUE, font = "Arial", bg_color = "blue")
+    , "<TR><TD BGCOLOR=\"blue\"><I><B><FONT FACE=\"Arial\">Hello</FONT></B></I></TD></TR>")
+
+
+  paste_dot_node <- nstandr:::paste_dot_node
+
+  expect_equal(
+      paste_dot_node("name_standardization_procedure", 1)
+
+    , "node_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\"><FONT FACE=\"Courier\">name_standardization_procedure</FONT></TD></TR></TABLE>>];"
+  )
+
+  expect_equal(
+      paste_dot_node("name_standardization_procedure", 1, "Name Standardization Procedure")
+
+    , "node_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Name Standardization Procedure</TD></TR></TABLE>>];"
+  )
+
+  expect_equal(
+      paste_dot_node(call("name_standardization_procedure"), 1, add_procedure_args = TRUE)
+
+    , "node_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\"><FONT FACE=\"Courier\">name_standardization_procedure</FONT></TD></TR></TABLE>>];"
+  )
+
+  expect_equal(
+      paste_dot_node(call("name_standardization_procedure", arg1 = 1, arg2 = 2), 1, add_procedure_args = TRUE)
+
+    , "node_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\"><FONT FACE=\"Courier\">name_standardization_procedure</FONT></TD></TR><TR><TD><FONT FACE=\"Courier\">(arg1 = 1, arg2 = 2)</FONT></TD></TR></TABLE>>];"
+  )
+
+
+
+  procedures_list <- list(
+      "this is a" = "a"
+    , "b"
+    , "c" = list(1,2,3)
+    , "e"
+    , "f" = list(4,5,6)
+  )
+
+  make_dot_nodes <- nstandr:::make_dot_nodes
+
+
+  expect_equal(
       procedures_list |>
-          make_dot_graph() |>
-          DiagrammeR::grViz()
-  }
+      make_dot_nodes() |>
+      paste0(collapse = "\n")
+    , "node_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">this is a</TD></TR></TABLE>>];\nnode_2 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"></TABLE>>];\nsubgraph cluster_3 {\n    label=\"c\";\n    bgcolor=\"#ecf0f1\";\n    fontname=\"Helvetica\"\n    node_3_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"></TABLE>>];\n    node_3_2 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"></TABLE>>];\n    node_3_3 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"></TABLE>>];\n}\nnode_4 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"></TABLE>>];\nsubgraph cluster_5 {\n    label=\"f\";\n    bgcolor=\"#ecf0f1\";\n    fontname=\"Helvetica\"\n    node_5_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"></TABLE>>];\n    node_5_2 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"></TABLE>>];\n    node_5_3 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"></TABLE>>];\n}")
 
 
-  nstandr:::magerman_procedures_list |>
-      browse_dot_graph()
+
+  make_dot_edges <- nstandr:::make_dot_edges
+
+  expect_equal(
+      procedures_list |>
+      make_dot_edges() |>
+      paste(collapse = "\n")
+    , "node_1 -> node_2 [];\nnode_2 -> node_3_1 [lhead = \"cluster_3\"];\n// cluster_3\n  node_3_1 -> node_3_2 [];\n  node_3_2 -> node_3_3 [];\nnode_3_3 -> node_4 [];\nnode_4 -> node_5_1 [lhead = \"cluster_5\"];\n// cluster_5\n  node_5_1 -> node_5_2 [];\n  node_5_2 -> node_5_3 [];")
 
 
-  nstandr:::magerman_procedures_list |>
-      make_dot_graph() |>
-      cat()
 
+  expect_equal(procedures_list |>
+               make_dot_graph()
+             , "digraph nstantr_procedures {\n  compound=true;\n  node [shape = plain, fontname = Helvetica]\n  node_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">this is a</TD></TR></TABLE>>];\n  node_2 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"></TABLE>>];\n  subgraph cluster_3 {\n      label=\"c\";\n      bgcolor=\"#ecf0f1\";\n      fontname=\"Helvetica\"\n      node_3_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\"><FONT FACE=\"Courier\">1</FONT></TD></TR></TABLE>>];\n      node_3_2 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\"><FONT FACE=\"Courier\">2</FONT></TD></TR></TABLE>>];\n      node_3_3 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\"><FONT FACE=\"Courier\">3</FONT></TD></TR></TABLE>>];\n  }\n  node_4 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"></TABLE>>];\n  subgraph cluster_5 {\n      label=\"f\";\n      bgcolor=\"#ecf0f1\";\n      fontname=\"Helvetica\"\n      node_5_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\"><FONT FACE=\"Courier\">4</FONT></TD></TR></TABLE>>];\n      node_5_2 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\"><FONT FACE=\"Courier\">5</FONT></TD></TR></TABLE>>];\n      node_5_3 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\"><FONT FACE=\"Courier\">6</FONT></TD></TR></TABLE>>];\n  }\n  node_1 -> node_2 [];\n  node_2 -> node_3_1 [lhead = \"cluster_3\"];\n  // cluster_3\n    node_3_1 -> node_3_2 [];\n    node_3_2 -> node_3_3 [];\n  node_3_3 -> node_4 [];\n  node_4 -> node_5_1 [lhead = \"cluster_5\"];\n  // cluster_5\n    node_5_1 -> node_5_2 [];\n    node_5_2 -> node_5_3 [];\n}")
 
 
 
@@ -7567,7 +7863,7 @@ Table: Umlaut harmonization replacements
 |  4 | Cleaning spaces (2)                      | 'standardize_squish_spaces'                                                     |
 |  5 | Replacing SGML coded characters          | 'magerman_replace_sgml_characters'                                              |
 |  6 | Replacing proprietary characters         | 'magerman_replace_proprietary_characters'                                       |
-|  7 | Detecting Umlauts                        | 'magerman_detect_umlaut', output_codes_col_name = 'magerman_umlaut'                    |
+|  7 | Detecting Umlauts                        | 'magerman_detect_umlaut', output_codes_col_name = 'magerman_umlaut'             |
 |    |                                          | /The above sets code names with umlaut for umlaut standardization later/        |
 |  8 | Replacing accented characters            | 'magerman_replace_accented_characters'                                          |
 |    |                                          |                                                                                 |
@@ -7580,7 +7876,7 @@ Table: Umlaut harmonization replacements
 | 14 | Fixing comma and period irregularities   | 'magerman_replace_comma_period_irregularities'                                  |
 |    |                                          |                                                                                 |
 |    | *Legal forms*                            |                                                                                 |
-| 15 | Detecting legal form                     | 'magerman_detect_legal_form', output_codes_col_name = 'legal_form'                     |
+| 15 | Detecting legal form                     | 'magerman_detect_legal_form', output_codes_col_name = 'legal_form'              |
 | 16 | Removing legal form                      | 'magerman_remove_legal_form_and_clean'                                          |
 |    |                                          |                                                                                 |
 |    | *Common words*                           |                                                                                 |
@@ -7599,6 +7895,44 @@ Table: Umlaut harmonization replacements
 #+call: make-rds-procedures-list(data = magerman_procedures_table, data.name = "magerman_procedures_list", remove.single.quotes = "FALSE")
 
 
+#+name: nstandr_magerman_procedures_list
+#+BEGIN_SRC R :tangle no :noweb yes :session *R-make-magerman_default_procedures_list*
+  nstandr_magerman_procedures_list <- 
+      list("Prepossessing" =
+               list("Upper casing" = 'standardize_toupper' 
+                  , "Cleaning spaces" = 'standardize_squish_spaces')
+         , "Characters" =
+               list("Removing HTML codes" = 'magerman_remove_html_codes'
+                  , "Cleaning spaces (2)" = 'standardize_squish_spaces'
+                  , "Replacing SGML coded characters" = 'magerman_replace_sgml_characters'                                             
+                  , "Replacing proprietary characters" = 'magerman_replace_proprietary_characters'
+                  , "Detecting Umlauts" = call('magerman_detect_umlaut', output_codes_col_name = 'magerman_umlaut')  # sets code names with umlaut for umlaut standardization later
+                  , "Replacing accented characters" = 'magerman_replace_accented_characters')
+         , "Punctuation" = list("Removing special characters" = 'magerman_remove_special_characters'                                           
+                              , "Fixing quotation irregularities" = 'magerman_remove_double_quotation_marks_irregularities'                        
+                              , "Removing double quotations" = 'magerman_remove_double_quotation_marks_beginning_end'                         
+                              , "Removing non alphanumeric characters (1)" = 'magerman_remove_non_alphanumeric_at_the_beginning'                            
+                              , "Removing non alphanumeric characters (2)" = 'magerman_remove_non_alphanumeric_at_the_end'                                  
+                              , "Fixing comma and period irregularities" = 'magerman_replace_comma_period_irregularities')
+         , "Legal forms" = list("Detecting legal form" = call('magerman_detect_legal_form', output_codes_col_name = 'legal_form')
+                               ,"Removing legal form" = 'magerman_remove_legal_form_and_clean')
+         , "Common words" = list( "Removing common words" = 'magerman_remove_common_words'                                                 
+                               , "Fixing spelling variations" = 'magerman_replace_spelling_variation'                                          
+                               , "Condensing" = 'magerman_condense')
+         , "Umlaut standardization" = list("Fixing umlaut variations" = call('magerman_replace_umlaut', has_umlaut_col = 'magerman_umlaut', progress = FALSE)))
+  ## the above procedure wont work properly for batches
+  ## because it need to look up matches in the whole corpus
+  ## that is why we set 'progress = FALSE'
+
+  <<save-rds-procedures-list>>
+#+END_SRC
+
+#+call: nstandr_magerman_procedures_list()
+
+#+BEGIN_SRC R 
+
+#+END_SRC
+  
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' Standardizes strings using exact procedures described in Magerman et al. 2009.
   ##' @param x table or vector
@@ -7617,7 +7951,7 @@ Table: Umlaut harmonization replacements
                                , append_output_copy_before_common_words_removal = FALSE
                                , condense_words = TRUE
                                , ...) {
-      magerman_procedures <- magerman_procedures_list
+      magerman_procedures <- nstandr_magerman_procedures_list
       ## do some tweaks on magerman_procedures
       if (!detect_legal_form) {
           is_magerman_detect_legal_form <- 
@@ -11652,6 +11986,26 @@ basically reproduces the 'main_coname2.do' stata file
 
 #+call: make-rds-procedures-list(data = cockburn_procedures_table, data.name = "cockburn_procedures_list", remove.single.quotes = "FALSE")
 
+
+#+name: nstandr_cookburn_procedures_list
+#+BEGIN_SRC R :tangle no :noweb yes :session *R-make-nstandr_cookburn_procedures_list*
+  nstandr_cookburn_procedures_list <-
+      list("Prepossessing" = list("Cleaning spaces"  = call('standardize_squish_spaces', wrap_in_spaces = TRUE)
+                                , "Upper casing"  = 'standardize_toupper')
+         , "Standartization" = list("Special removals and recoding for USPTO names"  = 'cockburn_detect_uspto'                          
+                                  , "Standardization of symbols and removals of some punctuation"  = 'cockburn_replace_punctuation'                   
+                                  , "Standardization of names (Derwent, etc.)"  = 'cockburn_replace_standard_names'                
+                                  , "Identification of organization type"  = 'cockburn_detect_type'
+                                  , "Cleaning organization type"  = 'cockburn_replace_type'
+                                  , "Combining single char sequences"  = 'cockburn_combabbrev'
+                                  , "Removal of legal entity identifiers"  = 'cockburn_remove_standard_names'
+                                  , "Cleaning spaces"  = 'standardize_squish_spaces'))
+
+  <<save-rds-procedures-list>>
+#+END_SRC
+
+#+call: nstandr_cookburn_procedures_list()
+
 #+BEGIN_SRC R :tangle R/cockburn.r
   ##' Standardizes strings using exact procedures described in Cockburn, et al. (2009)
   ##' @param x table or vector
@@ -11666,13 +12020,10 @@ basically reproduces the 'main_coname2.do' stata file
   ##' @md 
   ##' @export 
   standardize_cockburn <- function(x
-                               , cockburn_procedures = cockburn_procedures_table
+                               , cockburn_procedures = nstandr_cookburn_procedures_list
                                , detect_legal_form = FALSE
                                , return_x_before_common_words_removal = FALSE
                                , ... ) {
-      if(is.data.frame(cockburn_procedures)) {
-          cockburn_procedures <- standardize_make_procedures_list(cockburn_procedures)
-      }
     ## do some tweaks on cockburn_procedures
     if(!detect_legal_form) {
         cockburn_procedures <-
