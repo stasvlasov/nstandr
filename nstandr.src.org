@@ -1,5 +1,6 @@
 #+title: Name Standardization in R
 #+author: Stas Vlasov
+#+email: s.vlasov@uvt.nl
 #+r_package_version: 0.0.0.9000
 #+r_package_url: https://stasvlasov.github.io/nstandr/
 #+r_package_bug_reports: https://github.com/stasvlasov/nstandr/issues
@@ -202,31 +203,31 @@ Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linkin
 ** Dependencies
 
 #+caption: Suggested packages
-#+name: ob-r-pkg-suggests
+#+name: ob-r-pkg-table-suggests
 | name       | version | comment                                                                |
 |------------+---------+------------------------------------------------------------------------|
-| [[https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md][tinytest]]   |   1.3.1 | package developlent (unit testing)                                     |
-| [[https://cran.r-project.org/web/packages/fastmatch/index.html][fastmatch]]  |   1.1.3 | can speed things up a bit                                              |
-| [[https://rstudio.github.io/htmltools/index.html][htmltools]]  |   0.5.4 | used for escaping html in procedures desctiptions before visualization |
-| [[http://rich-iannone.github.io/DiagrammeR/docs.html][DiagrammeR]] |   1.0.9 | needed for visualizing procedures lists                                |
+| [[https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md][tinytest]]   |         | package developlent (unit testing)                                     |
+| [[https://cran.r-project.org/web/packages/fastmatch/index.html][fastmatch]]  |         | can speed things up a bit                                              |
+| [[https://rstudio.github.io/htmltools/index.html][htmltools]]  |         | used for escaping html in procedures desctiptions before visualization |
+| [[http://rich-iannone.github.io/DiagrammeR/docs.html][DiagrammeR]] |         | needed for visualizing procedures lists                                |
 #+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
 
 
 #+caption: Required packages (Imports)
-#+name: ob-r-pkg-imports
+#+name: ob-r-pkg-table-imports
 | name       | version | comment                                                   |
 |------------+---------+-----------------------------------------------------------|
-| data.table |  1.14.2 | fast data.frames, used as main input and output data type |
-| stringi    |   1.7.6 | fast string manipulations                                 |
-| xml2       |   1.3.2 |                                                           |
-| checkmate  |   2.0.0 | function arguments checker, ensures stability             |
+| data.table |         | fast data.frames, used as main input and output data type |
+| stringi    |         | fast string manipulations                                 |
+| xml2       |         |                                                           |
+| checkmate  |         | function arguments checker, ensures stability             |
 #+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
 
 
 There packages are used for developing and building ~nstandr~
 
 #+caption: Useful packages for development
-#+name: suggests-dev
+#+name: ob-r-pkg-table-suggests-dev
 | names          | version | comment                       |
 |----------------+---------+-------------------------------|
 | devtools       |         |                               |
@@ -283,325 +284,6 @@ For this package development I use Emacs' org-mode that allows literate programm
 - Data for string substitutions, removals or pattern recognition should be named as "patterns" (e.g., nstandr.magerman.patterns.special.characters)
 
 
-* Deploy
-#+name: deploy
-#+begin_src emacs-lisp
-  (save-excursion
-    (let ((calls '(
-                   "reset-working-directory"
-                   "tangle-buffer"
-                   "inject-get-dots"
-                   "call-all-calls"
-                   "generate-package-docs"
-                   ))
-           ;; turn off babel prompts
-           org-confirm-babel-evaluate)
-      (mapcar
-       (lambda (name)
-         (let (org-confirm-babel-evaluate)
-           (save-excursion
-             (org-babel-goto-named-src-block name)
-             (call-interactively 'org-babel-execute-maybe))))
-       calls))
-    (message "nstandr deployment is done!"))
-#+end_src
-
-** Make package data from org-tables
-
-It is a named src R code block. Call it in org file by refering in =#+CALL:= with arguments =data.name= and =data=.
-
-This file exports specific org-table to =.rds= (R data stucture) file to =data.dir= (default to =./data=) and then combines these data files (.rds) into =R/sysdata.rda= (about =R/sysdata.rda= see http://r-pkgs.had.co.nz/data.html).
-
-To call all calls
-#+name: call-all-calls
-#+BEGIN_SRC emacs-lisp :results none
-  (let (org-confirm-babel-evaluate)
-    (org-babel-map-call-lines nil (call-interactively 'org-babel-execute-maybe)))
-#+END_SRC
-
-#+name: make-rds-procedures-list
-#+header: :colnames no
-#+header: :var data = "default.data.table"
-#+header: :var data.name = "default.data.name"
-#+header: :var data.names = "first.row"
-#+header: :var data.dir = "data"
-#+header: :var remove.single.quotes = "TRUE"
-#+header: :var add.to.rda = "TRUE"
-#+header: :var rda.filename = "sysdata"
-#+header: :var rda.dir = "./R"
-#+begin_src R :tangle no :noweb yes
-  require("magrittr")
-  require("stringr")
-  require("stringi")
-  require("data.table")
-  require("romRDS")
-
-  ## just in case if there is not directory
-  dir.create(data.dir, recursive = TRUE, showWarnings = FALSE)
-
-  ## make a path for saving .rds
-  data.path  <-
-      data.name %>% 
-      paste0(".rds") %>%
-      file.path(data.dir, .)
-
-  ## just in case if there is not directory
-  dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
-
-  <<standardize_make_procedures_list>>
-
-  ## make a path for saving .rda
-  rda.path  <-
-      rda.filename %>% 
-      paste0(".rda") %>%
-      file.path(rda.dir, .)
-
-  if(length(data) == 1) {
-      data %<>%
-          extract2(1) %>%
-          ## small fix for the stings trimming problem
-          {if(as.logical(remove.single.quotes))
-               str_replace(.,"^'(.*)'$", "\\1")
-           else .} %>%
-          ## work around | character in the strings
-          stri_replace_all_fixed("\\vert", "|")
-      ## save data to .rda (filename is the same as var name)
-      saveRDS(data, data.path)
-  } else {  
-      ## fix for column names
-      if(data.names == "first.row") {
-          ## only works when option :colnames no
-          data.names <- 
-              data %>%
-              extract(1,) %>%
-              unlist %>% 
-              tolower %>%
-              make.names
-          data %<>% 
-              extract(-1,) %>%
-              set_names(data.names)
-      }
-      ## small fix for the stings trimming problem
-      ## only remove quotes when they is on the both sides of the string
-      ## it will then convert everything into strings
-      data <- {
-          if(as.logical(remove.single.quotes)) {
-              lapply(data,str_replace, "^'(.*)'$", "\\1")
-          } else {
-              data
-          }
-      } |>
-          ## work around | character in the strings
-          lapply(stri_replace_all_fixed, "\\vert", "|") |>
-          as.data.table() |>
-          standardize_make_procedures_list()
-
-      ## save data to .rda (filename is the same as var name)
-      saveRDS(data, data.path)
-  }
-
-  message(data.name, " is saved!")
-
-
-
-  ## add all .rds to R/sysdata.rda
-  ## (variable names are the same as .rds files)
-  if(!is.null(add.to.rda)) {
-      var_list <- 
-          dir(data.dir) |>
-          sapply(romRDS::rom_rds
-               , NULL
-               , rds_dir = data.dir
-               , return_name = TRUE
-               , do_not_make = TRUE
-               , name_has_extention = TRUE
-               , assign_to_name = TRUE)
-      save(list = var_list, file = rda.path)
-      message(".rda is updated!")
-  }
-
-#+end_src
-
-
-
-#+name: save-rds-procedures-list
-#+begin_src R :tangle no :noweb yes
-  data.name <- ls()
-  data <- get(data.name)
-
-  data.dir <- "data"
-  rda.filename <- "sysdata"
-  rda.dir <- "./R"
-
-
-  ## just in case if there is not directory
-  dir.create(data.dir, recursive = TRUE, showWarnings = FALSE)
-
-  ## make a path for saving .rds
-  data.path <- file.path(data.dir, paste0(data.name, ".rds"))
-
-  ## just in case if there is not directory
-  dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
-
-  ## make a path for saving .rda
-  rda.path  <- file.path(rda.dir, paste0(rda.filename, ".rda"))
-
-  if(is.list(data)) {
-      saveRDS(data, data.path)
-      message(data.name, " is saved!")
-  } else {
-      print(data)
-      stop("\n\n", data.name, " is not list!")
-  }
-
-
-  ## add all .rds to R/sysdata.rda
-  ## (variable names are the same as .rds files)
-  var_list <- 
-      dir(data.dir) |>
-      sapply(romRDS::rom_rds
-           , NULL
-           , rds_dir = data.dir
-           , return_name = TRUE
-           , do_not_make = TRUE
-           , name_has_extention = TRUE
-           , assign_to_name = TRUE)
-  save(list = var_list, file = rda.path)
-  message(".rda is updated!")
-#+end_src
-
-
-
-#+label: Rename and save org tables to .rds files
-#+name: make-rds-patterns-table
-#+header: :colnames no
-#+header: :var data = "default.data.table"
-#+header: :var data.name = "default.data.name"
-#+header: :var data.names = "first.row"
-#+header: :var data.dir = "data"
-#+header: :var remove.single.quotes = "TRUE"
-#+header: :var add.to.rda = "TRUE"
-#+header: :var rda.filename = "sysdata"
-#+header: :var rda.dir = "./R"
-#+begin_src R :tangle no
-  require("magrittr")
-  require("stringr")
-  require("stringi")
-  require("data.table")
-  require("romRDS")
-
-  ## just in case if there is not directory
-  dir.create(data.dir, recursive = TRUE, showWarnings = FALSE)
-
-  ## make a path for saving .rds
-  data.path  <-
-      data.name %>% 
-      paste0(".rds") %>%
-      file.path(data.dir, .)
-
-  ## just in case if there is not directory
-  dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
-
-  ## make a path for saving .rda
-  rda.path  <-
-      rda.filename %>% 
-      paste0(".rda") %>%
-      file.path(rda.dir, .)
-
-  if(length(data) == 1) {
-      data %<>%
-          extract2(1) %>%
-          ## small fix for the stings trimming problem
-          {if(as.logical(remove.single.quotes))
-               str_replace(.,"^'(.*)'$", "\\1")
-           else .} %>%
-          ## work around | character in the strings
-          stri_replace_all_fixed("\\vert", "|")
-      ## save data to .rda (filename is the same as var name)
-      saveRDS(data, data.path)
-  } else {  
-      ## fix for column names
-      if(data.names == "first.row") {
-          ## only works when option :colnames no
-          data.names <- 
-              data %>%
-              extract(1,) %>%
-              unlist %>% 
-              tolower %>%
-              make.names
-          data %<>% 
-              extract(-1,) %>%
-              set_names(data.names)
-      }
-      ## small fix for the stings trimming problem
-      ## only remove quotes when they is on the both sides of the string
-      ## it will then convert everything into strings
-      data %<>% 
-          {if(as.logical(remove.single.quotes))
-               lapply(.,str_replace, "^'(.*)'$", "\\1")
-           else .} %>%
-          ## work around | character in the strings
-          lapply(stri_replace_all_fixed, "\\vert", "|") %>% 
-          as.data.table
-      ## save data to .rda (filename is the same as var name)
-      saveRDS(data, data.path)
-  }
-
-  message(data.name, " is saved!")
-
-  ## add all .rds to R/sysdata.rda
-  ## (variable names are the same as .rds files)
-  if(!is.null(add.to.rda)) {
-      var_list <- 
-          dir(data.dir) |>
-          sapply(romRDS::rom_rds
-               , NULL
-               , rds_dir = data.dir
-               , quietly = TRUE
-               , return_name = TRUE
-               , do_not_make = TRUE
-               , name_has_extention = TRUE
-               , assign_to_name = TRUE)
-          save(list = var_list, file = rda.path)
-      message(".rda is updated!")
-  }
-
-#+end_src
-
-#+name: make-rda
-#+header: :var data.dir = "data"
-#+header: :var add.to.rda = "TRUE"
-#+header: :var rda.filename = "sysdata"
-#+header: :var rda.dir = "./R"
-#+BEGIN_SRC R
-  ## just in case if there is not directory
-  dir.create(rda.dir, recursive = TRUE, showWarnings = FALSE)
-
-  ## make a path for saving .rda
-  rda.path  <-
-      file.path(rda.dir
-              , rda.filename |>
-                paste0(".rda"))
-
-
-  ## add all .rds to R/sysdata.rda
-  ## (variable names are the same as .rds files)
-  if(!is.null(add.to.rda)) {
-      var_list <- 
-          dir(data.dir) |>
-          sapply(romRDS::rom_rds
-               , NULL
-               , rds_dir = data.dir
-               , return_name = TRUE
-               , do_not_make = TRUE
-               , name_has_extention = TRUE
-               , assign_to_name = TRUE)
-
-      save(list = var_list, file = rda.path)
-      message(".rda is updated!")
-  }
-
-#+END_SRC
 
 * Code
 ** Package documentation
@@ -615,53 +297,16 @@ To call all calls
   "_PACKAGE"
 #+END_SRC
 
-
-** get_dots
+** get_dots (get from external package)
 :PROPERTIES:
 :ID:       org:6lik3kf0kcj0
 :END:
 
-#+name: nstandr-inject-get-dots-src-old
-#+BEGIN_SRC emacs-lisp :tangle no
-  (save-window-excursion
-    (let* ((dots-get-dots-block-name "get_dots")
-           (dots-r-pkg-path "~/org/research/dots/dots.src.org")
-           ;; assume running in target pkg dir
-           (r-pkg-path (file-name-directory (buffer-file-name)))
-           (tangle-to-file (concat r-pkg-path "R/0_get_dots.r"))
-           ;; this is used as condition in 'bind-get-dots' call in dots.src.org
-           tangling-from-nstandr-R-package
-           ;; turn off babel prompts
-           org-confirm-babel-evaluate)
-      (with-current-buffer (find-file dots-r-pkg-path)
-        (org-with-wide-buffer 
-         (org-babel-goto-named-src-block dots-get-dots-block-name)
-         ;; With one universal prefix argument, only tangle the block at point.
-         (org-babel-tangle '(4) tangle-to-file)))))
-#+END_SRC
-
-#+name: nstandr-inject-get-dots-src
-#+BEGIN_SRC emacs-lisp :tangle no
-    (save-window-excursion
-      (let* ((dots-r-pkg-path "~/org/research/dots/dots.src.org")
-             (dots-r-pkg-buffer (find-file dots-r-pkg-path))
-             (dots-r-pkg-src-block "get_dots")
-             ;; this is used as condition in 'bind-get-dots' call in dots.src.org
-             (tangling-from-nstandr-R-package t)
-             ;; turn off babel prompts
-             (org-confirm-babel-evaluate nil)
-             ;; get src
-             (info (with-current-buffer dots-r-pkg-buffer
-                     (org-with-wide-buffer (org-babel-lob--src-info dots-r-pkg-src-block)))))
-        (when info
-          (org-babel-expand-noweb-references info dots-r-pkg-buffer))))
-#+END_SRC
+[[https://github.com/stasvlasov/dots][GitHub - stasvlasov/dots: An alternative way to interact with "..." dots arguments (aka ellipses).]]
 
 #+BEGIN_SRC R :tangle R/0_get_dots.r :noweb yes
-  <<nstandr-inject-get-dots-src()>>
+<<ob-r-pkg-utils-get-external-src(org-file="~/org/research/dots/dots.src.org",src-block="get_dots")>>
 #+END_SRC
-
-
 
 ** basic procedures
 
@@ -947,7 +592,7 @@ To call all calls
 
 A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ~ string to ~SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy~
 
-#+NAME: nstandr_patterns_ascii
+#+NAME: ob-r-pkg-data-nstandr-patterns-ascii
 | utf | ascii |
 |-----+-------|
 | Š   | S     |
@@ -1020,7 +665,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 | ý   | y     |
 | ÿ   | y     |
 
-#+call: make-rds-patterns-table(data = nstandr_patterns_ascii, data.name = "nstandr_patterns_ascii")
+
 *** standardize_squish_spaces
 :PROPERTIES:
 :ID:       org:dlp0f8s0lei0
@@ -5117,7 +4762,7 @@ Full text: https://core.ac.uk/download/pdf/34432497.pdf
 :ID:       org:qwne4v20zai0
 :END:
 
-#+NAME: magerman_patterns_detect_characters
+#+NAME: ob-r-pkg-data-magerman-patterns-detect-characters
 | R regex     | code                              | original pattern |
 |-------------+-----------------------------------+------------------|
 | '\{.+\}'    | propriety coded characters {xxx}  | %{%}%            |
@@ -5126,7 +4771,6 @@ Full text: https://core.ac.uk/download/pdf/34432497.pdf
 | '&.+;'      | sgml coded characters             | %&%;%            |
 | '<.+>'      | html coded characters             | %<%>%            |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_detect_characters, data.name = "magerman_patterns_detect_characters")
 
 
 #+BEGIN_SRC R :tangle R/magerman.r
@@ -5202,7 +4846,7 @@ Full text: https://core.ac.uk/download/pdf/34432497.pdf
 :END:
 
 Table: SGML codes and their ASCII/ANSI equivalent
-#+NAME: magerman_patterns_sgml_characters
+#+NAME: ob-r-pkg-data-magerman-patterns-sgml-characters
 | sgml.code | replacement.character |
 |-----------+-----------------------|
 | &AMP;     | &                     |
@@ -5213,7 +4857,6 @@ Table: SGML codes and their ASCII/ANSI equivalent
 | &BULL;    | .                     |
 | &EXCL;    | !                     |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_sgml_characters, data.name = "magerman_patterns_sgml_characters")
 
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval make_roxy_tags(magerman_replace_sgml_characters)
@@ -5260,7 +4903,7 @@ Table: SGML codes and their ASCII/ANSI equivalent
 :END:
 
 Table: Proprietary character codes and their ASCII/ANSI equivalent
-#+NAME: magerman_patterns_proprietary_characters
+#+NAME: ob-r-pkg-data-magerman-patterns-proprietary-characters
 | proprietary.coded.character | replacement.character |
 |-----------------------------+-----------------------|
 | {UMLAUT OVER (A)}           | Ä                     |
@@ -5288,7 +4931,6 @@ Table: Proprietary character codes and their ASCII/ANSI equivalent
 | {HAECK OVER (S)}            | S                     |
 
 
-#+call: make-rds-patterns-table(data = magerman_patterns_proprietary_characters, data.name = "magerman_patterns_proprietary_characters")
 
 
 #+BEGIN_SRC R :tangle R/magerman.r
@@ -5327,7 +4969,7 @@ Table: Proprietary character codes and their ASCII/ANSI equivalent
 :END:
 
 Table: Accented characters and their unaccented equivalent
-#+NAME: magerman_patterns_accented_characters
+#+NAME: ob-r-pkg-data-magerman-patterns-accented-characters
 | character | unaccented.equivalent | code |
 |-----------+-----------------------+------|
 | À         | A                     |  192 |
@@ -5359,7 +5001,6 @@ Table: Accented characters and their unaccented equivalent
 | Ý         | Y                     |  221 |
 | Ÿ         | Y                     |  159 |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_accented_characters, data.name = "magerman_patterns_accented_characters")
 
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval make_roxy_tags(magerman_replace_accented_characters)
@@ -5371,17 +5012,17 @@ Table: Accented characters and their unaccented equivalent
   ##' @export
   magerman_replace_accented_characters <- make_alias(replace_patterns
                                                    , patterns = magerman_patterns_accented_characters
-      , .title = "Replaces accented characters"
-      , .description = "This is original procedure based on patterns identified with original PATSTAT data. I.e. it is intended for reproducibility purposes. Use `magerman_detect_characters` to identify similar patterns in your own data."
-      , .example = "Æ -> AE"
-      , .tables = list(
-            list("magerman_patterns_accented_characters"
-               , title = "Accented characters and their unaccented equivalent"
-               , no = "9"
-               , pp = "26-27")
-        )
-      , .pp = "26-27"
-      , .ref = "magerman2006")
+                                                   , .title = "Replaces accented characters"
+                                                   , .description = "This is original procedure based on patterns identified with original PATSTAT data. I.e. it is intended for reproducibility purposes. Use `magerman_detect_characters` to identify similar patterns in your own data."
+                                                   , .example = "Æ -> AE"
+                                                   , .tables = list(
+                                                         list("magerman_patterns_accented_characters"
+                                                            , title = "Accented characters and their unaccented equivalent"
+                                                            , no = "9"
+                                                            , pp = "26-27")
+                                                     )
+                                                   , .pp = "26-27"
+                                                   , .ref = "magerman2006")
 
 
 #+END_SRC
@@ -5591,7 +5232,7 @@ Here one probably need to add smart quotes as well...
 :END:
 
 Table: Patterns used to identify comma and period irregularities.
-#+name: magerman_patterns_detect_comma_and_period_irregularities
+#+name: ob-r-pkg-data-magerman-patterns-detect-comma-and-period-irregularities
 | R regex          | type                                                   | pattern      | table |
 |------------------+--------------------------------------------------------+--------------+-------|
 | ,([^\s])         | Patterns with comma not followed by space              | %,[! ]%      |    10 |
@@ -5599,7 +5240,6 @@ Table: Patterns used to identify comma and period irregularities.
 | ([^A-Za-z0-9])\. | Patterns with period not preceded by a letter or digit | %[!A-Z0-9].% |    12 |
 
                      
-#+call: make-rds-patterns-table(data = magerman_patterns_detect_comma_and_period_irregularities, data.name = "magerman_patterns_detect_comma_and_period_irregularities")
 
 
 The function below is the generalization for replacement of the above punctuation irregularities. This procedure is not a part of Margerman procedures.
@@ -5661,7 +5301,7 @@ The function below is the generalization for replacement of the above punctuatio
       #+END_SRC
 
 Table: Patterns with comma not followed by space
-#+name: magerman_patterns_comma_followed_by_space
+#+name: ob-r-pkg-data-magerman-patterns-comma-followed-by-space
 | PATTERN      | REPLACE WITH | type  |
 |--------------+--------------+-------|
 | ' CO.,LTD.'  | ' CO., LTD.' | fixed |
@@ -5685,11 +5325,11 @@ Table: Patterns with comma not followed by space
 | ',PLC'       | ', PLC'      | ends  |
 | ',S.R.L.'    | ', S.R.L.'   | fixed |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_comma_followed_by_space, data.name = "magerman_patterns_comma_followed_by_space")
+
 
 
 Table: Patterns with comma preceded by space
-#+name: magerman_patterns_comma_preceded_by_space
+#+name: ob-r-pkg-data-magerman-patterns-comma-preceded-by-space
 | PATTERN     | REPLACE WITH | type  |
 |-------------+--------------+-------|
 | ' , INC.'   | ', INC.'     | fixed |
@@ -5699,11 +5339,11 @@ Table: Patterns with comma preceded by space
 | ' , S.P.A.' | ', S.P.A.'   | fixed |
 | ' , S.A.'   | ', S.A.'     | fixed |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_comma_preceded_by_space, data.name = "magerman_patterns_comma_preceded_by_space")
+
 
 
 Table: Patterns with period not preceded by a letter or digit
-#+name: magerman_patterns_periods
+#+name: ob-r-pkg-data-magerman-patterns-periods
 | PATTERN              | REPLACE WITH        | type  |
 |----------------------+---------------------+-------|
 | ', INC,.'            | ', INC.'            | ends  |
@@ -5724,7 +5364,7 @@ Table: Patterns with period not preceded by a letter or digit
 | ' CO.., LTD.'        | ' CO., LTD.'        | ends  |
 | ' P.L.C..'           | ' P.L.C.'           | ends  |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_periods, data.name = "magerman_patterns_periods")
+
 
 
 #+BEGIN_SRC R :tangle R/magerman.r
@@ -5783,9 +5423,8 @@ They assumed that the last word in organizational name more likely represents le
 As suggested by the authors all ending words in the dataset of organization names must be examened, especially those with hight occurence number.
 
 Table: Last words identified as legal form indications
-#+call: make-rds-patterns-table(data = magerman_legal_forms_list, data.name = "magerman_legal_forms_list"))
 
-#+NAME: magerman_legal_forms_list
+#+NAME: ob-r-pkg-data-magerman-legal-forms-list
 | LAST WORD (CLEANED) | LEGAL FORM                                       |
 |---------------------+--------------------------------------------------|
 | INC                 | Incorporated                                     |
@@ -5822,7 +5461,7 @@ Table: Last words identified as legal form indications
 Table below represents all words at the end that can be "safely" removed or replaced. The order of replacement or detection is important.
 
 Appendix 2: All search and replace statements for all legal forms to be removed at the end of a name
-#+NAME: magerman_patterns_legal_form_end
+#+NAME: ob-r-pkg-data-magerman-patterns-legal-form-end
 | "remove"                                           | "replace"                    | "legal.form"       |
 |----------------------------------------------------+------------------------------+--------------------|
 | ' MFG. COMPANY INC.'                               | ' MANUFACTURING COMPANY'     | 'INCORPORATED'     |
@@ -6886,11 +6525,9 @@ Appendix 2: All search and replace statements for all legal forms to be removed 
 | ' KAHUSHIKI KAISHA'                                | ''                           | 'KABUSHIKI KAISHA' |
 | ' KABUSHINI KAISHA'                                | ''                           | 'KABUSHIKI KAISHA' |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_legal_form_end, data.name = "magerman_patterns_legal_form_end"))
-
 *** Table: Legal form in the middle
 
-#+NAME: magerman_patterns_legal_form_middle
+#+NAME: ob-r-pkg-data-magerman-patterns-legal-form-middle
 | KEYWORD             | Replace       | LEGAL |
 |---------------------+---------------+-------|
 | ' GMBH & CO. K.G. ' | ' & COMPANY ' | GMBH  |
@@ -6911,7 +6548,6 @@ Appendix 2: All search and replace statements for all legal forms to be removed 
 | ' GMBH,'            | ' '           | GMBH  |
 | ' GMBH '            | ' '           | GMBH  |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_legal_form_middle, data.name = "magerman_patterns_legal_form_middle"))
 
 *** Detect and replace legal forms
 :PROPERTIES:
@@ -7194,7 +6830,7 @@ plus trim..."
                                      , "KABUSHIKI KAISHA MSlab Co. ") |>
                                      toupper())
     , structure(list(x = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP."
-                          , "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. ")
+                         , "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. ")
                    , x_legal_form = c("INCORPORATED", NA, NA, NA, NA))
               , row.names = c(NA, -5L), class = c("data.table", "data.frame"))
   )
@@ -7206,7 +6842,7 @@ plus trim..."
                , "KABUSHIKI KAISHA MSlab Co. ") |>
                toupper() |>
                magerman_replace_legal_form_end(output_placement = "append_to_col")
-   , structure(list(x = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP.", "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "), std_x = c("LKSDJF MANUFACTURING COMPANY", "MSLAB COMPANY", "IBM CORPORATION", "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. ")), row.names = c(NA, -5L), class = c("data.table", "data.frame")))
+             , structure(list(x = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP.", "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "), std_x = c("LKSDJF MANUFACTURING COMPANY", "MSLAB COMPANY", "IBM CORPORATION", "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. ")), row.names = c(NA, -5L), class = c("data.table", "data.frame")))
 
 
   expect_equal(magerman_detect_legal_form_end(c("lksdjf MFG. CO, INC"
@@ -7222,15 +6858,15 @@ plus trim..."
 
   expect_equal(
       magerman_detect_legal_form_middle(c("lksdjf MFG. CO, INC"
-                                                 , "MSlab Co."
-                                                 , "IBM Corp."
-                                                 , "MSlab Co. GMBH & CO.KG lalal"
-                                                 , "KABUSHIKI KAISHA MSlab Co. ") |>
+                                        , "MSlab Co."
+                                        , "IBM Corp."
+                                        , "MSlab Co. GMBH & CO.KG lalal"
+                                        , "KABUSHIKI KAISHA MSlab Co. ") |>
                                         toupper())
-             , structure(list(x = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP."
-                                    ,"MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "
-                                     ), x_legal_form = c(NA, NA, NA, "GMBH", NA))
-                       , row.names = c(NA, -5L), class = c("data.table", "data.frame")))
+    , structure(list(x = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP."
+                          ,"MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "
+                           ), x_legal_form = c(NA, NA, NA, "GMBH", NA))
+              , row.names = c(NA, -5L), class = c("data.table", "data.frame")))
 
   expect_equal(magerman_detect_legal_form_beginning(c("lksdjf MFG. CO, INC"
                                                     , "MSlab Co."
@@ -7238,9 +6874,9 @@ plus trim..."
                                                     , "MSlab Co. GMBH & CO.KG lalal"
                                                     , "KABUSHIKI KAISHA MSlab Co. ") |>
                                                     toupper()), structure(list(x = c("LKSDJF MFG. CO, INC", "MSLAB CO.", "IBM CORP.", 
-                                     "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "
-                                     ), x_legal_form = c(NA, NA, NA, NA, "KAISHA")), row.names = c(NA, 
-                                                                                               -5L), class = c("data.table", "data.frame")))
+                                                                                     "MSLAB CO. GMBH & CO.KG LALAL", "KABUSHIKI KAISHA MSLAB CO. "
+                                                                                     ), x_legal_form = c(NA, NA, NA, NA, "KAISHA")), row.names = c(NA, 
+                                                                                                                                                   -5L), class = c("data.table", "data.frame")))
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_magerman_remove_legal_form.r
@@ -7282,58 +6918,58 @@ plus trim..."
       , "KABUSHIKI KAISHA MSlab Co.") |>
       toupper() |>
       magerman_remove_legal_form_and_clean()
-  , c("LKSDJF MFG. GMBH CO", "MSLAB COMPANY", "IBM CORPORATION", 
-  "MSLAB CO. & COMPANY LALAL", "KABUSHIKI KAISHA MSLAB COMPANY"))
+    , c("LKSDJF MFG. GMBH CO", "MSLAB COMPANY", "IBM CORPORATION", 
+        "MSLAB CO. & COMPANY LALAL", "KABUSHIKI KAISHA MSLAB COMPANY"))
 
 
   expect_equal(
       data.table(c("lksdjf MFG. GMBH CO,; INC"
-                          , "MSlab Co."
-                          , "IBM Corp."
-                          , " MSlab Co. GMBH & CO.KG lalal  "
-                          , "KABUSHIKI KAISHA MSlab Co.") |> toupper()
-                        , somevar = c(1,2,3,4,5)) |>
-               magerman_remove_legal_form_and_clean(output_placement = "append_to_col")
-  , structure(list(V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", 
-  "IBM CORP.", " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO."
-  ), std_V1 = c("LKSDJF MFG. GMBH CO", "MSLAB COMPANY", "IBM CORPORATION", 
-  "MSLAB CO. & COMPANY LALAL", "KABUSHIKI KAISHA MSLAB COMPANY"
-  ), somevar = c(1, 2, 3, 4, 5)), row.names = c(NA, -5L), class = c("data.table", 
-  "data.frame"))
+                 , "MSlab Co."
+                 , "IBM Corp."
+                 , " MSlab Co. GMBH & CO.KG lalal  "
+                 , "KABUSHIKI KAISHA MSlab Co.") |> toupper()
+               , somevar = c(1,2,3,4,5)) |>
+      magerman_remove_legal_form_and_clean(output_placement = "append_to_col")
+    , structure(list(V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", 
+                            "IBM CORP.", " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO."
+                            ), std_V1 = c("LKSDJF MFG. GMBH CO", "MSLAB COMPANY", "IBM CORPORATION", 
+                                          "MSLAB CO. & COMPANY LALAL", "KABUSHIKI KAISHA MSLAB COMPANY"
+                                          ), somevar = c(1, 2, 3, 4, 5)), row.names = c(NA, -5L), class = c("data.table", 
+                                                                                                            "data.frame"))
   )
 
   expect_equal(
       data.table(c("lksdjf MFG. GMBH CO,; INC"
-                          , "MSlab Co."
-                          , "IBM Corp."
-                          , " MSlab Co. GMBH & CO.KG lalal  "
-                          , "KABUSHIKI KAISHA MSlab Co.") |> toupper()
-                        , somevar = c(1,2,3,4,5)) |>
+                 , "MSlab Co."
+                 , "IBM Corp."
+                 , " MSlab Co. GMBH & CO.KG lalal  "
+                 , "KABUSHIKI KAISHA MSlab Co.") |> toupper()
+               , somevar = c(1,2,3,4,5)) |>
       magerman_remove_legal_form_and_clean(output_placement = "prepend_to_x")
-  , structure(list(std_V1 = c("LKSDJF MFG. GMBH CO", "MSLAB COMPANY", 
-  "IBM CORPORATION", "MSLAB CO. & COMPANY LALAL", "KABUSHIKI KAISHA MSLAB COMPANY"
-  ), V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", "IBM CORP.", 
-  " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO."
-  ), somevar = c(1, 2, 3, 4, 5)), row.names = c(NA, -5L), class = c("data.table", 
-  "data.frame"))
+    , structure(list(std_V1 = c("LKSDJF MFG. GMBH CO", "MSLAB COMPANY", 
+                                "IBM CORPORATION", "MSLAB CO. & COMPANY LALAL", "KABUSHIKI KAISHA MSLAB COMPANY"
+                                ), V1 = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", "IBM CORP.", 
+                                          " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO."
+                                          ), somevar = c(1, 2, 3, 4, 5)), row.names = c(NA, -5L), class = c("data.table", 
+                                                                                                            "data.frame"))
   )
 
 
 
   expect_equal(
       c("lksdjf MFG. GMBH CO,; INC"
-               , "MSlab Co."
-               , "IBM Corp."
-               , " MSlab Co. GMBH & CO.KG lalal  "
-               , "KABUSHIKI KAISHA MSlab Co. ") |>
-               toupper() |>
-               magerman_replace_legal_form_end(output_placement = "prepend_to_x")
-  , structure(list(std_x = c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", 
-  "IBM CORPORATION", " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO. "
-  ), x = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", "IBM CORP.", 
-  " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO. "
-  )), row.names = c(NA, -5L), class = c("data.table", "data.frame"
-  )))
+      , "MSlab Co."
+      , "IBM Corp."
+      , " MSlab Co. GMBH & CO.KG lalal  "
+      , "KABUSHIKI KAISHA MSlab Co. ") |>
+      toupper() |>
+      magerman_replace_legal_form_end(output_placement = "prepend_to_x")
+    , structure(list(std_x = c("LKSDJF MFG. GMBH CO,;", "MSLAB COMPANY", 
+                               "IBM CORPORATION", " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO. "
+                               ), x = c("LKSDJF MFG. GMBH CO,; INC", "MSLAB CO.", "IBM CORP.", 
+                                        " MSLAB CO. GMBH & CO.KG LALAL  ", "KABUSHIKI KAISHA MSLAB CO. "
+                                        )), row.names = c(NA, -5L), class = c("data.table", "data.frame"
+                                                                              )))
 
 #+END_SRC
 
@@ -7343,7 +6979,7 @@ plus trim..."
 :END:
 
 Table 19: Common company words to be removed at the end of a name
-#+NAME: magerman_patterns_common_words_at_the_end
+#+NAME: ob-r-pkg-data-magerman-patterns-common-words-at-the-end
 | KEYWORD        |
 |----------------|
 | 'CORPORATION'  |
@@ -7354,11 +6990,11 @@ Table 19: Common company words to be removed at the end of a name
 | ' KG'          |
 | 'GESELLSCHAFT' |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_common_words_at_the_end, data.name = "magerman_patterns_common_words_at_the_end")
+
 
 
 Table 20: Common company words to be removed at the beginning of a name
-#+NAME: magerman_patterns_common_words_at_the_beginning
+#+NAME: ob-r-pkg-data-magerman-patterns-common-words-at-the-beginning
 | KEYWORD                                 |
 |-----------------------------------------|
 | 'SOCIETE A RESPONSABILITE LIMITEE DITE' |
@@ -7378,11 +7014,11 @@ Table 20: Common company words to be removed at the beginning of a name
 | 'SOCIETE D''                            |
 | 'SOCIETE '                              |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_common_words_at_the_beginning, data.name = "magerman_patterns_common_words_at_the_beginning")
+
 
 
 Table 21: Common company words to be removed anywhere in a name
-#+NAME: magerman_patterns_common_words_anywhere
+#+NAME: ob-r-pkg-data-magerman-patterns-common-words-anywhere
 | KEYWORD          |
 |------------------|
 | ' AND CO '       |
@@ -7404,7 +7040,7 @@ Table 21: Common company words to be removed anywhere in a name
 | ' AG,'           |
 | ' AG.'           |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_common_words_anywhere, data.name = "magerman_patterns_common_words_anywhere")
+
 
 
 #+BEGIN_SRC R :tangle R/magerman.r
@@ -7468,16 +7104,16 @@ Table 21: Common company words to be removed anywhere in a name
       make_alias(replace_patterns
                , patterns = magerman_patterns_common_words_anywhere
                , patterns_type = "fixed"
-  , .title = "Removes common words anywhere in a name"
-  , .example = "AMIC COMPANY -> AMIC"
-  , .tables = list(
-        list("magerman_patterns_common_words_anywhere"
-           , title = "Common company words to be removed anywhere in a name"
-           , no = "21"
-           , pp = "41")
-    )
-  , .pp = "41-42"
-  , .ref = "magerman2006")
+               , .title = "Removes common words anywhere in a name"
+               , .example = "AMIC COMPANY -> AMIC"
+               , .tables = list(
+                     list("magerman_patterns_common_words_anywhere"
+                        , title = "Common company words to be removed anywhere in a name"
+                        , no = "21"
+                        , pp = "41")
+                 )
+               , .pp = "41-42"
+               , .ref = "magerman2006")
 
 
 
@@ -7532,7 +7168,7 @@ Table 21: Common company words to be removed anywhere in a name
                toupper() |>
                magerman_remove_legal_form_and_clean() |>
                magerman_remove_common_words()
-  , c("LKSDJF MFG. GMBH CO", "MSLAB ", "IBM ", "MSLAB &LALAL", "KABUSHIKI KAISHA MSLAB "))
+             , c("LKSDJF MFG. GMBH CO", "MSLAB ", "IBM ", "MSLAB &LALAL", "KABUSHIKI KAISHA MSLAB "))
 
 #+END_SRC
 
@@ -7542,7 +7178,7 @@ Table 21: Common company words to be removed anywhere in a name
 :END:
 
 Table: Spelling variations and their standardized equivalent
-#+NAME: magerman_patterns_spelling_variation
+#+NAME: ob-r-pkg-data-magerman-patterns-spelling-variation
 | KEYWORD          | REMARKS         |
 |------------------+-----------------|
 | 'SYSTEMEN'       | 'SYSTEM'        |
@@ -7572,7 +7208,7 @@ Table: Spelling variations and their standardized equivalent
 | 'MACHINES'       | 'MACHINE'       |
 | 'SCIENCES'       | 'SCIENCE'       |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_spelling_variation, data.name = "magerman_patterns_spelling_variation")
+
 
 #+BEGIN_SRC R :tangle R/magerman.r
   ##' @eval make_roxy_tags(magerman_replace_spelling_variation)
@@ -7584,16 +7220,16 @@ Table: Spelling variations and their standardized equivalent
   ##' @export
   magerman_replace_spelling_variation <- make_alias(replace_patterns
                                                   , patterns = magerman_patterns_spelling_variation
-      , .title = "Replaces spelling variation"
-      , .example = "INTERNATIONALE -> INTERNATIONAL"
-      , .tables = list(
-            list("magerman_patterns_spelling_variation"
-               , title = "Spelling variations and their standardized equivalent"
-               , no = "22"
-               , pp = "42-43")
-        )
-      , .pp = "42-43"
-      , .ref = "magerman2006")
+                                                  , .title = "Replaces spelling variation"
+                                                  , .example = "INTERNATIONALE -> INTERNATIONAL"
+                                                  , .tables = list(
+                                                        list("magerman_patterns_spelling_variation"
+                                                           , title = "Spelling variations and their standardized equivalent"
+                                                           , no = "22"
+                                                           , pp = "42-43")
+                                                    )
+                                                  , .pp = "42-43"
+                                                  , .ref = "magerman2006")
 
 
 #+END_SRC
@@ -7661,7 +7297,7 @@ Next, all names having a preliminary umlaut standardized name (first removing �
 Finally, all preliminary umlaut standardized names not marked in the previous two steps are reverted to the previous cleaned name after condensing by executing an update query on the data.
 
 Table: Umlaut harmonization replacements
-#+NAME: magerman_patterns_umlaut
+#+NAME: ob-r-pkg-data-magerman-patterns-umlaut
 | char | ascii | replacement |
 |------+-------+-------------|
 | Ä    | A     | AE          |
@@ -7671,7 +7307,7 @@ Table: Umlaut harmonization replacements
 # | ö  | o     | oe          |
 # | ü  | u     | ue          |
 
-#+call: make-rds-patterns-table(data = magerman_patterns_umlaut, data.name = "magerman_patterns_umlaut")
+
 
 
 :PROPERTIES:
@@ -7906,83 +7542,38 @@ Table: Umlaut harmonization replacements
 :ID:       org:x0v7ug60gei0
 :END:
 
-#+NAME: magerman_procedures_table
-| no | message                                  | function.call                                                                   |
-|----+------------------------------------------+---------------------------------------------------------------------------------|
-|    |                                          |                                                                                 |
-|    | *Prepossessing*                          |                                                                                 |
-|  1 | Upper casing                             | 'standardize_toupper'                                                           |
-|  2 | Cleaning spaces                          | 'standardize_squish_spaces'                                                     |
-|    |                                          |                                                                                 |
-|    | *Characters*                             |                                                                                 |
-|  3 | Removing HTML codes                      | 'magerman_remove_html_codes'                                                    |
-|  4 | Cleaning spaces (2)                      | 'standardize_squish_spaces'                                                     |
-|  5 | Replacing SGML coded characters          | 'magerman_replace_sgml_characters'                                              |
-|  6 | Replacing proprietary characters         | 'magerman_replace_proprietary_characters'                                       |
-|  7 | Detecting Umlauts                        | 'magerman_detect_umlaut', output_codes_col_name = 'magerman_umlaut'             |
-|    |                                          | /The above sets code names with umlaut for umlaut standardization later/        |
-|  8 | Replacing accented characters            | 'magerman_replace_accented_characters'                                          |
-|    |                                          |                                                                                 |
-|    | *Punctuation*                            |                                                                                 |
-|  9 | Removing special characters              | 'magerman_remove_special_characters'                                            |
-| 10 | Fixing quotation irregularities          | 'magerman_remove_double_quotation_marks_irregularities'                         |
-| 11 | Removing double quotations               | 'magerman_remove_double_quotation_marks_beginning_end'                          |
-| 12 | Removing non alphanumeric characters (1) | 'magerman_remove_non_alphanumeric_at_the_beginning'                             |
-| 13 | Removing non alphanumeric characters (2) | 'magerman_remove_non_alphanumeric_at_the_end'                                   |
-| 14 | Fixing comma and period irregularities   | 'magerman_replace_comma_period_irregularities'                                  |
-|    |                                          |                                                                                 |
-|    | *Legal forms*                            |                                                                                 |
-| 15 | Detecting legal form                     | 'magerman_detect_legal_form', output_codes_col_name = 'legal_form'              |
-| 16 | Removing legal form                      | 'magerman_remove_legal_form_and_clean'                                          |
-|    |                                          |                                                                                 |
-|    | *Common words*                           |                                                                                 |
-| 17 | Removing common words                    | 'magerman_remove_common_words'                                                  |
-| 18 | Fixing spelling variations               | 'magerman_replace_spelling_variation'                                           |
-| 19 | Condensing                               | 'magerman_condense'                                                             |
-|    |                                          |                                                                                 |
-|    | *Umlaut standardization*                 |                                                                                 |
-| 20 | Fixing umlaut variations                 | 'magerman_replace_umlaut', has_umlaut_col = 'magerman_umlaut', progress = FALSE |
-|    |                                          | /the above procedure wont work properly for batches/                            |
-|    |                                          | /because it need to look up matches in the whole corpus/                        |
-|    |                                          | /that is why we set 'progress = FALSE'/                                         |
-
-#+call: make-rds-patterns-table(data = magerman_procedures_table, data.name = "magerman_procedures_table", remove.single.quotes = "FALSE")
-
-#+call: make-rds-procedures-list(data = magerman_procedures_table, data.name = "magerman_procedures_list", remove.single.quotes = "FALSE")
-
-
-#+name: nstandr_magerman_procedures_list
-#+BEGIN_SRC R :tangle no :noweb yes :session *R-make-magerman_default_procedures_list*
-  nstandr_magerman_procedures_list <- 
-      list("Prepossessing" =
-               list("Upper casing" = 'standardize_toupper' 
-                  , "Cleaning spaces" = 'standardize_squish_spaces')
-         , "Characters" =
-               list("Removing HTML codes" = 'magerman_remove_html_codes'
-                  , "Cleaning spaces (2)" = 'standardize_squish_spaces'
-                  , "Replacing SGML coded characters" = 'magerman_replace_sgml_characters'                                             
-                  , "Replacing proprietary characters" = 'magerman_replace_proprietary_characters'
-                  , "Detecting Umlauts" = call('magerman_detect_umlaut', output_codes_col_name = 'magerman_umlaut')  # sets code names with umlaut for umlaut standardization later
-                  , "Replacing accented characters" = 'magerman_replace_accented_characters')
-         , "Punctuation" = list("Removing special characters" = 'magerman_remove_special_characters'                                           
-                              , "Fixing quotation irregularities" = 'magerman_remove_double_quotation_marks_irregularities'                        
-                              , "Removing double quotations" = 'magerman_remove_double_quotation_marks_beginning_end'                         
-                              , "Removing non alphanumeric characters (1)" = 'magerman_remove_non_alphanumeric_at_the_beginning'                            
-                              , "Removing non alphanumeric characters (2)" = 'magerman_remove_non_alphanumeric_at_the_end'                                  
-                              , "Fixing comma and period irregularities" = 'magerman_replace_comma_period_irregularities')
-         , "Legal forms" = list("Detecting legal form" = call('magerman_detect_legal_form', output_codes_col_name = 'legal_form')
-                               ,"Removing legal form" = 'magerman_remove_legal_form_and_clean')
-         , "Common words" = list( "Removing common words" = 'magerman_remove_common_words'                                                 
-                               , "Fixing spelling variations" = 'magerman_replace_spelling_variation'                                          
-                               , "Condensing" = 'magerman_condense')
-           ## the 'Umlaut standardization' procedure will not work properly for batches
-           ## because it need to look up matches in the whole corpus that is why we set 'progress = FALSE'
-         , "Umlaut standardization" = list("Fixing umlaut variations" = call('magerman_replace_umlaut', has_umlaut_col = 'magerman_umlaut', progress = FALSE)))
-
-  <<save-rds-procedures-list>>
+#+BEGIN_SRC R :tangle data/nstandr-magerman-procedures-list.r
+  list("Prepossessing" =
+           list("Upper casing" = 'standardize_toupper' 
+              , "Cleaning spaces" = 'standardize_squish_spaces')
+     , "Characters" =
+           list("Removing HTML codes" = 'magerman_remove_html_codes'
+              , "Cleaning spaces (2)" = 'standardize_squish_spaces'
+              , "Replacing SGML coded characters" = 'magerman_replace_sgml_characters'                                             
+              , "Replacing proprietary characters" = 'magerman_replace_proprietary_characters'
+                ## set code names with umlaut for umlaut standardization later
+              , "Detecting Umlauts" = call('magerman_detect_umlaut', output_codes_col_name = 'magerman_umlaut')
+              , "Replacing accented characters" = 'magerman_replace_accented_characters')
+     , "Punctuation" =
+           list("Removing special characters" = 'magerman_remove_special_characters'                                           
+              , "Fixing quotation irregularities" = 'magerman_remove_double_quotation_marks_irregularities'                        
+              , "Removing double quotations" = 'magerman_remove_double_quotation_marks_beginning_end'                         
+              , "Removing non alphanumeric characters (1)" = 'magerman_remove_non_alphanumeric_at_the_beginning'                            
+              , "Removing non alphanumeric characters (2)" = 'magerman_remove_non_alphanumeric_at_the_end'                                  
+              , "Fixing comma and period irregularities" = 'magerman_replace_comma_period_irregularities')
+     , "Legal forms" =
+           list("Detecting legal form" = call('magerman_detect_legal_form', output_codes_col_name = 'legal_form')
+               ,"Removing legal form" = 'magerman_remove_legal_form_and_clean')
+     , "Common words" =
+           list( "Removing common words" = 'magerman_remove_common_words'                                                 
+              , "Fixing spelling variations" = 'magerman_replace_spelling_variation'                                          
+              , "Condensing" = 'magerman_condense')
+       ## the 'Umlaut standardization' procedure will not work properly for batches
+       ## because it need to look up matches in the whole corpus that is why we set 'progress = FALSE'
+     , "Umlaut standardization" =
+           list("Fixing umlaut variations" = call('magerman_replace_umlaut', has_umlaut_col = 'magerman_umlaut', progress = FALSE)))
 #+END_SRC
 
-#+call: nstandr_magerman_procedures_list()
 
 #+name: save_as_png_magerman_procedures_list
 #+BEGIN_SRC R :results replace raw
@@ -7995,7 +7586,6 @@ Table: Umlaut harmonization replacements
 
 #+RESULTS: save_as_png_magerman_procedures_list
 [[file:img/nstandr_magerman_procedures.png]]
-
 
 
 
@@ -8420,9 +8010,11 @@ Implementation of derwent_standardisation_BHH.do from https://sites.google.com/s
       "Performs Derwent standardization of organizational names"
 #+END_SRC
 
+
+
+
 **** Derwent Standartization Table
-#+call: make-rds-patterns-table(data = cockburn_patterns_derwent, data.name = "cockburn_patterns_derwent"))
-#+NAME: cockburn_patterns_derwent
+#+NAME: ob-r-pkg-data-cockburn-patterns-derwent
 | pattern                                                                        | replacement          |
 |--------------------------------------------------------------------------------+----------------------|
 | ' A B '                                                                        | ' AB '               |
@@ -9209,8 +8801,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 **** Table: Compustat Standartization
 - pattern type :: fixed (see doc for standardize.replace)
 
-#+call: make-rds-patterns-table(data = cockburn_patterns_compustat, data.name = "cockburn_patterns_compustat")
-#+NAME: cockburn_patterns_compustat
+#+NAME: ob-r-pkg-data-cockburn-patterns-compustat
 | "pattern"                                      | "replacement"          |
 |------------------------------------------------+------------------------|
 | '-ADR'                                         | ' '                    |
@@ -9459,8 +9050,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 **** Table: Compustat Standartization Names
 - pattern type :: trim.exact (see doc for standardize.replace)
 
-#+call: make-rds-patterns-table(data = cockburn_patterns_compustat_names, data.name = "cockburn_patterns_compustat_names")
-#+name: cockburn_patterns_compustat_names
+#+name: ob-r-pkg-data-cockburn-patterns-compustat-names
 | "pattern"                                      | "replacement"                |
 |------------------------------+------------------------------------------------|
 | 'WILLIAMS (A.L.) CORP'       | ' A. L. WILLIAMS CORP. '                       |
@@ -9676,8 +9266,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 
 ***** table - cockburn_patterns_corp
 
-#+call: make-rds-patterns-table(data = cockburn_patterns_corp, data.name = "cockburn_patterns_corp")
-#+name: cockburn_patterns_corp
+#+name: ob-r-pkg-data-cockburn-patterns-corp
 | ' & BRO '                                                |
 | ' & BROTHER '                                            |
 | ' & C '                                                  |
@@ -10611,8 +10200,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 
 
 ***** table - cockburn_patterns_indiv
-#+call: make-rds-patterns-table(data = cockburn_patterns_indiv, data.name = "cockburn_patterns_indiv")
-#+name: cockburn_patterns_indiv
+#+name: ob-r-pkg-data-cockburn-patterns-indiv
 | ' GEB '                       |
 | ' DECEASED '                  |
 | ' DECEDE '                    |
@@ -10725,8 +10313,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 
 ***** table - cockburn_patterns_govt
 
-#+call: make-rds-patterns-table(data = cockburn_patterns_govt, data.name = "cockburn_patterns_govt")
-#+name: cockburn_patterns_govt
+#+name: ob-r-pkg-data-cockburn-patterns-govt
 | ' NAT RES COUNCIL '                       |
 | ' NAT RES INST '                          |
 | ' NAT SCI COUNCIL '                       |
@@ -10818,8 +10405,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 ***** table - cockburn_patterns_govt_cleanup
 
 
-#+call: make-rds-patterns-table(data = cockburn_patterns_govt_cleanup, data.name = "cockburn_patterns_govt_cleanup")
-#+name: cockburn_patterns_govt_cleanup
+#+name: ob-r-pkg-data-cockburn-patterns-govt-cleanup
 | pattern                | replacement |
 |------------------------+-------------|
 | ' SEC OF DEPT OF '     | ' DEPT OF ' |
@@ -10906,8 +10492,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 
 
 ***** table - universities
-#+call: make-rds-patterns-table(data = cockburn_patterns_univ, data.name = "cockburn_patterns_univ")
-#+name: cockburn_patterns_univ
+#+name: ob-r-pkg-data-cockburn-patterns-univ
 | ' ACADEM'                   |
 | ' ACAD '                    |
 | ' AKAD '                    |
@@ -10945,8 +10530,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 | ' KU LEUVEN '               |
 
 ***** table - clean up university names
-#+call: make-rds-patterns-table(data = cockburn_patterns_univ_cleanup, data.name = "cockburn_patterns_univ_cleanup")
-#+name: cockburn_patterns_univ_cleanup
+#+name: ob-r-pkg-data-cockburn-patterns-univ-cleanup
 | pattern                         | replacement |
 |---------------------------------+-------------|
 | ' BOARD OF REGENTS OF THE '     | ' '         |
@@ -11024,8 +10608,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 
 ***** table - cockburn_patterns_inst
 
-#+call: make-rds-patterns-table(data = cockburn_patterns_inst, data.name = "cockburn_patterns_inst")
-#+name: cockburn_patterns_inst
+#+name: ob-r-pkg-data-cockburn-patterns-inst
 | ' RESEARCH COUNCIL '               |
 | ' RES COUNCIL '                    |
 | ' FRAUNHOFER GES '                 |
@@ -11330,9 +10913,7 @@ COMPUSTAT specific standardization for organizational names. Implementation of i
 #+END_SRC
 
 ***** table - cockburn_patterns_hosp
-#+call: make-rds-patterns-table(data = cockburn_patterns_hosp, data.name = "cockburn_patterns_hosp")
-
-#+name: cockburn_patterns_hosp
+#+name: ob-r-pkg-data-cockburn-patterns-hosp
 | ' AMTS SYGEHUS '        |
 | ' AMTSSYGEHUS '         |
 | ' BOLNHITSA '           |
@@ -11435,9 +11016,7 @@ Following funciton removes punctuation and standardise some symbols. Implementat
 
 **** table - & (EPO Espace)
 
-#+call: make-rds-patterns-table(data = cockburn_replace_punctuation_and, data.name = "cockburn_replace_punctuation_and")
-
-#+name: cockburn_replace_punctuation_and
+#+name: ob-r-pkg-data-cockburn-replace-punctuation-and
 | pattern | replacement |
 |---------+-------------|
 | '&AMP;' | ' & '       |
@@ -11449,9 +11028,7 @@ Following funciton removes punctuation and standardise some symbols. Implementat
 
 **** table - the (British)
 
-#+call: make-rds-patterns-table(data = cockburn_replace_punctuation_the, data.name = "cockburn_replace_punctuation_the")
-
-#+name: cockburn_replace_punctuation_the
+#+name: ob-r-pkg-data-cockburn-replace-punctuation-the
 | pattern | replacement | type   |
 |---------+-------------+--------|
 | '(THE)' | ''          | ends   |
@@ -11468,9 +11045,7 @@ ISO8859-1 (AMADEUS)
 
 **** table - Accented characters - AMADEUS
 
-#+call: make-rds-patterns-table(data = cockburn_replace_punctuation_amadeus, data.name = "cockburn_replace_punctuation_amadeus")
-
-#+name: cockburn_replace_punctuation_amadeus
+#+name: ob-r-pkg-data-cockburn-replace-punctuation-amadeus
 | pattern | replacement | codepoint |
 |---------+-------------+-----------|
 | À       | A           |       192 |
@@ -11538,9 +11113,7 @@ ISO8859-1 (AMADEUS)
 
 **** table - Accented characters - EPO PATSTAT
 
-#+call: make-rds-patterns-table(data = cockburn_replace_punctuation_patstat, data.name = "cockburn_replace_punctuation_patstat")
-
-#+name: cockburn_replace_punctuation_patstat
+#+name: ob-r-pkg-data-cockburn-replace-punctuation-patstat
 | pattern | replacement | code1 | code2 | name                     |
 |---------+-------------+-------+-------+--------------------------|
 | Ã       | a           |   195 |   160 | a grave                  |
@@ -11567,9 +11140,7 @@ ISO8859-1 (AMADEUS)
 
 **** table - strips out all punctuation characters
 
-#+call: make-rds-patterns-table(data = cockburn_replace_punctuation_char, data.name = "cockburn_replace_punctuation_char")
-
-#+name: cockburn_replace_punctuation_char
+#+name: ob-r-pkg-data-cockburn-replace-punctuation-char
 | pattern  | replacement |
 |----------+-------------|
 | '''      | ''          |
@@ -11645,9 +11216,7 @@ ISO8859-1 (AMADEUS)
 
 **** table - additional changes
 
-#+call: make-rds-patterns-table(data = cockburn_patterns_standard_names_additional, data.name = "cockburn_patterns_standard_names_additional")
-
-#+name: cockburn_patterns_standard_names_additional
+#+name: ob-r-pkg-data-cockburn-patterns-standard-names-additional
 | pattern        | replacement |
 |----------------+-------------|
 | ' RES & DEV '  | ' R&D '     |
@@ -11655,9 +11224,7 @@ ISO8859-1 (AMADEUS)
 
 **** table - country specific work
 
-#+call: make-rds-patterns-table(data = cockburn_patterns_standard_names_country_specific, data.name = "cockburn_patterns_standard_names_country_specific")
-
-#+name: cockburn_patterns_standard_names_country_specific
+#+name: ob-r-pkg-data-cockburn-patterns-standard-names-country-specific
 | pattern                                                | replacement       | country            |
 |--------------------------------------------------------+-------------------+--------------------|
 | ' PUBLIC LIMITED '                                     | ' PLC '           | UNITED KINGDOM     |
@@ -11804,9 +11371,7 @@ ISO8859-1 (AMADEUS)
 
 creates a name with all legal entity identifiers removed
 
-#+call: make-rds-patterns-table(data = cockburn_patterns_stem_name, data.name = "cockburn_patterns_stem_name")
-
-#+name: cockburn_patterns_stem_name
+#+name: ob-r-pkg-data-cockburn-patterns-stem-name
 | pattern             | replacement | country                      |
 |---------------------+-------------+------------------------------|
 | ' LTD '             | ' '         | UNITED KINGDOM               |
@@ -12019,9 +11584,7 @@ creates a name with all legal entity identifiers removed
 #+END_SRC
 
 
-#+call: make-rds-patterns-table(data = cockburn_patterns_uspto, data.name = "cockburn_patterns_uspto")
-
-#+name: cockburn_patterns_uspto
+#+name: ob-r-pkg-data-cockburn-patterns-uspto
 | pattern  | replacement |
 |----------+-------------|
 | '-CONN.' | ''          |
@@ -12031,46 +11594,21 @@ creates a name with all legal entity identifiers removed
 
 basically reproduces the 'main_coname2.do' stata file
 
-#+NAME: cockburn_procedures_table
-| no | message                                                     | function.call                                    |
-|----+-------------------------------------------------------------+--------------------------------------------------|
-|    | *Prepossessing*                                             |                                                  |
-|  1 | Cleaning spaces                                             | 'standardize_squish_spaces', wrap_in_spaces = TRUE |
-|  2 | Upper casing                                                | 'standardize_toupper'                            |
-|    |                                                             |                                                  |
-|    | *Standartization*                                           |                                                  |
-|  3 | Special removals and recoding for USPTO names               | 'cockburn_detect_uspto'                          |
-|  4 | Standardization of symbols and removals of some punctuation | 'cockburn_replace_punctuation'                   |
-|  5 | Standardization of names (Derwent, etc.)                    | 'cockburn_replace_standard_names'                |
-|  6 | Identification of organization type                         | 'cockburn_detect_type'                           |
-|  7 | Cleaning organization type                                  | 'cockburn_replace_type'                          |
-|  8 | Combining single char sequences                             | 'cockburn_combabbrev'                            |
-|  9 | Removal of legal entity identifiers                         | 'cockburn_remove_standard_names'                 |
-| 10 | Cleaning spaces                                             | 'standardize_squish_spaces'                      |
-
-#+call: make-rds-patterns-table(data = cockburn_procedures_table, data.name = "cockburn_procedures_table", remove.single.quotes = "FALSE")
-
-#+call: make-rds-procedures-list(data = cockburn_procedures_table, data.name = "cockburn_procedures_list", remove.single.quotes = "FALSE")
-
-
-#+name: nstandr_cookburn_procedures_list
-#+BEGIN_SRC R :tangle no :noweb yes :session *R-make-nstandr_cookburn_procedures_list*
-  nstandr_cookburn_procedures_list <-
-      list("Prepossessing" = list("Cleaning spaces"  = call('standardize_squish_spaces', wrap_in_spaces = TRUE)
-                                , "Upper casing"  = 'standardize_toupper')
-         , "Standartization" = list("Special removals and recoding for USPTO names"  = 'cockburn_detect_uspto'                          
-                                  , "Standardization of symbols and removals of some punctuation"  = 'cockburn_replace_punctuation'                   
-                                  , "Standardization of names (Derwent, etc.)"  = 'cockburn_replace_standard_names'                
-                                  , "Identification of organization type"  = 'cockburn_detect_type'
-                                  , "Cleaning organization type"  = 'cockburn_replace_type'
-                                  , "Combining single char sequences"  = 'cockburn_combabbrev'
-                                  , "Removal of legal entity identifiers"  = 'cockburn_remove_standard_names'
-                                  , "Cleaning spaces"  = 'standardize_squish_spaces'))
-
-  <<save-rds-procedures-list>>
+#+BEGIN_SRC R :tangle data/nstandr-cookburn-procedures-list-r
+  list("Prepossessing" =
+           list("Cleaning spaces"  = call('standardize_squish_spaces', wrap_in_spaces = TRUE)
+              , "Upper casing"  = 'standardize_toupper')
+     , "Standartization" =
+           list("Special removals and recoding for USPTO names"  = 'cockburn_detect_uspto'                          
+              , "Standardization of symbols and removals of some punctuation"  = 'cockburn_replace_punctuation'                   
+              , "Standardization of names (Derwent, etc.)"  = 'cockburn_replace_standard_names'                
+              , "Identification of organization type"  = 'cockburn_detect_type'
+              , "Cleaning organization type"  = 'cockburn_replace_type'
+              , "Combining single char sequences"  = 'cockburn_combabbrev'
+              , "Removal of legal entity identifiers"  = 'cockburn_remove_standard_names'
+              , "Cleaning spaces"  = 'standardize_squish_spaces'))
 #+END_SRC
 
-#+call: nstandr_cookburn_procedures_list()
 
 #+BEGIN_SRC R :tangle R/cockburn.r
   ##' Standardizes strings using exact procedures described in Cockburn, et al. (2009)
@@ -12201,8 +11739,6 @@ https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageuti
 
 ** p10_namecomp_patterns.csv
 
-#+call: make-rds-patterns-table(data = wasi_flaaen_patterns_namecomp, data.name = "wasi_flaaen_patterns_namecomp")
-#+NAME: wasi_flaaen_patterns_namecomp
 | "pattern"         | "replacement" |
 |-------------------+---------------|
 | DBA               | DBA           |

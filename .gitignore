@@ -1,0 +1,12 @@
+*.project.org
+*.notes.org
+data/
+docs/
+materials/
+.Rproj.user
+.Rhistory
+.Rdata
+.Rprofile
+.httr-oauth
+.DS_Store
+.log/
