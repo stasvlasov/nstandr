@@ -25,13 +25,7 @@
       <ul class="nav navbar-nav"><li>
   <a href="../reference/index.html">Reference</a>
 </li>
-      </ul><ul class="nav navbar-nav navbar-right"><li>
-  <a href="https://github.com/stasvlasov/nstandr/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul></div><!--/.nav-collapse -->
+      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -48,6 +42,10 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
+          <p><code><a href="browse_dot_graph.html">browse_dot_graph()</a></code> </p>
+        </td>
+        <td><p>Generates a temporary html file with visualization of given nstandr procedures and opens it in a browser (specified in <code>options('browser')</code>). This requires <code>DiagrammeR</code> package to be installed. If you do not have those you can <code><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat()</a></code> the returned string from `nstandr:::make_dot_graph()' to the R console and copy it to some web tool for dot visualization (e.g.http://magjac.com/graphviz-visual-editor)</p></td>
+      </tr><tr><td>
           <p><code><a href="check_rows.html">check_rows()</a></code> </p>
         </td>
         <td><p>Assumes that rows (if logical) are same length as x</p></td>
@@ -190,9 +188,13 @@ specified.</p></td>
         </td>
         <td><p>Insets target vector back to input object (<code>x</code>)</p></td>
       </tr><tr><td>
+          <p><code><a href="is_empty.html">is_empty()</a></code> </p>
+        </td>
+        <td><p>Checks if string has something to print</p></td>
+      </tr><tr><td>
           <p><code><a href="magerman_condense.html">magerman_condense()</a></code> </p>
         </td>
-        <td><p>Condenses string</p></td>
+        <td><p>Condensing names</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_detect_characters.html">magerman_detect_characters()</a></code> </p>
         </td>
@@ -208,35 +210,35 @@ specified.</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_detect_legal_form_beginning.html">magerman_detect_legal_form_beginning()</a></code> </p>
         </td>
-        <td><p>Detects legal form</p></td>
+        <td><p>Detects legal form at the beginning of a name</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_detect_legal_form_end.html">magerman_detect_legal_form_end()</a></code> </p>
         </td>
-        <td><p>Detects legal form</p></td>
+        <td><p>Detects legal form at the end of a name</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_detect_legal_form_middle.html">magerman_detect_legal_form_middle()</a></code> </p>
         </td>
-        <td><p>Detects legal form</p></td>
+        <td><p>Detects legal form in the middle of a name</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_detect_umlaut.html">magerman_detect_umlaut()</a></code> </p>
         </td>
-        <td><p>Detects umlauts</p></td>
+        <td><p>Detect umlauts</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_remove_common_words.html">magerman_remove_common_words()</a></code> </p>
         </td>
-        <td><p>Removes common words</p></td>
+        <td><p>Remove common words</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_remove_common_words_anywhere.html">magerman_remove_common_words_anywhere()</a></code> </p>
         </td>
-        <td><p>Removes common words</p></td>
+        <td><p>Removes common words anywhere in a name</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_remove_common_words_at_the_beginning.html">magerman_remove_common_words_at_the_beginning()</a></code> </p>
         </td>
-        <td><p>Removes common words</p></td>
+        <td><p>Removes common words at the beginning of a name</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_remove_common_words_at_the_end.html">magerman_remove_common_words_at_the_end()</a></code> </p>
         </td>
-        <td><p>Removes common words</p></td>
+        <td><p>Removes common words at the end of a name</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_remove_double_quotation_marks_beginning_end.html">magerman_remove_double_quotation_marks_beginning_end()</a></code> </p>
         </td>
@@ -264,11 +266,11 @@ specified.</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_remove_non_alphanumeric_at_the_beginning.html">magerman_remove_non_alphanumeric_at_the_beginning()</a></code> </p>
         </td>
-        <td><p>Removes non alphanumeric characters</p></td>
+        <td><p>Removes non alphanumeric characters at the beginning of a name</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_remove_non_alphanumeric_at_the_end.html">magerman_remove_non_alphanumeric_at_the_end()</a></code> </p>
         </td>
-        <td><p>Removes non alphanumeric characters</p></td>
+        <td><p>Removes non alphanumeric characters at the end of a name</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_remove_special_characters.html">magerman_remove_special_characters()</a></code> </p>
         </td>
@@ -284,19 +286,19 @@ specified.</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_replace_comma_period_irregularities_all.html">magerman_replace_comma_period_irregularities_all()</a></code> </p>
         </td>
-        <td><p>Replaces comma period irregularities</p></td>
+        <td><p>Replaces comma and period irregularities</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_replace_legal_form_beginning.html">magerman_replace_legal_form_beginning()</a></code> </p>
         </td>
-        <td><p>Replaces legal form</p></td>
+        <td><p>Replaces legal form at the beginning of a name</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_replace_legal_form_end.html">magerman_replace_legal_form_end()</a></code> </p>
         </td>
-        <td><p>Replaces legal form</p></td>
+        <td><p>Replaces legal form at the end of a name</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_replace_legal_form_middle.html">magerman_replace_legal_form_middle()</a></code> </p>
         </td>
-        <td><p>Replace legal form</p></td>
+        <td><p>Replace legal form in the middle of a name</p></td>
       </tr><tr><td>
           <p><code><a href="magerman_replace_proprietary_characters.html">magerman_replace_proprietary_characters()</a></code> </p>
         </td>
@@ -314,11 +316,35 @@ specified.</p></td>
         </td>
         <td><p>Replaces Umlauts</p></td>
       </tr><tr><td>
+          <p><code><a href="make_dot_edges.html">make_dot_edges()</a></code> </p>
+        </td>
+        <td><p>Makes dot graph edges for visualizing arrows between sequence of procedures.</p></td>
+      </tr><tr><td>
+          <p><code><a href="make_dot_graph.html">make_dot_graph()</a></code> </p>
+        </td>
+        <td><p>Generates graph description for visualizing list of procedures in dot format.</p></td>
+      </tr><tr><td>
+          <p><code><a href="make_dot_nodes.html">make_dot_nodes()</a></code> </p>
+        </td>
+        <td><p>Generates description of dot graph nodes.</p></td>
+      </tr><tr><td>
+          <p><code><a href="paste_dot_node.html">paste_dot_node()</a></code> </p>
+        </td>
+        <td><p>Makes a dot node (as html table) from procedure's attributes.</p></td>
+      </tr><tr><td>
+          <p><code><a href="paste_dot_node_tr_td.html">paste_dot_node_tr_td()</a></code> </p>
+        </td>
+        <td><p>Makes &lt;TR&gt;&lt;TD&gt; record for dot node &lt;TABLE&gt;</p></td>
+      </tr><tr><td>
           <p><code><a href="replace_patterns.html">replace_patterns()</a></code> </p>
         </td>
         <td><p>A wrapper for string replacement and cbinding some columns.</p></td>
       </tr><tr><td>
-          <p><code><a href="standardize.html">standardize()</a></code> <code><a href="standardize.html">make_std_names()</a></code> <code><a href="standardize.html">make_standard_names()</a></code> </p>
+          <p><code><a href="save_dot_graph_as.html">save_dot_graph_as()</a></code> </p>
+        </td>
+        <td><p>Saves dot graph as file using system command 'dot' from GraphViz (https://graphviz.org/) if installed.</p></td>
+      </tr><tr><td>
+          <p><code><a href="standardize.html">standardize()</a></code> <code><a href="standardize.html">make_std_names()</a></code> <code><a href="standardize.html">make_standard_names()</a></code> <code><a href="standardize.html">nstand()</a></code> </p>
         </td>
         <td><p>Standardizes organizational names. Takes either vector or column in the table.</p></td>
       </tr><tr><td>
@@ -382,6 +408,10 @@ specified.</p></td>
         </td>
         <td><p>If column in the <code>x</code> table is list unlist it if possible</p></td>
       </tr><tr><td>
+          <p><code><a href="visualize.html">visualize()</a></code> </p>
+        </td>
+        <td><p>Visualizes list of procedures.</p></td>
+      </tr><tr><td>
           <p><code><a href="x_length.html">x_length()</a></code> </p>
         </td>
         <td><p>Gets lengths of the object</p></td>
@@ -398,11 +428,11 @@ specified.</p></td>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Stanislav Vlasov.</p>
+  <p></p><p>Developed by Stas Vlasov.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

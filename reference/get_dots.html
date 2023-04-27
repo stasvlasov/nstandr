@@ -25,13 +25,7 @@
       <ul class="nav navbar-nav"><li>
   <a href="../reference/index.html">Reference</a>
 </li>
-      </ul><ul class="nav navbar-nav navbar-right"><li>
-  <a href="https://github.com/stasvlasov/nstandr/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul></div><!--/.nav-collapse -->
+      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -41,7 +35,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Provides access to arguments of nested functions. Sort of an alterative mechanism to passing <code>...</code> arguments but with more features.</h1>
-    <small class="dont-index">Source: <a href="https://github.com/stasvlasov/nstandr/blob/HEAD/R/0_get_dots.r" class="external-link"><code>R/0_get_dots.r</code></a></small>
+    
     <div class="hidden name"><code>get_dots.Rd</code></div>
     </div>
 
@@ -116,7 +110,8 @@
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Make get_dots available for following examples</span></span></span>
-<span class="r-in"><span><span class="va">get_dots</span> <span class="op">&lt;-</span> <span class="fu">nstandr</span><span class="fu">:::</span><span class="va">get_dots</span></span></span>
+<span class="r-in"><span><span class="va">get_dots</span> <span class="op">&lt;-</span> <span class="fu">dots</span><span class="fu">:::</span><span class="va">get_dots</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘dots’</span>
 <span class="r-in"><span><span class="co"># Basic usage</span></span></span>
 <span class="r-in"><span><span class="va">util</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">foo</span> <span class="op">=</span> <span class="fl">0</span>, <span class="va">bar</span> <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="co"># get dots and bind updated arguments into environment</span></span></span>
@@ -127,7 +122,7 @@
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">util</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 0, bar: 0</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dots():</span> could not find function "get_dots"</span>
 <span class="r-in"><span><span class="co">#&gt; foo: 0, bar: 0</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">main</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
@@ -137,9 +132,7 @@
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">main</span><span class="op">(</span>foo <span class="op">=</span> <span class="fl">2</span>, bar <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 2, bar: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 1, bar: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 2, bar: 1</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dots():</span> could not find function "get_dots"</span>
 <span class="r-in"><span><span class="co">#&gt; foo: 2, bar: 2</span></span></span>
 <span class="r-in"><span><span class="co">#&gt; foo: 1, bar: 2  # THIS WORKS NOW!</span></span></span>
 <span class="r-in"><span><span class="co">#&gt; foo: 2, bar: 1  # THIS WORKS NOW!</span></span></span>
@@ -168,13 +161,10 @@
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">main</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 0, bar: 0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 1, bar: 0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> foo: 1, bar: 2</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dots(search_depth = 3L):</span> could not find function "get_dots"</span>
 <span class="r-in"><span><span class="co">#&gt; foo: 0, bar: 0</span></span></span>
 <span class="r-in"><span><span class="co">#&gt; foo: 1, bar: 0</span></span></span>
 <span class="r-in"><span><span class="co">#&gt; foo: 0, bar: 2</span></span></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -185,11 +175,11 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Stanislav Vlasov.</p>
+  <p></p><p>Developed by Stas Vlasov.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

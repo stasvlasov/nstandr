@@ -5,15 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Standardization of Organizational Names • nstandr</title>
+<title>Name Standardization in R • nstandr</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Standardization of Organizational Names">
-<meta property="og:description" content="Standardizes organizational names using steps described in
-    Thoma et al. (2010) and Magerman, Looy, Bart, &amp; Song (2006) and more.">
+<script src="pkgdown.js"></script><meta property="og:title" content="Name Standardization in R">
+<meta property="og:description" content="What the package does (one paragraph).">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -44,14 +43,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/stasvlasov/nstandr/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul>
+<ul class="nav navbar-nav navbar-right"></ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -67,9 +59,11 @@
 <div class="section level1">
 <div class="page-header"><h1 id="nstandr-">nstandr <img src="img/logo.png" align="right" alt="" width="120"><a class="anchor" aria-label="anchor" href="#nstandr-"></a>
 </h1></div>
-
+<p><a href="https://github.com/stasvlasov/nstandr/actions" class="external-link"><img src="https://github.com/stasvlasov/nstandr/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a> <a href="https://codecov.io/gh/stasvlasov/nstandr" class="external-link"><img src="https://codecov.io/gh/stasvlasov/nstandr/branch/master/graph/badge.svg?token=OQVJ7NRXO5" alt="codecov"></a> <img src="https://img.shields.io/github/languages/code-size/stasvlasov/nstandr" alt="GitHub code size in bytes"></p>
 <p>The R package <code class="verbatim">nstandr</code> makes standardized organizational names using procedures described by Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi &amp; Flaaen (2015).</p>
 <p>This is work in progress. Please, file an issue or a suggestion if you have any.</p>
+<p>nstandr package standardizes organizational names mainly using procedures described in Thoma et al. (2010) and Magerman, Looy, Bart, &amp; Song (2006) but not only. This is work in progress. Please, file an issues or suggestion if you have any. The main function is [standardize()].</p>
+<p>Standardizes organizational names using steps described in Thoma et al. (2010) and Magerman, Looy, Bart, &amp; Song (2006) and more.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -228,19 +222,111 @@
 <p>Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., &amp; Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. <em>National Bureau of Economic Research Working Paper Series</em>, (15851). Retrieved from <a href="http://www.nber.org/papers/w15851" class="external-link uri">http://www.nber.org/papers/w15851</a> <a href="http://www.nber.org/papers/w15851.pdf" class="external-link uri">http://www.nber.org/papers/w15851.pdf</a></p>
 <p>Wasi, N., &amp; Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. The Stata Journal, 15(3), 672-697. Retrieved from <a href="https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf" class="external-link uri">https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf</a></p>
 </div>
+<div class="section level1">
+<h1 id="dependencies">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies"></a>
+</h1>
+<table class="table">
+<caption>Suggested packages</caption>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">version</th>
+<th align="left">comment</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><a href="https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md" class="external-link">tinytest</a></td>
+<td align="left"></td>
+<td align="left">package developlent (unit testing)</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="https://cran.r-project.org/web/packages/fastmatch/index.html" class="external-link">fastmatch</a></td>
+<td align="left"></td>
+<td align="left">can speed things up a bit</td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="https://rstudio.github.io/htmltools/index.html" class="external-link">htmltools</a></td>
+<td align="left"></td>
+<td align="left">used for escaping html in procedures desctiptions before visualization</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="http://rich-iannone.github.io/DiagrammeR/docs.html" class="external-link">DiagrammeR</a></td>
+<td align="left"></td>
+<td align="left">needed for visualizing procedures lists</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<caption>Required packages (Imports)</caption>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">version</th>
+<th align="left">comment</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">data.table</td>
+<td align="left"></td>
+<td align="left">fast data.frames, used as main input and output data type</td>
+</tr>
+<tr class="even">
+<td align="left">stringi</td>
+<td align="left"></td>
+<td align="left">fast string manipulations</td>
+</tr>
+<tr class="odd">
+<td align="left">xml2</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">checkmate</td>
+<td align="left"></td>
+<td align="left">function arguments checker, ensures stability</td>
+</tr>
+</tbody>
+</table>
+<p>There packages are used for developing and building <code>nstandr</code></p>
+<table class="table">
+<caption>Useful packages for development</caption>
+<thead><tr class="header">
+<th align="left">names</th>
+<th align="left">version</th>
+<th align="left">comment</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">devtools</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">roxygen2</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">languageserver</td>
+<td align="left"></td>
+<td align="left">provides some IDE consistensy</td>
+</tr>
+<tr class="even">
+<td align="left">lubridate</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="https://moodymudskipper.github.io/boomer" class="external-link">boomer</a></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+</div>
 
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="links">
-<h2 data-toc-skip>Links</h2>
-<ul class="list-unstyled">
-<li><a href="https://github.com/stasvlasov/nstandr/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/stasvlasov/nstandr/issues" class="external-link">Report a bug</a></li>
-</ul>
-</div>
-
-<div class="license">
+    <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
@@ -259,17 +345,11 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Stanislav Vlasov <br><small class="roles"> Author, maintainer </small>  </li>
+<li>Stas Vlasov <br><small class="roles"> Author, maintainer </small>  </li>
 </ul>
 </div>
 
-<div class="dev-status">
-<h2 data-toc-skip>Dev status</h2>
-<ul class="list-unstyled">
-<li><a href="https://github.com/stasvlasov/nstandr/actions" class="external-link"><img src="https://github.com/stasvlasov/nstandr/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://codecov.io/gh/stasvlasov/nstandr" class="external-link"><img src="https://codecov.io/gh/stasvlasov/nstandr/branch/master/graph/badge.svg?token=OQVJ7NRXO5" alt="codecov"></a></li>
-</ul>
-</div>
+
 
   </div>
 </div>
@@ -277,12 +357,12 @@
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Stanislav Vlasov.</p>
+<p>Developed by Stas Vlasov.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

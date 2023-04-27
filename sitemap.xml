@@ -16,6 +16,9 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/reference/browse_dot_graph.html</loc>
+  </url>
+  <url>
     <loc>/reference/check_rows.html</loc>
   </url>
   <url>
@@ -124,6 +127,9 @@
     <loc>/reference/inset_target.html</loc>
   </url>
   <url>
+    <loc>/reference/is_empty.html</loc>
+  </url>
+  <url>
     <loc>/reference/magerman_condense.html</loc>
   </url>
   <url>
@@ -217,10 +223,28 @@
     <loc>/reference/magerman_replace_umlaut.html</loc>
   </url>
   <url>
+    <loc>/reference/make_dot_edges.html</loc>
+  </url>
+  <url>
+    <loc>/reference/make_dot_graph.html</loc>
+  </url>
+  <url>
+    <loc>/reference/make_dot_nodes.html</loc>
+  </url>
+  <url>
     <loc>/reference/nstandr-package.html</loc>
   </url>
   <url>
+    <loc>/reference/paste_dot_node.html</loc>
+  </url>
+  <url>
+    <loc>/reference/paste_dot_node_tr_td.html</loc>
+  </url>
+  <url>
     <loc>/reference/replace_patterns.html</loc>
+  </url>
+  <url>
+    <loc>/reference/save_dot_graph_as.html</loc>
   </url>
   <url>
     <loc>/reference/standardize.html</loc>
@@ -269,6 +293,9 @@
   </url>
   <url>
     <loc>/reference/unlist_if_possible.html</loc>
+  </url>
+  <url>
+    <loc>/reference/visualize.html</loc>
   </url>
   <url>
     <loc>/reference/x_length.html</loc>

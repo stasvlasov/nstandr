@@ -25,13 +25,7 @@
       <ul class="nav navbar-nav"><li>
   <a href="../reference/index.html">Reference</a>
 </li>
-      </ul><ul class="nav navbar-nav navbar-right"><li>
-  <a href="https://github.com/stasvlasov/nstandr/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul></div><!--/.nav-collapse -->
+      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -41,7 +35,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Standardizes organizational names. Takes either vector or column in the table.</h1>
-    <small class="dont-index">Source: <a href="https://github.com/stasvlasov/nstandr/blob/HEAD/R/nstandr.r" class="external-link"><code>R/nstandr.r</code></a></small>
+    
     <div class="hidden name"><code>standardize.Rd</code></div>
     </div>
 
@@ -52,7 +46,7 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">standardize</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
-<span>  procedures <span class="op">=</span> <span class="va">nstandr_default_procedures_table</span>,</span>
+<span>  procedures <span class="op">=</span> <span class="fu">nstandr</span><span class="fu">:::</span><span class="va">nstandr_default_procedures_list</span>,</span>
 <span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  nrows_min_to_show_progress <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>,</span>
 <span>  progress_step_nrows <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -65,7 +59,7 @@
 <span></span>
 <span><span class="fu">make_std_names</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
-<span>  procedures <span class="op">=</span> <span class="va">nstandr_default_procedures_table</span>,</span>
+<span>  procedures <span class="op">=</span> <span class="fu">nstandr</span><span class="fu">:::</span><span class="va">nstandr_default_procedures_list</span>,</span>
 <span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  nrows_min_to_show_progress <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>,</span>
 <span>  progress_step_nrows <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -78,7 +72,20 @@
 <span></span>
 <span><span class="fu">make_standard_names</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
-<span>  procedures <span class="op">=</span> <span class="va">nstandr_default_procedures_table</span>,</span>
+<span>  procedures <span class="op">=</span> <span class="fu">nstandr</span><span class="fu">:::</span><span class="va">nstandr_default_procedures_list</span>,</span>
+<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  nrows_min_to_show_progress <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>,</span>
+<span>  progress_step_nrows <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  progress_step_in_percent <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  progress_message_use_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  quite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  save_intermediate_x_to_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">nstand</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  procedures <span class="op">=</span> <span class="fu">nstandr</span><span class="fu">:::</span><span class="va">nstandr_default_procedures_list</span>,</span>
 <span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  nrows_min_to_show_progress <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="fl">5</span>,</span>
 <span>  progress_step_nrows <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -97,7 +104,7 @@
 
 
 <dt>procedures</dt>
-<dd><p>Named list of procedures (closures) to apply to x. If we need to pass arguments to some of the procedures it can be done by specifying sub-list where the first element is procedure and the rest its arguments. Names of the list elements are used for progress messages. Procedures can also be passed as data.frame in which case it will be converted to list of procedures with <code>standardize_make_procedures_list</code> (see its help for the correct format of data.frame with procedures). Default is <code>nstandr_default_procedures_table</code></p></dd>
+<dd><p>The procedures that basically comprise the standardization algorithm are specified as a list of either (1) names of procedures function as character strings or as (2) calls where you can provide optional arguments or (3) nested lists that allow user to group procedures. Nesting lists of procedures has an effect on standardization progress reporting and on visualizing algorithms with <code>nstandr_plot</code>. Technically nested lists are equivalent to plain list of procedures as it should produce same results. Names of the list elements are used for progress messages. For unnamed elements the name of procedure's function will be used for standardization progress reporting. Default is <code>nstandr:::nstandr_default_procedures_list</code>.</p></dd>
 
 
 <dt>show_progress</dt>
@@ -177,11 +184,11 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Stanislav Vlasov.</p>
+  <p></p><p>Developed by Stas Vlasov.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
