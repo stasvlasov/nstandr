@@ -166,6 +166,7 @@ standardize_toascii <- function(x
            unlist() |>
            iconv(to = "ASCII", sub = "")
    } else {
+       ## stringi::stri_enc_toascii(str)
        chartr(utf, ascii, enc2utf8(str)) |> 
            iconv(to = "ASCII", sub = "")
    }) |> inset_target(x)
@@ -216,7 +217,7 @@ standardize_x_split <- function(x, by, len = NULL) {
 standardize <- function(x
                       , procedures = nstandr:::nstandr_default_procedures_list
                       , show_progress = TRUE
-                      , nrows_min_to_show_progress = 10^5
+                      , nrows_min_to_show_progress = 10^3
                       , progress_step_nrows = NULL
                       , progress_step_in_percent = 1
                       , progress_message_use_names = TRUE
