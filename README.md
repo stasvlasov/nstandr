@@ -10,21 +10,9 @@
 ```{=org}
 #+end:
 ```
-The R package `nstandr`{.verbatim} makes standardized organizational
-names using procedures described by Thoma et al. (2010), Magerman et al.
-(2006), Cockburn et al. (2009), Wasi & Flaaen (2015).
-
-This is work in progress. Please, file an issue or a suggestion if you
-have any.
-
-nstandr package standardizes organizational names mainly using
-procedures described in Thoma et al. (2010) and Magerman, Looy, Bart, &
-Song (2006) but not only. This is work in progress. Please, file an
-issues or suggestion if you have any. The main function is
-\[standardize()\].
-
-Standardizes organizational names using steps described in Thoma et al.
-(2010) and Magerman, Looy, Bart, & Song (2006) and more.
+``` {#r-pkg-description .markdown}
+(Organizational) Names STANDardization in R. Reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015) and more.
+```
 
 ## Installation
 

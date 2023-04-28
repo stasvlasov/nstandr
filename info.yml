@@ -1,0 +1,14 @@
+type: software
+ref: nstandr
+lang: R
+title: Name Standardization in R
+author: Stas Vlasov
+date: 
+version: 0.0.0.9000
+url: https://stasvlasov.github.io/nstandr/
+publisher: GitHub
+commit:
+implements:
+  - ref: magerman2006_std_names
+  - ref: dm0082                 # stata package
+  - ref: nber_pdp_stdname

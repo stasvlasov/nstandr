@@ -1,6 +1,7 @@
 *.project.org
 *.notes.org
 data/
+ob-r-pkg-data/
 docs/
 materials/
 .Rproj.user

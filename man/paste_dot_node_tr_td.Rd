@@ -2,7 +2,7 @@
 % Please edit documentation in R/visualize.r
 \name{paste_dot_node_tr_td}
 \alias{paste_dot_node_tr_td}
-\title{Makes <TR><TD> record for dot node <TABLE>}
+\title{Makes TR TD record for dot node TABLE}
 \usage{
 paste_dot_node_tr_td(str, bg_color = NULL, font = NULL, b = FALSE, i = FALSE)
 }
@@ -21,5 +21,5 @@ paste_dot_node_tr_td(str, bg_color = NULL, font = NULL, b = FALSE, i = FALSE)
 string
 }
 \description{
-Makes <TR><TD> record for dot node <TABLE>
+Makes TR TD record for dot node TABLE
 }

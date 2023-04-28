@@ -80,7 +80,8 @@ magerman_replace_proprietary_characters <- make_alias(replace_patterns
                                                     , patterns = magerman_patterns_proprietary_characters
                                                     , .title = "Replaces proprietary characters"
                                                     , .description = "This is original procedure based on patterns identified with original PATSTAT data. I.e. it is intended for reproducibility purposes. Use `magerman_detect_characters` to identify similar patterns in your own data."
-                                                    , .example = "{UMLAUT OVER (A)} -> Ä"
+                                                    ## , .example = "{UMLAUT OVER (A)} -> Ä"
+                                                    , .example = "{UMLAUT OVER (A)} -> \u00C4"
                                                     , .tables = list(
                                                           list("magerman_patterns_proprietary_characters"
                                                              , title = "Proprietary character codes and their ASCII/ANSI equivalent"
@@ -105,7 +106,8 @@ magerman_replace_accented_characters <- make_alias(replace_patterns
                                                  , patterns = magerman_patterns_accented_characters
                                                  , .title = "Replaces accented characters"
                                                  , .description = "This is original procedure based on patterns identified with original PATSTAT data. I.e. it is intended for reproducibility purposes. Use `magerman_detect_characters` to identify similar patterns in your own data."
-                                                 , .example = "Æ -> AE"
+                                                   ## , .example = "Æ -> AE"
+                                                   , .example = "\u00C6 -> AE"
                                                  , .tables = list(
                                                        list("magerman_patterns_accented_characters"
                                                           , title = "Accented characters and their unaccented equivalent"
@@ -130,8 +132,9 @@ magerman_remove_special_characters <- make_alias(replace_patterns
                                                , patterns = "[^A-Z0-9\\-+'\"#*;@!?/&():;,. ]"
                                                , patterns_type = "regex"
                                                , .title = "Removes special characters"
-                                               , .description = "Removes everything that is not: A-Z; 0-9; “-“; “+”; “’”; “””; “#”; ##' “*”;“@”; “!”; “?”; “/”; “&”; “(“; “)”; “:”; “;”; “,”; “.”; “ “"
-                                               , .example = "'©𝍎၍%^_' -> ' '"
+                                               , .description = "Removes everything that is not: A-Z; 0-9; \"-\"; \"+\"; \"'\"; \"\"\"; \"#\"; ##' \"*\";\"@\"; \"!\"; \"?\"; \"/\"; \"&\"; \"(\"; \")\"; \":\"; \";\"; \",\"; \".\"; \" \""
+                                               ## , .example = "'©%^_' -> ' '"
+                                               , .example = "'\u00A9%^_' -> ' '"
                                                , .pp = "27"
                                                , .ref = "magerman2006")
 ## --------<<  magerman.remove.special.characters:1 ends here
@@ -760,7 +763,8 @@ magerman_detect_umlaut <- make_alias(detect_patterns
                                    , return_only_first_detected_code = TRUE
                                    , return_only_codes = FALSE
                                    , .title = "Detect umlauts"
-                                   , .example = "GLÜHLAMPEN -> GLUEHLAMPEN"
+                                     ## , .example = "GLÜHLAMPEN -> GLUEHLAMPEN"
+                                   , .example = "GL\u00DCHLAMPEN -> GLUEHLAMPEN"
                                    , .tables = list(
                                          list("magerman_patterns_umlaut"
                                             , title = "Umlaut harmonization replacements"
@@ -851,7 +855,8 @@ magerman_replace_umlaut <- function(x
 
 add_attr(magerman_replace_umlaut
        , .title = "Replaces Umlauts"
-       , .example = "GLÜHLAMPEN -> GLUEHLAMPEN"
+       ## , .example = "GLÜHLAMPEN -> GLUEHLAMPEN"
+       , .example = "GL\u00DCHLAMPEN -> GLUEHLAMPEN"
        , .tables = list(
              list("magerman_patterns_umlaut"
                 , title = "Umlaut harmonization replacements"
@@ -879,33 +884,24 @@ add_attr(magerman_replace_umlaut
 standardize_magerman <- function(x
                              , detect_legal_form = FALSE
                              , append_output_copy_before_common_words_removal = FALSE
-                             , condense_words = TRUE
+                             , condense_words = FALSE
                              , ...) {
     magerman_procedures <- nstandr_magerman_procedures_list
     ## do some tweaks on magerman_procedures
     if (!detect_legal_form) {
-        is_magerman_detect_legal_form <- 
-            sapply(magerman_procedures
-                 , \(p) p[[1]] == "magerman_detect_legal_form")
-        magerman_procedures <-
-            magerman_procedures[!is_magerman_detect_legal_form]
+        ## "magerman_detect_legal_form" 
+        magerman_procedures$`Legal forms`$`Detecting legal form` <- NULL
     }
     if (!condense_words) {
-        is_magerman_condense <- 
-            sapply(magerman_procedures
-                 , \(p) p[[1]] == "magerman_condense")
-        magerman_procedures <-
-            magerman_procedures[!is_magerman_condense]
+        ## "magerman_condense"
+        magerman_procedures$`Common words`$Condensing <- NULL
     }
     if (append_output_copy_before_common_words_removal) {
-        which_is_magerman_remove_legal_form_and_clean <-
-            sapply(magerman_procedures
-                 , \(p) p[[1]] == "magerman_remove_legal_form_and_clean") |>
-            which()
-        magerman_procedures[[which_is_magerman_remove_legal_form_and_clean]] <-
-            c(magerman_procedures[[which_is_magerman_remove_legal_form_and_clean]]
-            , list(append_output_copy = TRUE
-                 , output_copy_col_name = "{col_name_}before_common_words_removal"))
+        ## "magerman_remove_legal_form_and_clean"
+        magerman_procedures$`Legal forms`$`Removing legal form` <-
+            call("magerman_remove_legal_form_and_clean"
+               , append_output_copy = TRUE
+               , output_copy_col_name = "{col_name_}before_common_words_removal")
     }
     standardize(x, magerman_procedures, ...)
 }

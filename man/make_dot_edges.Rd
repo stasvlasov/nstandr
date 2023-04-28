@@ -11,6 +11,9 @@ make_dot_edges(procedures_list, prefix = NULL)
 
 \item{prefix}{Prefix for edge IDs}
 }
+\value{
+list of dot graph edges
+}
 \description{
 Makes dot graph edges for visualizing arrows between sequence of procedures.
 }

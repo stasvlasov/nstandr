@@ -18,7 +18,7 @@
 ##' 
 ##' @examples
 ##' # Make get_dots available for following examples
-##' get_dots <- dots:::get_dots
+##' get_dots <- nstandr:::get_dots
 ##' # Basic usage
 ##' util <- function(foo = 0, bar = 0) {
 ##'     # get dots and bind updated arguments into environment

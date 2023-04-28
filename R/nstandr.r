@@ -1,5 +1,6 @@
 ## -------->>  [[file:../nstandr.src.org::*Package documentation][Package documentation:1]]
 #' @details
+#' (Organizational) Names STANDardization in R. Reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015) and more.
 #' @keywords internal
 "_PACKAGE"
 ## --------<<  Package documentation:1 ends here
@@ -262,6 +263,7 @@ standardize <- function(x
             }
         }
     ## Apply Procedures
+    parent_env <- parent.frame()
     x_env <- environment()
     for_procedures <- function(procedures) {
         for(p in 1:length(procedures)) {
@@ -308,7 +310,8 @@ standardize <- function(x
                                         assign(save_intermediate_x_to_var, x, pos = 1)
                                     ## apply procedure fun with args
                                     x_by <- do.call(procedure_fun
-                                                  , c(list(x_by), procedure_args))
+                                                  , c(list(x_by), procedure_args)
+                                                  , envir = parent_env)
                                     ## Increment progress counter
                                     assign("i", i + 100 * progress_step_nrows / x_len, pos = i_env)
                                     ## Anounce progress
@@ -330,7 +333,11 @@ standardize <- function(x
                 if(!is.null(save_intermediate_x_to_var))
                     assign(save_intermediate_x_to_var, x, pos = 1)
                 ## Apply procedure fun with args!
-                assign("x", value = do.call(procedure_fun, c(list(x), procedure_args)), pos = x_env)
+                assign("x"
+                     , value = do.call(procedure_fun
+                                     , c(list(x), procedure_args)
+                                     , envir = parent_env)
+                     , pos = x_env)
             }
             ## Anounce DONE
             if(!quite) packageStartupMessage(message_done)

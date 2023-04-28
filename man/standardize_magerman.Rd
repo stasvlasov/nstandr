@@ -8,7 +8,7 @@ standardize_magerman(
   x,
   detect_legal_form = FALSE,
   append_output_copy_before_common_words_removal = FALSE,
-  condense_words = TRUE,
+  condense_words = FALSE,
   ...
 )
 }

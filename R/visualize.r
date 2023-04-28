@@ -10,7 +10,8 @@ is_empty <- function(x) {
 }
 
 
-##' Makes <TR><TD> record for dot node <TABLE>
+##' Makes TR TD record for dot node TABLE
+##' 
 ##' @param str content
 ##' @param bg_color row's background color
 ##' @param font row's font family
@@ -137,7 +138,7 @@ make_dot_nodes <- function(procedures_list, node_prefix = NULL, ...
 ##' 
 ##' @param procedures_list List of procedures. See `sandardize` for how to specify of procedures list.
 ##' @param prefix Prefix for edge IDs
-##' @return 
+##' @return list of dot graph edges
 make_dot_edges <- function(procedures_list, prefix = NULL) {
     mapply(\(p, p_next, n, n_next) {
         ## from

@@ -1,10 +1,8 @@
 ## -------->>  [[file:../../nstandr.src.org::*Combined Magerman Procedures][Combined Magerman Procedures:4]]
 ## Test with return magerman_procedures in standardize_magerman
-standardize_magerman()
 
 
-## Test
-expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+expect_equal(data.table::data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
                                , "MSLab Co."
                                , "MSLaeb Comp."
@@ -17,17 +15,18 @@ expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                               , show_progress = TRUE
                               , detect_legal_form = FALSE
                               , quite = TRUE)
-           , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
-                               , "MSLAEBAEHREFLSDLDFAE"
-                               , "MSLAB"
-                               , "MSLAEBCOMP"
-                               , "MSLABCOMP"
-                               , "AEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY") |>
+           , data.table::data.table(name = c(
+                                        "MAEKAEROENI ETOE FKUESNOE"
+                                      , "MSLAEB AE HREFLSDLDF AE"
+                                      , "MSLAB "
+                                      , "MSLAEB COMP."
+                                      , "MSLAB COMP."
+                                      , "AEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY") |>
                             rep(20)
                       , foo = "I love coffee"))
 
 ## works now but weird naming of append_output_copy
-expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+expect_equal(data.table::data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
                                , "MSLab Co."
                                , "MSLaeb Comp."
@@ -41,12 +40,12 @@ expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                               , append_output_copy_before_common_words_removal = TRUE
                               , detect_legal_form = FALSE
                               , quite = TRUE)
-           , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
-                               , "MSLAEBAEHREFLSDLDFAE"
-                               , "MSLAB"
-                               , "MSLAEBCOMP"
-                               , "MSLABCOMP"
-                               , "AEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY") |>
+           , data.table::data.table(name = c("MAEKAEROENI ETOE FKUESNOE"
+                                      , "MSLAEB AE HREFLSDLDF AE"
+                                      , "MSLAB "
+                                      , "MSLAEB COMP."
+                                      , "MSLAB COMP."
+                                      , "AEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY") |>
                             rep(10)
                       , foo = "I love coffee"
                       , name_before_common_words_removal = c("MAKARONI ETO FKUSNO"
@@ -58,7 +57,7 @@ expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                             rep(10)))
 
 ## test differe columns
-expect_equal(data.table(foo = "I love coffee"
+expect_equal(data.table::data.table(foo = "I love coffee"
                       , name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
                                , "MSLab Co."
@@ -72,18 +71,18 @@ expect_equal(data.table(foo = "I love coffee"
                               , show_progress = TRUE
                               , detect_legal_form = FALSE
                               , quite = TRUE)
-           , data.table(foo = "I love coffee"
-                      , name = c("MAEKAEROENIETOEFKUESNOE"
-                               , "MSLAEBAEHREFLSDLDFAE"
-                               , "MSLAB"
-                               , "MSLAEBCOMP"
-                               , "MSLABCOMP"
-                               , "AEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY") |>
+           , data.table::data.table(foo = "I love coffee"
+                      , name = c(  "MAEKAEROENI ETOE FKUESNOE"
+                                      , "MSLAEB AE HREFLSDLDF AE"
+                                      , "MSLAB "
+                                      , "MSLAEB COMP."
+                                      , "MSLAB COMP."
+                                      , "AEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY") |>
                             rep(10)))
 
 
 ## issue with name match in detect_patterns with return_only_codes
-expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
+expect_equal(data.table::data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                                , "MSLab CÖ. <a href=lsdldf> <br> <\\a>"
                                , "MSLab Co."
                                , "MSLaeb Comp."
@@ -96,12 +95,12 @@ expect_equal(data.table(name = c("MÄKARÖNI ETÖ FKÜSNÖ Ltd"
                               , show_progress = TRUE
                               , detect_legal_form = TRUE
                               , quite = TRUE)
-           , data.table(name = c("MAEKAEROENIETOEFKUESNOE"
-                               , "MSLAEBAEHREFLSDLDFAE"
-                               , "MSLAB"
-                               , "MSLAEBCOMP"
-                               , "MSLABCOMP"
-                               , "AEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY") |>
+           , data.table::data.table(name = c(  "MAEKAEROENI ETOE FKUESNOE"
+                                      , "MSLAEB AE HREFLSDLDF AE"
+                                      , "MSLAB "
+                                      , "MSLAEB COMP."
+                                      , "MSLAB COMP."
+                                      , "AEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY") |>
                             rep(10)
                       , foo = "I love coffee"
                       , name_legal_form = c("LIMITED", NA, NA, NA, "LIMITED", NA)|>
@@ -161,7 +160,7 @@ expect_equal(c("SGS-THOMSON MICROELECTRONICS"
              , "SGS-THOMSON MICROELECTRONICS, SA."
              , "SGS-THOMSON MICROELECTRONICS, SRL"
              , "SGS-THOMSON MICROELECTRONICS,S.R.L.") |>
-             standardize_magerman(quite = TRUE)
+             standardize_magerman(quite = TRUE, condense_words = TRUE)
            , rep("SGSTHOMSONMICROELECTRONIC", 52))
 
 
@@ -217,7 +216,7 @@ expect_equal(c("E.I. DU PONT DE NEMOURS & COMPANY"
              , "E.I.DU PONT DE NEMOURS AND COMPANY"
              , "EI DU PONT DE NEMOURS AND COMPANY"
              , "EI DUPONT DE NEMOURS AND COMPANY") |>
-             standardize_magerman(quite = TRUE)
+             standardize_magerman(quite = TRUE, condense_words = TRUE)
            , rep("EIDUPONTDENEMOURS", 51))
 
 expect_equal(c("Chip &AMP; Dayle (lala) [0x2345] {abs} ops html <br>"
@@ -233,7 +232,7 @@ expect_equal(c("Chip &AMP; Dayle (lala) [0x2345] {abs} ops html <br>"
              , "MSlab ,INC. ,LTD"
              , "CHEMICALS SYSTEMEN MSlab Ltd."
              , "MSLab CÖ.") |>
-             standardize_magerman(quite = TRUE)
+             standardize_magerman(quite = TRUE, condense_words = TRUE)
            , c("CHIPDAYLELALA0X2345ABSOPSHTML", "O02937LKJFASLDJFUSDLFKJHHHHLASKDJF", 
                "OESDLFKJHHHHLASKDJF", "YAEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYAEAEAEAEAEAEAECEEEEIIIINOEOEOEOEOEUEUEUEUEYY", 
                "LKDF092834", "ASTRINGWITHMANYDOUPLESPACES", "MERRYCRISTMASLOVE", 

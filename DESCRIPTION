@@ -1,10 +1,12 @@
 Package: nstandr
 Title: Name Standardization in R
 Version: 0.0.0.9000
-Date: 2023-04-27
+Date: 2023-04-28
 Authors@R: 
     person("Stas", "Vlasov", , "s.vlasov@uvt.nl", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: (Organizational) Names STANDardization in R. Reproduces
+    procedures described in Thoma et al. (2010), Magerman et al. (2006),
+    Cockburn et al. (2009), Wasi & Flaaen (2015) and more.
 License: MIT + file LICENSE
 Imports: 
     checkmate,

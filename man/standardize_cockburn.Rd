@@ -15,7 +15,7 @@ standardize_cockburn(
 \arguments{
 \item{x}{table or vector}
 
-\item{cockburn_procedures}{list of procedures to pass to \code{standardize} function. Default is \code{cockburn_procedures.list}}
+\item{cockburn_procedures}{list of procedures to pass to \code{standardize} function.}
 
 \item{detect_legal_form}{Whether to detect legal forms. Default is FALSE}
 

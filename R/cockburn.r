@@ -569,7 +569,7 @@ attr(cockburn_detect_uspto, "@title") <-
 ## -------->>  [[file:../nstandr.src.org::*Combined Cockburn Procedures][Combined Cockburn Procedures:2]]
 ##' Standardizes strings using exact procedures described in Cockburn, et al. (2009)
 ##' @param x table or vector
-##' @param cockburn_procedures list of procedures to pass to `standardize` function. Default is `cockburn_procedures.list`
+##' @param cockburn_procedures list of procedures to pass to `standardize` function.
 ##' @param detect_legal_form Whether to detect legal forms. Default is FALSE
 ##' @param return_x_before_common_words_removal Whether to save standardized column before `common.words.removal` procedure. Default is FALSE
 ##' @inheritDotParams standardize
@@ -580,25 +580,23 @@ attr(cockburn_detect_uspto, "@title") <-
 ##' @md 
 ##' @export 
 standardize_cockburn <- function(x
-                             , cockburn_procedures = nstandr_cookburn_procedures_list
-                             , detect_legal_form = FALSE
-                             , return_x_before_common_words_removal = FALSE
-                             , ... ) {
-  ## do some tweaks on cockburn_procedures
-  if(!detect_legal_form) {
-      cockburn_procedures <-
-          cockburn_procedures[
-              !(sapply(cockburn_procedures, `[[`, 1) %in% 
-                c("cockburn_detect_type", "cockburn_detect_uspto"))
-          ]
-
-  }
+                               , cockburn_procedures = nstandr_cookburn_procedures_list
+                               , detect_legal_form = FALSE
+                               , return_x_before_common_words_removal = FALSE
+                               , ... ) {
+    ## do some tweaks on cockburn_procedures
+    if(!detect_legal_form) {
+        ## "cockburn_detect_uspto"
+        cockburn_procedures$Standartization$`Special removals and recoding for USPTO names` <- NULL
+        ## "cockburn_detect_type"
+        cockburn_procedures$Standartization$`Identification of organization type` <- NULL
+    }
     if(return_x_before_common_words_removal) {
-      cockburn_procedures[[
-          which(sapply(cockburn_procedures, `[[` , 1) %in% "cockburn_combabbrev")
-      ]] <- list("cockburn_combabbrev", append_output_copy = TRUE)
-  }
-  standardize(x, cockburn_procedures, ...)
+        ## "cockburn_combabbrev" 
+        cockburn_procedures$Standartization$`Combining single char sequences` <-
+            call("cockburn_combabbrev", append_output_copy = TRUE)
+    }
+    standardize(x, cockburn_procedures, ...)
 }
 ## --------<<  Combined Cockburn Procedures:2 ends here
 

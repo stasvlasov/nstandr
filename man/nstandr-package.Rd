@@ -6,7 +6,10 @@
 \alias{nstandr-package}
 \title{nstandr: Name Standardization in R}
 \description{
-What the package does (one paragraph).
+(Organizational) Names STANDardization in R. Reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015) and more.
+}
+\details{
+(Organizational) Names STANDardization in R. Reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015) and more.
 }
 \author{
 \strong{Maintainer}: Stas Vlasov \email{s.vlasov@uvt.nl}
