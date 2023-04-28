@@ -230,6 +230,13 @@ There packages are used for developing and building ~nstandr~
 | [[https://moodymudskipper.github.io/boomer][boomer]]         |         |                               |
 #+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
 
+
+#+caption: Hard dependencies (DEPENDS field in DESCRIPTION)
+#+name: ob-r-pkg-table-depends
+| names | version | comment                                                                               |
+|-------+---------+---------------------------------------------------------------------------------------|
+| R     |   3.5.0 | serialized objects in serialize/load version 3 cannot be read in older versions of R. |
+
 * Citing
 
 #+begin_src latex

@@ -238,3 +238,8 @@ There packages are used for developing and building `nstandr`
 ```{=org}
 #+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
 ```
+  names   version   comment
+  ------- --------- ---------------------------------------------------------------------------------------
+  R       3.5.0     serialized objects in serialize/load version 3 cannot be read in older versions of R.
+
+  : Hard dependencies (DEPENDS field in DESCRIPTION)

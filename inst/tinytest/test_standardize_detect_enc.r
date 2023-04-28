@@ -1,4 +1,4 @@
-## -------->>  [[file:../../nstandr.src.org::*standardize_detect_enc][standardize_detect_enc:1]]
+## -------->>  [[file:../../nstandr.src.org::*standardize_detect_enc][standardize_detect_enc:2]]
 ## This fails depending on platform (Windows) on R release.
 
 ## expect_equal(data.table::data.table(data = c("FAÇILE"
@@ -31,6 +31,6 @@
 ##                             coffee = c("Yes, please!", "Yes, please!", "Yes, please!"
 ##                                        ), data_lala = c("WINDOWS-1254", "ISO-8859-9", "UTF-8")), row.names = c(NA, 
 ##                                                                                                                -3L), class = c("data.table", "data.frame")))
-## --------<<  standardize_detect_enc:1 ends here
+## --------<<  standardize_detect_enc:2 ends here
 
 

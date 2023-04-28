@@ -1,4 +1,4 @@
-## -------->>  [[file:../../nstandr.src.org::*standardize_toascii][standardize_toascii:1]]
+## -------->>  [[file:../../nstandr.src.org::*standardize_toascii][standardize_toascii:2]]
 ## This fails depending on platform (Windows) on R release.
 
 ## expect_equal( c("FAÇILE"
@@ -10,6 +10,6 @@
 ## , structure(list(V1 = c("FAAILE", "facile", "cucuber"), V2 = c("coffee", 
 ## "coffee", "coffee")), row.names = c(NA, -3L), class = c("data.table", 
 ## "data.frame")))
-## --------<<  standardize_toascii:1 ends here
+## --------<<  standardize_toascii:2 ends here
 
 
