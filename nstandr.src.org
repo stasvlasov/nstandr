@@ -29,9 +29,13 @@
 #+end:
 
 #+name: r-pkg-description
-#+begin_src markdown
+#+begin_src org :exports results :results replace
   (Organizational) Names STANDardization in R. Reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015) and more.
 #+end_src
+
+#+RESULTS: r-pkg-description
+(Organizational) Names STANDardization in R. Reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015) and more.
+
 
 *** Installation
 
@@ -223,11 +227,11 @@ There packages are used for developing and building ~nstandr~
 #+name: ob-r-pkg-table-suggests-dev
 | names          | version | comment                       |
 |----------------+---------+-------------------------------|
-| devtools       |         |                               |
-| roxygen2       |         |                               |
+| devtools       |         | builds                        |
+| roxygen2       |         | makes docs                    |
 | languageserver |         | provides some IDE consistensy |
-| lubridate      |         |                               |
-| [[https://moodymudskipper.github.io/boomer][boomer]]         |         |                               |
+| [[https://moodymudskipper.github.io/boomer][boomer]]         |         | for debugging                 |
+| usethis        |         | utils                         |
 #+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
 
 
@@ -3849,7 +3853,7 @@ The default standardization procedures are the following (for now):
   #'
   #' @export
   standardize <- function(x
-                        , procedures = nstandr:::nstandr_default_procedures_list
+                        , procedures = nstandr_default_procedures_list
                         , show_progress = TRUE
                         , nrows_min_to_show_progress = 10^3
                         , progress_step_nrows = NULL

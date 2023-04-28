@@ -1,44 +1,36 @@
 # nstandr <img src="img/logo.png" align="right" alt="" width="120"/>
 
-```{=org}
-#+begin: md
-```
 [![R-CMD-check](https://github.com/stasvlasov/nstandr/workflows/R-CMD-check/badge.svg)](https://github.com/stasvlasov/nstandr/actions)
 [![codecov](https://codecov.io/gh/stasvlasov/nstandr/branch/master/graph/badge.svg?token=OQVJ7NRXO5)](https://codecov.io/gh/stasvlasov/nstandr)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/nstandr)
 
-```{=org}
-#+end:
-```
-``` {#r-pkg-description .markdown}
-(Organizational) Names STANDardization in R. Reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015) and more.
-```
+(Organizational) Names STANDardization in R. Reproduces procedures
+described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et
+al. (2009), Wasi & Flaaen (2015) and more.
 
 ## Installation
 
-``` {.r org-language="R"}
+``` r
 devtools::install_github("stasvlasov/nstandr")
 ```
 
 ## Usage
 
-The package provides its main function `standardize`{.verbatim}. The
-function expect character vector of organization names as input and
-returns its standardized version.
+The package provides its main function `standardize`. The function
+expect character vector of organization names as input and returns its
+standardized version.
 
 For the standardization methods described in Magerman et al. (2006) and
-Cockburn et al. (2009) you can use `standardize_magerman`{.verbatim} and
-`standardize_cockburn`{.verbatim} respectively. These functions are
-similar to
-`standardize(x, procedures=nstandr:::magerman_procedures_list))`{.verbatim}
-and
-`standardize(x, procedures=nstandr:::cockburn_procedures_list))`{.verbatim}
-but with additional options for tweaking original procedures and with
-more documentation.
+Cockburn et al. (2009) you can use `standardize_magerman` and
+`standardize_cockburn` respectively. These functions are similar to
+`standardize(x, procedures=nstandr:::magerman_procedures_list))` and
+`standardize(x, procedures=nstandr:::cockburn_procedures_list))` but
+with additional options for tweaking original procedures and with more
+documentation.
 
-Here is an example of `standardize_magerman`{.verbatim} usage
+Here is an example of `standardize_magerman` usage
 
-``` {.r org-language="R"}
+``` r
 textConnection("SGS-THOMSON MICROELECTRONICS
 S.G.S. THOMSON MICROELECTRONICS S.R.L.
 S.G.S. THOMSON MICROELECTRONICS, S.R.L.
@@ -199,47 +191,38 @@ Preprocessing, linking, and reviewing utilities. The Stata Journal,
 
 # Dependencies
 
-  name                                                                              version   comment
-  --------------------------------------------------------------------------------- --------- ------------------------------------------------------------------------
-  [tinytest](https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md)             package developlent (unit testing)
-  [fastmatch](https://cran.r-project.org/web/packages/fastmatch/index.html)                   can speed things up a bit
-  [htmltools](https://rstudio.github.io/htmltools/index.html)                                 used for escaping html in procedures desctiptions before visualization
-  [DiagrammeR](http://rich-iannone.github.io/DiagrammeR/docs.html)                            needed for visualizing procedures lists
+| name                                                                            | version | comment                                                                |
+|---------------------------------------------------------------------------------|---------|------------------------------------------------------------------------|
+| [tinytest](https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md) |         | package developlent (unit testing)                                     |
+| [fastmatch](https://cran.r-project.org/web/packages/fastmatch/index.html)       |         | can speed things up a bit                                              |
+| [htmltools](https://rstudio.github.io/htmltools/index.html)                     |         | used for escaping html in procedures desctiptions before visualization |
+| [DiagrammeR](http://rich-iannone.github.io/DiagrammeR/docs.html)                |         | needed for visualizing procedures lists                                |
 
-  : Suggested packages
+Suggested packages
 
-```{=org}
-#+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
-```
-  name         version   comment
-  ------------ --------- -----------------------------------------------------------
-  data.table             fast data.frames, used as main input and output data type
-  stringi                fast string manipulations
-  xml2                   
-  checkmate              function arguments checker, ensures stability
+| name       | version | comment                                                   |
+|------------|---------|-----------------------------------------------------------|
+| data.table |         | fast data.frames, used as main input and output data type |
+| stringi    |         | fast string manipulations                                 |
+| xml2       |         |                                                           |
+| checkmate  |         | function arguments checker, ensures stability             |
 
-  : Required packages (Imports)
+Required packages (Imports)
 
-```{=org}
-#+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
-```
 There packages are used for developing and building `nstandr`
 
-  names                                                version   comment
-  ---------------------------------------------------- --------- -------------------------------
-  devtools                                                       
-  roxygen2                                                       
-  languageserver                                                 provides some IDE consistensy
-  lubridate                                                      
-  [boomer](https://moodymudskipper.github.io/boomer)             
+| names                                              | version | comment                       |
+|----------------------------------------------------|---------|-------------------------------|
+| devtools                                           |         | builds                        |
+| roxygen2                                           |         | makes docs                    |
+| languageserver                                     |         | provides some IDE consistensy |
+| [boomer](https://moodymudskipper.github.io/boomer) |         | for debugging                 |
+| usethis                                            |         | utils                         |
 
-  : Useful packages for development
+Useful packages for development
 
-```{=org}
-#+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
-```
-  names   version   comment
-  ------- --------- ---------------------------------------------------------------------------------------
-  R       3.5.0     serialized objects in serialize/load version 3 cannot be read in older versions of R.
+| names | version | comment                                                                               |
+|-------|---------|---------------------------------------------------------------------------------------|
+| R     | 3.5.0   | serialized objects in serialize/load version 3 cannot be read in older versions of R. |
 
-  : Hard dependencies (DEPENDS field in DESCRIPTION)
+Hard dependencies (DEPENDS field in DESCRIPTION)

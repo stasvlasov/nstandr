@@ -9,7 +9,7 @@
 \usage{
 standardize(
   x,
-  procedures = nstandr:::nstandr_default_procedures_list,
+  procedures = nstandr_default_procedures_list,
   show_progress = TRUE,
   nrows_min_to_show_progress = 10^3,
   progress_step_nrows = NULL,
@@ -22,7 +22,7 @@ standardize(
 
 make_std_names(
   x,
-  procedures = nstandr:::nstandr_default_procedures_list,
+  procedures = nstandr_default_procedures_list,
   show_progress = TRUE,
   nrows_min_to_show_progress = 10^3,
   progress_step_nrows = NULL,
@@ -35,7 +35,7 @@ make_std_names(
 
 make_standard_names(
   x,
-  procedures = nstandr:::nstandr_default_procedures_list,
+  procedures = nstandr_default_procedures_list,
   show_progress = TRUE,
   nrows_min_to_show_progress = 10^3,
   progress_step_nrows = NULL,
@@ -48,7 +48,7 @@ make_standard_names(
 
 nstand(
   x,
-  procedures = nstandr:::nstandr_default_procedures_list,
+  procedures = nstandr_default_procedures_list,
   show_progress = TRUE,
   nrows_min_to_show_progress = 10^3,
   progress_step_nrows = NULL,

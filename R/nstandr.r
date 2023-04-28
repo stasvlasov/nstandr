@@ -215,7 +215,7 @@ standardize_x_split <- function(x, by, len = NULL) {
 #'
 #' @export
 standardize <- function(x
-                      , procedures = nstandr:::nstandr_default_procedures_list
+                      , procedures = nstandr_default_procedures_list
                       , show_progress = TRUE
                       , nrows_min_to_show_progress = 10^3
                       , progress_step_nrows = NULL
