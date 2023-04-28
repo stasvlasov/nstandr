@@ -62,20 +62,20 @@
 <div class="page-header"><h1 id="nstandr-">nstandr <img src="img/logo.png" align="right" alt="" width="120"><a class="anchor" aria-label="anchor" href="#nstandr-"></a>
 </h1></div>
 <p><a href="https://github.com/stasvlasov/nstandr/actions" class="external-link"><img src="https://github.com/stasvlasov/nstandr/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a> <a href="https://codecov.io/gh/stasvlasov/nstandr" class="external-link"><img src="https://codecov.io/gh/stasvlasov/nstandr/branch/master/graph/badge.svg?token=OQVJ7NRXO5" alt="codecov"></a> <img src="https://img.shields.io/github/languages/code-size/stasvlasov/nstandr" alt="GitHub code size in bytes"></p>
-<div class="sourceCode" id="r-pkg-description"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="r-pkg-description-1"><a href="#r-pkg-description-1" aria-hidden="true" tabindex="-1"></a>(Organizational) Names STANDardization in R. Reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi &amp; Flaaen (2015) and more.</span></code></pre></div>
+<p>(Organizational) Names STANDardization in R. Reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi &amp; Flaaen (2015) and more.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="sourceCode" id="cb1" org-language="R"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"stasvlasov/nstandr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<p>The package provides its main function <code class="verbatim">standardize</code>. The function expect character vector of organization names as input and returns its standardized version.</p>
-<p>For the standardization methods described in Magerman et al. (2006) and Cockburn et al. (2009) you can use <code class="verbatim">standardize_magerman</code> and <code class="verbatim">standardize_cockburn</code> respectively. These functions are similar to <code class="verbatim">standardize(x, procedures=nstandr:::magerman_procedures_list))</code> and <code class="verbatim">standardize(x, procedures=nstandr:::cockburn_procedures_list))</code> but with additional options for tweaking original procedures and with more documentation.</p>
-<p>Here is an example of <code class="verbatim">standardize_magerman</code> usage</p>
-<div class="sourceCode" id="cb2" org-language="R"><pre class="downlit sourceCode r">
+<p>The package provides its main function <code>standardize</code>. The function expect character vector of organization names as input and returns its standardized version.</p>
+<p>For the standardization methods described in Magerman et al. (2006) and Cockburn et al. (2009) you can use <code>standardize_magerman</code> and <code>standardize_cockburn</code> respectively. These functions are similar to <code>standardize(x, procedures=nstandr:::magerman_procedures_list))</code> and <code>standardize(x, procedures=nstandr:::cockburn_procedures_list))</code> but with additional options for tweaking original procedures and with more documentation.</p>
+<p>Here is an example of <code>standardize_magerman</code> usage</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/textconnections.html" class="external-link">textConnection</a></span><span class="op">(</span><span class="st">"SGS-THOMSON MICROELECTRONICS</span></span>
 <span><span class="st">S.G.S. THOMSON MICROELECTRONICS S.R.L.</span></span>
 <span><span class="st">S.G.S. THOMSON MICROELECTRONICS, S.R.L.</span></span>
@@ -225,114 +225,134 @@
 <h1 id="dependencies">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies"></a>
 </h1>
 <table class="table">
-<caption>Suggested packages</caption>
+<colgroup>
+<col width="50%">
+<col width="5%">
+<col width="44%">
+</colgroup>
 <thead><tr class="header">
-<th align="left">name</th>
-<th align="left">version</th>
-<th align="left">comment</th>
+<th>name</th>
+<th>version</th>
+<th>comment</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left"><a href="https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md" class="external-link">tinytest</a></td>
-<td align="left"></td>
-<td align="left">package developlent (unit testing)</td>
+<td><a href="https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md" class="external-link">tinytest</a></td>
+<td></td>
+<td>package developlent (unit testing)</td>
 </tr>
 <tr class="even">
-<td align="left"><a href="https://cran.r-project.org/web/packages/fastmatch/index.html" class="external-link">fastmatch</a></td>
-<td align="left"></td>
-<td align="left">can speed things up a bit</td>
+<td><a href="https://cran.r-project.org/web/packages/fastmatch/index.html" class="external-link">fastmatch</a></td>
+<td></td>
+<td>can speed things up a bit</td>
 </tr>
 <tr class="odd">
-<td align="left"><a href="https://rstudio.github.io/htmltools/index.html" class="external-link">htmltools</a></td>
-<td align="left"></td>
-<td align="left">used for escaping html in procedures desctiptions before visualization</td>
+<td><a href="https://rstudio.github.io/htmltools/index.html" class="external-link">htmltools</a></td>
+<td></td>
+<td>used for escaping html in procedures desctiptions before visualization</td>
 </tr>
 <tr class="even">
-<td align="left"><a href="http://rich-iannone.github.io/DiagrammeR/docs.html" class="external-link">DiagrammeR</a></td>
-<td align="left"></td>
-<td align="left">needed for visualizing procedures lists</td>
+<td><a href="http://rich-iannone.github.io/DiagrammeR/docs.html" class="external-link">DiagrammeR</a></td>
+<td></td>
+<td>needed for visualizing procedures lists</td>
 </tr>
 </tbody>
 </table>
+<p>Suggested packages</p>
 <table class="table">
-<caption>Required packages (Imports)</caption>
+<colgroup>
+<col width="15%">
+<col width="11%">
+<col width="73%">
+</colgroup>
 <thead><tr class="header">
-<th align="left">name</th>
-<th align="left">version</th>
-<th align="left">comment</th>
+<th>name</th>
+<th>version</th>
+<th>comment</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">data.table</td>
-<td align="left"></td>
-<td align="left">fast data.frames, used as main input and output data type</td>
+<td>data.table</td>
+<td></td>
+<td>fast data.frames, used as main input and output data type</td>
 </tr>
 <tr class="even">
-<td align="left">stringi</td>
-<td align="left"></td>
-<td align="left">fast string manipulations</td>
+<td>stringi</td>
+<td></td>
+<td>fast string manipulations</td>
 </tr>
 <tr class="odd">
-<td align="left">xml2</td>
-<td align="left"></td>
-<td align="left"></td>
+<td>xml2</td>
+<td></td>
+<td></td>
 </tr>
 <tr class="even">
-<td align="left">checkmate</td>
-<td align="left"></td>
-<td align="left">function arguments checker, ensures stability</td>
+<td>checkmate</td>
+<td></td>
+<td>function arguments checker, ensures stability</td>
 </tr>
 </tbody>
 </table>
+<p>Required packages (Imports)</p>
 <p>There packages are used for developing and building <code>nstandr</code></p>
 <table class="table">
-<caption>Useful packages for development</caption>
+<colgroup>
+<col width="56%">
+<col width="9%">
+<col width="33%">
+</colgroup>
 <thead><tr class="header">
-<th align="left">names</th>
-<th align="left">version</th>
-<th align="left">comment</th>
+<th>names</th>
+<th>version</th>
+<th>comment</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">devtools</td>
-<td align="left"></td>
-<td align="left"></td>
+<td>devtools</td>
+<td></td>
+<td>builds</td>
 </tr>
 <tr class="even">
-<td align="left">roxygen2</td>
-<td align="left"></td>
-<td align="left"></td>
+<td>roxygen2</td>
+<td></td>
+<td>makes docs</td>
 </tr>
 <tr class="odd">
-<td align="left">languageserver</td>
-<td align="left"></td>
-<td align="left">provides some IDE consistensy</td>
+<td>languageserver</td>
+<td></td>
+<td>provides some IDE consistensy</td>
 </tr>
 <tr class="even">
-<td align="left">lubridate</td>
-<td align="left"></td>
-<td align="left"></td>
+<td><a href="https://moodymudskipper.github.io/boomer" class="external-link">boomer</a></td>
+<td></td>
+<td>for debugging</td>
 </tr>
 <tr class="odd">
-<td align="left"><a href="https://moodymudskipper.github.io/boomer" class="external-link">boomer</a></td>
-<td align="left"></td>
-<td align="left"></td>
+<td>usethis</td>
+<td></td>
+<td>utils</td>
 </tr>
 </tbody>
 </table>
+<p>Useful packages for development</p>
 <table class="table">
-<caption>Hard dependencies (DEPENDS field in DESCRIPTION)</caption>
+<colgroup>
+<col width="6%">
+<col width="8%">
+<col width="84%">
+</colgroup>
 <thead><tr class="header">
-<th align="left">names</th>
-<th align="left">version</th>
-<th align="left">comment</th>
+<th>names</th>
+<th>version</th>
+<th>comment</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="left">R</td>
-<td align="left">3.5.0</td>
-<td align="left">serialized objects in serialize/load version 3 cannot be read in older versions of R.</td>
+<td>R</td>
+<td>3.5.0</td>
+<td>serialized objects in serialize/load version 3 cannot be read in older versions of R.</td>
 </tr></tbody>
 </table>
+<p>Hard dependencies (DEPENDS field in DESCRIPTION)</p>
 </div>
 
   </div>
