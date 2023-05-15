@@ -30,45 +30,45 @@ escape_regex_for_type <- function(string
     types_specs <- list(
         list(type = "fixed"
            , docs = "Match pattern string as it is within the target vector"
-           , func = \(string, escape_fixed) {
+           , func = function(string, escape_fixed) {
                if(escape_fixed) escape_regex(string)
                else string
            })
       , list(type = "begins"
            , docs = "Match pattern string as it is in the beggining of the target vector"
-           , func = \(string, escape_fixed) {
+           , func = function(string, escape_fixed) {
                paste0("^", escape_regex(string))
            })
       , list(type = "trim_begins"
            , docs = "Match pattern string as it is in the beginning of the target vector ignoring preceding white-spaces"
-           , func = \(string, escape_fixed) {
+           , func = function(string, escape_fixed) {
                paste0("^\\s*", escape_regex(string))
            })
       , list(type = "ends"
            , docs = "Match pattern string as it is in the end of the target vector"
-           , func = \(string, escape_fixed) {
+           , func = function(string, escape_fixed) {
                paste0(escape_regex(string), "$")
            })
       , list(type = "trim_ends"
            , docs = "Match pattern string as it is in the end of the target vector ignoring leading white-spaces"
-           , func = \(string, escape_fixed) {
+           , func = function(string, escape_fixed) {
                paste0(escape_regex(string), "\\s*$")
            })
       , list(type = "exact"
            , docs = "Match pattern string exactly (i.e., match equal strings)"
-           , func = \(string, escape_fixed) {
+           , func = function(string, escape_fixed) {
                if(escape_fixed) paste0("^", escape_regex(string), "$")
                else string
            })
       , list(type = "trim_exact"
            , docs = "Match pattern string exactly (i.e., match equal strings) ignoring surrounding white-spaces"
-           , func = \(string, escape_fixed) {
+           , func = function(string, escape_fixed) {
                if(escape_fixed) paste0("^\\s*", escape_regex(string), "\\s*$")
                else stringi::stri_trim_both(string)
            })
       , list(type = "regex"
            , docs = "Match regex pattern"
-           , func = \(string, escape_fixed) {
+           , func = function(string, escape_fixed) {
                string
            }))
     if(return_docs) {
