@@ -72,7 +72,7 @@ escape_regex_for_type <- function(string
                string
            }))
     if(return_docs) {
-        return(sapply(types_specs, \(x) paste("* ", x$type, " - ", x$docs)))
+        return(sapply(types_specs, function(x) paste("* ", x$type, " - ", x$docs)))
     }
     if(return_choices) {
         return(sapply(types_specs, `[[`, "type"))
@@ -102,7 +102,7 @@ escape_regex_for_types <- function(patterns, types, escape_fixed = FALSE) {
         escape_regex_for_type(patterns, type, escape_fixed = escape_fixed)
     } else {
         checkmate::assert_subset(types, choices, fmatch = TRUE)
-        mapply(\(p, t) escape_regex_for_type(p, t, escape_fixed = TRUE)
+        mapply(function(p, t) escape_regex_for_type(p, t, escape_fixed = TRUE)
              , patterns , types
              , SIMPLIFY = TRUE)
     }
