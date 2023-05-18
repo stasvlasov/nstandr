@@ -221,8 +221,8 @@ There packages are used for developing and building `nstandr`
 
 Useful packages for development
 
-| names | version | comment                                                                               |
-|-------|---------|---------------------------------------------------------------------------------------|
-| R     | 3.5.0   | serialized objects in serialize/load version 3 cannot be read in older versions of R. |
+| names | version | comment |
+|-------|---------|---------|
+| R     | 4.2.0   |         |
 
 Hard dependencies (DEPENDS field in DESCRIPTION)

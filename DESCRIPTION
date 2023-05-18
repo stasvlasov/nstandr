@@ -1,7 +1,7 @@
 Package: nstandr
 Title: Name Standardization in R
 Version: 0.0.0.9000
-Date: 2023-04-28
+Date: 2023-05-18
 Authors@R: 
     person("Stas", "Vlasov", , "s.vlasov@uvt.nl", role = c("aut", "cre"))
 Description: (Organizational) Names STANDardization in R. Reproduces
@@ -9,7 +9,7 @@ Description: (Organizational) Names STANDardization in R. Reproduces
     Cockburn et al. (2009), Wasi & Flaaen (2015) and more.
 License: MIT + file LICENSE
 Depends: 
-    R (>= 3.5.0)
+    R (>= 4.2.0)
 Imports: 
     checkmate,
     data.table,
@@ -22,4 +22,4 @@ Suggests:
     tinytest
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
