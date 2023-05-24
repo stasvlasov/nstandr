@@ -3,12 +3,11 @@
 ##' @param x string to test
 ##' @return boolean
 is_empty <- function(x) {
-    if(is.null(x) || is.na(x) || isTRUE(is.character(x) && x == ""))
+    if(isTRUE(is.null(x)) || isTRUE(is.na(x)) || isTRUE(is.character(x) && x == ""))
         TRUE
     else
         FALSE
 }
-
 
 ##' Makes TR TD record for dot node TABLE
 ##' 
@@ -59,21 +58,18 @@ paste_dot_node <- function(procedure, id
                         , procedure_attr_prefix = "nstandr_procedure_") {
     procedure_name <- as.character(procedure[[1]])
     obj <- get0(procedure_name, ifnotfound = NULL)
-    att <- list()
-    att_to_get <- c("title"
-                  , "example"
-                  , "ref"
-                  , "pp")
-    if(!is.null(obj)) {
-        ## bind procedure description attribures
-        within(att
-             , for(tag in att_to_get) {
-                   if(requireNamespace("htmltools", quietly=TRUE)) {
-                       assign(tag, attr(obj, paste0(procedure_attr_prefix, tag)) |> htmltools::htmlEscape())
-                   } else {
-                       assign(tag, attr(obj, paste0(procedure_attr_prefix, tag)))
-                   }
-               })
+    if(!is.null(obj) && !is_empty(att <- attributes(obj))) {
+        att <- att[paste0(procedure_attr_prefix,
+                          c('title'
+                          , 'example'
+                          , 'ref'
+                          , 'pp'))]
+        names(att) <- sub(procedure_attr_prefix, "", names(att), fixed = TRUE)
+        if(requireNamespace("htmltools", quietly=TRUE)) {
+            att <- lapply(att, htmltools::htmlEscape)
+        }
+    } else {
+        att <- NULL
     }
     paste0("node_", id, " [label = " , 
            c('<<TABLE BGCOLOR="', node_bg_color, '" BORDER="0" CELLBORDER="1" CELLSPACING="0">'

@@ -4165,12 +4165,11 @@ The default standardization procedures are the following (for now):
   ##' @param x string to test
   ##' @return boolean
   is_empty <- function(x) {
-      if(is.null(x) || is.na(x) || isTRUE(is.character(x) && x == ""))
+      if(isTRUE(is.null(x)) || isTRUE(is.na(x)) || isTRUE(is.character(x) && x == ""))
           TRUE
       else
           FALSE
   }
-
 
   ##' Makes TR TD record for dot node TABLE
   ##' 
@@ -4221,21 +4220,18 @@ The default standardization procedures are the following (for now):
                           , procedure_attr_prefix = "nstandr_procedure_") {
       procedure_name <- as.character(procedure[[1]])
       obj <- get0(procedure_name, ifnotfound = NULL)
-      att <- list()
-      att_to_get <- c("title"
-                    , "example"
-                    , "ref"
-                    , "pp")
-      if(!is.null(obj)) {
-          ## bind procedure description attribures
-          within(att
-               , for(tag in att_to_get) {
-                     if(requireNamespace("htmltools", quietly=TRUE)) {
-                         assign(tag, attr(obj, paste0(procedure_attr_prefix, tag)) |> htmltools::htmlEscape())
-                     } else {
-                         assign(tag, attr(obj, paste0(procedure_attr_prefix, tag)))
-                     }
-                 })
+      if(!is.null(obj) && !is_empty(att <- attributes(obj))) {
+          att <- att[paste0(procedure_attr_prefix,
+                            c('title'
+                            , 'example'
+                            , 'ref'
+                            , 'pp'))]
+          names(att) <- sub(procedure_attr_prefix, "", names(att), fixed = TRUE)
+          if(requireNamespace("htmltools", quietly=TRUE)) {
+              att <- lapply(att, htmltools::htmlEscape)
+          }
+      } else {
+          att <- NULL
       }
       paste0("node_", id, " [label = " , 
              c('<<TABLE BGCOLOR="', node_bg_color, '" BORDER="0" CELLBORDER="1" CELLSPACING="0">'
@@ -4503,6 +4499,16 @@ The default standardization procedures are the following (for now):
     , "node_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\"><FONT FACE=\"Courier\">name_standardization_procedure</FONT></TD></TR><TR><TD><FONT FACE=\"Courier\">(arg1 = 1, arg2 = 2)</FONT></TD></TR></TABLE>>];"
   )
 
+  ## test examples
+  expect_equal(
+      paste_dot_node("magerman_remove_double_spaces", 1, add_example = TRUE)
+
+    , "node_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Removes double spaces</TD></TR><TR><TD><I>'  ' -&gt; ' '</I></TD></TR></TABLE>>];")
+
+
+
+
+
 
 
   procedures_list <- list(
@@ -4706,6 +4712,13 @@ The default standardization procedures are the following (for now):
   "</svg>"))
   }
 
+  ## test examples
+  expect_equal(
+
+      make_dot_graph(nstandr:::nstandr_magerman_procedures_list)
+
+    , "digraph nstantr_procedures {\n  compound=true;\n  node [shape = plain, fontname = Helvetica]\n  subgraph cluster_1 {\n      label=\"Prepossessing\";\n      bgcolor=\"#ecf0f1\";\n      fontname=\"Helvetica\"\n      node_1_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Upper casing</TD></TR></TABLE>>];\n      node_1_2 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Cleaning spaces</TD></TR></TABLE>>];\n  }\n  subgraph cluster_2 {\n      label=\"Characters\";\n      bgcolor=\"#ecf0f1\";\n      fontname=\"Helvetica\"\n      node_2_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Removing HTML codes</TD></TR><TR><TD><I>`&lt;BR&gt;` -&gt; ' '</I></TD></TR></TABLE>>];\n      node_2_2 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Cleaning spaces (2)</TD></TR></TABLE>>];\n      node_2_3 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Replacing SGML coded characters</TD></TR><TR><TD><I>&amp;AMP;EXCL; -&gt; !</I></TD></TR></TABLE>>];\n      node_2_4 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Replacing proprietary characters</TD></TR><TR><TD><I>{UMLAUT OVER (A)} -&gt; Ä</I></TD></TR></TABLE>>];\n      node_2_5 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Detecting Umlauts</TD></TR><TR><TD><I>GLÜHLAMPEN -&gt; GLUEHLAMPEN</I></TD></TR></TABLE>>];\n      node_2_6 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Replacing accented characters</TD></TR><TR><TD><I>Æ -&gt; AE</I></TD></TR></TABLE>>];\n  }\n  subgraph cluster_3 {\n      label=\"Punctuation\";\n      bgcolor=\"#ecf0f1\";\n      fontname=\"Helvetica\"\n      node_3_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Removing special characters</TD></TR><TR><TD><I>'©%^_' -&gt; ' '</I></TD></TR></TABLE>>];\n      node_3_2 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Fixing quotation irregularities</TD></TR><TR><TD><I>\"\"IBM\" -&gt; \"IBM\"</I></TD></TR></TABLE>>];\n      node_3_3 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Removing double quotations</TD></TR><TR><TD><I>\"\"IBM Co.\"\" -&gt; IBM Co.</I></TD></TR></TABLE>>];\n      node_3_4 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Removing non alphanumeric characters (1)</TD></TR><TR><TD><I>.IBM Co. -&gt; IBM Co.</I></TD></TR></TABLE>>];\n      node_3_5 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Removing non alphanumeric characters (2)</TD></TR><TR><TD><I>IBM Co., DITE : -&gt; IBM Co.</I></TD></TR></TABLE>>];\n      node_3_6 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Fixing comma and period irregularities</TD></TR><TR><TD><I>' CO.,INC.' -&gt; ' CO., INC.'</I></TD></TR></TABLE>>];\n  }\n  subgraph cluster_4 {\n      label=\"Legal forms\";\n      bgcolor=\"#ecf0f1\";\n      fontname=\"Helvetica\"\n      node_4_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Detecting legal form</TD></TR></TABLE>>];\n      node_4_2 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Removing legal form</TD></TR><TR><TD><I>IBM INC. -&gt; IBM</I></TD></TR></TABLE>>];\n  }\n  subgraph cluster_5 {\n      label=\"Common words\";\n      bgcolor=\"#ecf0f1\";\n      fontname=\"Helvetica\"\n      node_5_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Removing common words</TD></TR><TR><TD><I>3COM CORPORATION -&gt; 3COM</I></TD></TR></TABLE>>];\n      node_5_2 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Fixing spelling variations</TD></TR><TR><TD><I>INTERNATIONALE -&gt; INTERNATIONAL</I></TD></TR></TABLE>>];\n      node_5_3 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Condensing</TD></TR><TR><TD><I>3 COM -&gt; 3COM</I></TD></TR></TABLE>>];\n  }\n  subgraph cluster_6 {\n      label=\"Umlaut standardization\";\n      bgcolor=\"#ecf0f1\";\n      fontname=\"Helvetica\"\n      node_6_1 [label = <<TABLE BGCOLOR=\"white\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#bdc3c7\">Fixing umlaut variations</TD></TR><TR><TD><I>GLÜHLAMPEN -&gt; GLUEHLAMPEN</I></TD></TR></TABLE>>];\n  }\n  // cluster_1\n    node_1_1 -> node_1_2 [];\n  node_1_2 -> node_2_1 [lhead = \"cluster_2\"];\n  // cluster_2\n    node_2_1 -> node_2_2 [];\n    node_2_2 -> node_2_3 [];\n    node_2_3 -> node_2_4 [];\n    node_2_4 -> node_2_5 [];\n    node_2_5 -> node_2_6 [];\n  node_2_6 -> node_3_1 [lhead = \"cluster_3\"];\n  // cluster_3\n    node_3_1 -> node_3_2 [];\n    node_3_2 -> node_3_3 [];\n    node_3_3 -> node_3_4 [];\n    node_3_4 -> node_3_5 [];\n    node_3_5 -> node_3_6 [];\n  node_3_6 -> node_4_1 [lhead = \"cluster_4\"];\n  // cluster_4\n    node_4_1 -> node_4_2 [];\n  node_4_2 -> node_5_1 [lhead = \"cluster_5\"];\n  // cluster_5\n    node_5_1 -> node_5_2 [];\n    node_5_2 -> node_5_3 [];\n  node_5_3 -> node_6_1 [lhead = \"cluster_6\"];\n  // cluster_6\n    \n}"
+  )
 #+END_SRC
 
 * Magerman, et al. (2006) - Standardization Procedure
@@ -7516,7 +7529,6 @@ Table: Umlaut harmonization replacements
      , "Umlaut standardization" =
            list("Fixing umlaut variations" = call('magerman_replace_umlaut', has_umlaut_col = 'magerman_umlaut', progress = FALSE)))
 #+END_SRC
-
 
 #+name: save_as_png_magerman_procedures_list
 #+BEGIN_SRC R :results replace raw
