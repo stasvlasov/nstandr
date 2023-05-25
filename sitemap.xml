@@ -1,309 +1,309 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/index.html</loc>
   </url>
   <url>
-    <loc>/reference/browse_dot_graph.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/browse_dot_graph.html</loc>
   </url>
   <url>
-    <loc>/reference/check_rows.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/check_rows.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_combabbrev.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_combabbrev.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_detect_corp.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_detect_corp.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_detect_govt.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_detect_govt.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_detect_hosp.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_detect_hosp.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_detect_indiv.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_detect_indiv.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_detect_inst.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_detect_inst.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_detect_inst_conds.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_detect_inst_conds.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_detect_inst_conds_1.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_detect_inst_conds_1.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_detect_inst_conds_2.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_detect_inst_conds_2.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_detect_inst_german.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_detect_inst_german.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_detect_type.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_detect_type.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_detect_univ.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_detect_univ.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_detect_uspto.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_detect_uspto.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_remove_standard_names.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_remove_standard_names.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_remove_uspto.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_remove_uspto.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_replace_compustat.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_replace_compustat.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_replace_compustat_names.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_replace_compustat_names.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_replace_derwent.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_replace_derwent.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_replace_govt.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_replace_govt.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_replace_punctuation.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_replace_punctuation.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_replace_standard_names.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_replace_standard_names.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_replace_type.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_replace_type.html</loc>
   </url>
   <url>
-    <loc>/reference/cockburn_replace_univ.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/cockburn_replace_univ.html</loc>
   </url>
   <url>
-    <loc>/reference/defactor.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/defactor.html</loc>
   </url>
   <url>
-    <loc>/reference/defactor_vector.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/defactor_vector.html</loc>
   </url>
   <url>
-    <loc>/reference/detect_legal_form.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/detect_legal_form.html</loc>
   </url>
   <url>
-    <loc>/reference/detect_patterns.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/detect_patterns.html</loc>
   </url>
   <url>
-    <loc>/reference/escape_regex.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/escape_regex.html</loc>
   </url>
   <url>
-    <loc>/reference/escape_regex_for_type.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/escape_regex_for_type.html</loc>
   </url>
   <url>
-    <loc>/reference/escape_regex_for_types.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/escape_regex_for_types.html</loc>
   </url>
   <url>
-    <loc>/reference/get_dots.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/get_dots.html</loc>
   </url>
   <url>
-    <loc>/reference/get_standardize_options.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/get_standardize_options.html</loc>
   </url>
   <url>
-    <loc>/reference/get_target.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/get_target.html</loc>
   </url>
   <url>
-    <loc>/reference/get_vector.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/get_vector.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/inset_target.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/inset_target.html</loc>
   </url>
   <url>
-    <loc>/reference/is_empty.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/is_empty.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_condense.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_condense.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_detect_characters.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_detect_characters.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_detect_comma_period_irregularities.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_detect_comma_period_irregularities.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_detect_legal_form.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_detect_legal_form.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_detect_legal_form_beginning.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_detect_legal_form_beginning.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_detect_legal_form_end.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_detect_legal_form_end.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_detect_legal_form_middle.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_detect_legal_form_middle.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_detect_umlaut.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_detect_umlaut.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_common_words.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_common_words.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_common_words_anywhere.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_common_words_anywhere.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_common_words_at_the_beginning.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_common_words_at_the_beginning.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_common_words_at_the_end.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_common_words_at_the_end.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_double_quotation_marks_beginning_end.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_double_quotation_marks_beginning_end.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_double_quotation_marks_irregularities.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_double_quotation_marks_irregularities.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_double_spaces.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_double_spaces.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_html_codes.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_html_codes.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_legal_form.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_legal_form.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_legal_form_and_clean.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_legal_form_and_clean.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_non_alphanumeric_at_the_beginning.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_non_alphanumeric_at_the_beginning.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_non_alphanumeric_at_the_end.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_non_alphanumeric_at_the_end.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_remove_special_characters.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_remove_special_characters.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_replace_accented_characters.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_replace_accented_characters.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_replace_comma_period_irregularities.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_replace_comma_period_irregularities.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_replace_comma_period_irregularities_all.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_replace_comma_period_irregularities_all.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_replace_legal_form_beginning.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_replace_legal_form_beginning.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_replace_legal_form_end.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_replace_legal_form_end.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_replace_legal_form_middle.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_replace_legal_form_middle.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_replace_proprietary_characters.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_replace_proprietary_characters.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_replace_sgml_characters.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_replace_sgml_characters.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_replace_spelling_variation.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_replace_spelling_variation.html</loc>
   </url>
   <url>
-    <loc>/reference/magerman_replace_umlaut.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/magerman_replace_umlaut.html</loc>
   </url>
   <url>
-    <loc>/reference/make_dot_edges.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/make_dot_edges.html</loc>
   </url>
   <url>
-    <loc>/reference/make_dot_graph.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/make_dot_graph.html</loc>
   </url>
   <url>
-    <loc>/reference/make_dot_nodes.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/make_dot_nodes.html</loc>
   </url>
   <url>
-    <loc>/reference/nstandr-package.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/nstandr-package.html</loc>
   </url>
   <url>
-    <loc>/reference/paste_dot_node.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/paste_dot_node.html</loc>
   </url>
   <url>
-    <loc>/reference/paste_dot_node_tr_td.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/paste_dot_node_tr_td.html</loc>
   </url>
   <url>
-    <loc>/reference/replace_patterns.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/replace_patterns.html</loc>
   </url>
   <url>
-    <loc>/reference/save_dot_graph_as.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/save_dot_graph_as.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_cockburn.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_cockburn.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_dehtmlize.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_dehtmlize.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_detect_enc.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_detect_enc.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_is_data_empty.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_is_data_empty.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_magerman.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_magerman.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_make_procedures_list.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_make_procedures_list.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_omit_empty.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_omit_empty.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_options.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_options.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_remove_brackets.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_remove_brackets.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_remove_quotes.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_remove_quotes.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_squish_spaces.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_squish_spaces.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_toascii.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_toascii.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_toupper.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_toupper.html</loc>
   </url>
   <url>
-    <loc>/reference/standardize_x_split.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/standardize_x_split.html</loc>
   </url>
   <url>
-    <loc>/reference/unlist_if_possible.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/unlist_if_possible.html</loc>
   </url>
   <url>
-    <loc>/reference/visualize.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/visualize.html</loc>
   </url>
   <url>
-    <loc>/reference/x_length.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/x_length.html</loc>
   </url>
   <url>
-    <loc>/reference/x_width.html</loc>
+    <loc>https://stasvlasov.github.io/nstandr/reference/x_width.html</loc>
   </url>
 </urlset>
