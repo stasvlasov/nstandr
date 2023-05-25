@@ -4,9 +4,11 @@
 [![codecov](https://codecov.io/gh/stasvlasov/nstandr/branch/master/graph/badge.svg?token=OQVJ7NRXO5)](https://codecov.io/gh/stasvlasov/nstandr)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/stasvlasov/nstandr)
 
-(Organizational) Names STANDardization in R. Reproduces procedures
-described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et
-al. (2009), Wasi & Flaaen (2015) and more.
+A package that does (Organizational) Names STANDardization in R.
+
+`nstandr` reproduces procedures described in Thoma et al. (2010),
+Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015) and
+more.
 
 ## Installation
 
@@ -189,40 +191,46 @@ Preprocessing, linking, and reviewing utilities. The Stata Journal,
 15(3), 672-697. Retrieved from
 <https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf>
 
-# Dependencies
+## Dependencies
+
+| name                            | version | comment                                   |
+|---------------------------------|---------|-------------------------------------------|
+| [R](https://www.r-project.org/) | 4.2.0   | minimum R version to enable native piping |
+
+Hard dependencies (`Depends` field in `DESCRIPTION` file)
+
+### Required packages
+
+| name                                                   | version | comment                                                   |
+|--------------------------------------------------------|---------|-----------------------------------------------------------|
+| [data.table](https://rdatatable.gitlab.io/data.table/) |         | fast data.frames, used as main input and output data type |
+| [stringi](https://stringi.gagolewski.com/)             |         | fast string manipulations                                 |
+| [xml2](https://xml2.r-lib.org/)                        |         | cleaning web syntax                                       |
+| [checkmate](https://mllg.github.io/checkmate/)         |         | function arguments checker, ensures stability             |
+
+Required packages (`Imports` field in the `DESCRIPTION` file)
+
+### Suggested packages
 
 | name                                                                            | version | comment                                                                |
 |---------------------------------------------------------------------------------|---------|------------------------------------------------------------------------|
-| [tinytest](https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md) |         | package developlent (unit testing)                                     |
-| [fastmatch](https://cran.r-project.org/web/packages/fastmatch/index.html)       |         | can speed things up a bit                                              |
-| [htmltools](https://rstudio.github.io/htmltools/index.html)                     |         | used for escaping html in procedures desctiptions before visualization |
+| [tinytest](https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md) |         | package development (unit testing)                                     |
+| [fastmatch](https://cran.r-project.org/web/packages/fastmatch/index.html)       |         | can speed things up                                                    |
+| [htmltools](https://rstudio.github.io/htmltools/index.html)                     |         | used for escaping html in procedures descriptions before visualization |
 | [DiagrammeR](http://rich-iannone.github.io/DiagrammeR/docs.html)                |         | needed for visualizing procedures lists                                |
 
-Suggested packages
+Suggested packages (`Suggests` field in the `DESCRIPTION` file)
 
-| name       | version | comment                                                   |
-|------------|---------|-----------------------------------------------------------|
-| data.table |         | fast data.frames, used as main input and output data type |
-| stringi    |         | fast string manipulations                                 |
-| xml2       |         |                                                           |
-| checkmate  |         | function arguments checker, ensures stability             |
+### Development dependencies and tools
 
-Required packages (Imports)
+These packages are used for developing and building `nstandr`
 
-There packages are used for developing and building `nstandr`
-
-| names                                              | version | comment                       |
-|----------------------------------------------------|---------|-------------------------------|
-| devtools                                           |         | builds                        |
-| roxygen2                                           |         | makes docs                    |
-| languageserver                                     |         | provides some IDE consistensy |
-| [boomer](https://moodymudskipper.github.io/boomer) |         | for debugging                 |
-| usethis                                            |         | utils                         |
+| name                                                               | version | comment                       |
+|--------------------------------------------------------------------|---------|-------------------------------|
+| [devtools](https://devtools.r-lib.org/)                            |         | builds the package            |
+| [roxygen2](https://roxygen2.r-lib.org/)                            |         | makes docs                    |
+| [languageserver](https://github.com/REditorSupport/languageserver) |         | provides some IDE consistency |
+| [usethis](https://usethis.r-lib.org/)                              |         | repo utils                    |
+| [boomer](https://moodymudskipper.github.io/boomer)                 |         | can be used for debugging     |
 
 Useful packages for development
-
-| names | version | comment |
-|-------|---------|---------|
-| R     | 4.2.0   |         |
-
-Hard dependencies (DEPENDS field in DESCRIPTION)

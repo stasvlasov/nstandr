@@ -34,8 +34,9 @@
 #+end_src
 
 #+RESULTS: r-pkg-description
-(Organizational) Names STANDardization in R. Reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015) and more.
+A package that does (Organizational) Names STANDardization in R.
 
+=nstandr= reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015) and more.
 
 *** Installation
 
@@ -196,50 +197,56 @@ Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., & Harhoff, D.
 
 Wasi, N., & Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. The Stata Journal, 15(3), 672-697. Retrieved from https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf
 
+*** Dependencies
 
-** Dependencies
+#+caption: Hard dependencies (=Depends= field in =DESCRIPTION= file)
+#+name: ob-r-pkg-table-depends
+| name  | version | comment                                   |
+|-------+---------+-------------------------------------------|
+| [[https://www.r-project.org/][R]]     |   4.2.0 | minimum R version to enable native piping |
 
-#+caption: Suggested packages
-#+name: ob-r-pkg-table-suggests
-| name       | version | comment                                                                |
-|------------+---------+------------------------------------------------------------------------|
-| [[https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md][tinytest]]   |         | package developlent (unit testing)                                     |
-| [[https://cran.r-project.org/web/packages/fastmatch/index.html][fastmatch]]  |         | can speed things up a bit                                              |
-| [[https://rstudio.github.io/htmltools/index.html][htmltools]]  |         | used for escaping html in procedures desctiptions before visualization |
-| [[http://rich-iannone.github.io/DiagrammeR/docs.html][DiagrammeR]] |         | needed for visualizing procedures lists                                |
-#+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
-
-
-#+caption: Required packages (Imports)
+**** Required packages
+#+caption: Required packages (=Imports= field in the =DESCRIPTION= file)
 #+name: ob-r-pkg-table-imports
 | name       | version | comment                                                   |
 |------------+---------+-----------------------------------------------------------|
-| data.table |         | fast data.frames, used as main input and output data type |
-| stringi    |         | fast string manipulations                                 |
-| xml2       |         |                                                           |
-| checkmate  |         | function arguments checker, ensures stability             |
+| [[https://rdatatable.gitlab.io/data.table/][data.table]] |         | fast data.frames, used as main input and output data type |
+| [[https://stringi.gagolewski.com/][stringi]]    |         | fast string manipulations                                 |
+| [[https://xml2.r-lib.org/][xml2]]       |         | cleaning web syntax                                       |
+| [[https://mllg.github.io/checkmate/][checkmate]]  |         | function arguments checker, ensures stability             |
 #+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
 
+**** Suggested packages
 
-There packages are used for developing and building ~nstandr~
+#+caption: Suggested packages (=Suggests= field in the =DESCRIPTION= file)
+#+name: ob-r-pkg-table-suggests
+| name       | version | comment                                                                |
+|------------+---------+------------------------------------------------------------------------|
+| [[https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md][tinytest]]   |         | package development (unit testing)                                     |
+| [[https://cran.r-project.org/web/packages/fastmatch/index.html][fastmatch]]  |         | can speed things up                                                    |
+| [[https://rstudio.github.io/htmltools/index.html][htmltools]]  |         | used for escaping html in procedures descriptions before visualization |
+| [[http://rich-iannone.github.io/DiagrammeR/docs.html][DiagrammeR]] |         | needed for visualizing procedures lists                                |
+#+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
+
+**** Development dependencies and tools
+These packages are used for developing and building ~nstandr~
 
 #+caption: Useful packages for development
 #+name: ob-r-pkg-table-suggests-dev
-| names          | version | comment                       |
+| name           | version | comment                       |
 |----------------+---------+-------------------------------|
-| devtools       |         | builds                        |
-| roxygen2       |         | makes docs                    |
-| languageserver |         | provides some IDE consistensy |
-| [[https://moodymudskipper.github.io/boomer][boomer]]         |         | for debugging                 |
-| usethis        |         | utils                         |
+| [[https://devtools.r-lib.org/][devtools]]       |         | builds the package            |
+| [[https://roxygen2.r-lib.org/][roxygen2]]       |         | makes docs                    |
+| [[https://github.com/REditorSupport/languageserver][languageserver]] |         | provides some IDE consistency |
+| [[https://usethis.r-lib.org/][usethis]]        |         | repo utils                    |
+| [[https://moodymudskipper.github.io/boomer][boomer]]         |         | can be used for debugging     |
 #+TBLFM: $2='(org-sbe get-package-vesion (pkg $$1))
 
 
-#+caption: Hard dependencies (DEPENDS field in DESCRIPTION)
-#+name: ob-r-pkg-table-depends
-| names | version | comment |
-|-------+---------+---------|
-| R     |   4.2.0 |         |
+
+
+
+
 
 
 * Citing
