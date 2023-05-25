@@ -517,11 +517,11 @@ add_attr(magerman_detect_legal_form
        , .ref = "magerman2006")
 
 
-  ##' @title Detect legal form
-  ##' @inherit magerman_detect_legal_form
-  ##' @export
-  ##' @aliases magerman_detect_legal_form
-  detect_legal_form <- magerman_detect_legal_form
+##' @title Detect legal form
+##' @inherit magerman_detect_legal_form
+##' @inheritDotParams standardize_options
+##' @export
+detect_legal_form <- magerman_detect_legal_form
 
 
 
