@@ -1,9 +1,9 @@
 #+title: Name Standardization in R
 #+author: Stas Vlasov
 #+email: s.vlasov@uvt.nl
-#+r_package_version: 0.0.0.9000
-#+r_package_url: https://stasvlasov.github.io/nstandr/
-#+r_package_bug_reports: https://github.com/stasvlasov/nstandr/issues
+#+r-pkg-version: 0.0.0.9000
+#+r-pkg-url: https://stasvlasov.github.io/nstandr/
+#+r-pkg-bug-reports: https://github.com/stasvlasov/nstandr/issues
 
 #+PROPERTY: header-args:R  :comments link :session :mkdirp yes :padline yes
 # - Reference from [[associate-id:org:29i4s7t0y5i0][nstandr R package]] on [2021-06-05 Sat 22:51]

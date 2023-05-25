@@ -11,6 +11,14 @@
 \details{
 (Organizational) Names STANDardization in R. Reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi & Flaaen (2015) and more.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://stasvlasov.github.io/nstandr/}
+  \item Report bugs at \url{https://github.com/stasvlasov/nstandr/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Stas Vlasov \email{s.vlasov@uvt.nl}
 
