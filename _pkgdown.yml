@@ -1,6 +1,8 @@
+url: https://stasvlasov.github.io/nstandr
 template:
   bootstrap: 5
   bootswatch: spacelab
   theme: solarized
-  navbar:
-    bg: primary
+navbar:
+  bg: primary
+
