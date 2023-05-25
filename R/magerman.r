@@ -517,6 +517,15 @@ add_attr(magerman_detect_legal_form
        , .ref = "magerman2006")
 
 
+  ##' @title Detect legal form
+  ##' @inherit magerman_detect_legal_form
+  ##' @export
+  ##' @aliases magerman_detect_legal_form
+  detect_legal_form <- magerman_detect_legal_form
+
+
+
+
 ##' @eval make_roxy_tags(magerman_remove_legal_form)
 ##' @param x table
 ##' @inheritDotParams standardize_options
