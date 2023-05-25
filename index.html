@@ -65,7 +65,8 @@
 <div class="page-header"><h1 id="nstandr-">nstandr <img src="img/logo.png" align="right" alt="" width="120"><a class="anchor" aria-label="anchor" href="#nstandr-"></a>
 </h1></div>
 <p><a href="https://github.com/stasvlasov/nstandr/actions" class="external-link"><img src="https://github.com/stasvlasov/nstandr/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a> <a href="https://codecov.io/gh/stasvlasov/nstandr" class="external-link"><img src="https://codecov.io/gh/stasvlasov/nstandr/branch/master/graph/badge.svg?token=OQVJ7NRXO5" alt="codecov"></a> <img src="https://img.shields.io/github/languages/code-size/stasvlasov/nstandr" alt="GitHub code size in bytes"></p>
-<p>(Organizational) Names STANDardization in R. Reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi &amp; Flaaen (2015) and more.</p>
+<p>A package that does (Organizational) Names STANDardization in R.</p>
+<p><code>nstandr</code> reproduces procedures described in Thoma et al. (2010), Magerman et al. (2006), Cockburn et al. (2009), Wasi &amp; Flaaen (2015) and more.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -223,10 +224,69 @@
 <p>Magerman, T., Looy, V., Bart, &amp; Song, X. (2006). <em>Data Production Methods for Harmonized Patent Statistics: Patentee Name Standardization</em> (SSRN Scholarly Paper No. ID 944470). Rochester, NY: Social Science Research Network. Retrieved from <a href="http://papers.ssrn.com/abstract=944470" class="external-link uri">http://papers.ssrn.com/abstract=944470</a></p>
 <p>Thoma, G., Torrisi, S., Gambardella, A., Guellec, D., Hall, B. H., &amp; Harhoff, D. (2010). Harmonizing and combining large datasets - an application to firm-level patent and accounting data. <em>National Bureau of Economic Research Working Paper Series</em>, (15851). Retrieved from <a href="http://www.nber.org/papers/w15851" class="external-link uri">http://www.nber.org/papers/w15851</a> <a href="http://www.nber.org/papers/w15851.pdf" class="external-link uri">http://www.nber.org/papers/w15851.pdf</a></p>
 <p>Wasi, N., &amp; Flaaen, A. (2015). Record linkage using Stata: Preprocessing, linking, and reviewing utilities. The Stata Journal, 15(3), 672-697. Retrieved from <a href="https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf" class="external-link uri">https://ebp-projects.isr.umich.edu/NCRN/papers/wasi_flaaen_statarecordlinkageutilities.pdf</a></p>
+<div class="section level2">
+<h2 id="dependencies">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="38%">
+<col width="10%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>name</th>
+<th>version</th>
+<th>comment</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td><a href="https://www.r-project.org/" class="external-link">R</a></td>
+<td>4.2.0</td>
+<td>minimum R version to enable native piping</td>
+</tr></tbody>
+</table>
+<p>Hard dependencies (<code>Depends</code> field in <code>DESCRIPTION</code> file)</p>
+<div class="section level3">
+<h3 id="required-packages">Required packages<a class="anchor" aria-label="anchor" href="#required-packages"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="45%">
+<col width="7%">
+<col width="47%">
+</colgroup>
+<thead><tr class="header">
+<th>name</th>
+<th>version</th>
+<th>comment</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://rdatatable.gitlab.io/data.table/" class="external-link">data.table</a></td>
+<td></td>
+<td>fast data.frames, used as main input and output data type</td>
+</tr>
+<tr class="even">
+<td><a href="https://stringi.gagolewski.com/" class="external-link">stringi</a></td>
+<td></td>
+<td>fast string manipulations</td>
+</tr>
+<tr class="odd">
+<td><a href="https://xml2.r-lib.org/" class="external-link">xml2</a></td>
+<td></td>
+<td>cleaning web syntax</td>
+</tr>
+<tr class="even">
+<td><a href="https://mllg.github.io/checkmate/" class="external-link">checkmate</a></td>
+<td></td>
+<td>function arguments checker, ensures stability</td>
+</tr>
+</tbody>
+</table>
+<p>Required packages (<code>Imports</code> field in the <code>DESCRIPTION</code> file)</p>
 </div>
-<div class="section level1">
-<h1 id="dependencies">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies"></a>
-</h1>
+<div class="section level3">
+<h3 id="suggested-packages">Suggested packages<a class="anchor" aria-label="anchor" href="#suggested-packages"></a>
+</h3>
 <table class="table">
 <colgroup>
 <col width="50%">
@@ -242,17 +302,17 @@
 <tr class="odd">
 <td><a href="https://github.com/markvanderloo/tinytest/blob/master/pkg/README.md" class="external-link">tinytest</a></td>
 <td></td>
-<td>package developlent (unit testing)</td>
+<td>package development (unit testing)</td>
 </tr>
 <tr class="even">
 <td><a href="https://cran.r-project.org/web/packages/fastmatch/index.html" class="external-link">fastmatch</a></td>
 <td></td>
-<td>can speed things up a bit</td>
+<td>can speed things up</td>
 </tr>
 <tr class="odd">
 <td><a href="https://rstudio.github.io/htmltools/index.html" class="external-link">htmltools</a></td>
 <td></td>
-<td>used for escaping html in procedures desctiptions before visualization</td>
+<td>used for escaping html in procedures descriptions before visualization</td>
 </tr>
 <tr class="even">
 <td><a href="http://rich-iannone.github.io/DiagrammeR/docs.html" class="external-link">DiagrammeR</a></td>
@@ -261,12 +321,17 @@
 </tr>
 </tbody>
 </table>
-<p>Suggested packages</p>
+<p>Suggested packages (<code>Suggests</code> field in the <code>DESCRIPTION</code> file)</p>
+</div>
+<div class="section level3">
+<h3 id="development-dependencies-and-tools">Development dependencies and tools<a class="anchor" aria-label="anchor" href="#development-dependencies-and-tools"></a>
+</h3>
+<p>These packages are used for developing and building <code>nstandr</code></p>
 <table class="table">
 <colgroup>
-<col width="15%">
-<col width="11%">
-<col width="73%">
+<col width="62%">
+<col width="8%">
+<col width="28%">
 </colgroup>
 <thead><tr class="header">
 <th>name</th>
@@ -275,82 +340,35 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>data.table</td>
+<td><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></td>
 <td></td>
-<td>fast data.frames, used as main input and output data type</td>
+<td>builds the package</td>
 </tr>
 <tr class="even">
-<td>stringi</td>
-<td></td>
-<td>fast string manipulations</td>
-</tr>
-<tr class="odd">
-<td>xml2</td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>checkmate</td>
-<td></td>
-<td>function arguments checker, ensures stability</td>
-</tr>
-</tbody>
-</table>
-<p>Required packages (Imports)</p>
-<p>There packages are used for developing and building <code>nstandr</code></p>
-<table class="table">
-<colgroup>
-<col width="56%">
-<col width="9%">
-<col width="33%">
-</colgroup>
-<thead><tr class="header">
-<th>names</th>
-<th>version</th>
-<th>comment</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td>devtools</td>
-<td></td>
-<td>builds</td>
-</tr>
-<tr class="even">
-<td>roxygen2</td>
+<td><a href="https://roxygen2.r-lib.org/" class="external-link">roxygen2</a></td>
 <td></td>
 <td>makes docs</td>
 </tr>
 <tr class="odd">
-<td>languageserver</td>
+<td><a href="https://github.com/REditorSupport/languageserver" class="external-link">languageserver</a></td>
 <td></td>
-<td>provides some IDE consistensy</td>
+<td>provides some IDE consistency</td>
 </tr>
 <tr class="even">
-<td><a href="https://moodymudskipper.github.io/boomer" class="external-link">boomer</a></td>
+<td><a href="https://usethis.r-lib.org/" class="external-link">usethis</a></td>
 <td></td>
-<td>for debugging</td>
+<td>repo utils</td>
 </tr>
 <tr class="odd">
-<td>usethis</td>
+<td><a href="https://moodymudskipper.github.io/boomer" class="external-link">boomer</a></td>
 <td></td>
-<td>utils</td>
+<td>can be used for debugging</td>
 </tr>
 </tbody>
 </table>
 <p>Useful packages for development</p>
-<table class="table">
-<thead><tr class="header">
-<th>names</th>
-<th>version</th>
-<th>comment</th>
-</tr></thead>
-<tbody><tr class="odd">
-<td>R</td>
-<td>4.2.0</td>
-<td></td>
-</tr></tbody>
-</table>
-<p>Hard dependencies (DEPENDS field in DESCRIPTION)</p>
+</div>
+</div>
 </div>
 
   </main><aside class="col-md-3"><div class="links">
