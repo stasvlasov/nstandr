@@ -119,6 +119,7 @@ Other magerman:
 \code{\link{magerman_replace_legal_form_middle}()},
 \code{\link{magerman_replace_proprietary_characters}()},
 \code{\link{magerman_replace_sgml_characters}()},
-\code{\link{magerman_replace_spelling_variation}()}
+\code{\link{magerman_replace_spelling_variation}()},
+\code{\link{standardize_eee_ppat}()}
 }
 \concept{magerman}

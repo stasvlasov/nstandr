@@ -2,6 +2,7 @@
 % Please edit documentation in R/magerman.r
 \name{standardize_magerman}
 \alias{standardize_magerman}
+\alias{standardize_eee_ppat}
 \title{Standardizes strings using exact procedures described in Magerman et al. 2009.}
 \usage{
 standardize_magerman(

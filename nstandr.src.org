@@ -7571,6 +7571,8 @@ Table: Umlaut harmonization replacements
   ##'
   ##' @references Magerman et al., 2006 - Data Production Methods for Harmonized Patent Statistics: Patentee Name Standardization
   ##'
+  ##' @aliases standardize_eee_ppat
+  ##'
   ##' @md
   ##' @export
   standardize_magerman <- function(x
@@ -7597,6 +7599,18 @@ Table: Umlaut harmonization replacements
       }
       standardize(x, magerman_procedures, ...)
   }
+
+
+  ##' @inherit standardize_magerman params return
+  ##' @inheritDotParams standardize_options
+  ##' @family magerman
+  ##'
+  ##' @md
+  ##' @export
+  standardize_eee_ppat <- standardize_magerman
+
+  ## make condensing words default
+  formals(standardize_eee_ppat)["condense_words"] <- TRUE
 #+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_standardize_magerman.r
