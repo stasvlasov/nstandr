@@ -14,7 +14,7 @@ visualize(
 )
 }
 \arguments{
-\item{procedures_list}{List of procedures. See \code{sandardize} for how to specify of procedures list.}
+\item{procedures_list}{List of procedures. See \code{sandardize} for how to specify of procedures list. Or it can be a character string for standard procedure list (e.g., 'eee-ppat' for Magerman et al., 2006 procedures).}
 
 \item{save_to_file}{If set tries to save visualization to file in the format \code{save_as} with \code{dot} system command (should be installed on your system). If it is NULL tries to open the visualization in browser (this requires DiagrammeR R package to be installed.)}
 

@@ -4432,7 +4432,7 @@ The default standardization procedures are the following (for now):
 
   ##' Visualizes list of procedures.
   ##' 
-  ##' @param procedures_list List of procedures. See `sandardize` for how to specify of procedures list.
+  ##' @param procedures_list List of procedures. See `sandardize` for how to specify of procedures list. Or it can be a character string for standard procedure list (e.g., 'eee-ppat' for Magerman et al., 2006 procedures).
   ##' @param save_to_file If set tries to save visualization to file in the format `save_as` with `dot` system command (should be installed on your system). If it is NULL tries to open the visualization in browser (this requires DiagrammeR R package to be installed.)
   ##' @param save_as Type of file to save if `save_to_file` is not NULL. If not specified (i.e. NULL) then it tries to guess the type of file from `save_to_file` extention. Currently "png", "svg" and "pdf" are supported.
   ##' @param width width of the procedures graph in pixels
@@ -4446,6 +4446,14 @@ The default standardization procedures are the following (for now):
                       , width = NULL
                       , height = NULL
                       , ...) {
+      ## if procedures_list is a string then use predefined procedures
+      if(is.character(procedures_list)) {
+          if(procedures_list == "eee_ppat") {
+              procedures_list <- nstandr-magerman-procedures-list
+          } else {
+              stop("nstandr - Can not visualize. Unknown procedures list '", procedures_list, "'.")
+          }
+      }
       if(is.null(save_to_file)) {
           browse_dot_graph(procedures_list
                          , width
