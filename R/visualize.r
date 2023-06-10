@@ -280,7 +280,7 @@ visualize <- function(procedures_list
     ## if procedures_list is a string then use predefined procedures
     if(is.character(procedures_list)) {
         if(procedures_list == "eee_ppat") {
-            procedures_list <- nstandr-magerman-procedures-list
+            procedures_list <- nstandr_magerman_procedures_list
         } else {
             stop("nstandr - Can not visualize. Unknown procedures list '", procedures_list, "'.")
         }
