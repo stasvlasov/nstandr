@@ -9,7 +9,9 @@ escape_regex_for_type(
   type,
   escape_fixed = FALSE,
   return_docs = FALSE,
-  return_choices = FALSE
+  return_choices = FALSE,
+  escape_begins = TRUE,
+  escape_ends = TRUE
 )
 }
 \arguments{
@@ -27,6 +29,10 @@ places)}
 
 \item{return_choices}{Return character vector of available escape
 types}
+
+\item{escape_begins}{Whether to escape string for 'begins' type}
+
+\item{escape_ends}{Whether to escape string for 'ends' type}
 }
 \value{
 character vector with all special to regex characters

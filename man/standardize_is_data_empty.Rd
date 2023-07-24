@@ -2,7 +2,7 @@
 % Please edit documentation in R/0_is_x_empty.r
 \name{standardize_is_data_empty}
 \alias{standardize_is_data_empty}
-\title{Checks if all elements in vercor(s) are either "", NA, NULL or have zero length}
+\title{Checks if all elements in vector(s) are either "", NA, NULL or have zero length}
 \usage{
 standardize_is_data_empty(x, return_as_true_if_x_zero_length = FALSE)
 }
@@ -15,5 +15,5 @@ standardize_is_data_empty(x, return_as_true_if_x_zero_length = FALSE)
 logical vector of the same length
 }
 \description{
-Checks if all elements in vercor(s) are either "", NA, NULL or have zero length
+Checks if all elements in vector(s) are either "", NA, NULL or have zero length
 }

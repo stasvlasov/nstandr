@@ -96,7 +96,11 @@ detect_patterns <- function(x
     ## get patterns excaped according to types.vector
     patterns_vector <-
         get_vector(patterns, patterns_col) |>
-        escape_regex_for_types(types_vector)
+        escape_regex_for_types(types_vector
+                             , escape_fixed = FALSE
+                             , escape_begins = FALSE
+                             , escape_ends = FALSE
+                             , escape_all_if_multiple_types = FALSE)
     if(length(patterns_vector) == 0) return(x)
     ## get codes
     codes_vector <- get_vector(patterns, patterns_codes_col
@@ -105,21 +109,29 @@ detect_patterns <- function(x
     if(length(patterns_vector) == 0) return(x)
     ## --------------------------------------------------------------------------------
     ## detect and clean up
-    x_inset_vector <-
-        mapply(\(pattern, pattern_type, code)
-            switch(pattern_type
-                 , "fixed" = stringi::stri_detect_fixed(x_vector, pattern)
-                 , "exact" = x_vector == pattern
-                 , "trim_exact" = stringi::stri_trim_both(x_vector) == pattern
-                 , stringi::stri_detect_regex(x_vector, pattern)
-                   ) |> ifelse(code, NA)
-             , patterns_vector
-             , types_vector
-             , codes_vector
-             , SIMPLIFY = FALSE
-             , USE.NAMES = FALSE) |>
-        transpose_list_of_vectors() |>
-        lapply(standardize_omit_empty)
+    x_inset_vector <- vector(mode = 'list', length = length(x_vector))
+    ## map over patterns
+    mapply(
+        FUN = \(pattern, code, detect_func) {
+            matches <- detect_func(x_vector, pattern)
+            x_inset_vector_copy <- x_inset_vector
+            x_inset_vector_copy[matches] <- lapply(x_inset_vector_copy[matches], c, code)
+            x_inset_vector <<- x_inset_vector_copy
+            return(NULL)
+        }
+      , pattern = patterns_vector
+      , code = codes_vector
+      , detect_func = lapply(types_vector, switch
+                           , "fixed" = \(s, p) stringi::stri_detect_fixed(s, p)
+                           , "exact" = \(s, p) s == p
+                           , "trim_exact" = \(s, p) stringi::stri_trim_both(s) == p
+                           , "trim_beggins" = \(s, p) stringi::stri_trim_left(s) |>
+                                                   stringi::stri_startswith_fixed(p)
+                           , "trim_ends" = \(s, p) stringi::stri_trim_right(s) |>
+                                                stringi::stri_endswith_fixed(p)
+                           , "beggins" = \(s, p) stringi::stri_startswith_fixed(s, p)
+                           , "ends" = \(s, p) stringi::stri_endswith_fixed(s, p)
+                           , \(s, p) stringi::stri_detect_regex(s, p)))
     ## code unmached records if needed
     if(!is.null(no_match_code)) {
         x_inset_vector <- 
@@ -132,7 +144,8 @@ detect_patterns <- function(x
         x_inset_vector <-
             lapply(x_inset_vector
                  , \(x) if(length(x) > 1) x[1] else x)
-    }     ## merge if there is something to merge with
+    }
+    ## merge if there is something to merge with
     if(merge_existing_codes %in% c("append_to_existing", "prepend_to_existing")) {
         x_codes_vector <- get_target(x
                                    , rows = rows

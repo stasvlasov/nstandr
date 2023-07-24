@@ -1068,7 +1068,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
 :ID:       org:3971f8s0lei0
 :END:
 #+BEGIN_SRC R :tangle R/0_is_x_empty.r
-  ##' Checks if all elements in vercor(s) are either "", NA, NULL or have zero length
+  ##' Checks if all elements in vector(s) are either "", NA, NULL or have zero length
   ##' @param x input data to check each vector
   ##' @param return_as_true_if_x_zero_length how to interpret zero lenth input. If TRUE then it returns TRUE. Otherwise NULL.
   ##' @return logical vector of the same length
@@ -1081,11 +1081,29 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
               return(NULL)
           }
       }
-      x_list_checks <-
-          lapply(x, function(x) {
-              if (length(x) == 0) TRUE else all(x == "" | is.na(x))
-          })
-      unlist(x_list_checks, recursive = FALSE)
+      if(is.atomic(x)) {
+          return(is.na(x) | x == "")
+      } else if(is.list(x)) {
+          ## try to speed things up
+          x_empty <- rep(FALSE, length(x))
+          ## check for NULLs
+          x_list_length <- sapply(x, length)
+          if(any(x_list_length == 0)) {
+              x_empty[x_list_length == 0] <- TRUE
+          }
+          ## check single elements
+          if(any(x_list_length == 1)) {
+              x_empty_singles <- x[x_list_length == 1] |> unlist()
+              x_empty_singles <- is.na(x_empty_singles) | x_empty_singles == ""
+              x_empty[x_list_length == 1] <- x_empty_singles
+          }
+          ## check lengthy elements
+          if(any(x_list_length > 1)) {
+              x_empty_multiples <- x[x_list_length > 1] |> sapply(\(.x) all(is.na(.x) | .x == ""))
+              x_empty[x_list_length > 1] <- x_empty_multiples
+          }
+          return(x_empty)
+      }
   }
 
 
@@ -1095,7 +1113,7 @@ A table for converting ~ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒ
   ##' @export
   standardize_omit_empty <- function(x) {
       if(length(x) == 0) return(x)
-      x[!sapply(standardize_is_data_empty(x), isTRUE)]
+      x[!standardize_is_data_empty(x)]
   }
 
 
@@ -2917,6 +2935,8 @@ Tests:
   ##'     places)
   ##' @param return_choices Return character vector of available escape
   ##'     types
+  ##' @param escape_begins Whether to escape string for 'begins' type
+  ##' @param escape_ends Whether to escape string for 'ends' type
   ##' @return character vector with all special to regex characters
   ##'     escaped
   ##' @eval escape_regex_for_type(return_docs = TRUE)
@@ -2925,39 +2945,39 @@ Tests:
                                   , type
                                   , escape_fixed = FALSE
                                   , return_docs = FALSE
-                                  , return_choices = FALSE) {
+                                  , return_choices = FALSE
+                                  , escape_begins = TRUE
+                                  , escape_ends =  TRUE) {
       types_specs <- list(
           list(type = "fixed"
              , docs = "Match pattern string as it is within the target vector"
              , func = \(string, escape_fixed) {
-                 if(escape_fixed) escape_regex(string)
-                 else string
+                 if(escape_fixed) escape_regex(string) else string
              })
         , list(type = "begins"
              , docs = "Match pattern string as it is in the beggining of the target vector"
              , func = \(string, escape_fixed) {
-                 paste0("^", escape_regex(string))
+                 if(escape_begins) paste0("^", escape_regex(string)) else string
              })
         , list(type = "trim_begins"
              , docs = "Match pattern string as it is in the beginning of the target vector ignoring preceding white-spaces"
              , func = \(string, escape_fixed) {
-                 paste0("^\\s*", escape_regex(string))
+                 if(escape_begins) paste0("^\\s*", escape_regex(string)) else string
              })
         , list(type = "ends"
              , docs = "Match pattern string as it is in the end of the target vector"
              , func = \(string, escape_fixed) {
-                 paste0(escape_regex(string), "$")
+                 if(escape_ends) paste0(escape_regex(string), "$") else string
              })
         , list(type = "trim_ends"
              , docs = "Match pattern string as it is in the end of the target vector ignoring leading white-spaces"
              , func = \(string, escape_fixed) {
-                 paste0(escape_regex(string), "\\s*$")
+                 if(escape_ends) paste0(escape_regex(string), "\\s*$") else string
              })
         , list(type = "exact"
              , docs = "Match pattern string exactly (i.e., match equal strings)"
              , func = \(string, escape_fixed) {
-                 if(escape_fixed) paste0("^", escape_regex(string), "$")
-                 else string
+                 if(escape_fixed) paste0("^", escape_regex(string), "$") else string
              })
         , list(type = "trim_exact"
              , docs = "Match pattern string exactly (i.e., match equal strings) ignoring surrounding white-spaces"
@@ -2984,24 +3004,37 @@ Tests:
 
   ##' Escapes special for regex characters conditionally
   ##' @param patterns character vector
+  ##' @param types character vector of the same length as `strings` with
+  ##'     instructions whether and how to to escape regex
+  ##'     characters. Options are:
   ##' @param escape_fixed Whether to escape strings for 'fixed' and
   ##'     'exact' types in case all types are the same
   ##'     (length(unique(types)) == 1). The "trim_exact" types get
   ##'     trimed if not escaped. Otherwise if types heterogenious
-  ##' @param types character vector of the same length as `strings` with
-  ##'     instructions whether and how to to escape regex
-  ##'     characters. Options are:
+  ##' @param escape_begins Whether to escape string for 'begins' type
+  ##' @param escape_ends Whether to escape string for 'ends' type
+  ##' @param escape_all_if_multiple_types If types are multiple this applies to all esapes options
   ##' @eval escape_regex_for_type(return_docs = TRUE)
   ##' @return string with all special to regex characters escaped
-  escape_regex_for_types <- function(patterns, types, escape_fixed = FALSE) {
+  escape_regex_for_types <- function(patterns, types
+                                   , escape_fixed = FALSE
+                                   , escape_begins = TRUE
+                                   , escape_ends = TRUE
+                                   , escape_all_if_multiple_types = TRUE) {
       choices <- escape_regex_for_type(return_choices = TRUE)
       if(length(types) == 1 || length(unique(types)) == 1) {
           type <- types[1]
           checkmate::assert_choice(type, choices, fmatch = TRUE)
-          escape_regex_for_type(patterns, type, escape_fixed = escape_fixed)
+          escape_regex_for_type(patterns, type
+                              , escape_fixed = escape_fixed
+                              , escape_begins = escape_begins
+                              , escape_ends = escape_ends)
       } else {
           checkmate::assert_subset(types, choices, fmatch = TRUE)
-          mapply(\(p, t) escape_regex_for_type(p, t, escape_fixed = TRUE)
+          mapply(\(p, t) escape_regex_for_type(p, t
+                                             , escape_fixed = escape_all_if_multiple_types
+                                             , escape_begins = escape_all_if_multiple_types 
+                                             , escape_ends = escape_all_if_multiple_types)
                , patterns , types
                , SIMPLIFY = TRUE)
       }
@@ -3398,7 +3431,11 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
       ## get patterns excaped according to types.vector
       patterns_vector <-
           get_vector(patterns, patterns_col) |>
-          escape_regex_for_types(types_vector)
+          escape_regex_for_types(types_vector
+                               , escape_fixed = FALSE
+                               , escape_begins = FALSE
+                               , escape_ends = FALSE
+                               , escape_all_if_multiple_types = FALSE)
       if(length(patterns_vector) == 0) return(x)
       ## get codes
       codes_vector <- get_vector(patterns, patterns_codes_col
@@ -3407,21 +3444,29 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
       if(length(patterns_vector) == 0) return(x)
       ## --------------------------------------------------------------------------------
       ## detect and clean up
-      x_inset_vector <-
-          mapply(\(pattern, pattern_type, code)
-              switch(pattern_type
-                   , "fixed" = stringi::stri_detect_fixed(x_vector, pattern)
-                   , "exact" = x_vector == pattern
-                   , "trim_exact" = stringi::stri_trim_both(x_vector) == pattern
-                   , stringi::stri_detect_regex(x_vector, pattern)
-                     ) |> ifelse(code, NA)
-               , patterns_vector
-               , types_vector
-               , codes_vector
-               , SIMPLIFY = FALSE
-               , USE.NAMES = FALSE) |>
-          transpose_list_of_vectors() |>
-          lapply(standardize_omit_empty)
+      x_inset_vector <- vector(mode = 'list', length = length(x_vector))
+      ## map over patterns
+      mapply(
+          FUN = \(pattern, code, detect_func) {
+              matches <- detect_func(x_vector, pattern)
+              x_inset_vector_copy <- x_inset_vector
+              x_inset_vector_copy[matches] <- lapply(x_inset_vector_copy[matches], c, code)
+              x_inset_vector <<- x_inset_vector_copy
+              return(NULL)
+          }
+        , pattern = patterns_vector
+        , code = codes_vector
+        , detect_func = lapply(types_vector, switch
+                             , "fixed" = \(s, p) stringi::stri_detect_fixed(s, p)
+                             , "exact" = \(s, p) s == p
+                             , "trim_exact" = \(s, p) stringi::stri_trim_both(s) == p
+                             , "trim_beggins" = \(s, p) stringi::stri_trim_left(s) |>
+                                                     stringi::stri_startswith_fixed(p)
+                             , "trim_ends" = \(s, p) stringi::stri_trim_right(s) |>
+                                                  stringi::stri_endswith_fixed(p)
+                             , "beggins" = \(s, p) stringi::stri_startswith_fixed(s, p)
+                             , "ends" = \(s, p) stringi::stri_endswith_fixed(s, p)
+                             , \(s, p) stringi::stri_detect_regex(s, p)))
       ## code unmached records if needed
       if(!is.null(no_match_code)) {
           x_inset_vector <- 
@@ -3434,7 +3479,8 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
           x_inset_vector <-
               lapply(x_inset_vector
                    , \(x) if(length(x) > 1) x[1] else x)
-      }     ## merge if there is something to merge with
+      }
+      ## merge if there is something to merge with
       if(merge_existing_codes %in% c("append_to_existing", "prepend_to_existing")) {
           x_codes_vector <- get_target(x
                                      , rows = rows
@@ -3464,7 +3510,7 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
                  , return_only_target_col = return_only_codes)
   }
 
-  #+END_SRC
+#+END_SRC
 
 #+BEGIN_SRC R :tangle inst/tinytest/test_detect_patterns.r
   ## Tests for detect_patterns
@@ -3608,8 +3654,9 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
           some.extra.col = c(1, 2)
       ),
       return_only_first_detected_code = FALSE
-      ),
-      structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = list(c("corp", "corp2"), "corp2", character(0))), row.names = c(
+      )
+     ,
+      structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = list(c("corp", "corp2"), "corp2", NULL)), row.names = c(
           NA,
           -3L
       ), class = c("data.table", "data.frame"))
@@ -3632,7 +3679,7 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
       ),
       structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = list(
           c("single code", "single code"), "single code",
-          character(0)
+          NULL
       )), row.names = c(NA, -3L), class = c(
           "data.table",
           "data.frame"
@@ -3694,13 +3741,14 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
       ),
       return_only_first_detected_code = TRUE,
       patterns_type_col = 3
-      ),
+      )
+     ,
       structure(list(x = c(
           "MSlab Co", "MS3lab Co", "MSlab8 Co.",
           "IBM Corp.", "Tilburg University", " TiU    "
       ), x_coded = c(
           "corp",
-          "corp", "ms", "ibm", "univ", NA
+          "corp", "ms", "ibm", "univ", "tiu"
       )), row.names = c(NA, -6L), class = c(
           "data.table",
           "data.frame"
@@ -3730,7 +3778,7 @@ testing performance of ~stri_replace_all_regex(vectorize_all = FALSE)~
           "MSlab Co", "MS3lab Co", "MSlab8 Co.",
           "IBM Corp.", "Tilburg University", " TiU    "
       ), x_coded = list(
-          c("corp", "ms"), "corp", "ms", "ibm", "univ", character(0)
+          c("corp", "ms"), "corp", "ms", "ibm", "univ", "tiu"
       )), row.names = c(
           NA,
           -6L

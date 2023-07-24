@@ -140,8 +140,9 @@ expect_equal(
         some.extra.col = c(1, 2)
     ),
     return_only_first_detected_code = FALSE
-    ),
-    structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = list(c("corp", "corp2"), "corp2", character(0))), row.names = c(
+    )
+   ,
+    structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = list(c("corp", "corp2"), "corp2", NULL)), row.names = c(
         NA,
         -3L
     ), class = c("data.table", "data.frame"))
@@ -164,7 +165,7 @@ expect_equal(
     ),
     structure(list(x = c("MSlab Co.", "IBM Corp.", "Tilburg University"), x_coded = list(
         c("single code", "single code"), "single code",
-        character(0)
+        NULL
     )), row.names = c(NA, -3L), class = c(
         "data.table",
         "data.frame"
@@ -226,13 +227,14 @@ expect_equal(
     ),
     return_only_first_detected_code = TRUE,
     patterns_type_col = 3
-    ),
+    )
+   ,
     structure(list(x = c(
         "MSlab Co", "MS3lab Co", "MSlab8 Co.",
         "IBM Corp.", "Tilburg University", " TiU    "
     ), x_coded = c(
         "corp",
-        "corp", "ms", "ibm", "univ", NA
+        "corp", "ms", "ibm", "univ", "tiu"
     )), row.names = c(NA, -6L), class = c(
         "data.table",
         "data.frame"
@@ -262,7 +264,7 @@ expect_equal(
         "MSlab Co", "MS3lab Co", "MSlab8 Co.",
         "IBM Corp.", "Tilburg University", " TiU    "
     ), x_coded = list(
-        c("corp", "ms"), "corp", "ms", "ibm", "univ", character(0)
+        c("corp", "ms"), "corp", "ms", "ibm", "univ", "tiu"
     )), row.names = c(
         NA,
         -6L

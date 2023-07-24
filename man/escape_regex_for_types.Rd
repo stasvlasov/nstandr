@@ -4,7 +4,14 @@
 \alias{escape_regex_for_types}
 \title{Escapes special for regex characters conditionally}
 \usage{
-escape_regex_for_types(patterns, types, escape_fixed = FALSE)
+escape_regex_for_types(
+  patterns,
+  types,
+  escape_fixed = FALSE,
+  escape_begins = TRUE,
+  escape_ends = TRUE,
+  escape_all_if_multiple_types = TRUE
+)
 }
 \arguments{
 \item{patterns}{character vector}
@@ -17,6 +24,12 @@ characters. Options are:}
 'exact' types in case all types are the same
 (length(unique(types)) == 1). The "trim_exact" types get
 trimed if not escaped. Otherwise if types heterogenious}
+
+\item{escape_begins}{Whether to escape string for 'begins' type}
+
+\item{escape_ends}{Whether to escape string for 'ends' type}
+
+\item{escape_all_if_multiple_types}{If types are multiple this applies to all esapes options}
 }
 \value{
 string with all special to regex characters escaped
