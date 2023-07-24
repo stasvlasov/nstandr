@@ -83,7 +83,9 @@ regex  -  Match regex pattern
 <span>  <span class="va">type</span>,</span>
 <span>  escape_fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  return_docs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  return_choices <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  return_choices <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  escape_begins <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  escape_ends <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -112,6 +114,14 @@ places)</p></dd>
 <dt>return_choices</dt>
 <dd><p>Return character vector of available escape
 types</p></dd>
+
+
+<dt>escape_begins</dt>
+<dd><p>Whether to escape string for 'begins' type</p></dd>
+
+
+<dt>escape_ends</dt>
+<dd><p>Whether to escape string for 'ends' type</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -78,7 +78,14 @@ regex  -  Match regex pattern
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">escape_regex_for_types</span><span class="op">(</span><span class="va">patterns</span>, <span class="va">types</span>, escape_fixed <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">escape_regex_for_types</span><span class="op">(</span></span>
+<span>  <span class="va">patterns</span>,</span>
+<span>  <span class="va">types</span>,</span>
+<span>  escape_fixed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  escape_begins <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  escape_ends <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  escape_all_if_multiple_types <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -98,6 +105,18 @@ characters. Options are:</p></dd>
 'exact' types in case all types are the same
 (length(unique(types)) == 1). The "trim_exact" types get
 trimed if not escaped. Otherwise if types heterogenious</p></dd>
+
+
+<dt>escape_begins</dt>
+<dd><p>Whether to escape string for 'begins' type</p></dd>
+
+
+<dt>escape_ends</dt>
+<dd><p>Whether to escape string for 'ends' type</p></dd>
+
+
+<dt>escape_all_if_multiple_types</dt>
+<dd><p>If types are multiple this applies to all esapes options</p></dd>
 
 </dl></div>
     <div class="section level2">
